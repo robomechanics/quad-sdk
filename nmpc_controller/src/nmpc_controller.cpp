@@ -56,7 +56,7 @@ NMPCController::NMPCController(ros::NodeHandle &nh, int robot_id) {
       u_min(control_lower_bound.data(), m_, 1),
       u_max(control_upper_bound.data(), m_, 1);
 
-  mynlp_ = new spiritNLP(
+  mynlp_ = new quadNLP(
       type_,
       N_,
       n_,

@@ -1,9 +1,9 @@
 
 <library path="lib/libcontroller">
 
-  <class name="effort_controllers/QuadController" type="effort_controllers::QuadController" base_class_type="controller_interface::ControllerBase">
+  <class name="effort_controllers/SpiritController" type="effort_controllers::SpiritController" base_class_type="controller_interface::ControllerBase">
     <description>
-      The QuadController tracks positions commands w/ specified feedforward torques and specified feedback gains
+      The SpiritController tracks positions commands w/ specified feedforward torques and specified feedback gains
     </description>
   </class>
 

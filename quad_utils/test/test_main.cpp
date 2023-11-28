@@ -1,9 +1,9 @@
-#include <gtest/gtest.h>
 #include <ros/ros.h>
+#include <gtest/gtest.h>
 
 int main(int argc, char** argv) {
-  testing::InitGoogleTest(&argc, argv);
-  ros::init(argc, argv, "quad_utils_tester");
+	testing::InitGoogleTest(&argc, argv);
+	ros::init(argc, argv, "quad_utils_tester");
 
-  return RUN_ALL_TESTS();
+	return RUN_ALL_TESTS();
 }

@@ -4,24 +4,30 @@
 #include <eigen_conversions/eigen_msg.h>
 #include <local_planner/local_planner_modes.h>
 #include <nav_msgs/Path.h>
-#include <spirit_msgs/RobotPlan.h>
-#include <spirit_msgs/RobotState.h>
-#include <spirit_msgs/FootState.h>
-#include <spirit_msgs/MultiFootState.h>
-#include <spirit_msgs/FootPlanDiscrete.h>
-#include <spirit_msgs/MultiFootPlanContinuous.h>
-#include <spirit_msgs/MultiFootPlanDiscrete.h>
-#include <spirit_utils/fast_terrain_map.h>
-#include <spirit_utils/function_timer.h>
-#include <spirit_utils/math_utils.h>
-#include <spirit_utils/ros_utils.h>
-#include <spirit_utils/quad_kd.h>
+#include <quad_msgs/RobotPlan.h>
+#include <quad_msgs/RobotState.h>
+#include <quad_msgs/FootState.h>
+#include <quad_msgs/MultiFootState.h>
+#include <quad_msgs/FootPlanDiscrete.h>
+#include <quad_msgs/MultiFootPlanContinuous.h>
+#include <quad_msgs/MultiFootPlanDiscrete.h>
+#include <quad_utils/fast_terrain_map.h>
+#include <quad_utils/function_timer.h>
+#include <quad_utils/math_utils.h>
+#include <quad_utils/ros_utils.h>
+#include <quad_utils/quad_kd.h>
 
 #include <eigen3/Eigen/Eigen>
 #include <grid_map_core/grid_map_core.hpp>
 #include <grid_map_ros/GridMapRosConverter.hpp>
 #include <grid_map_ros/grid_map_ros.hpp>
 
+<<<<<<< HEAD
+=======
+#include <eigen3/Eigen/Eigen>
+#include <eigen_conversions/eigen_msg.h>
+
+>>>>>>> Switch build system to catkin_tools, switch spirit* to quad*
 //! A local footstep planning class for quad
 /*!
    FootstepPlanner is a container for all of the logic utilized in the local
@@ -54,7 +60,7 @@ class LocalFootstepPlanner {
      * @param[in] kinematics Kinematics class for computations
      */
     void setSpatialParams(double ground_clearance, double grf_weight,double standing_error_threshold,
-      std::shared_ptr<spirit_utils::QuadKD> kinematics);
+      std::shared_ptr<quad_utils::QuadKD> kinematics);
 
     /**
      * @brief Transform a vector of foot positions from the world to the body frame
@@ -128,6 +134,7 @@ class LocalFootstepPlanner {
      */
     void computeFootPlanMsgs(
       const std::vector<std::vector<bool>> &contact_schedule, const Eigen::MatrixXd &foot_positions,
+<<<<<<< HEAD
       int current_plan_index, const Eigen::MatrixXd &body_plan, const double &time_ahead, quad_msgs::MultiFootPlanDiscrete &past_footholds_msg,
       quad_msgs::MultiFootPlanDiscrete &future_footholds_msg,
       quad_msgs::MultiFootPlanContinuous &foot_plan_continuous_msg);
@@ -140,6 +147,21 @@ class LocalFootstepPlanner {
           printf("1 ");
         } else {
           printf("0 ");
+=======
+      int current_plan_index, quad_msgs::MultiFootPlanDiscrete &past_footholds_msg,
+      quad_msgs::MultiFootPlanDiscrete &future_footholds_msg,
+      quad_msgs::MultiFootPlanContinuous &foot_plan_continuous_msg);
+
+    inline void printContactSchedule(const std::vector<std::vector<bool>> &contact_schedule) {
+      
+      for (int i = 0; i < contact_schedule.size(); i++) {
+        for (int j = 0; j < contact_schedule.at(i).size(); j++) {
+          if (contact_schedule[i][j]) {
+            printf("1 ");
+          } else {
+            printf("0 ");
+          } 
+>>>>>>> Switch build system to catkin_tools, switch spirit* to quad*
         }
       }
       printf("\n");
@@ -417,8 +439,13 @@ class LocalFootstepPlanner {
   /// Gait period in timesteps
   int period_;
 
+<<<<<<< HEAD
   /// Horizon length in timesteps
   int horizon_length_;
+=======
+    /// Current continuous footstep plan
+    quad_msgs::MultiFootPlanContinuous multi_foot_plan_continuous_msg_;
+>>>>>>> Switch build system to catkin_tools, switch spirit* to quad*
 
   /// Phase offsets for the touchdown of each foot
   std::vector<double> phase_offsets_ = {0, 0.5, 0.5, 0.0};
@@ -460,7 +487,7 @@ class LocalFootstepPlanner {
   double foothold_search_radius_;
 
     /// QuadKD class
-    std::shared_ptr<spirit_utils::QuadKD>quadKD_;
+    std::shared_ptr<quad_utils::QuadKD>quadKD_;
 
   /// Terrain layer for foothold search
   std::string obj_fun_layer_;

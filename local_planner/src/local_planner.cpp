@@ -9,6 +9,7 @@ LocalPlanner::LocalPlanner(ros::NodeHandle nh) : local_body_planner_nonlinear_()
   // Load rosparams from parameter server
   std::string terrain_map_topic, body_plan_topic, robot_state_topic, local_plan_topic,
     foot_plan_discrete_topic, foot_plan_continuous_topic, cmd_vel_topic;
+<<<<<<< HEAD
   // quad_utils::loadROSParamDefault(nh_, "robot_type", robot_name_,
                                   // std::string("spirit"));
   quad_utils::loadROSParam(nh_, "topics/terrain_map", terrain_map_topic);
@@ -57,12 +58,43 @@ LocalPlanner::LocalPlanner(ros::NodeHandle nh) : local_body_planner_nonlinear_()
                            stand_cmd_vel_threshold_);
   quad_utils::loadROSParam(nh_, "/local_planner/stand_pos_error_threshold",
                            stand_pos_error_threshold_);
+=======
+  quad_utils::loadROSParam(nh_, "topics/terrain_map", terrain_map_topic);
+  quad_utils::loadROSParam(nh_, "topics/global_plan", body_plan_topic);
+  quad_utils::loadROSParam(nh_, "topics/state/ground_truth",robot_state_topic);
+  quad_utils::loadROSParam(nh_, "topics/local_plan", local_plan_topic);
+  quad_utils::loadROSParam(nh_, "topics/foot_plan_discrete", foot_plan_discrete_topic);
+  quad_utils::loadROSParam(nh_, "topics/foot_plan_continuous", foot_plan_continuous_topic);
+  quad_utils::loadROSParam(nh_, "topics/cmd_vel", cmd_vel_topic);
+  quad_utils::loadROSParam(nh_, "map_frame", map_frame_);
+
+
+  // Setup pubs and subs
+  terrain_map_sub_ = nh_.subscribe(terrain_map_topic,1, &LocalPlanner::terrainMapCallback, this);
+  body_plan_sub_ = nh_.subscribe(body_plan_topic,1, &LocalPlanner::robotPlanCallback, this);
+  robot_state_sub_ = nh_.subscribe(robot_state_topic,1,&LocalPlanner::robotStateCallback,this);
+  cmd_vel_sub_ = nh_.subscribe(cmd_vel_topic,1,&LocalPlanner::cmdVelCallback, this);
+
+  local_plan_pub_ = nh_.advertise<quad_msgs::RobotPlan>(local_plan_topic,1);
+  foot_plan_discrete_pub_ = nh_.advertise<
+    quad_msgs::MultiFootPlanDiscrete>(foot_plan_discrete_topic,1);
+  foot_plan_continuous_pub_ = nh_.advertise<
+    quad_msgs::MultiFootPlanContinuous>(foot_plan_continuous_topic,1);  
+
+  // Load system parameters from parameter server
+  quad_utils::loadROSParam(nh_, "local_planner/update_rate", update_rate_);
+  quad_utils::loadROSParam(nh_, "local_planner/timestep",dt_);
+  quad_utils::loadROSParam(nh_, "local_planner/iterations",iterations_);
+  quad_utils::loadROSParam(nh_, "twist_body_planner/cmd_vel_scale", cmd_vel_scale_);
+  quad_utils::loadROSParam(nh_, "twist_body_planner/last_cmd_vel_msg_time_max",
+    last_cmd_vel_msg_time_max_);
+>>>>>>> Switch build system to catkin_tools, switch spirit* to quad*
 
   // Load system parameters from launch file (not in config file)
   nh.param<bool>("local_planner/use_twist_input", use_twist_input_, false);
 
   // Convert kinematics
-quadKD_ = std::make_shared<spirit_utils::QuadKD>();
+quadKD_ = std::make_shared<quad_utils::QuadKD>();
 
   // Initialize nominal footstep positions projected down from the hips
   Eigen::Vector3d nominal_joint_state;
@@ -187,6 +219,7 @@ void LocalPlanner::initLocalFootstepPlanner() {
       period_d, foothold_search_radius, foothold_obj_threshold;
   std::string obj_fun_layer;
   int period;
+<<<<<<< HEAD
   std::vector<double> duty_cycles, phase_offsets;
   quad_utils::loadROSParam(nh_, "/local_footstep_planner/grf_weight",
                            grf_weight);
@@ -211,6 +244,15 @@ void LocalPlanner::initLocalFootstepPlanner() {
                            phase_offsets);
 
   period = period_d / dt_;
+=======
+  quad_utils::loadROSParam(nh_, "local_footstep_planner/grf_weight", grf_weight);
+  quad_utils::loadROSParam(nh_, "local_footstep_planner/ground_clearance", ground_clearance);
+  quad_utils::loadROSParam(nh_, "local_footstep_planner/standing_error_threshold",
+    standing_error_threshold);
+  quad_utils::loadROSParam(nh_, "local_footstep_planner/period", period_d);
+
+  period = period_d/dt_;
+>>>>>>> Switch build system to catkin_tools, switch spirit* to quad*
 
   // Confirm grf weight is valid
   if (grf_weight > 1 || grf_weight < 0) {
@@ -237,6 +279,7 @@ void LocalPlanner::terrainMapCallback(
   local_footstep_planner_->updateMap(terrain_grid_);
 }
 
+<<<<<<< HEAD
 void LocalPlanner::robotPlanCallback(
     const quad_msgs::RobotPlan::ConstPtr &msg) {
   body_plan_msg_ = msg;
@@ -244,6 +287,25 @@ void LocalPlanner::robotPlanCallback(
 
 void LocalPlanner::robotStateCallback(
     const quad_msgs::RobotState::ConstPtr &msg) {
+=======
+void LocalPlanner::robotPlanCallback(const quad_msgs::RobotPlan::ConstPtr& msg) {
+  // If this is the first plan, initialize the message of past footholds with current foot positions
+  if (body_plan_msg_ == NULL && robot_state_msg_ != NULL) {
+    past_footholds_msg_.header = msg->header;
+    for (int i = 0; i < num_feet_; i++) {
+      past_footholds_msg_.feet[i].footholds.clear();
+      past_footholds_msg_.feet[i].footholds.push_back(robot_state_msg_->feet.feet[i]);
+      past_footholds_msg_.feet[i].footholds.front().header = past_footholds_msg_.header;
+      past_footholds_msg_.feet[i].footholds.front().traj_index = 0;
+    }
+  }
+
+  body_plan_msg_ = msg;
+}
+
+void LocalPlanner::robotStateCallback(const quad_msgs::RobotState::ConstPtr& msg) {
+
+>>>>>>> Switch build system to catkin_tools, switch spirit* to quad*
   // Make sure the data is actually populated
   if (msg->feet.feet.empty() || msg->joints.position.empty()) return;
 
@@ -290,26 +352,37 @@ void LocalPlanner::getReference() {
   // Tracking trajectory so enter run mode
   control_mode_ = STEP;
 
+<<<<<<< HEAD
   // Get plan index, compare with the previous one to check if this is a
   // duplicated solve
   int previous_plan_index = current_plan_index_;
   quad_utils::getPlanIndex(initial_timestamp_, dt_, current_plan_index_,
                            first_element_duration_);
   plan_index_diff_ = current_plan_index_ - previous_plan_index;
+=======
+  // Get index within the global plan
+  current_plan_index_ = quad_utils::getPlanIndex(body_plan_msg_->global_plan_timestamp,dt_);
+>>>>>>> Switch build system to catkin_tools, switch spirit* to quad*
 
   // Get the current body and foot positions into Eigen
   current_state_ = quad_utils::bodyStateMsgToEigen(robot_state_msg_->body);
   current_state_timestamp_ = robot_state_msg_->header.stamp;
+<<<<<<< HEAD
   quad_utils::multiFootStateMsgToEigen(robot_state_msg_->feet,
                                        current_foot_positions_world_,
                                        current_foot_velocities_world_);
   local_footstep_planner_->getFootPositionsBodyFrame(
       current_state_, current_foot_positions_world_,
+=======
+  quad_utils::multiFootStateMsgToEigen(robot_state_msg_->feet, current_foot_positions_world_);
+  local_footstep_planner_->getFootPositionsBodyFrame(current_state_, current_foot_positions_world_,
+>>>>>>> Switch build system to catkin_tools, switch spirit* to quad*
       current_foot_positions_body_);
 
   // Grab the appropriate states from the body plan and convert to an Eigen
   // matrix
   ref_body_plan_.setZero();
+<<<<<<< HEAD
   ref_primitive_plan_.setZero();
 
   if (use_twist_input_) {
@@ -320,6 +393,15 @@ void LocalPlanner::getReference() {
     if (time_elapsed_since_msg.toSec() > last_cmd_vel_msg_time_max_) {
       cmd_vel_.setZero();
       ROS_WARN_THROTTLE(1.0, "No cmd_vel data, setting twist cmd_vel to zero");
+=======
+  for (int i = 0; i < N_+1; i++) {
+
+    // If the horizon extends past the reference trajectory, just hold the last state
+    if (i+current_plan_index_ > body_plan_msg_->plan_indices.back()) {
+      ref_body_plan_.row(i) = quad_utils::bodyStateMsgToEigen(body_plan_msg_->states.back().body);
+    } else {
+      ref_body_plan_.row(i) = quad_utils::bodyStateMsgToEigen(body_plan_msg_->states[i+current_plan_index_].body);
+>>>>>>> Switch build system to catkin_tools, switch spirit* to quad*
     }
 
     ref_ground_height_(i) = local_footstep_planner_->getTerrainHeight(ref_body_plan_(i, 0), ref_body_plan_(i, 1));
@@ -339,9 +421,35 @@ void LocalPlanner::getReference() {
       stand_pose_ << current_state_[0], current_state_[1], current_state_[5];
     }
 
+<<<<<<< HEAD
     // Set initial condition for forward integration
     Eigen::Vector2d support_center;
     support_center.setZero();
+=======
+    // No reference for feet so last two elements will be the same
+    foot_positions_body_.topRows(N_-1) = foot_positions_body_.bottomRows(N_-1);
+    foot_positions_world_.topRows(N_-1) = foot_positions_world_.bottomRows(N_-1);
+  }
+
+  // Initialize with current foot and body positions
+  body_plan_.row(0) = current_state_;
+  foot_positions_body_.row(0) = current_foot_positions_body_;
+  foot_positions_world_.row(0) = current_foot_positions_world_;
+}
+
+void LocalPlanner::getStateAndTwistInput() {
+
+  if (robot_state_msg_ == NULL)
+    return;
+
+  // Get index
+  current_plan_index_ = quad_utils::getPlanIndex(initial_timestamp_,dt_);
+
+  // Initializing foot positions if not data has arrived
+  if (first_plan_) {
+    first_plan_ = false;
+    past_footholds_msg_.header = robot_state_msg_->header;
+>>>>>>> Switch build system to catkin_tools, switch spirit* to quad*
     for (int i = 0; i < num_feet_; i++) {
       support_center.x() +=
           robot_state_msg_->feet.feet[i].position.x / ((double)num_feet_);
@@ -349,6 +457,7 @@ void LocalPlanner::getReference() {
           robot_state_msg_->feet.feet[i].position.y / ((double)num_feet_);
     }
 
+<<<<<<< HEAD
     // Step if velocity commanded, current velocity exceeds threshold, or too
     // far from center of support
     bool is_stepping =
@@ -369,6 +478,14 @@ void LocalPlanner::getReference() {
       stand_pose_ = stand_pose_ * (1 - 1 / update_rate_) +
                     current_stand_pose * 1 / update_rate_;
     }
+=======
+  // Get the current body and foot positions into Eigen
+  current_state_ = quad_utils::bodyStateMsgToEigen(robot_state_msg_->body);
+  current_state_timestamp_ = robot_state_msg_->header.stamp;
+  quad_utils::multiFootStateMsgToEigen(robot_state_msg_->feet, current_foot_positions_world_);
+  local_footstep_planner_->getFootPositionsBodyFrame(current_state_, current_foot_positions_world_,
+      current_foot_positions_body_);
+>>>>>>> Switch build system to catkin_tools, switch spirit* to quad*
 
     ref_body_plan_(0, 0) = stand_pose_[0];  // support_center.x();
     ref_body_plan_(0, 1) = stand_pose_[1];  // support_center.x();
@@ -678,6 +795,7 @@ void LocalPlanner::publishLocalPlan() {
     robot_state_msg.body = quad_utils::eigenToBodyStateMsg(body_plan_.row(i));
     robot_state_msg.feet = foot_plan_msg.states[i];
 <<<<<<< HEAD
+<<<<<<< HEAD
     quad_utils::ikRobotState(*quadKD_, robot_state_msg);
 =======
     spirit_utils::ikRobotState(*quadKD_, robot_state_msg);
@@ -687,12 +805,20 @@ void LocalPlanner::publishLocalPlan() {
     quad_msgs::GRFArray grf_array_msg;
     quad_utils::eigenToGRFArrayMsg(grf_plan_.row(i), foot_plan_msg.states[i],
                                    grf_array_msg);
+=======
+    quad_utils::ikRobotState(*quadKD_, robot_state_msg);
+
+    // Add the GRF information
+    quad_msgs::GRFArray grf_array_msg;
+    quad_utils::eigenToGRFArrayMsg(grf_plan_.row(i), foot_plan_msg.states[i], grf_array_msg);
+>>>>>>> Switch build system to catkin_tools, switch spirit* to quad*
     grf_array_msg.contact_states.resize(num_feet_);
     for (int j = 0; j < num_feet_; j++) {
       grf_array_msg.contact_states[j] = contact_schedule_[i][j];
     }
 
     // Update the headers and plan indices of the messages
+<<<<<<< HEAD
     ros::Time state_timestamp;
 
     // The first duration will vary
@@ -703,6 +829,10 @@ void LocalPlanner::publishLocalPlan() {
 
     quad_utils::updateStateHeaders(robot_state_msg, state_timestamp, map_frame_,
                                    current_plan_index_ + i);
+=======
+    ros::Time state_timestamp = local_plan_msg.header.stamp + ros::Duration(i*dt_);
+    quad_utils::updateStateHeaders(robot_state_msg, state_timestamp, map_frame_, current_plan_index_+i);
+>>>>>>> Switch build system to catkin_tools, switch spirit* to quad*
     grf_array_msg.header = robot_state_msg.header;
     grf_array_msg.traj_index = robot_state_msg.traj_index;
 

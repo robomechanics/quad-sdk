@@ -37,7 +37,7 @@ void LocalFootstepPlanner::setTemporalParams(
 
 
 void LocalFootstepPlanner::setSpatialParams(double ground_clearance, double grf_weight, 
-  double standing_error_threshold, std::shared_ptr<spirit_utils::QuadKD> kinematics) {
+  double standing_error_threshold, std::shared_ptr<quad_utils::QuadKD> kinematics) {
 
   ground_clearance_ = ground_clearance;
   hip_clearance_ = hip_clearance;
@@ -277,18 +277,42 @@ void LocalFootstepPlanner::computeFootPlan(
       }
     }
   }
+<<<<<<< HEAD
+=======
+}
+
+void LocalFootstepPlanner::computeFootPlanMsgs(
+  const std::vector<std::vector<bool>> &contact_schedule, const Eigen::MatrixXd &foot_positions,
+  int current_plan_index, quad_msgs::MultiFootPlanDiscrete &past_footholds_msg,
+  quad_msgs::MultiFootPlanDiscrete &future_footholds_msg,
+  quad_msgs::MultiFootPlanContinuous &foot_plan_continuous_msg) {
+
+  foot_plan_continuous_msg.states.resize(contact_schedule.size());
+  future_footholds_msg.feet.resize(num_feet_);
+
+  // Loop through each foot to construct the continuous foot plan message
+  for (int j=0; j<num_feet_; j++) {
+
+    future_footholds_msg.feet[j].header = future_footholds_msg.header;
+>>>>>>> Switch build system to catkin_tools, switch spirit* to quad*
 
   // Loop through each foot to interpolate the swing foot states
   for (int j = 0; j < num_feet_; j++) {
     // Declare variables for computing initial swing foot state
     // Identify index for the liftoff and touchdown events
+<<<<<<< HEAD
     quad_msgs::FootState most_recent_foothold_msg = past_footholds_msg.feet[j];
 
+=======
+    quad_msgs::FootState most_recent_foothold_msg = past_footholds_msg.feet[j].footholds.back();
+    
+>>>>>>> Switch build system to catkin_tools, switch spirit* to quad*
     int i_liftoff = most_recent_foothold_msg.traj_index - current_plan_index;
     int i_touchdown = getNextContactIndex(contact_schedule, 0, j);
     double swing_duration = i_touchdown - i_liftoff;
 
     // Identify positions of the previous and next footholds
+<<<<<<< HEAD
     Eigen::Vector3d foot_position_prev, foot_position_prev_nominal;
     quad_utils::footStateMsgToEigen(most_recent_foothold_msg,
                                     foot_position_prev);
@@ -322,12 +346,22 @@ void LocalFootstepPlanner::computeFootPlan(
       // is unused
       past_footholds_msg.feet[j].velocity.z = swing_apex;
     }
+=======
+    Eigen::Vector3d foot_position_prev;
+    quad_utils::footStateMsgToEigen(most_recent_foothold_msg, foot_position_prev);
+    Eigen::Vector3d foot_position_next = getFootData(foot_positions, i_touchdown, j);
+>>>>>>> Switch build system to catkin_tools, switch spirit* to quad*
 
     // Loop through the horizon
     for (int i = 0; i < contact_schedule.size(); i++) {
       // Create the foot state message
       quad_msgs::FootState foot_state_msg;
+<<<<<<< HEAD
       foot_state_msg.traj_index = current_plan_index + i;
+=======
+      foot_state_msg.header = foot_plan_continuous_msg.header;
+      foot_state_msg.traj_index = foot_plan_continuous_msg.states[i].traj_index;
+>>>>>>> Switch build system to catkin_tools, switch spirit* to quad*
 
       Eigen::Vector3d foot_position;
       Eigen::Vector3d foot_velocity;
@@ -521,6 +555,7 @@ void LocalFootstepPlanner::loadFootPlanMsgs(
         foot_plan_continuous_msg.states[i].traj_index = current_plan_index + i;
       }
 
+<<<<<<< HEAD
       // Create the foot state message
       quad_msgs::FootState foot_state_msg;
       foot_state_msg.header = foot_plan_continuous_msg.header;
@@ -530,6 +565,11 @@ void LocalFootstepPlanner::loadFootPlanMsgs(
                                       foot_accelerations.block<1, 3>(i, 3 * j),
                                       foot_state_msg);
       foot_state_msg.contact = isContact(contact_schedule, i, j);
+=======
+      // Load state data into the message
+      quad_utils::eigenToFootStateMsg(foot_position, foot_velocity, foot_acceleration, foot_state_msg);
+      foot_plan_continuous_msg.states[i].feet.push_back(foot_state_msg);
+>>>>>>> Switch build system to catkin_tools, switch spirit* to quad*
 
       // If this is a touchdown event, add to the future footholds message
       if (isNewContact(contact_schedule, i, j)) {

@@ -4,22 +4,27 @@
 #include <geometry_msgs/PoseArray.h>
 #include <geometry_msgs/PoseStamped.h>
 #include <nav_msgs/Path.h>
-#include <spirit_msgs/RobotState.h>
-#include <spirit_msgs/RobotPlan.h>
-#include <spirit_msgs/FootState.h>
-#include <spirit_msgs/MultiFootState.h>
-#include <spirit_msgs/MultiFootPlanContinuous.h>
-#include <spirit_msgs/FootPlanDiscrete.h>
-#include <spirit_msgs/MultiFootPlanDiscrete.h>
-#include <spirit_msgs/GRFArray.h>
-#include <spirit_utils/ros_utils.h>
+#include <quad_msgs/RobotState.h>
+#include <quad_msgs/RobotPlan.h>
+#include <quad_msgs/FootState.h>
+#include <quad_msgs/MultiFootState.h>
+#include <quad_msgs/MultiFootPlanContinuous.h>
+#include <quad_msgs/FootPlanDiscrete.h>
+#include <quad_msgs/MultiFootPlanDiscrete.h>
+#include <quad_msgs/GRFArray.h>
+#include <quad_utils/ros_utils.h>
 
 #include <tf2/LinearMath/Quaternion.h>
 #include <tf2_ros/transform_broadcaster.h>
 #include <visualization_msgs/Marker.h>
 #include <visualization_msgs/MarkerArray.h>
 
+<<<<<<< HEAD:quad_utils/include/quad_utils/rviz_interface.h
 //! A class for interfacing between RViz and quad-sdk topics.
+=======
+
+//! A class for interfacing between RViz and quad-software topics.
+>>>>>>> Switch build system to catkin_tools, switch spirit* to quad*:spirit_utils/include/spirit_utils/rviz_interface.h
 /*!
    RVizInterface is a container for all of the logic utilized in the template
    node. The implementation must provide a clean and high level interface to the
@@ -44,40 +49,61 @@ class RVizInterface {
    * @brief Callback function to handle new body plan data
    * @param[in] msg plan message contining interpolated output of body planner
    */
+<<<<<<< HEAD:quad_utils/include/quad_utils/rviz_interface.h
   void grfCallback(const quad_msgs::GRFArray::ConstPtr &msg);
+=======
+  void robotPlanCallback(const quad_msgs::RobotPlan::ConstPtr& msg,
+    const int pub_id);
+>>>>>>> Switch build system to catkin_tools, switch spirit* to quad*:spirit_utils/include/spirit_utils/rviz_interface.h
 
   /**
    * @brief Callback function to handle new grf data
    * @param[in] msg plan message contining interpolated output of body planner
    */
-  void grfCallback(const spirit_msgs::GRFArray::ConstPtr& msg);
+  void grfCallback(const quad_msgs::GRFArray::ConstPtr& msg);
 
   /**
    * @brief Callback function to handle new body plan discrete state data
    * @param[in] msg plan message contining discrete output of body planner
    */
+<<<<<<< HEAD:quad_utils/include/quad_utils/rviz_interface.h
   void discreteBodyPlanCallback(const quad_msgs::RobotPlan::ConstPtr &msg);
+=======
+  void discreteBodyPlanCallback(const quad_msgs::RobotPlan::ConstPtr& msg);
+>>>>>>> Switch build system to catkin_tools, switch spirit* to quad*:spirit_utils/include/spirit_utils/rviz_interface.h
 
   /**
    * @brief Callback function to handle new discrete foot plan data
    * @param[in] Footstep plan message containing output of footstep planner
    */
+<<<<<<< HEAD:quad_utils/include/quad_utils/rviz_interface.h
   void footPlanDiscreteCallback(
       const quad_msgs::MultiFootPlanDiscrete::ConstPtr &msg);
+=======
+  void footPlanDiscreteCallback(const quad_msgs::MultiFootPlanDiscrete::ConstPtr& msg);
+>>>>>>> Switch build system to catkin_tools, switch spirit* to quad*:spirit_utils/include/spirit_utils/rviz_interface.h
 
   /**
    * @brief Callback function to handle new continous foot plan data
    * @param[in] SwingLegPlan message containing output of swing leg planner
    */
+<<<<<<< HEAD:quad_utils/include/quad_utils/rviz_interface.h
   void footPlanContinuousCallback(
       const quad_msgs::MultiFootPlanContinuous::ConstPtr &msg);
+=======
+  void footPlanContinuousCallback(const quad_msgs::MultiFootPlanContinuous::ConstPtr& msg);
+>>>>>>> Switch build system to catkin_tools, switch spirit* to quad*:spirit_utils/include/spirit_utils/rviz_interface.h
 
   /**
    * @brief Callback function to handle new state estimate data
    * @param[in] msg RobotState message containing output of the state estimator
    * node
    */
+<<<<<<< HEAD:quad_utils/include/quad_utils/rviz_interface.h
   void stateEstimateCallback(const quad_msgs::RobotState::ConstPtr &msg);
+=======
+  void stateEstimateCallback(const quad_msgs::RobotState::ConstPtr& msg);
+>>>>>>> Switch build system to catkin_tools, switch spirit* to quad*:spirit_utils/include/spirit_utils/rviz_interface.h
 
   /**
    * @brief Callback function to handle new robot state data
@@ -85,8 +111,12 @@ class RVizInterface {
    * node
    * @param[in] pub_id Identifier of which publisher to use to handle this data
    */
+<<<<<<< HEAD:quad_utils/include/quad_utils/rviz_interface.h
   void robotStateCallback(const quad_msgs::RobotState::ConstPtr &msg,
                           const int pub_id);
+=======
+  void robotStateCallback(const quad_msgs::RobotState::ConstPtr& msg, const int pub_id);
+>>>>>>> Switch build system to catkin_tools, switch spirit* to quad*:spirit_utils/include/spirit_utils/rviz_interface.h
 
   /// ROS subscriber for the global plan
   ros::Subscriber global_plan_sub_;

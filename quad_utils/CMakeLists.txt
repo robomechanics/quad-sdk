@@ -71,7 +71,10 @@ add_library(quad_utils
 )
 add_dependencies(quad_utils ${quad_utils_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 target_link_libraries(quad_utils)
+<<<<<<< HEAD:quad_utils/CMakeLists.txt
 target_include_directories(quad_utils INTERFACE ${quad_utils_INCLUDE_DIRS})
+=======
+>>>>>>> Switch build system to catkin_tools, switch spirit* to quad*:spirit_utils/CMakeLists.txt
 
 # And link the library against the executable
 TARGET_LINK_LIBRARIES ( quad_utils
@@ -96,6 +99,19 @@ target_link_libraries(rviz_interface_node
 
 target_link_libraries(terrain_map_publisher_node
   quad_utils
+<<<<<<< HEAD:quad_utils/CMakeLists.txt
+=======
+  ${catkin_LIBRARIES}
+)
+
+target_link_libraries(mesh_to_grid_map_node
+  quad_utils
+  ${catkin_LIBRARIES}
+)
+
+target_link_libraries(ground_truth_publisher_node
+  quad_utils
+>>>>>>> Switch build system to catkin_tools, switch spirit* to quad*:spirit_utils/CMakeLists.txt
   ${catkin_LIBRARIES}
 )
 
@@ -104,7 +120,11 @@ target_link_libraries(trajectory_publisher_node
   ${catkin_LIBRARIES}
 )
 
+<<<<<<< HEAD:quad_utils/CMakeLists.txt
 target_link_libraries(mesh_to_grid_map_node
+=======
+target_link_libraries(robot_proxy_node
+>>>>>>> Switch build system to catkin_tools, switch spirit* to quad*:spirit_utils/CMakeLists.txt
   quad_utils
   ${catkin_LIBRARIES}
 )
