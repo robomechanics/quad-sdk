@@ -1,25 +1,7 @@
 #include "robot_driver/hardware_interfaces/MotorDriver.hpp"
-#include <thread>
 
 namespace motor_driver
 {
-    bool sendCANFrame(int can_id, unsigned char* CANMsg, int sd)
-    {
-        struct can_frame frame;
-        frame.can_id = can_id;
-        frame.can_dlc = 8;
-        memcpy(frame.data, CANMsg, 8);
-
-        if (write(sd, &frame, sizeof(struct can_frame)) != sizeof(struct can_frame))
-        {
-            perror("CANInterface: Error writing to CAN Interface.");
-            return false;
-        }
-        else
-        {
-            return true;
-        }
-    }
 
     MotorDriver::MotorDriver(const std::vector<int>& motor_ids, const char* motor_can_socket, MotorType motor_type=MotorType::AK80_6_V1p1) 
         : motor_type_(motor_type), motor_ids_(motor_ids), motor_CAN_interface_(motor_can_socket)
@@ -57,7 +39,7 @@ namespace motor_driver
                 current_params_ = default_params::AK10_9_V1p1_params;
                 break;
             default:
-                perror("Specified Motor Type Not Found!!");
+                ROS_ERROR("Specified Motor Type Not Found!!");
         }
 
         // Initialize all Motors to not enabled.
@@ -78,18 +60,23 @@ namespace motor_driver
             // using std::find
             motor_CAN_interface_.sendCANFrame(motor_id, default_msgs::motorEnableMsg);
             usleep(motorReplyWaitTime);
-            if (motor_CAN_interface_.receiveCANFrame(CAN_reply_msg_))
-            {
-                state = decodeCANFrame(CAN_reply_msg_);
-                is_motor_enabled_[motor_id] = true;
+            switch (motor_CAN_interface_.receiveCANFrame(CAN_reply_msg_, std::chrono::milliseconds(10))) {
+                case Recieve_CAN_Frame::FAILED:
+                    ROS_ERROR("MotorDriver::setZeroPosition() Unable to Receive CAN Reply.");
+                    break;
+                case Recieve_CAN_Frame::SUCCESS:
+                    state = decodeCANFrame(CAN_reply_msg_);
+                    if (motor_id != state.motor_id) {
+                        std::string return_message = "Expected motor id: " + std::to_string(motor_id) + " but got motor id: " + std::to_string(state.motor_id);
+                        ROS_WARN(return_message.c_str());
+                    }
+                    motor_state_map[motor_id] = state;
+                    break;
+                case Recieve_CAN_Frame::TIMEOUT:
+                    break;
+                default:
+                    break;
             }
-            else
-            {
-                perror("MotorDriver::enableMotor() Unable to Receive CAN Reply.");
-            }
-
-            if (motor_id != state.motor_id)
-                perror("MotorDriver::enableMotor() Received message does not have the same motor id!!");
 
             motor_state_map[motor_id] = state;
         }
@@ -118,35 +105,41 @@ namespace motor_driver
             // causes an initial kick as the motor controller starts. The fix is then to set the 
             // last command to zero so that this does not happen. For the user, the behaviour does
             // not change as zero command + disable is same as disable.
-            bool return_val = encodeCANFrame(default_msgs::zeroCmdStruct, CAN_msg_);
-            motor_CAN_interface_.sendCANFrame(motor_id, CAN_msg_);
-            usleep(motorReplyWaitTime);
+
+            // bool return_val = encodeCANFrame(default_msgs::zeroCmdStruct, CAN_msg_);
+            // motor_CAN_interface_.sendCANFrame(motor_id, CAN_msg_);
+            // usleep(motorReplyWaitTime);
             
-            if (motor_CAN_interface_.receiveCANFrame(CAN_reply_msg_))
-            {
-                state = decodeCANFrame(CAN_reply_msg_);
-            }
-            else
-            {
-                perror("MotorDriver::disableMotor() Unable to Receive CAN Reply.");
-            }
+            // if (motor_CAN_interface_.receiveCANFrame(CAN_reply_msg_))
+            // {
+            //     state = decodeCANFrame(CAN_reply_msg_);
+            // }
+            // else
+            // {
+            //     ROS_ERROR("MotorDriver::disableMotor() Unable to Receive CAN Reply.");
+            // }
 
             // Do the actual disabling after zero command.
             motor_CAN_interface_.sendCANFrame(motor_id, default_msgs::motorDisableMsg);
             usleep(motorReplyWaitTime);
-            if (motor_CAN_interface_.receiveCANFrame(CAN_reply_msg_))
-            {
-                state = decodeCANFrame(CAN_reply_msg_);
-                is_motor_enabled_[motor_id] = false;
-            }
-            else
-            {
-                perror("MotorDriver::disableMotor() Unable to Receive CAN Reply.");
+            switch (motor_CAN_interface_.receiveCANFrame(CAN_reply_msg_, std::chrono::milliseconds(10))) {
+                case Recieve_CAN_Frame::FAILED:
+                    ROS_ERROR("MotorDriver::setZeroPosition() Unable to Receive CAN Reply.");
+                    break;
+                case Recieve_CAN_Frame::SUCCESS:
+                    state = decodeCANFrame(CAN_reply_msg_);
+                    if (motor_id != state.motor_id) {
+                        std::string return_message = "Expected motor id: " + std::to_string(motor_id) + " but got motor id: " + std::to_string(state.motor_id);
+                        ROS_WARN(return_message.c_str());
+                    }
+                    motor_state_map[motor_id] = state;
+                    break;
+                case Recieve_CAN_Frame::TIMEOUT:
+                    break;
+                default:
+                    break;
             }
 
-            if (motor_id != state.motor_id)
-                perror("MotorDriver::disableMotor() Received message does not have the same motor id!!");
-                
             motor_state_map[motor_id] = state;
         }
         return motor_state_map;
@@ -170,28 +163,44 @@ namespace motor_driver
             // }
             motor_CAN_interface_.sendCANFrame(motor_id, default_msgs::motorSetZeroPositionMsg);
             usleep(motorReplyWaitTime);
-            if (motor_CAN_interface_.receiveCANFrame(CAN_reply_msg_))
-            {
-                state = decodeCANFrame(CAN_reply_msg_);
-                motor_state_map[motor_id] = state;
-            }
-            else
-            {
-                perror("MotorDriver::setZeroPosition() Unable to Receive CAN Reply.");
+            switch (motor_CAN_interface_.receiveCANFrame(CAN_reply_msg_, std::chrono::milliseconds(5000))) {
+                case Recieve_CAN_Frame::FAILED:
+                    ROS_ERROR("MotorDriver::setZeroPosition() Unable to Receive CAN Reply.");
+                    break;
+                case Recieve_CAN_Frame::SUCCESS:
+                    state = decodeCANFrame(CAN_reply_msg_);
+                    if (motor_id != state.motor_id) {
+                        std::string return_message = "Expected motor id: " + std::to_string(motor_id) + " but got motor id: " + std::to_string(state.motor_id);
+                        ROS_WARN(return_message.c_str());
+                    }
+                    motor_state_map[motor_id] = state;
+                    break;
+                case Recieve_CAN_Frame::TIMEOUT:
+                    break;
+                default:
+                    break;
             }
 
             while (state.position > (1 * (pi / 180)))
             {
                 motor_CAN_interface_.sendCANFrame(motor_id, default_msgs::motorSetZeroPositionMsg);
                 usleep(motorReplyWaitTime);
-                if (motor_CAN_interface_.receiveCANFrame(CAN_reply_msg_))
-                {
-                    state = decodeCANFrame(CAN_reply_msg_);
-                    motor_state_map[motor_id] = state;
-                }
-                else
-                {
-                    perror("MotorDriver::setZeroPosition() Unable to Receive CAN Reply.");
+                switch (motor_CAN_interface_.receiveCANFrame(CAN_reply_msg_, std::chrono::milliseconds(5000))) {
+                    case Recieve_CAN_Frame::FAILED:
+                        ROS_ERROR("MotorDriver::setZeroPosition() Unable to Receive CAN Reply.");
+                        break;
+                    case Recieve_CAN_Frame::SUCCESS:
+                        state = decodeCANFrame(CAN_reply_msg_);
+                        if (motor_id != state.motor_id) {
+                            std::string return_message = "Expected motor id: " + std::to_string(motor_id) + " but got motor id: " + std::to_string(state.motor_id);
+                            ROS_WARN(return_message.c_str());
+                        }
+                        motor_state_map[motor_id] = state;
+                        break;
+                    case Recieve_CAN_Frame::TIMEOUT:
+                        break;
+                    default:
+                        break;
                 }
             }
         }
@@ -203,13 +212,13 @@ namespace motor_driver
     {
         motorState state;
         std::map<int, motorState> motor_state_map;
-        int cmd_motor_id;
 
-        std::vector<std::thread> v;
         for (const std::pair<int, motorCommand>& command_pair : motor_rad_commands)
         {
-            cmd_motor_id = command_pair.first;
+            int cmd_motor_id = command_pair.first;
             const motorCommand& cmd_to_send = command_pair.second;
+
+            // std::cout << "Motor ID: " << cmd_motor_id << std::endl;
 
             bool return_val = encodeCANFrame(cmd_to_send, CAN_msg_);
             // TODO: Enable enabled check better across multiple objects of this class.
@@ -218,27 +227,24 @@ namespace motor_driver
             //     std::cout << "MotorDriver::sendRadCommand() Motor in disabled state.\
             //                   Did you want to really do this?" << std::endl;
             // }
-
-            int sd = motor_CAN_interface_.socket_descrp_;
-            v.emplace_back(&sendCANFrame, cmd_motor_id, CAN_msg_, sd);
-        }
-
-        for (auto& t : v) 
-        {
-            t.join();
-        }
-                
-        for (auto& t : v) 
-        {
-            
-            if (motor_CAN_interface_.receiveCANFrame(CAN_reply_msg_))
-            {
-                state = decodeCANFrame(CAN_reply_msg_);
-                motor_state_map[cmd_motor_id] = state;
-            }
-            else
-            {
-                perror("MotorDriver::sendRadCommand() Unable to Receive CAN Reply.");
+            motor_CAN_interface_.sendCANFrame(cmd_motor_id, CAN_msg_);
+            usleep(motorReplyWaitTime);
+            switch (motor_CAN_interface_.receiveCANFrame(CAN_reply_msg_, std::chrono::milliseconds(10))) {
+                case Recieve_CAN_Frame::FAILED:
+                    ROS_ERROR("MotorDriver::setZeroPosition() Unable to Receive CAN Reply.");
+                    break;
+                case Recieve_CAN_Frame::SUCCESS:
+                    state = decodeCANFrame(CAN_reply_msg_);
+                    if (cmd_motor_id != state.motor_id) {
+                        std::string return_message = "Expected motor id: " + std::to_string(cmd_motor_id) + " but got motor id: " + std::to_string(state.motor_id);
+                        ROS_WARN(return_message.c_str());
+                    }
+                    motor_state_map[cmd_motor_id] = state;
+                    break;
+                case Recieve_CAN_Frame::TIMEOUT:
+                    break;
+                default:
+                    break;
             }
         }
 
