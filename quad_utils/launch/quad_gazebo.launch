@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 <launch>
   <arg name="robot_type" default="spirit" />
   <arg name="multiple_robots" default="false" />
@@ -68,7 +67,6 @@
   </include>
 
 </launch>
-=======
 <!-- 
 MIT License (modified)
 
@@ -110,6 +108,10 @@ SOFTWARE.
     <arg name="world" value="$(arg world)"/>
   </include>
 
+  <group ns="robot_1">
+    <!-- Load the parameters and the sdf description -->
+    <include file="$(find quad_utils)/launch/load_robot_params.launch">
+      <arg name="robot_type" value="$(arg robot_type)" />
   <group if="$(arg software)">
     <include file="$(find quad_utils)/launch/visualization.launch">
       <arg name="live_plot" value="$(arg live_plot)"/>
@@ -148,8 +150,6 @@ SOFTWARE.
   <!-- Spawn SDF model -->
   <node name="spawn_sdf_model" pkg="gazebo_ros" type="spawn_model" args="-sdf -param robot_description_sdf -model spirit -x 0.0 -y 0.0 -z 0.5" output="screen"/>
 
-  <rosparam file="$(find gazebo_scripts)/config/spirit_control.yaml" command="load"/>
-
   <node name="controller_spawner"
         pkg="controller_manager"
         type="spawner"
@@ -163,4 +163,3 @@ SOFTWARE.
   <node name="contact_state_publisher" pkg="gazebo_scripts" type="contact_state_publisher_node" output="screen"/>
   
 </launch>
->>>>>>> Switch build system to catkin_tools, switch spirit* to quad*
