@@ -1,4 +1,8 @@
 <launch>
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+>>>>>>> d5a072b3a89924f1b027bb8b8d27919519fafc18
     <arg name="reference"  default="twist" />
     <arg name="logging"         default="false" />
     <arg name="twist_input"     default="none" />
@@ -10,6 +14,7 @@
     <include file="$(find quad_utils)/launch/load_robot_params.launch">
         <arg name="robot_type" value="$(arg robot_type)"/>
     </include>
+<<<<<<< HEAD
 
     <!-- Launch the node to publish the global body plan -->
     <group if="$(eval arg('reference') == 'gbpl')">
@@ -24,10 +29,42 @@
     <!-- Use twist input to local plan and no global plan -->
     <group if="$(eval arg('reference') == 'twist')">
         <param name="local_planner/use_twist_input" value="true" />
+=======
 
-        <group if="$(eval arg('twist_input') == 'keyboard')">
-            <node name="teleop_twist_keyboard" pkg="teleop_twist_keyboard" type="teleop_twist_keyboard.py" />
-        </group>
+    <!-- Launch the node to publish the global body plan -->
+    <group if="$(eval arg('reference') == 'gbpl')">
+        <node name="global_body_planner" pkg="global_body_planner" type="global_body_planner_node" output="screen">
+            <remap from="start_state" to="state/ground_truth" />
+            <remap from="goal_state" to="clicked_point" />
+            <param name="enable_leaping" value="$(arg leaping)" />
+        </node>
+        <param name="local_planner/use_twist_input" value="false" />
+=======
+  
+    <include file="$(find quad_utils)/launch/load_params.launch" />
+
+    <arg name="global_planner" default="fgmp"/>
+    <arg name="local_planner" default="full"/>
+    <arg name="mpc_type" default="nonlinear"/>
+    <arg name="logging" default="false"/>
+
+    <!-- Launch the node to publish the global body plan -->
+    <group if="$(eval arg('global_planner') == 'fgmp')">
+        <node name="global_body_planner" pkg="global_body_planner" type="global_body_planner_node" output="screen" />
+>>>>>>> Switch build system to catkin_tools, switch spirit* to quad*
+    </group>
+
+    <!-- Use twist input to local plan and no global plan -->
+    <group if="$(eval arg('global_planner') == 'twist')">
+        <param name="local_planner/use_twist_input" value="true"/>
+    </group>
+
+
+    <!-- Launch the node to publish the local plan -->
+    <group if="$(eval arg('local_planner') == 'full')">
+        <node name="local_planner" pkg="local_planner" type="local_planner_node" output="screen"/>
+<<<<<<< HEAD
+    </group>
 
         <group if="$(eval arg('twist_input') == 'joy')">
             <include file="$(find teleop_twist_joy)/launch/teleop.launch">
@@ -46,4 +83,50 @@
     </group>
 
     <node name="plan_publisher" pkg="quad_utils" type="trajectory_publisher_node" output="screen" />
+=======
+>>>>>>> d5a072b3a89924f1b027bb8b8d27919519fafc18
+
+        <group if="$(eval arg('twist_input') == 'keyboard')">
+            <node name="teleop_twist_keyboard" pkg="teleop_twist_keyboard" type="teleop_twist_keyboard.py" />
+        </group>
+
+        <group if="$(eval arg('twist_input') == 'joy')">
+            <include file="$(find teleop_twist_joy)/launch/teleop.launch">
+                <arg name="joy_config" value="ps3-holonomic" />
+            </include>
+        </group>
+    </group>
+
+    <param name="nmpc_controller/enable_adaptive_complexity" value="$(arg ac)" />
+    <node name="local_planner" pkg="local_planner" type="local_planner_node" output="screen" />
+
+    <group if="$(arg logging)">
+<<<<<<< HEAD
+        <include file="$(find quad_utils)/launch/logging.launch">
+            <arg name="namespace" value="$(arg namespace)" />
+        </include>
+    </group>
+
+    <node name="plan_publisher" pkg="quad_utils" type="trajectory_publisher_node" output="screen" />
+=======
+        <node pkg="rosbag" type="record" name="rosbag_record"
+            args="record -o $(find quad_logger)/bags/quad_log 
+            /state/trajectory
+            /state/ground_truth 
+            /state/estimate 
+            /local_plan 
+            /robot_plan
+            /state/grfs 
+            /control/grfs
+            /control/joint_command 
+            /control/mode 
+            /terrain_map 
+            /body_plan_continuous
+            /body_plan_discrete
+            /foot_plan_continuous 
+            /foot_plan_discrete" />
+    </group>
+
+>>>>>>> Switch build system to catkin_tools, switch spirit* to quad*
+>>>>>>> d5a072b3a89924f1b027bb8b8d27919519fafc18
 </launch>

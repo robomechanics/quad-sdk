@@ -22,12 +22,20 @@ if nargin>0
     trialName = varargin{1};
     namespace = varargin{2};
 else
+<<<<<<< HEAD
     trialName = ''; % Set to '' to load via GUI
     namespace = 'robot_1'; % Namespace of the robot bag, set to '' if none
+=======
+    % Specify the trial name and settings
+    trialName = 'quad_log_current';
+    bAnimate = true;
+    bSave = true;
+>>>>>>> d5a072b3a89924f1b027bb8b8d27919519fafc18
 end
 
 %% Set parameters
 
+<<<<<<< HEAD
 bSave = true;                       % Save the figures/videos
 bAnimate = false;                   % Animate the trajectory (no translation)
 bTitles = true;                     % Turn on figure titles
@@ -37,6 +45,13 @@ tWindowControl = [];                % Specify time window for control (use [] fo
 tWindowLocalPlan = [];              % Specify time window for local plan (use [] for no clipping)
 
 %% Load the data
+=======
+% Import URDF
+quad40 = importrobot('../../quad_simulator/spirit_description/urdf/spirit.urdf');
+%figure
+% homeConfig = homeConfiguration(quad40);
+% show(quad40,homeConfig);
+>>>>>>> d5a072b3a89924f1b027bb8b8d27919519fafc18
 
 % Load the data
 [data, trialName] = parseQuadBag(trialName, namespace);
@@ -50,6 +65,7 @@ localPlan = data.localPlan;
 %% Plot the data
 
 % Plot the state
+<<<<<<< HEAD
 stateFigs = [];
 if ~isempty(stateGroundTruth)
     [stateFigs] = plotState(stateGroundTruth,tWindowStates,'-', bTitles, stateFigs);
@@ -69,6 +85,15 @@ end
 if ~isempty(controlGRFs)
     controlFigs = plotControl(controlGRFs,tWindowControl,':', bTitles,controlFigs);
 end
+=======
+[figArray] = plotState(stateGroundTruth,'-');
+[figArray] = plotState(stateTrajectory, ':', figArray);
+% plotState(stateEstimate);
+
+% Compute and plot the toe forces - in progress
+% toeForces = getToeForces(quad40, stateEstimate);
+% plotToeForces(toeForces);
+>>>>>>> d5a072b3a89924f1b027bb8b8d27919519fafc18
 
 % Plot local plan information if desired
 localPlanFigs = [];
@@ -91,5 +116,10 @@ if bAnimate
     robot_path = '../../quad_simulator/spirit_description/urdf/spirit.urdf';
     robot = importrobot(robot_path);
     videosDir = fullfile(logDir,'videos/');
+<<<<<<< HEAD
     animateData(robot,stateGroundTruth, fullfile(videosDir, trialName), bSave);
 end
+=======
+    animateData(quad40,stateTrajectory, fullfile(videosDir, trialName), bSave);
+end
+>>>>>>> d5a072b3a89924f1b027bb8b8d27919519fafc18

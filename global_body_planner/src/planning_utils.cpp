@@ -1,4 +1,12 @@
 #include "global_body_planner/planning_utils.h"
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+=======
+#include "quad_utils/matplotlibcpp.h"
+
+>>>>>>> Switch build system to catkin_tools, switch spirit* to quad*
+>>>>>>> d5a072b3a89924f1b027bb8b8d27919519fafc18
 namespace planning_utils {
 
 State fullStateToState(const FullState &full_state) {
@@ -70,6 +78,7 @@ void vectorToFullState(const std::vector<double> &v, FullState &s) {
 }
 
 void flipDirection(State &state) { state.vel = -state.vel; }
+<<<<<<< HEAD
 
 void flipDirection(Action &action) {
   // Reverse ground reaction forces (works if GRF is symmetric)
@@ -82,6 +91,20 @@ void flipDirection(Action &action) {
   action.dz_0 = -action.dz_f;
   action.dz_f = -temp_dz;
 
+=======
+
+void flipDirection(Action &action) {
+  // Reverse ground reaction forces (works if GRF is symmetric)
+  GRF temp_grf = action.grf_0;
+  action.grf_0 = action.grf_f;
+  action.grf_f = temp_grf;
+
+  // Reverse initial and final vertical velocities
+  double temp_dz = action.dz_0;
+  action.dz_0 = -action.dz_f;
+  action.dz_f = -temp_dz;
+
+>>>>>>> d5a072b3a89924f1b027bb8b8d27919519fafc18
   // Reverse stance times for landing and leaping if this is an actual leap
   if (action.t_f > 0) {
     double temp_t_s = action.t_s_leap;
@@ -134,12 +157,21 @@ void printInterpStateSequence(const std::vector<State> &state_sequence,
 
 void printActionSequence(const std::vector<Action> &action_sequence) {
   for (Action a : action_sequence) printActionNewline(a);
+<<<<<<< HEAD
 }
 
 double poseDistance(const State &s1, const State &s2) {
   return (s1.pos - s2.pos).norm();
 }
 
+=======
+}
+
+double poseDistance(const State &s1, const State &s2) {
+  return (s1.pos - s2.pos).norm();
+}
+
+>>>>>>> d5a072b3a89924f1b027bb8b8d27919519fafc18
 double poseDistance(const FullState &s1, const FullState &s2) {
   return (s1.pos - s2.pos).norm();
 }
@@ -298,6 +330,7 @@ Eigen::Vector3d getAcceleration(const Action &a, double t, int phase,
 
 double getPitchFromState(const State &s, const PlannerConfig &planner_config) {
   Eigen::Vector3d surf_norm = getSurfaceNormalFiltered(s, planner_config);
+<<<<<<< HEAD
 
   // Get magnitude of lateral velociy
   double vel = s.vel.head<2>().norm();
@@ -307,6 +340,17 @@ double getPitchFromState(const State &s, const PlannerConfig &planner_config) {
                       ? surf_norm[0]
                       : s.vel.head<2>().dot(surf_norm.head<2>()) / vel;
 
+=======
+
+  // Get magnitude of lateral velociy
+  double vel = s.vel.head<2>().norm();
+
+  // If velocity is zero or surf norm undefined, assume v is in +x direction
+  double v_proj = (vel == 0 || surf_norm[2] <= 0)
+                      ? surf_norm[0]
+                      : s.vel.head<2>().dot(surf_norm.head<2>()) / vel;
+
+>>>>>>> d5a072b3a89924f1b027bb8b8d27919519fafc18
   // set pitch to angle that aligns v_proj with surface normal
   return atan2(v_proj, surf_norm[2]);
 }
@@ -629,6 +673,7 @@ bool refineStance(const State &s, int phase, Action &a,
       return false;
     }
     pos_f = s_final.pos;
+<<<<<<< HEAD
 
     double buffer = 3e-2;
     if (phase == LEAP_STANCE) {
@@ -782,6 +827,161 @@ bool isValidAction(const Action &a, const PlannerConfig &planner_config) {
   grf_0 = a.grf_0;
   grf_f = a.grf_f;
 
+=======
+
+    double buffer = 3e-2;
+    if (phase == LEAP_STANCE) {
+      isValidState(s_final, planner_config, phase, pos_f[2]);
+      pos_f[2] -= buffer;
+    } else {
+      pos_f[2] = planner_config.h_nom + getTerrainZ(pos_f, planner_config);
+    }
+
+    // Compute final GRF
+    grf_stance[2] =
+        (1.0 / (t_s * t_s) *
+         (s.pos[2] - pos_f[2] + (t_s * (dz_0 * 6.0 - g * t_s * 3.0)) / 6.0) *
+         -3.0) /
+        g;
+    s_final = applyStance(s, a, t_s, phase, planner_config);
+    s_midstance = applyStance(s, a, 0.5 * t_s, phase, planner_config);
+    s_midstance.pos[2] -=
+        0.01;  // Make sure validity is robust to discretization
+
+    // Compute validity checks
+    // TODO(jcnorby): sample surface normal from ground projection
+    // (non-filtered)
+    grf_valid =
+        (grf_stance.norm() <= planner_config.grf_max) && (grf_stance[2] >= 1);
+    friction_cone_valid =
+        (grf_stance.head<2>().norm() <= abs(grf_stance[2] * planner_config.mu));
+
+    final_state_valid = isValidState(s_final, planner_config, phase);
+    midstance_state_valid = isValidState(s_midstance, planner_config, phase);
+
+    // Exit if final state is invalid
+    if (!final_state_valid) {
+#ifdef DEBUG_REFINE_STATE
+      std::cout << "Final state invalid, exiting" << std::endl;
+      printState(s_final);
+#endif
+      return false;
+    }
+
+    // Enforce friction cone
+    if (!friction_cone_valid) {
+      // std::cout << "grf_stance before = \n" << grf_stance << std::endl;
+      grf_stance.head<2>() = 0.9 * grf_stance.head<2>() * grf_stance[2] *
+                             planner_config.mu / grf_stance.head<2>().norm();
+
+#ifdef DEBUG_REFINE_STATE
+      std::cout << "Friction cone violated, trying again" << std::endl;
+#endif
+      continue;
+    }
+
+    // Increase t_s or dz0 (decrease GRF) if GRF exceeds limits (exiting if
+    // midstance was already infeasible)
+    if (!grf_valid) {
+      if (!midstance_state_valid || grf_increased) {
+#ifdef DEBUG_REFINE_STATE
+        std::cout
+            << "GRF exceeds limits and midstance is or was invalid, exiting"
+            << std::endl;
+#endif
+        return false;
+      }
+
+      if (phase == LEAP_STANCE) {
+        dz_0 += 0.2;
+#ifdef DEBUG_REFINE_STATE
+        std::cout << "GRF exceeds limits, reducing initial downwards velocity"
+                  << std::endl;
+#endif
+      } else {
+#ifdef DEBUG_REFINE_STATE
+        std::cout << "GRF exceeds limits, increasing stance time" << std::endl;
+#endif
+        t_s = t_s * 1.2;
+      }
+      continue;
+    }
+
+    // Decrease t_s or dz0 (increase GRF) if midstance is infeasible
+    if (!midstance_state_valid) {
+#ifdef DEBUG_REFINE_STATE
+      std::cout << "Midstance state invalid, reducing stance time from " << t_s
+                << " to " << t_s / 1.2 << std::endl;
+#endif
+      // t_s = t_s / 1.1;
+      dz_0 -= 0.2;
+
+      grf_increased = true;
+      continue;
+    }
+  }
+  if (phase == LEAP_STANCE) {
+    a.dz_0 = dz_0;
+  } else {
+    a.dz_f = s_final.vel[2];
+  }
+
+#ifdef DEBUG_REFINE_STATE
+  std::cout << "stance refine success" << std::endl;
+#endif
+  return true;
+}
+
+bool refineFlight(const State &s, double &t_f,
+                  const PlannerConfig &planner_config) {
+#ifdef DEBUG_REFINE_STATE
+  std::cout << "starting flight refine" << std::endl;
+#endif
+  bool is_valid = false;
+  double t = 0;
+  double z_f = planner_config.h_nom + 0.05;
+  State s_check = s;
+  double h = getZRelToTerrain(s_check, planner_config);
+
+  double h_last = h;
+  while (h >= planner_config.h_min) {
+    if ((h <= z_f) && (h_last > z_f)) {
+      t_f = t;
+      is_valid = true;
+    }
+    t += planner_config.dt;
+    s_check = applyFlight(s, t, planner_config);
+    if (!isInMap(s_check, planner_config)) {
+      break;
+    }
+    h_last = h;
+    h = getZRelToTerrain(s_check, planner_config);
+  }
+  if (!is_valid) {
+    State s_test = applyFlight(s, planner_config.dt, planner_config);
+#ifdef DEBUG_REFINE_STATE
+    std::cout << "No valid flight detected" << std::endl;
+    std::cout << "t = " << t << std::endl;
+    printState(s);
+    printState(s_test);
+#endif
+  }
+  return is_valid;
+}
+
+bool isValidAction(const Action &a, const PlannerConfig &planner_config) {
+  if ((a.t_s_leap <= 0) || (a.t_f < 0)) return false;
+
+  double m = planner_config.mass;
+  double g = planner_config.g;
+  double mu = planner_config.mu;
+
+  // Get peak forces
+  GRF grf_0, grf_f;
+  grf_0 = a.grf_0;
+  grf_f = a.grf_f;
+
+>>>>>>> d5a072b3a89924f1b027bb8b8d27919519fafc18
   if (a.t_f == 0) {
     grf_0[2] = 1.0;
     grf_f[2] = 1.0;
@@ -977,9 +1177,15 @@ bool isValidStateActionPair(const State &s_in, const Action &a,
   int phase = (t_f == 0) ? CONNECT : LEAP_STANCE;
 
   // LEAP (OR CONNECT) ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+<<<<<<< HEAD
 
   double t = 0;
 
+=======
+
+  double t = 0;
+
+>>>>>>> d5a072b3a89924f1b027bb8b8d27919519fafc18
   while (t <= t_s) {
     // Compute state to check
     State s_next = applyStance(s, a, t, phase, planner_config);

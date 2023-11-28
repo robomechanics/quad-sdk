@@ -1,3 +1,8 @@
+<<<<<<< HEAD
+#ifndef QUAD_KD_H
+#define QUAD_KD_H
+=======
+<<<<<<< HEAD
 #ifndef QUAD_KD_H
 #define QUAD_KD_H
 
@@ -59,22 +64,108 @@ class QuadKD {
 
   /**
    * @brief Create an Eigen Eigen::Matrix4d containing a homogeneous transform
+=======
+#ifndef KINEMATICS_H
+#define KINEMATICS_H
+>>>>>>> d5a072b3a89924f1b027bb8b8d27919519fafc18
+
+#include <math.h>
+#include <rbdl/addons/urdfreader/urdfreader.h>
+#include <rbdl/rbdl.h>
+#include <rbdl/rbdl_utils.h>
+#include <ros/ros.h>
+#include <tf2/LinearMath/Quaternion.h>
+
+#include <Eigen/Geometry>
+#include <chrono>
+#include <grid_map_core/GridMap.hpp>
+#include <random>
+#include <vector>
+
+#include "quad_utils/function_timer.h"
+#include "quad_utils/math_utils.h"
+
+namespace quad_utils {
+
+//! A lightweight library for quad kinematic functions
+/*!
+  This library includes several functions and classes to aid in quad kinematic
+  calculations. It relies on Eigen, as well as some MATLAB codegen for more
+  complicated computations that would be a pain to write out by hand.
+*/
+class QuadKD {
+ public:
+  /**
+   * @brief Constructor for QuadKD Class
+   * @return Constructed object of type QuadKD
+   */
+  QuadKD();
+
+  /**
+   * @brief Constructor for QuadKD Class
+   * @param[in] ns Namespace
+   * @return Constructed object of type QuadKD
+   */
+  QuadKD(std::string ns);
+
+  /**
+   * @brief Initialize model for the class
+   * @param[in] ns Namespace
+   */
+  void initModel(std::string ns);
+
+  /**
+   * @brief Create an Eigen Eigen::Matrix4d containing a homogeneous transform
+   * from a specified translation and a roll, pitch, and yaw vector
+   * @param[in] trans Translation from input frame to output frame
+   * @param[in] rpy Rotation from input frame to output frame as roll, pitch,
+   * yaw
+   * @return Homogenous transformation matrix
+   */
+  Eigen::Matrix4d createAffineMatrix(Eigen::Vector3d trans,
+                                     Eigen::Vector3d rpy) const;
+
+  /**
+<<<<<<< HEAD
+   * @brief Create an Eigen Eigen::Matrix4d containing a homogeneous transform
+=======
+   * @brief Create an Eigen Eigen::Matrix4d containing a homogeneous transform 
+>>>>>>> Switch build system to catkin_tools, switch spirit* to quad*
+>>>>>>> d5a072b3a89924f1b027bb8b8d27919519fafc18
    * from a specified translation and an AngleAxis object
    * @param[in] trans Translation from input frame to output frame
    * @param[in] rot Rotation from input frame to output frame as AngleAxis
    * @return Homogenous transformation matrix
    */
+<<<<<<< HEAD
   Eigen::Matrix4d createAffineMatrix(Eigen::Vector3d trans,
                                      Eigen::AngleAxisd rot) const;
 
   /**
    * @brief Transform a transformation matrix from the body frame to the world
    * frame
+=======
+<<<<<<< HEAD
+  Eigen::Matrix4d createAffineMatrix(Eigen::Vector3d trans,
+                                     Eigen::AngleAxisd rot) const;
+
+  /**
+   * @brief Transform a transformation matrix from the body frame to the world
+   * frame
+=======
+  Eigen::Matrix4d createAffineMatrix(Eigen::Vector3d trans, 
+      Eigen::AngleAxisd rot) const;
+
+  /**
+   * @brief Transform a transformation matrix from the body frame to the world frame
+>>>>>>> Switch build system to catkin_tools, switch spirit* to quad*
+>>>>>>> d5a072b3a89924f1b027bb8b8d27919519fafc18
    * @param[in] body_pos Position of center of body frame
    * @param[in] body_rpy Orientation of body frame in roll, pitch, yaw
    * @param[in] transform_body Specified transform in the body frame
    * @param[out] transform_world Specified transform in the world frame
    */
+<<<<<<< HEAD
   void transformBodyToWorld(Eigen::Vector3d body_pos, Eigen::Vector3d body_rpy,
                             Eigen::Matrix4d transform_body,
                             Eigen::Matrix4d &transform_world) const;
@@ -82,14 +173,42 @@ class QuadKD {
   /**
    * @brief Transform a transformation matrix from the world frame to the body
    * frame
+=======
+<<<<<<< HEAD
+  void transformBodyToWorld(Eigen::Vector3d body_pos, Eigen::Vector3d body_rpy,
+                            Eigen::Matrix4d transform_body,
+                            Eigen::Matrix4d &transform_world) const;
+
+  /**
+   * @brief Transform a transformation matrix from the world frame to the body
+   * frame
+=======
+  void transformBodyToWorld(Eigen::Vector3d body_pos, Eigen::Vector3d body_rpy, 
+    Eigen::Matrix4d transform_body, Eigen::Matrix4d &transform_world) const;
+
+  /**
+   * @brief Transform a transformation matrix from the world frame to the body frame
+>>>>>>> Switch build system to catkin_tools, switch spirit* to quad*
+>>>>>>> d5a072b3a89924f1b027bb8b8d27919519fafc18
    * @param[in] body_pos Position of center of body frame
    * @param[in] body_rpy Orientation of body frame in roll, pitch, yaw
    * @param[in] transform_world Specified transform in the world frame
    * @param[out] transform_body Specified transform in the body frame
    */
+<<<<<<< HEAD
   void transformWorldToBody(Eigen::Vector3d body_pos, Eigen::Vector3d body_rpy,
                             Eigen::Matrix4d transform_world,
                             Eigen::Matrix4d &transform_body) const;
+=======
+<<<<<<< HEAD
+  void transformWorldToBody(Eigen::Vector3d body_pos, Eigen::Vector3d body_rpy,
+                            Eigen::Matrix4d transform_world,
+                            Eigen::Matrix4d &transform_body) const;
+=======
+  void transformWorldToBody(Eigen::Vector3d body_pos, Eigen::Vector3d body_rpy, 
+    Eigen::Matrix4d transform_world, Eigen::Matrix4d &transform_body) const;
+>>>>>>> Switch build system to catkin_tools, switch spirit* to quad*
+>>>>>>> d5a072b3a89924f1b027bb8b8d27919519fafc18
 
   /**
    * @brief Compute forward kinematics for a specified leg from the body COM
@@ -97,8 +216,18 @@ class QuadKD {
    * @param[in] joint_state Joint states for the specified leg (abad, hip, knee)
    * @param[out] g_body_foot Transform of the specified foot in world frame
    */
+<<<<<<< HEAD
   void bodyToFootFKBodyFrame(int leg_index, Eigen::Vector3d joint_state,
                              Eigen::Matrix4d &g_body_foot) const;
+=======
+<<<<<<< HEAD
+  void bodyToFootFKBodyFrame(int leg_index, Eigen::Vector3d joint_state,
+                             Eigen::Matrix4d &g_body_foot) const;
+=======
+  void bodyToFootFK(int leg_index, Eigen::Vector3d joint_state, 
+    Eigen::Matrix4d &g_body_foot) const;
+>>>>>>> Switch build system to catkin_tools, switch spirit* to quad*
+>>>>>>> d5a072b3a89924f1b027bb8b8d27919519fafc18
 
   /**
    * @brief Compute forward kinematics for a specified leg from the body COM
@@ -106,8 +235,18 @@ class QuadKD {
    * @param[in] joint_state Joint states for the specified leg (abad, hip, knee)
    * @param[out] foot_pos_world Position of the specified foot in world frame
    */
+<<<<<<< HEAD
   void bodyToFootFKBodyFrame(int leg_index, Eigen::Vector3d joint_state,
                              Eigen::Vector3d &foot_pos_body) const;
+=======
+<<<<<<< HEAD
+  void bodyToFootFKBodyFrame(int leg_index, Eigen::Vector3d joint_state,
+                             Eigen::Vector3d &foot_pos_body) const;
+=======
+  void bodyToFootFK(int leg_index, Eigen::Vector3d joint_state, 
+    Eigen::Vector3d &foot_pos_body) const;
+>>>>>>> Switch build system to catkin_tools, switch spirit* to quad*
+>>>>>>> d5a072b3a89924f1b027bb8b8d27919519fafc18
 
   /**
    * @brief Compute forward kinematics for a specified leg
@@ -117,10 +256,21 @@ class QuadKD {
    * @param[in] joint_state Joint states for the specified leg (abad, hip, knee)
    * @param[out] g_world_foot Transform of the specified foot in world frame
    */
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+>>>>>>> d5a072b3a89924f1b027bb8b8d27919519fafc18
   void worldToFootFKWorldFrame(int leg_index, Eigen::Vector3d body_pos,
                                Eigen::Vector3d body_rpy,
                                Eigen::Vector3d joint_state,
                                Eigen::Matrix4d &g_world_foot) const;
+<<<<<<< HEAD
+=======
+=======
+  void legFK(int leg_index, Eigen::Vector3d body_pos, Eigen::Vector3d body_rpy,
+      Eigen::Vector3d joint_state, Eigen::Matrix4d &g_world_foot) const;
+>>>>>>> Switch build system to catkin_tools, switch spirit* to quad*
+>>>>>>> d5a072b3a89924f1b027bb8b8d27919519fafc18
 
   /**
    * @brief Compute forward kinematics for a specified leg
@@ -130,6 +280,10 @@ class QuadKD {
    * @param[in] joint_state Joint states for the specified leg (abad, hip, knee)
    * @param[out] foot_pos_world Position of the specified foot in world frame
    */
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+>>>>>>> d5a072b3a89924f1b027bb8b8d27919519fafc18
   void worldToFootFKWorldFrame(int leg_index, Eigen::Vector3d body_pos,
                                Eigen::Vector3d body_rpy,
                                Eigen::Vector3d joint_state,
@@ -160,6 +314,13 @@ class QuadKD {
                                Eigen::Vector3d body_rpy,
                                Eigen::Vector3d joint_state,
                                Eigen::Vector3d &knee_pos_world) const;
+<<<<<<< HEAD
+=======
+=======
+  void legFK(int leg_index, Eigen::Vector3d body_pos, Eigen::Vector3d body_rpy,
+      Eigen::Vector3d joint_state, Eigen::Vector3d &foot_pos_world) const;
+>>>>>>> Switch build system to catkin_tools, switch spirit* to quad*
+>>>>>>> d5a072b3a89924f1b027bb8b8d27919519fafc18
 
   /**
    * @brief Compute inverse kinematics for a specified leg
@@ -167,6 +328,7 @@ class QuadKD {
    * @param[in] body_pos Position of center of body frame
    * @param[in] body_rpy Orientation of body frame in roll, pitch, yaw
    * @param[in] foot_pos_world Position of the specified foot in world frame
+<<<<<<< HEAD
    * @param[out] joint_state Joint states for the specified leg (abad, hip,
    * knee)
    */
@@ -174,14 +336,40 @@ class QuadKD {
                                Eigen::Vector3d body_rpy,
                                Eigen::Vector3d foot_pos_world,
                                Eigen::Vector3d &joint_state) const;
+=======
+<<<<<<< HEAD
+   * @param[out] joint_state Joint states for the specified leg (abad, hip,
+   * knee)
+   */
+  bool worldToFootIKWorldFrame(int leg_index, Eigen::Vector3d body_pos,
+                               Eigen::Vector3d body_rpy,
+                               Eigen::Vector3d foot_pos_world,
+                               Eigen::Vector3d &joint_state) const;
+=======
+   * @param[out] joint_state Joint states for the specified leg (abad, hip, knee)
+   */
+  void legIK(int leg_index, Eigen::Vector3d body_pos, Eigen::Vector3d body_rpy,
+      Eigen::Vector3d foot_pos_world, Eigen::Vector3d &joint_state) const;
+>>>>>>> Switch build system to catkin_tools, switch spirit* to quad*
+>>>>>>> d5a072b3a89924f1b027bb8b8d27919519fafc18
 
   /**
    * @brief Compute inverse kinematics for a specified leg in the leg base frame
    * @param[in] leg_index Quad leg (0 = FL, 1 = BL, 2 = FR, 3 = BR)
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+>>>>>>> d5a072b3a89924f1b027bb8b8d27919519fafc18
    * @param[in] foot_pos_legbase Position of the specified foot in leg base
    * frame
    * @param[out] joint_state Joint states for the specified leg (abad, hip,
    * knee)
+<<<<<<< HEAD
+   */
+  bool legbaseToFootIKLegbaseFrame(int leg_index,
+                                   Eigen::Vector3d foot_pos_legbase,
+                                   Eigen::Vector3d &joint_state) const;
+=======
    */
   bool legbaseToFootIKLegbaseFrame(int leg_index,
                                    Eigen::Vector3d foot_pos_legbase,
@@ -202,6 +390,34 @@ class QuadKD {
    * @return Requested joint limit
    */
   double getJointUpperLimit(int leg_index, int joint_index) const;
+=======
+   * @param[in] foot_pos_legbase Position of the specified foot in leg base frame
+   * @param[out] joint_state Joint states for the specified leg (abad, hip, knee)
+   */
+  void legIKLegBaseFrame(int leg_index, Eigen::Vector3d foot_pos_legbase,
+    Eigen::Vector3d &joint_state) const;
+>>>>>>> d5a072b3a89924f1b027bb8b8d27919519fafc18
+
+  /**
+   * @brief Get the lower joint limit of a particular joint
+   * @param[in] leg_index Quad leg (0 = FL, 1 = BL, 2 = FR, 3 = BR)
+   * @param[in] joint_index Index for joint (0 = abad, 1 = hip, 2 = knee)
+   * @return Requested joint limit
+   */
+  double getJointLowerLimit(int leg_index, int joint_index) const;
+
+  /**
+   * @brief Get the upper joint limit of a particular joint
+   * @param[in] leg_index Quad leg (0 = FL, 1 = BL, 2 = FR, 3 = BR)
+   * @param[in] joint_index Index for joint (0 = abad, 1 = hip, 2 = knee)
+   * @return Requested joint limit
+   */
+<<<<<<< HEAD
+  double getJointUpperLimit(int leg_index, int joint_index) const;
+=======
+  double getJointUpperLimit(int joint_index) const;
+>>>>>>> Switch build system to catkin_tools, switch spirit* to quad*
+>>>>>>> d5a072b3a89924f1b027bb8b8d27919519fafc18
 
   /**
    * @brief Get the upper joint limit of a particular joint
@@ -218,9 +434,17 @@ class QuadKD {
    * @param[in] body_rpy Orientation of body frame in roll, pitch, yaw
    * @param[out] g_world_legbase Transformation matrix of world to leg base
    */
+<<<<<<< HEAD
   void worldToLegbaseFKWorldFrame(int leg_index, Eigen::Vector3d body_pos,
                                   Eigen::Vector3d body_rpy,
                                   Eigen::Matrix4d &g_world_legbase) const;
+<<<<<<< HEAD
+=======
+=======
+  void legBaseFK(int leg_index, Eigen::Vector3d body_pos,
+    Eigen::Vector3d body_rpy, Eigen::Matrix4d &g_world_legbase) const;
+>>>>>>> Switch build system to catkin_tools, switch spirit* to quad*
+>>>>>>> d5a072b3a89924f1b027bb8b8d27919519fafc18
 
   /**
    * @brief Get the position of the leg base frame origin in the world frame
@@ -229,52 +453,106 @@ class QuadKD {
    * @param[in] body_rpy Orientation of body frame in roll, pitch, yaw
    * @param[out] leg_base_pos_world Origin of leg base frame in world frame
    */
+<<<<<<< HEAD
   void worldToLegbaseFKWorldFrame(int leg_index, Eigen::Vector3d body_pos,
                                   Eigen::Vector3d body_rpy,
                                   Eigen::Vector3d &leg_base_pos_world) const;
+<<<<<<< HEAD
+=======
+=======
+  void legBaseFK(int leg_index, Eigen::Vector3d body_pos,
+    Eigen::Vector3d body_rpy, Eigen::Vector3d &leg_base_pos_world) const;
+>>>>>>> Switch build system to catkin_tools, switch spirit* to quad*
+>>>>>>> d5a072b3a89924f1b027bb8b8d27919519fafc18
 
   /**
    * @brief Get the position of the nominal hip location in the world frame
    * @param[in] leg_index Quad leg (0 = FL, 1 = BL, 2 = FR, 3 = BR)
    * @param[in] body_pos Position of center of body frame
    * @param[in] body_rpy Orientation of body frame in roll, pitch, yaw
+<<<<<<< HEAD
    * @param[out] nominal_hip_pos_world Location of nominal hip in world frame
    */
   void worldToNominalHipFKWorldFrame(
       int leg_index, Eigen::Vector3d body_pos, Eigen::Vector3d body_rpy,
       Eigen::Vector3d &nominal_hip_pos_world) const;
+<<<<<<< HEAD
+=======
+=======
+   * @param[out] nominal_footstep_pos_world Location of nominal footstep in world frame
+   */
+  void nominalHipFK(int leg_index, Eigen::Vector3d body_pos,
+    Eigen::Vector3d body_rpy, Eigen::Vector3d &nominal_footstep_pos_world) const;
+>>>>>>> Switch build system to catkin_tools, switch spirit* to quad*
+>>>>>>> d5a072b3a89924f1b027bb8b8d27919519fafc18
 
   /**
    * @brief Compute Jacobian for generalized coordinates
    * @param[in] state Joint and body states
    * @param[out] jacobian Jacobian for generalized coordinates
    */
+<<<<<<< HEAD
   void getJacobianGenCoord(const Eigen::VectorXd &state,
                            Eigen::MatrixXd &jacobian) const;
+=======
+<<<<<<< HEAD
+  void getJacobianGenCoord(const Eigen::VectorXd &state,
+                           Eigen::MatrixXd &jacobian) const;
+=======
+  void getJacobianGenCoord(const Eigen::VectorXd &state, Eigen::MatrixXd &jacobian) const;
+>>>>>>> Switch build system to catkin_tools, switch spirit* to quad*
+>>>>>>> d5a072b3a89924f1b027bb8b8d27919519fafc18
 
   /**
    * @brief Compute Jacobian for angular velocity in body frame
    * @param[in] state Joint and body states
    * @param[out] jacobian Jacobian for angular velocity in body frame
    */
+<<<<<<< HEAD
   void getJacobianBodyAngVel(const Eigen::VectorXd &state,
                              Eigen::MatrixXd &jacobian) const;
+=======
+<<<<<<< HEAD
+  void getJacobianBodyAngVel(const Eigen::VectorXd &state,
+                             Eigen::MatrixXd &jacobian) const;
+=======
+  void getJacobianBodyAngVel(const Eigen::VectorXd &state, Eigen::MatrixXd &jacobian) const;
+>>>>>>> Switch build system to catkin_tools, switch spirit* to quad*
+>>>>>>> d5a072b3a89924f1b027bb8b8d27919519fafc18
 
   /**
    * @brief Compute Jacobian for angular velocity in world frame
    * @param[in] state Joint and body states
    * @param[out] jacobian Jacobian for angular velocity in world frame
    */
+<<<<<<< HEAD
   void getJacobianWorldAngVel(const Eigen::VectorXd &state,
                               Eigen::MatrixXd &jacobian) const;
+=======
+<<<<<<< HEAD
+  void getJacobianWorldAngVel(const Eigen::VectorXd &state,
+                              Eigen::MatrixXd &jacobian) const;
+=======
+  void getJacobianWorldAngVel(const Eigen::VectorXd &state, Eigen::MatrixXd &jacobian) const;
+>>>>>>> Switch build system to catkin_tools, switch spirit* to quad*
+>>>>>>> d5a072b3a89924f1b027bb8b8d27919519fafc18
 
   /**
    * @brief Compute rotation matrix given roll pitch and yaw
    * @param[in] rpy Roll pitch and yaw
    * @param[out] rot Rotation matrix
    */
+<<<<<<< HEAD
   void getRotationMatrix(const Eigen::VectorXd &rpy,
                          Eigen::Matrix3d &rot) const;
+=======
+<<<<<<< HEAD
+  void getRotationMatrix(const Eigen::VectorXd &rpy,
+                         Eigen::Matrix3d &rot) const;
+=======
+  void getRotationMatrix(const Eigen::VectorXd &rpy, Eigen::Matrix3d &rot) const;
+>>>>>>> Switch build system to catkin_tools, switch spirit* to quad*
+>>>>>>> d5a072b3a89924f1b027bb8b8d27919519fafc18
 
   /**
    * @brief Compute inverse dynamics for swing leg
@@ -285,6 +563,10 @@ class QuadKD {
    * @param[in] contact_mode Contact mode of the legs
    * @param[out] tau Joint torques
    */
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+>>>>>>> d5a072b3a89924f1b027bb8b8d27919519fafc18
   void computeInverseDynamics(const Eigen::VectorXd &state_pos,
                               const Eigen::VectorXd &state_vel,
                               const Eigen::VectorXd &foot_acc,
@@ -400,6 +682,8 @@ class QuadKD {
 
   /// Vector of legbase offsets
   std::vector<Eigen::Matrix4d> g_body_legbases_;
+<<<<<<< HEAD
+=======
 
   /// Epsilon offset for joint bounds
   const double joint_eps = 0.1;
@@ -456,3 +740,69 @@ class QuadKD {
 }  // namespace quad_utils
 
 #endif  // QUAD_KD_H
+=======
+  void compInvDyn(const Eigen::VectorXd &state_pos,const Eigen::VectorXd &state_vel,
+    const Eigen::VectorXd &foot_acc,const Eigen::VectorXd &grf,
+    const std::vector<int> &contact_mode, Eigen::VectorXd &tau) const;
+>>>>>>> d5a072b3a89924f1b027bb8b8d27919519fafc18
+
+  /// Epsilon offset for joint bounds
+  const double joint_eps = 0.1;
+
+  /// Vector of the joint lower limits
+  std::vector<std::vector<double>> joint_min_;
+
+  /// Vector of the joint upper limits
+  std::vector<std::vector<double>> joint_max_;
+
+  RigidBodyDynamics::Model *model_;
+
+  std::vector<std::string> body_name_list_;
+
+  std::vector<unsigned int> body_id_list_;
+
+  std::vector<int> leg_idx_list_;
+
+  /// Abad max joint torque
+  const double abad_tau_max_ = 21;
+
+  /// Hip max joint torque
+  const double hip_tau_max_ = 21;
+
+  /// Knee max joint torque
+  const double knee_tau_max_ = 32;
+
+  /// Vector of max torques
+  const Eigen::VectorXd tau_max_ =
+      (Eigen::VectorXd(12) << abad_tau_max_, hip_tau_max_, knee_tau_max_,
+       abad_tau_max_, hip_tau_max_, knee_tau_max_, abad_tau_max_, hip_tau_max_,
+       knee_tau_max_, abad_tau_max_, hip_tau_max_, knee_tau_max_)
+          .finished();
+
+  /// Abad max joint velocity
+  const double abad_vel_max_ = 37.7;
+
+  /// Hip max joint velocity
+  const double hip_vel_max_ = 37.7;
+
+  /// Knee max joint velocity
+  const double knee_vel_max_ = 25.1;
+
+  /// Vector of max velocities
+  const Eigen::VectorXd vel_max_ =
+      (Eigen::VectorXd(12) << abad_vel_max_, hip_vel_max_, knee_vel_max_,
+       abad_vel_max_, hip_vel_max_, knee_vel_max_, abad_vel_max_, hip_vel_max_,
+       knee_vel_max_, abad_vel_max_, hip_vel_max_, knee_vel_max_)
+          .finished();
+
+  const Eigen::VectorXd mm_slope_ = tau_max_.cwiseQuotient(vel_max_);
+};
+
+}  // namespace quad_utils
+
+<<<<<<< HEAD
+#endif  // QUAD_KD_H
+=======
+#endif // KINEMATICS_H
+>>>>>>> Switch build system to catkin_tools, switch spirit* to quad*
+>>>>>>> d5a072b3a89924f1b027bb8b8d27919519fafc18

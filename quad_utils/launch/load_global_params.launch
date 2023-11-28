@@ -24,11 +24,14 @@
         <param name="robot_description" command="cat $(find a1_description)/urdf/a1.urdf" />
     </group>
 
+<<<<<<< HEAD
     <group if="$(eval arg('robot_type') == 'new_platform')">
         <param name="robot_description_sdf" textfile="$(find new_platform_description)/sdf_mesh/new_platform.sdf" />
         <param name="robot_description" command="cat $(find new_platform_description)/urdf/new_platform.urdf" />
     </group>
 
+=======
+>>>>>>> d5a072b3a89924f1b027bb8b8d27919519fafc18
     <group if="$(arg load_robot_params)">
         <include file="$(find quad_utils)/launch/load_robot_params.launch"/>
     </group>

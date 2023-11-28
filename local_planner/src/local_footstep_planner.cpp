@@ -35,21 +35,32 @@ void LocalFootstepPlanner::setTemporalParams(
   }
 }
 
+<<<<<<< HEAD
 void LocalFootstepPlanner::setSpatialParams(
     double ground_clearance, double hip_clearance, double grf_weight,
     double standing_error_threshold,
     std::shared_ptr<quad_utils::QuadKD> kinematics,
     double foothold_search_radius, double foothold_obj_threshold,
     std::string obj_fun_layer, double toe_radius) {
+=======
+
+void LocalFootstepPlanner::setSpatialParams(double ground_clearance, double grf_weight, 
+  double standing_error_threshold, std::shared_ptr<quad_utils::QuadKD> kinematics) {
+
+>>>>>>> d5a072b3a89924f1b027bb8b8d27919519fafc18
   ground_clearance_ = ground_clearance;
   hip_clearance_ = hip_clearance;
   standing_error_threshold_ = standing_error_threshold;
   grf_weight_ = grf_weight;
+<<<<<<< HEAD
   quadKD_ = kinematics;
   foothold_search_radius_ = foothold_search_radius;
   foothold_obj_threshold_ = foothold_obj_threshold;
   obj_fun_layer_ = obj_fun_layer;
   toe_radius_ = toe_radius;
+=======
+quadKD_ = kinematics;
+>>>>>>> d5a072b3a89924f1b027bb8b8d27919519fafc18
 }
 
 void LocalFootstepPlanner::updateMap(const FastTerrainMap &terrain) {
@@ -83,10 +94,25 @@ void LocalFootstepPlanner::getFootPositionsBodyFrame(
   }
 }
 
+<<<<<<< HEAD
 void LocalFootstepPlanner::computeContactSchedule(
     int current_plan_index, const Eigen::MatrixXd &body_plan,
     const Eigen::VectorXi &ref_primitive_plan, int control_mode,
     std::vector<std::vector<bool>> &contact_schedule) {
+=======
+void LocalFootstepPlanner::computeStanceContactSchedule(int current_plan_index,
+  std::vector<std::vector<bool>> &contact_schedule) {
+
+  for (int i = 0; i < horizon_length_; i++) { // For each finite element
+    contact_schedule.at(i).resize(num_feet_);
+    for (int leg_idx = 0; leg_idx < num_feet_; leg_idx++) { // For each leg
+      nominal_contact_schedule_.at(i).at(leg_idx) = true;
+    }
+  }
+}
+
+void LocalFootstepPlanner::computeContactSchedule(int current_plan_index, std::vector<std::vector<bool>> &contact_schedule) {
+>>>>>>> d5a072b3a89924f1b027bb8b8d27919519fafc18
   // Compute the current phase in the nominal contact schedule
   int phase = current_plan_index % period_;
 
@@ -182,9 +208,14 @@ void LocalFootstepPlanner::computeFootPlan(
     for (int i = 1; i < contact_schedule.size(); i++) {
       if (isNewContact(contact_schedule, i, j)) {
         // Declare foot position vectors
+<<<<<<< HEAD
         Eigen::Vector3d foot_position, foot_position_grf, foot_position_nominal,
             hip_position_midstance, centrifugal, vel_tracking,
             foot_position_raibert;
+=======
+        Eigen::Vector3d foot_position, foot_position_grf,
+          foot_position_nominal, hip_position_midstance, centrifugal, vel_tracking, foot_position_raibert;
+>>>>>>> d5a072b3a89924f1b027bb8b8d27919519fafc18
 
         // Declare body and grf vectors
         Eigen::Vector3d body_pos_midstance, body_rpy_midstance,
@@ -240,6 +271,7 @@ void LocalFootstepPlanner::computeFootPlan(
         hip_position_midstance = welzlMinimumCircle(P, R);
 
         // Get touchdown information for body state
+<<<<<<< HEAD
         body_vel_touchdown = body_plan.block<1, 3>(i, 6);
         ref_body_vel_touchdown = ref_body_plan.block<1, 3>(i, 6);
         body_ang_vel_touchdown = body_plan.block<1, 3>(i, 9);
@@ -292,6 +324,34 @@ void LocalFootstepPlanner::computeFootPlan(
             foot_positions.block<1, 3>(i, 3 * j);
         foot_position = getNearestValidFoothold(foot_position_nominal,
                                                 foot_position_previous);
+=======
+        body_vel_touchdown = body_plan.block<1,3>(i,6);
+        ref_body_vel_touchdown = ref_body_plan.block<1,3>(i,6);
+        body_ang_vel_touchdown = body_plan.block<1,3>(i,9);
+        ref_body_ang_vel_touchdown = ref_body_plan.block<1,3>(i,9);
+
+        // Compute nominal foot positions for kinematic and grf-projection measures
+      quadKD_->nominalHipFK(j, body_pos_midstance, body_rpy_midstance, 
+          hip_position_midstance);
+        // double hip_height = hip_position_midstance.z() - 
+        //   terrain_.getGroundHeight(hip_position_midstance.x(), hip_position_midstance.y());
+        grid_map::Position hip_position_grid_map = {hip_position_midstance.x(), hip_position_midstance.y()};
+        auto hip_height = hip_position_midstance.z() - terrain_grid_.atPosition(
+          "z",hip_position_grid_map, grid_map::InterpolationMethods::INTER_NEAREST);
+        centrifugal = (hip_height/9.81)*body_vel_touchdown.cross(ref_body_ang_vel_touchdown);
+        vel_tracking = (hip_height/9.81)*(body_vel_touchdown - ref_body_vel_touchdown);
+        foot_position_grf = terrain_.projectToMap(hip_position_midstance, -1.0*grf_midstance);
+
+        // Combine these measures to get the nominal foot position and grab correct height
+        foot_position_raibert = hip_position_midstance + centrifugal + vel_tracking;
+        foot_position_nominal = grf_weight_*foot_position_grf +
+          (1-grf_weight_)*foot_position_raibert;
+        grid_map::Position foot_position_grid_map = {foot_position_nominal.x(), foot_position_nominal.y()};
+        foot_position_nominal.z() = terrain_grid_.atPosition("z", foot_position_grid_map,
+          grid_map::InterpolationMethods::INTER_NEAREST);
+
+        foot_position = foot_position_nominal;
+>>>>>>> d5a072b3a89924f1b027bb8b8d27919519fafc18
 
         // Store foot position in the Eigen matrix
         foot_positions.block<1, 3>(i, 3 * j) = foot_position;
@@ -304,18 +364,53 @@ void LocalFootstepPlanner::computeFootPlan(
       }
     }
   }
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+=======
+}
+
+void LocalFootstepPlanner::computeFootPlanMsgs(
+  const std::vector<std::vector<bool>> &contact_schedule, const Eigen::MatrixXd &foot_positions,
+  int current_plan_index, quad_msgs::MultiFootPlanDiscrete &past_footholds_msg,
+  quad_msgs::MultiFootPlanDiscrete &future_footholds_msg,
+  quad_msgs::MultiFootPlanContinuous &foot_plan_continuous_msg) {
+
+  foot_plan_continuous_msg.states.resize(contact_schedule.size());
+  future_footholds_msg.feet.resize(num_feet_);
+
+  // Loop through each foot to construct the continuous foot plan message
+  for (int j=0; j<num_feet_; j++) {
+
+    future_footholds_msg.feet[j].header = future_footholds_msg.header;
+>>>>>>> Switch build system to catkin_tools, switch spirit* to quad*
+>>>>>>> d5a072b3a89924f1b027bb8b8d27919519fafc18
 
   // Loop through each foot to interpolate the swing foot states
   for (int j = 0; j < num_feet_; j++) {
     // Declare variables for computing initial swing foot state
     // Identify index for the liftoff and touchdown events
+<<<<<<< HEAD
     quad_msgs::FootState most_recent_foothold_msg = past_footholds_msg.feet[j];
 
+=======
+<<<<<<< HEAD
+    quad_msgs::FootState most_recent_foothold_msg = past_footholds_msg.feet[j];
+
+=======
+    quad_msgs::FootState most_recent_foothold_msg = past_footholds_msg.feet[j].footholds.back();
+    
+>>>>>>> Switch build system to catkin_tools, switch spirit* to quad*
+>>>>>>> d5a072b3a89924f1b027bb8b8d27919519fafc18
     int i_liftoff = most_recent_foothold_msg.traj_index - current_plan_index;
     int i_touchdown = getNextContactIndex(contact_schedule, 0, j);
     double swing_duration = i_touchdown - i_liftoff;
 
     // Identify positions of the previous and next footholds
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+>>>>>>> d5a072b3a89924f1b027bb8b8d27919519fafc18
     Eigen::Vector3d foot_position_prev, foot_position_prev_nominal;
     quad_utils::footStateMsgToEigen(most_recent_foothold_msg,
                                     foot_position_prev);
@@ -349,12 +444,29 @@ void LocalFootstepPlanner::computeFootPlan(
       // is unused
       past_footholds_msg.feet[j].velocity.z = swing_apex;
     }
+<<<<<<< HEAD
+=======
+=======
+    Eigen::Vector3d foot_position_prev;
+    quad_utils::footStateMsgToEigen(most_recent_foothold_msg, foot_position_prev);
+    Eigen::Vector3d foot_position_next = getFootData(foot_positions, i_touchdown, j);
+>>>>>>> Switch build system to catkin_tools, switch spirit* to quad*
+>>>>>>> d5a072b3a89924f1b027bb8b8d27919519fafc18
 
     // Loop through the horizon
     for (int i = 0; i < contact_schedule.size(); i++) {
       // Create the foot state message
       quad_msgs::FootState foot_state_msg;
+<<<<<<< HEAD
       foot_state_msg.traj_index = current_plan_index + i;
+=======
+<<<<<<< HEAD
+      foot_state_msg.traj_index = current_plan_index + i;
+=======
+      foot_state_msg.header = foot_plan_continuous_msg.header;
+      foot_state_msg.traj_index = foot_plan_continuous_msg.states[i].traj_index;
+>>>>>>> Switch build system to catkin_tools, switch spirit* to quad*
+>>>>>>> d5a072b3a89924f1b027bb8b8d27919519fafc18
 
       Eigen::Vector3d foot_position;
       Eigen::Vector3d foot_velocity;
@@ -414,6 +526,7 @@ void LocalFootstepPlanner::computeFootPlan(
             foot_position_next = getFootData(foot_positions, i_touchdown, j);
             swing_duration = i_touchdown - i_liftoff;
           }
+<<<<<<< HEAD
 
           // Compute the midair index
           mid_air = std::round(i_liftoff + swing_duration / 2);
@@ -484,6 +597,78 @@ void LocalFootstepPlanner::computeFootPlan(
         foot_state_msg.contact = false;
       }
 
+=======
+
+          // Compute the midair index
+          mid_air = std::round(i_liftoff + swing_duration / 2);
+          if (mid_air > horizon_length_ - 1) {
+            // Apply basic footstep heuristic, no searching
+            body_plan_mid_air = computeFutureBodyPlan(
+                (i_liftoff + swing_duration / 2) - (horizon_length_ - 1),
+                body_plan.row(horizon_length_ - 1));
+          } else {
+            body_plan_mid_air = body_plan.row(mid_air);
+          }
+
+          // Compute the swing apex
+          swing_apex =
+              computeSwingApex(j, body_plan_mid_air, foot_position_prev_nominal,
+                               foot_position_next);
+        }
+
+        // Compute the period index of plan and current states
+        // For the first step, it might be duplicated in the same plan index so
+        // we need to refine the phase based on the time duration to next plan
+        // index
+        double swing_idx =
+            (i == 0) ? (i - i_liftoff + (dt_ - first_element_duration) / dt_)
+                     : (i - i_liftoff);
+        double swing_idx_current =
+            0 - i_liftoff + (dt_ - first_element_duration) / dt_;
+
+        // Define interpolate phase and duration
+        double interp_phase;
+        double interp_duration;
+
+        // We use the plan
+        interp_phase = swing_idx / swing_duration;
+        interp_duration = swing_duration * dt_;
+
+        // Interplate x and y
+        cubicHermiteSpline(foot_position_prev.x(), foot_velocity_prev.x(),
+                           foot_position_next.x(), foot_velocity_next.x(),
+                           interp_phase, interp_duration, foot_position.x(),
+                           foot_velocity.x(), foot_acceleration.x());
+        cubicHermiteSpline(foot_position_prev.y(), foot_velocity_prev.y(),
+                           foot_position_next.y(), foot_velocity_next.y(),
+                           interp_phase, interp_duration, foot_position.y(),
+                           foot_velocity.y(), foot_acceleration.y());
+
+        // Interplate z
+        // Start from plan
+        interp_phase = (2 * swing_idx >= swing_duration)
+                           ? (2 * swing_idx / swing_duration - 1)
+                           : (2 * swing_idx / swing_duration);
+        interp_duration = swing_duration * dt_ / 2;
+
+        if (swing_idx / swing_duration < 0.5) {
+          // Swing upwards
+          cubicHermiteSpline(foot_position_prev.z(), foot_velocity_prev.z(),
+                             swing_apex, 0, interp_phase, interp_duration,
+                             foot_position.z(), foot_velocity.z(),
+                             foot_acceleration.z());
+        } else {
+          // Swing downwards
+          cubicHermiteSpline(swing_apex, 0, foot_position_next.z(),
+                             foot_velocity_next.z(), interp_phase,
+                             interp_duration, foot_position.z(),
+                             foot_velocity.z(), foot_acceleration.z());
+        }
+
+        foot_state_msg.contact = false;
+      }
+
+>>>>>>> d5a072b3a89924f1b027bb8b8d27919519fafc18
       if (isContact(contact_schedule, i, j)) {
         // In contact
         // Log current foot position and zero velocity
@@ -548,6 +733,10 @@ void LocalFootstepPlanner::loadFootPlanMsgs(
         foot_plan_continuous_msg.states[i].traj_index = current_plan_index + i;
       }
 
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+>>>>>>> d5a072b3a89924f1b027bb8b8d27919519fafc18
       // Create the foot state message
       quad_msgs::FootState foot_state_msg;
       foot_state_msg.header = foot_plan_continuous_msg.header;
@@ -557,6 +746,14 @@ void LocalFootstepPlanner::loadFootPlanMsgs(
                                       foot_accelerations.block<1, 3>(i, 3 * j),
                                       foot_state_msg);
       foot_state_msg.contact = isContact(contact_schedule, i, j);
+<<<<<<< HEAD
+=======
+=======
+      // Load state data into the message
+      quad_utils::eigenToFootStateMsg(foot_position, foot_velocity, foot_acceleration, foot_state_msg);
+      foot_plan_continuous_msg.states[i].feet.push_back(foot_state_msg);
+>>>>>>> Switch build system to catkin_tools, switch spirit* to quad*
+>>>>>>> d5a072b3a89924f1b027bb8b8d27919519fafc18
 
       // If this is a touchdown event, add to the future footholds message
       if (isNewContact(contact_schedule, i, j)) {
@@ -694,6 +891,7 @@ Eigen::Vector3d LocalFootstepPlanner::welzlMinimumCircle(
         D << 0, 0, 0;
         break;
     }
+<<<<<<< HEAD
 
     return D;
   }
@@ -706,6 +904,20 @@ Eigen::Vector3d LocalFootstepPlanner::welzlMinimumCircle(
     return D;
   }
 
+=======
+
+    return D;
+  }
+
+  // Recursive
+  Eigen::Vector2d p = P.back();
+  P.pop_back();
+  Eigen::Vector3d D = welzlMinimumCircle(P, R);
+  if ((p - D.segment(0, 2)).norm() < D.z()) {
+    return D;
+  }
+
+>>>>>>> d5a072b3a89924f1b027bb8b8d27919519fafc18
   R.push_back(p);
   return welzlMinimumCircle(P, R);
 }

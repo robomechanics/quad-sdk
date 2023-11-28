@@ -5,6 +5,18 @@ quiet_mkdir () {
 	fi
 }
 
+<<<<<<< HEAD
+=======
+cd osqp-eigen
+quiet_mkdir build
+cd build
+cmake ..
+make -j8
+sudo make install
+cd ../..
+
+
+>>>>>>> d5a072b3a89924f1b027bb8b8d27919519fafc18
 # Setup and build for IPOPT
 cd ipopt
 sudo apt-get install -y gcc g++ gfortran git patch wget pkg-config liblapack-dev libmetis-dev
@@ -26,7 +38,11 @@ else
     echo "Warning: HSL not found."
 fi
 cd coinbrew
+<<<<<<< HEAD
 ./coinbrew build Ipopt --latest-release --tests none --prefix=/usr/local
+=======
+./coinbrew build Ipopt --latest-release --tests none --prefix=/usr/local --no-prompt --parallel-jobs=8
+>>>>>>> d5a072b3a89924f1b027bb8b8d27919519fafc18
 cd ../..
 
 # Setup and build for rbdl
@@ -40,4 +56,8 @@ sudo make install
 cd ../..
 
 # Setup for teleop_twist_joy to get dependencies installed
+<<<<<<< HEAD
 sudo apt install -y ros-noetic-teleop-twist-joy
+=======
+sudo apt install -y ros-melodic-teleop-twist-joy
+>>>>>>> d5a072b3a89924f1b027bb8b8d27919519fafc18

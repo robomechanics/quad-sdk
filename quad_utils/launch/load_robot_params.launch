@@ -15,10 +15,13 @@
         <param name="robot_description_sdf" textfile="$(find a1_description)/sdf_mesh/a1.sdf" />
         <param name="robot_description" command="cat $(find a1_description)/urdf/a1.urdf" />
     </group>
+<<<<<<< HEAD
 
     <group if="$(eval arg('robot_type') == 'new_platform')">
         <rosparam command="load" file="$(find quad_utils)/config/new_platform.yaml" />
         <param name="robot_description_sdf" textfile="$(find new_platform_description)/sdf_mesh/new_platform.sdf" />
         <param name="robot_description" command="cat $(find new_platform_description)/urdf/new_platform.urdf" />
     </group>
+=======
+>>>>>>> d5a072b3a89924f1b027bb8b8d27919519fafc18
 </launch>

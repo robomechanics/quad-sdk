@@ -13,7 +13,10 @@ topics:
   trajectory: robot_plan
   state: # These should not change for the remapping to work in some launch files
     joints: state/joints
+<<<<<<< HEAD
     joints_hardware: state/joints_hardware
+=======
+>>>>>>> d5a072b3a89924f1b027bb8b8d27919519fafc18
     imu: state/imu
     ground_truth: state/ground_truth
     ground_truth_body_frame: state/ground_truth_body_frame

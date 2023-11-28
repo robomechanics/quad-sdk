@@ -3,6 +3,7 @@
 
 #include "quad_utils/fast_terrain_map.h"
 
+<<<<<<< HEAD
 TEST(FastTerrainMapTest, testSpeedComparison) {
   // Define map parameters
   double res = 0.01;
@@ -179,12 +180,16 @@ TEST(FastTerrainMapTest, testSpeedComparison) {
   EXPECT_EQ(1 + 1, 2);
 }
 
+=======
+>>>>>>> d5a072b3a89924f1b027bb8b8d27919519fafc18
 TEST(FastTerrainMapTest, testConstructor) {
+  ros::NodeHandle nh;
   FastTerrainMap fast_terrain_map;
   EXPECT_EQ(1 + 1, 2);
 }
 
 TEST(FastTerrainMapTest, testProjection) {
+  ros::NodeHandle nh;
   FastTerrainMap fast_terrain_map;
 
   int x_size = 2;

@@ -6,6 +6,7 @@ RobotDriver::RobotDriver(ros::NodeHandle nh, int argc, char **argv) {
   argv_ = argv;
 
   // Load rosparams from parameter server
+<<<<<<< HEAD
   std::string robot_name, imu_topic, joint_state_topic, joint_state_hardware_topic_, 
       grf_topic, robot_state_topic, trajectory_state_topic, local_plan_topic,
       leg_command_array_topic, control_mode_topic, remote_heartbeat_topic,
@@ -15,6 +16,17 @@ RobotDriver::RobotDriver(ros::NodeHandle nh, int argc, char **argv) {
   quad_utils::loadROSParam(nh_, "topics/state/imu", imu_topic);
   quad_utils::loadROSParam(nh_, "topics/state/joints", joint_state_topic);
   quad_utils::loadROSParam(nh_, "topics/state/joints_hardware", joint_state_hardware_topic_);
+=======
+  std::string robot_name, imu_topic, joint_state_topic, grf_topic,
+      robot_state_topic, trajectory_state_topic, local_plan_topic,
+      leg_command_array_topic, control_mode_topic, remote_heartbeat_topic,
+      robot_heartbeat_topic, single_joint_cmd_topic, mocap_topic,
+      control_restart_flag_topic;
+  quad_utils::loadROSParamDefault(nh_, "robot_type", robot_name,
+                                  std::string("spirit"));
+  quad_utils::loadROSParam(nh_, "topics/state/imu", imu_topic);
+  quad_utils::loadROSParam(nh_, "topics/state/joints", joint_state_topic);
+>>>>>>> d5a072b3a89924f1b027bb8b8d27919519fafc18
   quad_utils::loadROSParam(nh_, "topics/local_plan", local_plan_topic);
   quad_utils::loadROSParam(nh_, "topics/state/ground_truth", robot_state_topic);
   quad_utils::loadROSParam(nh_, "topics/state/trajectory",
@@ -33,7 +45,12 @@ RobotDriver::RobotDriver(ros::NodeHandle nh, int argc, char **argv) {
                            control_restart_flag_topic);
   quad_utils::loadROSParam(nh_, "topics/mocap", mocap_topic);
 
+<<<<<<< HEAD
   quad_utils::loadROSParam(nh_, "robot_driver/is_hardware", is_hardware_);
+=======
+  quad_utils::loadROSParamDefault(nh_, "robot_driver/is_hardware", is_hardware_,
+                                  true);
+>>>>>>> d5a072b3a89924f1b027bb8b8d27919519fafc18
   quad_utils::loadROSParamDefault(nh_, "robot_driver/controller",
                                   controller_id_,
                                   std::string("inverse_dynamics"));
@@ -67,9 +84,12 @@ RobotDriver::RobotDriver(ros::NodeHandle nh, int argc, char **argv) {
   quad_utils::loadROSParam(nh_, "robot_driver/sit_joint_angles",
                            sit_joint_angles_);
   quad_utils::loadROSParam(nh_, "robot_driver/torque_limit", torque_limits_);
+<<<<<<< HEAD
   //Get position limits for robot
   // quad_utils::loadROSParam(nh_, "nmpc_controller/joints/x_lb", pos_limit_min);
   // quad_utils::loadROSParam(nh_, "nmpc_controller/joints/x_ub", pos_limit_max);
+=======
+>>>>>>> d5a072b3a89924f1b027bb8b8d27919519fafc18
 
   // Setup pubs and subs
   local_plan_sub_ =
@@ -94,7 +114,10 @@ RobotDriver::RobotDriver(ros::NodeHandle nh, int argc, char **argv) {
       nh_.advertise<quad_msgs::RobotState>(trajectory_state_topic, 1);
 
   // Set up pubs and subs dependent on robot layer
+<<<<<<< HEAD
   
+=======
+>>>>>>> d5a072b3a89924f1b027bb8b8d27919519fafc18
   if (is_hardware_) {
     ROS_INFO("Loading hardware robot driver");
     mocap_sub_ = nh_.subscribe(mocap_topic, 1000, &RobotDriver::mocapCallback,
@@ -109,15 +132,19 @@ RobotDriver::RobotDriver(ros::NodeHandle nh, int argc, char **argv) {
     robot_state_sub_ =
         nh_.subscribe(robot_state_topic, 1, &RobotDriver::robotStateCallback,
                       this, ros::TransportHints().tcpNoDelay(true));
+<<<<<<< HEAD
 
       // joint_state_pub_ =
       //   nh_.advertise<sensor_msgs::JointState>(joint_state_topic, 1);
+=======
+>>>>>>> d5a072b3a89924f1b027bb8b8d27919519fafc18
   }
 
   // Initialize kinematics object
   quadKD_ = std::make_shared<quad_utils::QuadKD>();
 
   // Initialize hardware interface
+<<<<<<< HEAD
   // if (is_hardware_) {
   if (true) {
     if (robot_name == "spirit") {
@@ -129,6 +156,12 @@ RobotDriver::RobotDriver(ros::NodeHandle nh, int argc, char **argv) {
         hardware_interface_ = std::make_shared<NewPlatformInterface>();
     } 
     else {
+=======
+  if (is_hardware_) {
+    if (robot_name == "spirit") {
+      hardware_interface_ = std::make_shared<SpiritInterface>();
+    } else {
+>>>>>>> d5a072b3a89924f1b027bb8b8d27919519fafc18
       ROS_ERROR_STREAM("Invalid robot name " << robot_name
                                              << ", returning nullptr");
       hardware_interface_ = nullptr;
@@ -574,8 +607,12 @@ void RobotDriver::spin() {
   ros::Rate r(update_rate_);
 
   // Start the mblink connection
+<<<<<<< HEAD
   // if (is_hardware_) {
   if (true) {
+=======
+  if (is_hardware_) {
+>>>>>>> d5a072b3a89924f1b027bb8b8d27919519fafc18
     hardware_interface_->loadInterface(argc_, argv_);
   }
 

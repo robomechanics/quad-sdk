@@ -72,6 +72,7 @@ void quadNLP::loadCasadiFuncs() {
   eval_sparsity_vec_[A1][JAC] = eval_jac_g_a1_sparsity_out;
   eval_sparsity_vec_[A1][HESS] = eval_hess_g_a1_sparsity_out;
 
+<<<<<<< HEAD
     // Load basic leg controller functions for the new_platform platform
   eval_vec_[NEW_PLATFORM][FUNC] = eval_g_new_platform;
   eval_vec_[NEW_PLATFORM][JAC] = eval_jac_g_new_platform;
@@ -95,6 +96,8 @@ void quadNLP::loadCasadiFuncs() {
   eval_sparsity_vec_[NEW_PLATFORM][JAC] = eval_jac_g_new_platform_sparsity_out;
   eval_sparsity_vec_[NEW_PLATFORM][HESS] = eval_hess_g_new_platform_sparsity_out;
 
+=======
+>>>>>>> d5a072b3a89924f1b027bb8b8d27919519fafc18
   // Load simple to simple functions - for adaptive complexity
   eval_vec_[SIMPLE_TO_SIMPLE][FUNC] = eval_g_leg_simple;
   eval_vec_[SIMPLE_TO_SIMPLE][JAC] = eval_jac_g_leg_simple;

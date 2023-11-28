@@ -28,7 +28,10 @@
 #include "robot_driver/estimators/state_estimator.h"
 #include "robot_driver/hardware_interfaces/hardware_interface.h"
 #include "robot_driver/hardware_interfaces/spirit_interface.h"
+<<<<<<< HEAD
 #include "robot_driver/hardware_interfaces/new_platform_interface.h"
+=======
+>>>>>>> d5a072b3a89924f1b027bb8b8d27919519fafc18
 #include "robot_driver/robot_driver_utils.h"
 
 #define MATH_PI 3.141592

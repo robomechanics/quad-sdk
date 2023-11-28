@@ -5,9 +5,14 @@
           type="mocap_node"
           respawn="false"
           launch-prefix=""
-          required="true"
-          output="screen">
+          required="true">
         <rosparam file="$(find mocap_optitrack)/config/mocap.yaml" />
     </node>
+<<<<<<< HEAD
+=======
+
+    <!-- Launch the node to publish ground truth messages-->
+    <node name="ground_truth_publisher" pkg="quad_utils" type="ground_truth_publisher_node" output="screen"/>
+>>>>>>> d5a072b3a89924f1b027bb8b8d27919519fafc18
     
 </launch>

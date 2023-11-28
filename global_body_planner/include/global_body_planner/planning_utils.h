@@ -13,6 +13,10 @@
 #include <chrono>
 #include <eigen3/Eigen/Eigen>
 #include <grid_map_core/grid_map_core.hpp>
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+>>>>>>> d5a072b3a89924f1b027bb8b8d27919519fafc18
 #include <iostream>
 #include <limits>
 #include <random>
@@ -27,6 +31,14 @@
 // #define DEBUG_REFINE_STATE
 // #define DEBUG_INVALID_STATE
 // #define DEBUG_SOLVE_RESULT
+<<<<<<< HEAD
+=======
+=======
+#include <ros/ros.h>
+#include <quad_utils/fast_terrain_map.h>
+#include <quad_utils/math_utils.h>
+>>>>>>> Switch build system to catkin_tools, switch spirit* to quad*
+>>>>>>> d5a072b3a89924f1b027bb8b8d27919519fafc18
 
 namespace planning_utils {
 
@@ -46,6 +58,10 @@ struct PlannerConfig {
   double v_nom;  // Nominal velocity, m/s (used during connect function)
 
   // Define dynamic constraint parameters
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+>>>>>>> d5a072b3a89924f1b027bb8b8d27919519fafc18
   double mass;     // Robot mass, kg
   double g;        // Gravity constant, m/s^2
   double grf_min;  // Minimum GRF in units of body weight
@@ -55,6 +71,20 @@ struct PlannerConfig {
   double t_s_max;  //  Maximum stance time, s
   double dz0_min;  //  Minimum vertical velocity impulse, m/s
   double dz0_max;  //  Maximum vertical velocity impulse, m/s
+<<<<<<< HEAD
+=======
+=======
+  double M_CONST = 12;          // Robot mass, kg (12 for quad, 43 for cheetah, 30 for anymal)
+  double J_CONST = 1.0;         // Moment of inertia about the robot's y axis (pitch)
+  double G_CONST = 9.81;        // Gravity constant, m/s^2
+  double F_MAX = 300;           // Maximum GRF, N (800 for cheetah, 500 for anymal)
+  double MU = 1.0;              // Friction coefficient (1.0 for Cheetah, 0.5 for ANYmal)
+  double T_S_MIN = 0.3;         // Minimum stance time, s
+  double T_S_MAX = 0.3;         // Maximum stance time, s
+  double T_F_MIN = 0.0;         // Minimum flight time, s
+  double T_F_MAX = 0.5;         // Maximum stance time, s
+>>>>>>> Switch build system to catkin_tools, switch spirit* to quad*
+>>>>>>> d5a072b3a89924f1b027bb8b8d27919519fafc18
 
   // Define planning parameters
   double dt;                  //  Resolution of kinematic feasibility checks, m
@@ -146,6 +176,7 @@ struct PlannerConfig {
     // Load the scalar parameters into Eigen vectors
     loadEigenVectorsFromParams();
   }
+<<<<<<< HEAD
 };
 
 /**
@@ -171,6 +202,33 @@ enum ExitFlag {
   INVALID_START_GOAL_EQUAL
 };
 
+=======
+};
+
+/**
+ * @brief Define phase labels
+ */
+enum Phase { CONNECT, LEAP_STANCE, FLIGHT, LAND_STANCE };
+
+/**
+ * @brief Define tree growing direction labels
+ * (FORWARD to go away from the root vertex, REVERSE to go towards it)
+ */
+enum TreeDirection { FORWARD, REVERSE };
+
+/**
+ * @brief Define exit flags
+ */
+enum ExitFlag {
+  UNSOLVED,
+  VALID,
+  VALID_PARTIAL,
+  INVALID_START_STATE,
+  INVALID_GOAL_STATE,
+  INVALID_START_GOAL_EQUAL
+};
+
+>>>>>>> d5a072b3a89924f1b027bb8b8d27919519fafc18
 /// Interpolation typ
 const grid_map::InterpolationMethods INTER_TYPE =
     grid_map::InterpolationMethods::INTER_NEAREST;
@@ -584,6 +642,7 @@ inline Eigen::Vector3d getSurfaceNormalFiltered(
   // return surf_norm;
   return planner_config.terrain.getSurfaceNormalFilteredEigen(s.pos[0],
                                                               s.pos[1]);
+<<<<<<< HEAD
 }
 
 /**
@@ -675,6 +734,99 @@ inline void getMapBounds(const PlannerConfig &planner_config, double &x_min,
 }
 
 /**
+=======
+}
+
+/**
+ * @brief Inline function to get the terrain height of State position
+ * @param[in] s State
+ * @param[in] planner_config Configuration parameters
+ * @return Terrain height at the State position
+ */
+inline double getTerrainZFromState(const State &s,
+                                   const PlannerConfig &planner_config) {
+  return getTerrainZ(s.pos, planner_config);
+}
+
+/**
+ * @brief Inline function to get the filtered terrain height at a point
+ * @param[in] pos location to check height
+ * @param[in] planner_config Configuration parameters
+ * @return Filtered terrain height at the location
+ */
+inline double getTerrainZFilteredFromState(
+    const State &s, const PlannerConfig &planner_config) {
+  return getTerrainZFiltered(s.pos, planner_config);
+}
+
+/**
+ * @brief Inline function to get the relative difference between
+ *  terrain height and  State +z position
+ * @param[in] pos State position in Eigen vector form
+ * @param[in] planner_config Configuration parameters
+ * @return The relative difference between terrain height and  State +z position
+ */
+inline double getZRelToTerrain(const Eigen::Vector3d &pos,
+                               const PlannerConfig &planner_config) {
+  return (pos[2] - getTerrainZ(pos, planner_config));
+}
+
+/**
+ * @brief Inline function to get the relative difference between
+ * terrain height and State +z position
+ * @param[in] s State
+ * @param[in] planner_config Configuration parameters
+ * @return The relative difference between terrain height and State +z position
+ */
+inline double getZRelToTerrain(const State &s,
+                               const PlannerConfig &planner_config) {
+  return getZRelToTerrain(s.pos, planner_config);
+}
+
+/**
+ * @brief Inline function to get the relative difference between
+ * filtered terrain height and State +z position
+ * @param[in] pos State position
+ * @param[in] planner_config Configuration parameters
+ * @return the relative difference between filtered terrain height and State +z
+ * position
+ */
+inline double getZRelToTerrainFiltered(const Eigen::Vector3d &pos,
+                                       const PlannerConfig &planner_config) {
+  return (pos[2] - getTerrainZFiltered(pos, planner_config));
+}
+
+/**
+ * @brief Inline function to get the relative difference between
+ * filtered terrain height and State position
+ * @param[in] s State
+ * @param[in] planner_config Configuration parameters
+ * @return Filtered terrain height at the location
+ */
+inline double getZRelToTerrainFiltered(const State &s,
+                                       const PlannerConfig &planner_config) {
+  return getZRelToTerrainFiltered(s.pos, planner_config);
+}
+
+/**
+ * @brief Inline function to get the map boundary
+ * @param[in] planner_config Configuration parameters
+ * @param[in] x_min The minimal x
+ * @param[in] x_max The maximal x
+ * @param[in] y_min The minimal y
+ * @param[in] y_max The maximal x
+ */
+inline void getMapBounds(const PlannerConfig &planner_config, double &x_min,
+                         double &x_max, double &y_min, double &y_max) {
+  double eps = 0.5;
+  x_min = planner_config.terrain.getXData().front() + eps;
+  x_max = planner_config.terrain.getXData().back() - eps;
+  y_min = planner_config.terrain.getYData().front() + eps;
+  y_max = planner_config.terrain.getYData().back() - eps;
+}
+
+/**
+>>>>>>> d5a072b3a89924f1b027bb8b8d27919519fafc18
  * @brief Obtain new State after applying Action
  * @param[in] s The initial State
  * @param[in] a The Action applied

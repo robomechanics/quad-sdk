@@ -131,6 +131,7 @@ grid_map_filters:
       output_layer: traversability
       upper_threshold: 1.0
       set_to: 1.0 # Other uses: .nan, .inf
+<<<<<<< HEAD
 
   # Delete layers.
   - name: delete
@@ -153,3 +154,5 @@ grid_map_filters:
       output_layer: traversability_mask
       lower_threshold: 0.5 # Note - for now must match /local_footstep_planner/foothold_obj_threshold
       set_to: 0.0
+=======
+>>>>>>> d5a072b3a89924f1b027bb8b8d27919519fafc18
