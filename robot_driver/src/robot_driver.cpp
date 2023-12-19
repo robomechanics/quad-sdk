@@ -1,4 +1,7 @@
 #include "robot_driver/robot_driver.h"
+// New comments to test David's stuff
+// 10/06/2023 @ 15:25
+
 
 RobotDriver::RobotDriver(ros::NodeHandle nh, int argc, char **argv) {
   nh_ = nh;
@@ -10,7 +13,8 @@ RobotDriver::RobotDriver(ros::NodeHandle nh, int argc, char **argv) {
       robot_state_topic, trajectory_state_topic, local_plan_topic,
       leg_command_array_topic, control_mode_topic, remote_heartbeat_topic,
       robot_heartbeat_topic, single_joint_cmd_topic, mocap_topic,
-      control_restart_flag_topic, state_estimate_topic;
+      control_restart_flag_topic, body_force_estimate_topic, state_estimate_topic;
+      
   quad_utils::loadROSParamDefault(nh_, "robot_type", robot_name,
                                   std::string("spirit"));
   quad_utils::loadROSParam(nh_, "topics/state/imu", imu_topic);
@@ -24,6 +28,8 @@ RobotDriver::RobotDriver(ros::NodeHandle nh, int argc, char **argv) {
                            remote_heartbeat_topic);
   quad_utils::loadROSParam(nh_, "topics/heartbeat/robot",
                            robot_heartbeat_topic);
+  quad_utils::loadROSParam(nh_, "topics/body_force/joint_torques",
+                           body_force_estimate_topic);
   quad_utils::loadROSParam(nh_, "topics/control/grfs", grf_topic);
   quad_utils::loadROSParam(nh_, "topics/control/joint_command",
                            leg_command_array_topic);
@@ -80,6 +86,9 @@ RobotDriver::RobotDriver(ros::NodeHandle nh, int argc, char **argv) {
   single_joint_cmd_sub_ =
       nh_.subscribe(single_joint_cmd_topic, 1,
                     &RobotDriver::singleJointCommandCallback, this);
+  body_force_estimate_sub_ =
+      nh_.subscribe(body_force_estimate_topic, 1,
+                    &RobotDriver::bodyForceEstimateCallback, this);
   remote_heartbeat_sub_ = nh_.subscribe(
       remote_heartbeat_topic, 1, &RobotDriver::remoteHeartbeatCallback, this);
   control_restart_flag_sub_ =
@@ -125,7 +134,7 @@ RobotDriver::RobotDriver(ros::NodeHandle nh, int argc, char **argv) {
 
   // Initialize hardware interface
   if (is_hardware_) {
-    if (robot_name == "spirit") {
+    if (robot_name == "spirit" || robot_name == "spirit_rotors") {
       hardware_interface_ = std::make_shared<SpiritInterface>();
     } else {
       ROS_ERROR_STREAM("Invalid robot name " << robot_name
@@ -190,6 +199,26 @@ void RobotDriver::initLegController() {
     leg_controller_ = std::make_shared<GrfPidController>();
   } else if (controller_id_ == "joint") {
     leg_controller_ = std::make_shared<JointController>();
+  } else if (controller_id_ == "underbrush") {
+    leg_controller_ = std::make_shared<UnderbrushInverseDynamicsController>();
+    double retract_vel, tau_push, tau_contact_start, tau_contact_end,
+        min_switch, t_down, t_up;
+    quad_utils::loadROSParam(nh_, "/underbrush_swing/retract_vel", retract_vel);
+    quad_utils::loadROSParam(nh_, "/underbrush_swing/tau_push", tau_push);
+    quad_utils::loadROSParam(nh_, "/underbrush_swing/tau_contact_start",
+                             tau_contact_start);
+    quad_utils::loadROSParam(nh_, "/underbrush_swing/tau_contact_end",
+                             tau_contact_end);
+    quad_utils::loadROSParam(nh_, "/underbrush_swing/min_switch", min_switch);
+    quad_utils::loadROSParam(nh_, "/underbrush_swing/t_down", t_down);
+    quad_utils::loadROSParam(nh_, "/underbrush_swing/t_up", t_up);
+    UnderbrushInverseDynamicsController *c =
+        dynamic_cast<UnderbrushInverseDynamicsController *>(
+            leg_controller_.get());
+    c->setUnderbrushParams(retract_vel, tau_push, tau_contact_start,
+                           tau_contact_end, min_switch, t_down, t_up);
+  } else if (controller_id_ == "inertia_estimation") {
+    leg_controller_ = std::make_shared<InertiaEstimationController>();
   } else {
     ROS_ERROR_STREAM("Invalid controller id " << controller_id_
                                               << ", returning nullptr");
@@ -293,6 +322,16 @@ void RobotDriver::mocapCallback(
 void RobotDriver::robotStateCallback(
     const quad_msgs::RobotState::ConstPtr &msg) {
   last_robot_state_msg_ = *msg;
+}
+
+void RobotDriver::bodyForceEstimateCallback(
+    const quad_msgs::BodyForceEstimate::ConstPtr &msg) {
+  if (controller_id_ == "underbrush") {
+    UnderbrushInverseDynamicsController *c =
+        reinterpret_cast<UnderbrushInverseDynamicsController *>(
+            leg_controller_.get());
+    c->updateBodyForceEstimate(msg);
+  }
 }
 
 void RobotDriver::remoteHeartbeatCallback(
