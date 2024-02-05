@@ -60,7 +60,6 @@ Visualization Manager:
       Unreliable: false
       Use Rainbow: false
       Value: true
-<<<<<<< HEAD:quad_utils/rviz/quad_viewer.rviz
     - Alpha: 1
       Class: rviz/RobotModel
       Collision Enabled: false
@@ -175,27 +174,6 @@ Visualization Manager:
     - Alpha: 1
       Class: rviz/RobotModel
       Collision Enabled: false
-=======
-    - Alpha: 1
-      Class: rviz/RobotModel
-      Collision Enabled: false
-      Enabled: false
-      Links:
-        All Links Enabled: true
-        Expand Joint Details: false
-        Expand Link Details: false
-        Expand Tree: false
-        Link Tree Style: Links in Alphabetic Order
-      Name: Trajectory State
-      Robot Description: robot_description
-      TF Prefix: robot_1_ground_truth
-      Update Interval: 0
-      Value: false
-      Visual Enabled: true
-    - Alpha: 1
-      Class: rviz/RobotModel
-      Collision Enabled: false
->>>>>>> d5a072b3a89924f1b027bb8b8d27919519fafc18:quad_utils/rviz/example_estimation.rviz
       Enabled: false
       Links:
         All Links Enabled: true
@@ -208,7 +186,6 @@ Visualization Manager:
       TF Prefix: robot_2_ground_truth
       Update Interval: 0
       Value: false
-<<<<<<< HEAD:quad_utils/rviz/quad_viewer.rviz
       Visual Enabled: true
     - Alpha: 0.10000000149011612
       Class: rviz/RobotModel
@@ -241,8 +218,6 @@ Visualization Manager:
       TF Prefix: robot_2_trajectory
       Update Interval: 0
       Value: false
-=======
->>>>>>> d5a072b3a89924f1b027bb8b8d27919519fafc18:quad_utils/rviz/example_estimation.rviz
       Visual Enabled: true
     - Class: rviz/Marker
       Enabled: false
@@ -301,58 +276,7 @@ Visualization Manager:
       Queue Size: 100
       Value: true
     - Class: rviz/Marker
-      Enabled: false
-      Marker Topic: /robot_2/visualization/state/ground_truth_trace
-      Name: Robot 2 Ground Truth Trace
-      Namespaces:
-        {}
-      Queue Size: 100
-      Value: false
-    - Class: rviz/MarkerArray
       Enabled: true
-<<<<<<< HEAD:quad_utils/rviz/quad_viewer.rviz
-=======
-      Marker Topic: /robot_1/visualization/current_grf
-      Name: Robot 1 Desired GRFs
-      Namespaces:
-        {}
-      Queue Size: 100
-      Value: true
-    - Class: rviz/MarkerArray
-      Enabled: true
-      Marker Topic: /robot_2/visualization/current_grf
-      Name: Robot 2 Desired GRFs
-      Namespaces:
-        "": true
-      Queue Size: 100
-      Value: true
-    - Class: rviz/Marker
-      Enabled: true
-      Marker Topic: /robot_1/visualization/global_plan
-      Name: Robot 1 Global Plan
-      Namespaces:
-        {}
-      Queue Size: 100
-      Value: true
-    - Class: rviz/Marker
-      Enabled: true
-      Marker Topic: /robot_2/visualization/global_plan
-      Name: Robot 2 Global Plan
-      Namespaces:
-        {}
-      Queue Size: 100
-      Value: true
-    - Class: rviz/Marker
-      Enabled: true
-      Marker Topic: /robot_1/visualization/local_plan
-      Name: Robot 1 Local Plan
-      Namespaces:
-        {}
-      Queue Size: 100
-      Value: true
-    - Class: rviz/Marker
-      Enabled: true
->>>>>>> d5a072b3a89924f1b027bb8b8d27919519fafc18:quad_utils/rviz/example_estimation.rviz
       Marker Topic: /robot_2/visualization/local_plan
       Name: Robot 2 Local Plan
       Namespaces:

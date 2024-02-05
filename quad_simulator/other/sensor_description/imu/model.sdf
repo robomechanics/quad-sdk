@@ -26,11 +26,7 @@
         <visualize>true</visualize>
         <topic>__default_topic__</topic>
         <plugin filename="libgazebo_ros_imu_sensor.so" name="imu_plugin">
-<<<<<<< HEAD
           <topicName>state/imu</topicName>
-=======
-          <topicName>/state/imu</topicName>
->>>>>>> d5a072b3a89924f1b027bb8b8d27919519fafc18
           <bodyName>link</bodyName>
           <updateRateHZ>500.0</updateRateHZ>
           <gaussianNoise>0.0</gaussianNoise>

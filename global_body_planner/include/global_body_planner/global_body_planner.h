@@ -2,7 +2,6 @@
 #define GLOBAL_BODY_PLANNER_H
 
 #include <nav_msgs/Path.h>
-<<<<<<< HEAD
 #include <quad_msgs/RobotPlan.h>
 #include <quad_msgs/RobotState.h>
 #include <quad_utils/ros_utils.h>
@@ -10,24 +9,6 @@
 #include <tf2/LinearMath/Quaternion.h>
 #include <tf2_geometry_msgs/tf2_geometry_msgs.h>
 #include <visualization_msgs/MarkerArray.h>
-=======
-#include <quad_msgs/RobotPlan.h>
-#include <quad_msgs/RobotState.h>
-#include <quad_utils/ros_utils.h>
-#include <ros/ros.h>
-#include <tf2/LinearMath/Quaternion.h>
-#include <tf2_geometry_msgs/tf2_geometry_msgs.h>
-<<<<<<< HEAD
-#include <visualization_msgs/MarkerArray.h>
-=======
-
-#include <quad_msgs/RobotPlan.h>
-#include <quad_msgs/RobotState.h>
-#include <quad_utils/ros_utils.h>
-
-#include "global_body_planner/rrt_connect.h"
->>>>>>> Switch build system to catkin_tools, switch spirit* to quad*
->>>>>>> d5a072b3a89924f1b027bb8b8d27919519fafc18
 
 #include <grid_map_core/grid_map_core.hpp>
 #include <grid_map_ros/GridMapRosConverter.hpp>
@@ -47,10 +28,6 @@ using namespace planning_utils;
    planner (from which the full path is interpolated).
 */
 class GlobalBodyPlanner {
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
->>>>>>> d5a072b3a89924f1b027bb8b8d27919519fafc18
  public:
   /**
    * @brief Constructor for GlobalBodyPlanner Class
@@ -149,81 +126,10 @@ class GlobalBodyPlanner {
    * @brief Publish the current plan if updated
    */
   void publishCurrentPlan();
-<<<<<<< HEAD
 
   /// Subscriber for terrain map messages
   ros::Subscriber terrain_map_sub_;
 
-=======
-
-  /// Subscriber for terrain map messages
-  ros::Subscriber terrain_map_sub_;
-=======
-  public:
-    /**
-     * @brief Constructor for GlobalBodyPlanner Class
-     * @param[in] nh Node handle
-     * @return Constructed object of type GlobalBodyPlanner
-     */
-    GlobalBodyPlanner(ros::NodeHandle nh);
-
-    /**
-     * @brief Call the correct planning class and compute statistics
-     */
-    void callPlanner();
-
-    /**
-     * @brief Primary work function in class, called in node file for this component
-     */
-    void spin();
-
-  private:
-    /**
-     * @brief Callback function to handle new terrain map data
-     * @param[in] msg the message contining map data
-     */
-    void terrainMapCallback(const grid_map_msgs::GridMap::ConstPtr& msg);
-
-    /**
-     * @brief Callback function to handle new robot state data
-     * @param[in] msg the message contining robot state data
-     */
-    void robotStateCallback(const quad_msgs::RobotState::ConstPtr& msg);
-
-    /**
-     * @brief Callback function to handle new goal state
-     * @param[in] msg the message contining the goal state
-     */
-    void goalStateCallback(const geometry_msgs::PointStamped::ConstPtr& msg);
-
-    /**
-     * @brief Check if a restart is required
-     */
-    void updateRestartFlag();
-
-    /**
-     * @brief Initialize the planner by clearing out old plan data and setting the start state
-     * @return Index of the current plan from which to being the new plan (zero if fully replanning)
-     */
-    int initPlanner();
-
-    /**
-     * @brief Clear all data in plan member variables
-     */
-    void clearPlan();
-
-    /**
-     * @brief Update the body plan with the current plan
-     * @param[in] t Time of state in trajectory
-     * @param[in] body_state Body state
-     * @param[in] grf GRF applied to body
-     * @param[in] body_plan_msg Body plan message
-     */
-    void addStateAndGRFToMsg(double t, int plan_index, FullState body_state, GRF grf,
-      int primitive_id, quad_msgs::RobotPlan& body_plan_msg);
->>>>>>> Switch build system to catkin_tools, switch spirit* to quad*
-
->>>>>>> d5a072b3a89924f1b027bb8b8d27919519fafc18
   /// Subscriber for robot state messages
   ros::Subscriber robot_state_sub_;
 

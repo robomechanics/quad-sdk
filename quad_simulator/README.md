@@ -21,27 +21,7 @@ This is research code, expect that it changes often and any fitness for a partic
 
 ## Usage
 
-<<<<<<< HEAD
 Launch the Gazebo simulation with
-=======
-8. To launch the simulation, build the package and run:
-```
-$ roslaunch gazebo_scripts minitaur_gazebo.launch
-```
-for standalone Minitaur, or
-```
-$ roslaunch gazebo_scripts minitaur_sensor_gazebo.launch
-```
-for Minitaur equipped with a sensor head, or 
-```
-$ roslaunch gazebo_scripts vision60_gazebo.launch
-```
-for Vision60, or
-```
-$ roslaunch gazebo_scripts spirit_gazebo.launch
-```
-for Quad.
->>>>>>> d5a072b3a89924f1b027bb8b8d27919519fafc18
 
 	roslaunch quad_utils quad_gazebo.launch
 
@@ -57,19 +37,7 @@ Publishes the Ground Reaction Forces from the feet.
 
 #### Subscribed Topics
 
-<<<<<<< HEAD
 * **`/gazebo/toe[0-3]_contact_state`** ([gazebo_msgs/ContactsState])
-=======
-## Converting Quad's URDF to SDF
-We have a URDF xacro file ([spirit_gazebo.urdf.xacro](spirit_description/urdf/spirit_gazebo.urdf.xacro)) in the urdf folder that can be converted to URDF with
-```bash
-$ python xacro.py spirit_gazebo.urdf.xacro > spirit_gazebo.urdf
-```
-and subsequently to SDF using
-```bash
-$ gz sdf -p spirit_gazebo.urdf > ../sdf/spirit.sdf
-```
->>>>>>> d5a072b3a89924f1b027bb8b8d27919519fafc18
 
         These four topics report information about contact at each of the four feet.
 

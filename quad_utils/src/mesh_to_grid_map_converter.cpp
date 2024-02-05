@@ -1,13 +1,4 @@
-<<<<<<< HEAD
 #include <grid_map_msgs/GridMap.h>
-=======
-<<<<<<< HEAD:quad_utils/src/mesh_to_grid_map_converter.cpp
-#include <grid_map_msgs/GridMap.h>
-=======
-#include <quad_utils/mesh_to_grid_map_converter.hpp>
-
->>>>>>> Switch build system to catkin_tools, switch spirit* to quad*:spirit_utils/src/mesh_to_grid_map_converter.cpp
->>>>>>> d5a072b3a89924f1b027bb8b8d27919519fafc18
 #include <pcl/io/vtk_lib_io.h>
 #include <pcl_conversions/pcl_conversions.h>
 #include <pcl_ros/point_cloud.h>

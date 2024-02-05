@@ -14,7 +14,6 @@ TerrainMapPublisher::TerrainMapPublisher(ros::NodeHandle nh)
   nh.param<double>("terrain_map_publisher/update_rate", update_rate_, 10);
   nh.param<double>("terrain_map_publisher/obstacle_x", obstacle_.x, 2.0);
   nh.param<double>("terrain_map_publisher/obstacle_y", obstacle_.y, 0.0);
-<<<<<<< HEAD
   nh.param<double>("terrain_map_publisher/obstacle_height", obstacle_.height,
                    0.5);
   nh.param<double>("terrain_map_publisher/obstacle_radius", obstacle_.radius,
@@ -23,12 +22,6 @@ TerrainMapPublisher::TerrainMapPublisher(ros::NodeHandle nh)
   nh.param<double>("terrain_map_publisher/step1_height", step1_.height, 0.3);
   nh.param<double>("terrain_map_publisher/step2_x", step2_.x, 4.0);
   nh.param<double>("terrain_map_publisher/step2_height", step2_.height, 0.3);
-=======
-  nh.param<double>("terrain_map_publisher/obstacle_height", obstacle_.height, 0.5);
-  nh.param<double>("terrain_map_publisher/obstacle_radius", obstacle_.radius, 1.0);
-  nh.param<double>("terrain_map_publisher/step_x", step_.x, 4.0);
-  nh.param<double>("terrain_map_publisher/step_height", step_.height, 0.3);
->>>>>>> d5a072b3a89924f1b027bb8b8d27919519fafc18
   nh.param<double>("terrain_map_publisher/resolution", resolution_, 0.2);
   nh.param<double>("terrain_map_publisher/update_rate", update_rate_, 10);
   nh.param<std::string>("terrain_map_publisher/map_data_source",
@@ -57,7 +50,6 @@ TerrainMapPublisher::TerrainMapPublisher(ros::NodeHandle nh)
 void TerrainMapPublisher::updateParams() {
   nh_.param<double>("terrain_map_publisher/obstacle_x", obstacle_.x, 2.0);
   nh_.param<double>("terrain_map_publisher/obstacle_y", obstacle_.y, 0.0);
-<<<<<<< HEAD
   nh_.param<double>("terrain_map_publisher/obstacle_height", obstacle_.height,
                     0.5);
   nh_.param<double>("terrain_map_publisher/obstacle_radius", obstacle_.radius,
@@ -66,24 +58,14 @@ void TerrainMapPublisher::updateParams() {
   nh_.param<double>("terrain_map_publisher/step1_height", step1_.height, 0.3);
   nh_.param<double>("terrain_map_publisher/step2_x", step2_.x, 6.0);
   nh_.param<double>("terrain_map_publisher/step2_height", step2_.height, -0.3);
-=======
-  nh_.param<double>("terrain_map_publisher/obstacle_height", obstacle_.height, 0.5);
-  nh_.param<double>("terrain_map_publisher/obstacle_radius", obstacle_.radius, 1.0);
-  nh_.param<double>("terrain_map_publisher/step_x", step_.x, 4.0);
-  nh_.param<double>("terrain_map_publisher/step_height", step_.height, 0.3);
->>>>>>> d5a072b3a89924f1b027bb8b8d27919519fafc18
 }
 
 void TerrainMapPublisher::createMap() {
   // Set initial map parameters and geometry
   terrain_map_.setFrameId(map_frame_);
-<<<<<<< HEAD
   terrain_map_.setGeometry(
       grid_map::Length(24.0, 12.0), resolution_,
       grid_map::Position(-0.5 * resolution_, -0.5 * resolution_));
-=======
-  terrain_map_.setGeometry(grid_map::Length(12.0, 5.0), resolution_, grid_map::Position(4.0, 0.0));
->>>>>>> d5a072b3a89924f1b027bb8b8d27919519fafc18
   ROS_INFO("Created map with size %f x %f m (%i x %i cells).",
            terrain_map_.getLength().x(), terrain_map_.getLength().y(),
            terrain_map_.getSize()(0), terrain_map_.getSize()(1));
@@ -97,25 +79,23 @@ void TerrainMapPublisher::updateMap() {
     double x_diff = position.x() - obstacle_.x;
     double y_diff = position.y() - obstacle_.y;
 
-<<<<<<< HEAD
     if (x_diff * x_diff + y_diff * y_diff <=
         obstacle_.radius * obstacle_.radius) {
       terrain_map_.at("z", *it) = obstacle_.height;
       terrain_map_.at("z_filt", *it) = obstacle_.height;
-=======
-    if (x_diff*x_diff + y_diff*y_diff <= obstacle_.radius*obstacle_.radius)
-    {
-      terrain_map_.at("z", *it) = obstacle_.height;//0.7;
-      terrain_map_.at("z_filt", *it) = obstacle_.height;//0.7;
->>>>>>> d5a072b3a89924f1b027bb8b8d27919519fafc18
     } else {
       terrain_map_.at("z", *it) = 0.0;
       terrain_map_.at("z_filt", *it) = 0.0;
     }
 
-    if (position.x() >= step_.x) {
-      terrain_map_.at("z", *it) += step_.height;//0.7;
-      terrain_map_.at("z_filt", *it) += step_.height;//0.7;
+    if (position.x() >= step1_.x) {
+      terrain_map_.at("z", *it) += step1_.height;
+      terrain_map_.at("z_filt", *it) += step1_.height;
+    }
+
+    if (position.x() >= step2_.x) {
+      terrain_map_.at("z", *it) += step2_.height;
+      terrain_map_.at("z_filt", *it) += step2_.height;
     }
 
     terrain_map_.at("nx", *it) = 0.0;

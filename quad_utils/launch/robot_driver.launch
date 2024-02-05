@@ -1,7 +1,6 @@
 <launch>
     <arg name="robot_type"/>
 
-<<<<<<< HEAD
     <include file="$(find quad_utils)/launch/load_robot_params.launch">
       <arg name="robot_type" value="$(arg robot_type)"/>
     </include>
@@ -17,26 +16,6 @@
         <param name="is_hardware" value="$(arg is_hardware)" />
     </node>
 
-=======
-    <arg name="mblink" default="true"/>
-    <arg name="proxy" default="false"/>
-    <arg name="mocap" default="false"/>
-    <arg name="logging" default="false"/>
-    <arg name="controller" default="inverse_dynamics"/>
-
-    <include file="$(find quad_utils)/launch/control.launch">
-        <arg name="controller" value="$(arg controller)" />
-    </include>
-
-    <include file="$(find quad_utils)/launch/estimation.launch" />
-
-    <!-- Launch the robot_proxy if specified-->
-    <group if="$(arg proxy)">
-        <node name="robot_proxy" pkg="quad_utils" type="robot_proxy_node" output="screen"/>
-        <include file="$(find quad_utils)/launch/mocap.launch" />
-    </group>
-
->>>>>>> d5a072b3a89924f1b027bb8b8d27919519fafc18
     <!-- Launch the mocap node if specified-->
     <group if="$(arg mocap)">
         <include file="$(find quad_utils)/launch/mocap.launch" />
@@ -47,13 +26,4 @@
         <include file="$(find quad_utils)/launch/logging.launch" />
     </group>
 
-<<<<<<< HEAD
 </launch>
-=======
-    <!-- Launch the mblink converter unless using a proxy-->
-    <group if="$(arg mblink)">
-        <node name="mblink_converter" pkg="mblink_converter" type="mblink_converter_node" output="screen"/>
-    </group>
-
-</launch>
->>>>>>> d5a072b3a89924f1b027bb8b8d27919519fafc18

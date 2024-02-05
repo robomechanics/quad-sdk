@@ -2,21 +2,11 @@
 
     <include file="$(find quad_utils)/launch/load_global_params.launch" />
 
-<<<<<<< HEAD
     <arg name="logging" default="false" />
     <arg name="live_plot" default="false" />
     <arg name="dash" default="false" />
     <arg name="map_input_type" default="mesh" />
     <arg name="world" default="flat" />
-=======
-    <arg name="proxy"           default="false"/>
-    <arg name="controller"      default="inverse_dynamics"/>
-    <arg name="logging"         default="false"/>
-    <arg name="plan"            default="false"/>
-    <arg name="live_plot"       default="false"/>
-    <arg name="map_input_type"  default="grid"/>
-    <arg name="world"           default="flat"/>
->>>>>>> d5a072b3a89924f1b027bb8b8d27919519fafc18
 
     <!-- Launch the mapping and visualization nodes -->
     <include file="$(find quad_utils)/launch/mapping.launch">
@@ -29,24 +19,8 @@
         <arg name="dash" value="$(arg dash)" />
     </include>
 
-<<<<<<< HEAD
     <group if="$(arg logging)">
         <include file="$(find quad_utils)/launch/logging.launch" />
-=======
-    <!-- Launch the robot_proxy if specified-->
-    <group if="$(arg proxy)">
-        <include file="$(find quad_utils)/launch/robot_driver.launch">
-            <arg name="proxy" value="true" />
-            <arg name="controller" value="$(arg controller)" />
-            <arg name="logging" value="$(arg logging)" />
-        </include>
-    </group>
-
-    <group if="$(arg plan)">
-        <include file="$(find quad_utils)/launch/execute_plan.launch">
-            <arg name="logging" value="$(arg logging)"/>
-        </include>
->>>>>>> d5a072b3a89924f1b027bb8b8d27919519fafc18
     </group>
 
     <!-- Start the heartbeat node -->

@@ -15,25 +15,13 @@ jobs:
             chmod +x setup.sh
             ./setup.sh
             cd /catkin_ws
-<<<<<<< HEAD
             catkin build -j4 -l4
-=======
-            catkin build -j8 -l8
->>>>>>> Switch build system to catkin_tools, switch spirit* to quad*
       - run:
           name: "Load ROS params in the background"
           command: |
             source /opt/ros/melodic/setup.bash
             source /catkin_ws/devel/setup.bash
-<<<<<<< HEAD
             roslaunch quad_utils load_global_params.launch load_robot_params:=true
-=======
-<<<<<<< HEAD
-            roslaunch quad_utils load_global_params.launch load_robot_params:=true
-=======
-            roslaunch quad_utils load_params.launch
->>>>>>> Switch build system to catkin_tools, switch spirit* to quad*
->>>>>>> d5a072b3a89924f1b027bb8b8d27919519fafc18
           background: true
       - run:
           name: "Run tests"
@@ -41,20 +29,10 @@ jobs:
             cd /catkin_ws
             source /opt/ros/melodic/setup.bash
             source /catkin_ws/devel/setup.bash
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
->>>>>>> d5a072b3a89924f1b027bb8b8d27919519fafc18
             catkin run_tests -j2 -l2 && catkin_test_results
       - run:
           name: "Run soft linting checks"
           command: ./scripts/lint_soft.sh
-<<<<<<< HEAD
-=======
-=======
-            catkin run_tests -j8 -l8 && catkin_test_results
->>>>>>> Switch build system to catkin_tools, switch spirit* to quad*
->>>>>>> d5a072b3a89924f1b027bb8b8d27919519fafc18
 workflows:
   version: 2
   melodic-build-and-test:
