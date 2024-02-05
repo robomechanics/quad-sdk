@@ -13,7 +13,6 @@
 #include <chrono>
 #include <eigen3/Eigen/Eigen>
 #include <grid_map_core/grid_map_core.hpp>
-<<<<<<< HEAD
 #include <iostream>
 #include <limits>
 #include <random>
@@ -28,11 +27,6 @@
 // #define DEBUG_REFINE_STATE
 // #define DEBUG_INVALID_STATE
 // #define DEBUG_SOLVE_RESULT
-=======
-#include <ros/ros.h>
-#include <quad_utils/fast_terrain_map.h>
-#include <quad_utils/math_utils.h>
->>>>>>> Switch build system to catkin_tools, switch spirit* to quad*
 
 namespace planning_utils {
 
@@ -52,7 +46,6 @@ struct PlannerConfig {
   double v_nom;  // Nominal velocity, m/s (used during connect function)
 
   // Define dynamic constraint parameters
-<<<<<<< HEAD
   double mass;     // Robot mass, kg
   double g;        // Gravity constant, m/s^2
   double grf_min;  // Minimum GRF in units of body weight
@@ -62,17 +55,6 @@ struct PlannerConfig {
   double t_s_max;  //  Maximum stance time, s
   double dz0_min;  //  Minimum vertical velocity impulse, m/s
   double dz0_max;  //  Maximum vertical velocity impulse, m/s
-=======
-  double M_CONST = 12;          // Robot mass, kg (12 for quad, 43 for cheetah, 30 for anymal)
-  double J_CONST = 1.0;         // Moment of inertia about the robot's y axis (pitch)
-  double G_CONST = 9.81;        // Gravity constant, m/s^2
-  double F_MAX = 300;           // Maximum GRF, N (800 for cheetah, 500 for anymal)
-  double MU = 1.0;              // Friction coefficient (1.0 for Cheetah, 0.5 for ANYmal)
-  double T_S_MIN = 0.3;         // Minimum stance time, s
-  double T_S_MAX = 0.3;         // Maximum stance time, s
-  double T_F_MIN = 0.0;         // Minimum flight time, s
-  double T_F_MAX = 0.5;         // Maximum stance time, s
->>>>>>> Switch build system to catkin_tools, switch spirit* to quad*
 
   // Define planning parameters
   double dt;                  //  Resolution of kinematic feasibility checks, m

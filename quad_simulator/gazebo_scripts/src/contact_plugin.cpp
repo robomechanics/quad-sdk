@@ -66,12 +66,8 @@ void ContactPlugin::Load(sensors::SensorPtr _sensor, sdf::ElementPtr /*_sdf*/) {
   this->rosNode.reset(new ros::NodeHandle("ContactPublisher"));
 
   // Initialize Publishers
-<<<<<<< HEAD:quad_simulator/gazebo_scripts/src/contact_plugin.cpp
   this->contact_publisher = this->rosNode->advertise<quad_msgs::ContactMode>(
       "/gazebo/toe_forces", 1, true);
-=======
-  this->contact_publisher = this->rosNode->advertise<quad_msgs::ContactMode>("/gazebo/toe_forces", 1, true);
->>>>>>> Switch build system to catkin_tools, switch spirit* to quad*:spirit_simulator/gazebo_scripts/src/contact_plugin.cpp
 }
 
 /////////////////////////////////////////////////
@@ -80,12 +76,8 @@ void ContactPlugin::OnUpdate() {
   msgs::Contacts contacts;
   contacts = this->parentSensor->Contacts();
 
-<<<<<<< HEAD:quad_simulator/gazebo_scripts/src/contact_plugin.cpp
   // Initialize outgoing messages with zeros (send zero contact force if no
   // contact detected)
-=======
-  // Initialize outgoing messages with zeros (send zero contact force if no contact detected)
->>>>>>> Switch build system to catkin_tools, switch spirit* to quad*:spirit_simulator/gazebo_scripts/src/contact_plugin.cpp
   quad_msgs::ContactMode contact_msg;
   contact_msg.leg_contacts.resize(4);
 

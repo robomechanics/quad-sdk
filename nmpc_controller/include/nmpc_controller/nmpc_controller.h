@@ -12,14 +12,7 @@
 #include <quad_utils/ros_utils.h>
 #include "quad_utils/matplotlibcpp.h"
 #include <tf2_geometry_msgs/tf2_geometry_msgs.h>
-<<<<<<< HEAD
 
-=======
-#include <quad_msgs/LegCommand.h>
-
-#include "nmpc_controller/quad_nlp.h"
-#include "IpIpoptApplication.hpp"
->>>>>>> Switch build system to catkin_tools, switch spirit* to quad*
 #include <Eigen/Dense>
 
 #include "IpIpoptApplication.hpp"
@@ -85,6 +78,8 @@ class NMPCController {
                       Eigen::MatrixXd &foot_velocities,
                       const std::vector<std::vector<bool>> &contact_schedule,
                       const Eigen::VectorXd &ref_ground_height,
+                      const double &first_element_duration, int plan_index_diff,
+                      const grid_map::GridMap &terrain,
                       Eigen::MatrixXd &state_traj,
                       Eigen::MatrixXd &control_traj);
 
@@ -116,27 +111,12 @@ class NMPCController {
   /// Update rate for sending and receiving data;
   double update_rate_;
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
   /// Pointer to nlp formulation
   SmartPtr<quadNLP> mynlp_;
-=======
-  /// QuadKD class
-  std::shared_ptr<spirit_utils::QuadKD>quadKD_;
-
-=======
->>>>>>> update NMPC, adaptive body height and constraints using terrain information
-  SmartPtr<spiritNLP> mynlp_;
->>>>>>> Switch SpiritKinematics to QuadKD, switch inverse dynamics function to QuadKD
-=======
-  SmartPtr<quadNLP> mynlp_;
->>>>>>> Switch build system to catkin_tools, switch spirit* to quad*
 
   /// Pointer to IPOPT solver
   SmartPtr<IpoptApplication> app_;
 
-<<<<<<< HEAD
   /// Pointer to robot kinematics
   std::shared_ptr<quad_utils::QuadKD> quadKD_;
 
@@ -145,9 +125,6 @@ class NMPCController {
 
   /// Whether enable mixed complexity
   bool enable_mixed_complexity_ = false;
-=======
-  int N_;
->>>>>>> update NMPC, adaptive body height and constraints using terrain information
 
   /// Whether enable adaptive complexity
   bool enable_adaptive_complexity_ = false;

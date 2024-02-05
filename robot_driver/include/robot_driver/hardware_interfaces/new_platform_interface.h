@@ -58,25 +58,23 @@ class NewPlatformInterface : public HardwareInterface
                     sensor_msgs::Imu& imu_msg, Eigen::VectorXd& user_rx_data);
   
   /// Vector of joint names
-  std::vector<std::string> joint_names_0_ = {"1","5","13","16","4","8"};
-  std::vector<std::string> joint_names_1_ = {"3","7","11","2","6","10"};
-
-  
+  std::vector<std::string> joint_names_0_ = {"3","7","11","2","6","10"};
+  std::vector<std::string> joint_names_1_ = {"1","5","13","16","4","8"};
 
   /// Vector of joint names  Spirit
 //   std::vector<std::string> joint_names_ = {"8",  "0", "1", "9",  "2", "3",
 //                                            "10", "4", "5", "11", "6", "7"};
 
   /// Vector denoting joint indices
-   std::vector<int> joint_indices_0_ = {0x01, 0x05, 0x0D, 0x10, 0x04, 0x08};
-   std::vector<int> joint_indices_1_ = {0x03, 0x07, 0x0B, 0x02, 0x06, 0x0A};
+   std::vector<int> joint_indices_0_ = {0x03, 0x07, 0x0B, 0x02, 0x06, 0x0A};
+   std::vector<int> joint_indices_1_ = {0x01, 0x05, 0x0D, 0x10, 0x04, 0x08};
                                     
    //Change IDs for new motor command creation implementation
-   std::vector<int> motor_ids_0 = {0x01, 0x05, 0x0D, 0x10, 0x04, 0x08}; //Front legs (L_Ab, L_Hip, L_Knee, R_Ab, R_Hip, R_Knee)
-   std::vector<int> motor_ids_1 = {0x03, 0x07, 0x0B, 0x02, 0x06, 0x0A}; //Rear legs (L_Ab, L_Hip, L_Knee, R_Ab, R_Hip, R_Knee)
+   std::vector<int> motor_ids_0 = {0x03, 0x07, 0x0B, 0x02, 0x06, 0x0A}; //Front legs (L_Ab, L_Hip, L_Knee, R_Ab, R_Hip, R_Knee)
+   std::vector<int> motor_ids_1 = {0x01, 0x05, 0x0D, 0x10, 0x04, 0x08}; //Rear legs (L_Ab, L_Hip, L_Knee, R_Ab, R_Hip, R_Knee)
 
-   std::vector<int> motor_dirs_0 = {1, 1, 1, 1, -1, -1};
-   std::vector<int> motor_dirs_1 = {1, 1, 1, 1, -1, -1};
+   std::vector<int> motor_dirs_0 = {1, -1, -1, 1, 1, 1};
+   std::vector<int> motor_dirs_1 = {1, -1, -1, 1, 1, 1};
 
   /// Vector of joint names  Spirit
 //   std::vector<std::string> joint_names_ = {"8",  "0", "1", "9",  "2", "3",

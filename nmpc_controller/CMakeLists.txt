@@ -49,7 +49,6 @@ link_directories(/usr/local/lib)
 
 ## Declare a C++ library for control
 add_library(nmpc_controller
-<<<<<<< HEAD
   src/gen/eval_g_spirit.cpp
   src/gen/eval_jac_g_spirit.cpp
   src/gen/eval_hess_g_spirit.cpp
@@ -75,15 +74,6 @@ add_library(nmpc_controller
   src/quad_nlp.cpp
   src/quad_nlp_utils.cpp
   src/adaptive_complexity_utils.cpp
-=======
-  src/eval_g_leg.cpp
-  src/eval_jac_g_leg.cpp
-  src/eval_hess_g_leg.cpp
-  src/eval_g_tail.cpp
-  src/eval_jac_g_tail.cpp
-  src/eval_hess_g_tail.cpp
-  src/quad_nlp.cpp
->>>>>>> Switch build system to catkin_tools, switch spirit* to quad*
   src/nmpc_controller.cpp
 )
 target_link_libraries(nmpc_controller 

@@ -26,17 +26,20 @@ void RemoteHeartbeat::robotHeartbeatCallback(const std_msgs::Header::ConstPtr& m
   double t_now = ros::Time::now().toSec();
   double t_latency = t_now - last_robot_heartbeat_time;
 
-  ROS_INFO_THROTTLE(1.0,"Robot latency = %6.4fs", t_latency);
+  // ROS_INFO_THROTTLE(1.0,"Robot latency = %6.4fs", t_latency);
 
   if (abs(t_latency) >= robot_latency_threshold_warn_) {
-    ROS_WARN_THROTTLE(1.0,"Robot latency = %6.4fs which exceeds the warning threshold of %6.4fs\n",
-      t_latency, robot_latency_threshold_warn_);
+    // ROS_WARN_THROTTLE(1.0,"Robot latency = %6.4fs which exceeds the warning
+    // threshold of %6.4fs\n",
+    //   t_latency, robot_latency_threshold_warn_);
   }
 
   if (abs(t_latency) >= robot_latency_threshold_error_) {
-    ROS_ERROR("Robot latency = %6.4fs which exceeds the maximum threshold of %6.4fs, "
-      "killing remote heartbeat\n", t_latency, robot_latency_threshold_error_);
-    throw std::runtime_error("Shutting down remote heartbeat");
+    // ROS_ERROR("Robot latency = %6.4fs which exceeds the maximum threshold of
+    // %6.4fs, "
+    //   "killing remote heartbeat\n", t_latency,
+    //   robot_latency_threshold_error_);
+    // throw std::runtime_error("Shutting down remote heartbeat");
   }
   
 }

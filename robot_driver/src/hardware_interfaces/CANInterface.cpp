@@ -1,9 +1,12 @@
 #include "robot_driver/hardware_interfaces/CANInterface.hpp"
 
+
 namespace CAN_interface
 {
     CANInterface::CANInterface(const char* socketName)
     {
+        // const char* socketIfName = &socketName;  
+        // int s;  // File descriptor for the socket as everything in Linux/Unix is a file. 
         struct sockaddr_can addr; // structure for CAN sockets : address family number AF_CAN
         struct ifreq ifr; // from if.h Interface Request structure used for all socket ioctl's. All interface ioctl's must have parameter definitions which begin with ifr name. The remainder may be interface specific.
 
@@ -12,7 +15,7 @@ namespace CAN_interface
         // socket(int domain, int type, int protocol): returns file descriptor int or -1 if fail
         if ((socket_descrp_ = socket(PF_CAN, SOCK_RAW, CAN_RAW)) < 0)
         {
-            ROS_ERROR("CANInterface: Error While Opening CAN Socket");
+            perror("CANInterface: Error While Opening CAN Socket");
         }
         else {
             // If socket was created successfully, apply the can filter for only receiving from motor and not from master.
@@ -40,7 +43,11 @@ namespace CAN_interface
 
             if (bind(socket_descrp_, (struct sockaddr *)&addr, sizeof(addr)) < 0)
             {
-               ROS_ERROR("CANInterface: Error while binding to the CAN Socket.");
+               perror("CANInterface: Error while binding to the CAN Socket.");
+            }
+            else
+            {
+                std::cout << "The Socket Descriptor is: " << socket_descrp_ << std::endl;
             }
         }
     }
@@ -54,7 +61,7 @@ namespace CAN_interface
 
         if (write(socket_descrp_, &frame, sizeof(struct can_frame)) != sizeof(struct can_frame))
         {
-            ROS_ERROR("CANInterface: Error writing to CAN Interface.");
+            perror("CANInterface: Error writing to CAN Interface.");
             return false;
         }
         else
@@ -63,64 +70,27 @@ namespace CAN_interface
         }
     }
 
-    // bool CANInterface::receiveCANFrame(unsigned char* CANMsg)
-    // {
-    //     // Listen to all CAN messages. Filter by Motor ID later in the motor driver class.
-    //     struct can_frame frame;
-
-    //     if (read(socket_descrp_, &frame, sizeof(struct can_frame)) < 0)
-    //     {
-    //         perror("CANInterface: Error Reading Data.");
-    //         return false;
-    //     }
-    //     else
-    //     {
-    //         memcpy(CANMsg, frame.data, frame.can_dlc);
-    //         return true;
-    //     }
-    // }
-
-    int CANInterface::receiveCANFrame(unsigned char* CANMsg, std::chrono::milliseconds timeout_time)
+    bool CANInterface::receiveCANFrame(unsigned char* CANMsg)
     {
         // Listen to all CAN messages. Filter by Motor ID later in the motor driver class.
         struct can_frame frame;
 
-        std::mutex m;
-        std::condition_variable cv;
-        int retValue;
-
-        std::thread t([&cv, &retValue, this, &frame]() 
+        if (read(socket_descrp_, &frame, sizeof(struct can_frame)) < 0)
         {
-            ROS_INFO("Reading Data");
-            retValue = read(socket_descrp_, &frame, sizeof(struct can_frame));
-            cv.notify_one();
-        });
-
-        t.detach();
-
-        {
-            std::unique_lock<std::mutex> l(m);
-            if(cv.wait_for(l, timeout_time) == std::cv_status::timeout) {
-                ROS_WARN("Recieve CAN frame timed out.\n");
-                return Recieve_CAN_Frame::TIMEOUT;
-            }
-        }
-        
-        if (retValue < 0)  // getting stuck here
-        {
-            ROS_ERROR("CANInterface: Error Reading Data.");
-            return Recieve_CAN_Frame::FAILED;
+            perror("CANInterface: Error Reading Data.");
+            return false;
         }
         else
         {
             memcpy(CANMsg, frame.data, frame.can_dlc);
-            return Recieve_CAN_Frame::SUCCESS;
+            return true;
         }
     }
+
     CANInterface::~CANInterface() {
 
         if (close(socket_descrp_) < 0) {
-            ROS_ERROR("CANInterface: Error Closing CAN Socket.");
+            perror("CANInterface: Error Closing CAN Socket.");
         }
 
     }

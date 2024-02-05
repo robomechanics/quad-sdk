@@ -7,7 +7,6 @@
 #ifndef __quadNLP_HPP__
 #define __quadNLP_HPP__
 
-<<<<<<< HEAD
 #include <quad_msgs/RobotPlanDiagnostics.h>
 #include <sys/resource.h>
 
@@ -46,141 +45,31 @@
 
 using namespace Ipopt;
 
-enum SystemID {
-  SPIRIT,
-  A1,
-  NEW_PLATFORM,
-  SIMPLE_TO_SIMPLE,
-  SIMPLE_TO_COMPLEX,
-  COMPLEX_TO_COMPLEX,
-  COMPLEX_TO_SIMPLE
-};
+class quadNLP : public TNLP
+{
+public:
+    // Horizon length, state dimension, input dimension, and constraints dimension
+    int N_, n_, m_, g_;
 
-enum FunctionID { FUNC, JAC, HESS };
+    int leg_input_start_idx_;
 
-// Struct for storing parameter information
-struct NLPConfig {
-  int x_dim_complex = 0;
-  int u_dim_complex = 0;
-  int g_dim_complex = 0;
-  int x_dim_cost_complex = 0;
-  int u_dim_cost_complex = 0;
-  int x_dim_simple = 0;
-  int u_dim_simple = 0;
-  int g_dim_simple = 0;
-  int x_dim_cost_simple = 0;
-  int u_dim_cost_simple = 0;
-  int x_dim_null = 0;
-  int u_dim_null = 0;
+    int type_;
 
-  Eigen::VectorXd Q_complex;
-  Eigen::VectorXd R_complex;
-  Eigen::VectorXd x_min_complex;
-  Eigen::VectorXd x_max_complex;
-  Eigen::VectorXd x_min_complex_soft;
-  Eigen::VectorXd x_max_complex_soft;
-  Eigen::VectorXd u_min_complex;
-  Eigen::VectorXd u_max_complex;
-  Eigen::VectorXd g_min_complex;
-  Eigen::VectorXd g_max_complex;
-};
+    bool known_leg_input_;
 
-// Struct for storing diagnostic information
-struct NLPDiagnostics {
-  double compute_time, cost;
-  int iterations, horizon_length;
-  Eigen::VectorXi complexity_schedule;
-  Eigen::VectorXd element_times;
+    Eigen::MatrixXd leg_input_;
 
-  void loadDiagnosticsMsg(quad_msgs::RobotPlanDiagnostics &msg) {
-    msg.compute_time = compute_time;
-    msg.cost = cost;
-    msg.iterations = iterations;
-    msg.horizon_length = horizon_length;
+    // State cost weighting, input cost weighting
+    Eigen::MatrixXd Q_, R_;
 
-    msg.complexity_schedule.resize(complexity_schedule.size());
-    msg.element_times.resize(element_times.size());
-    for (int i = 0; i < complexity_schedule.size(); i++) {
-      msg.complexity_schedule.at(i) = complexity_schedule[i];
-      msg.element_times.at(i) = element_times[i];
-    }
-  }
-};
+    // Scale factor for Q and R
+    Eigen::MatrixXd Q_factor_, R_factor_;
 
-class quadNLP : public TNLP {
- public:
-  /// Diagnostics struct for gathering metadata
-  NLPDiagnostics diagnostics_;
+    // Feet location from feet to body COM in world frame
+    Eigen::MatrixXd feet_location_;
 
-  /// Config struct for storing meta parameters
-  NLPConfig config_;
-
-  /// Default system used for NLP (if not mixed complexity)
-  SystemID default_system_;
-
-  // QuadKD object for kinematics calculations
-  std::shared_ptr<quad_utils::QuadKD> quadKD_;
-
-  // Horizon length, state dimension, input dimension, and constraints dimension
-  int N_, g_relaxed_;
-
-  // Number of states in different components
-  const int n_body_ = 12, n_foot_ = 24, n_joints_ = 24, n_tail_ = 4,
-            m_body_ = 12, m_foot_ = 24, m_tail_ = 2;
-
-  /// Vectors of state and constraint dimension for each finite element
-  Eigen::VectorXi n_vec_, n_slack_vec_, m_vec_, g_vec_, g_slack_vec_,
-      n_cost_vec_, m_cost_vec_;
-
-  /// Boolean for whether to apply panic variables for complex constraints
-  const bool apply_slack_to_complex_constr_ = true;
-
-  /// Boolean for whether to allow modifications of foot trajectory
-  const bool always_constrain_feet_ = false;
-
-  /// Boolean for whether to include the terrain in the foot height constraint
-  const bool use_terrain_constraint_ = false;
-
-  /// Boolean for whether to include the terrain in the foot height constraint
-  const bool remember_complex_elements_ = true;
-
-  const grid_map::InterpolationMethods interp_type_ =
-      grid_map::InterpolationMethods::INTER_LINEAR;
-
-  /// Map for constraint names
-  std::vector<std::vector<std::string>> constr_names_;
-
-  /// Number of variables , primal variables, slack variables, and constraints
-  int n_vars_, n_vars_primal_, n_vars_slack_, n_constraints_;
-
-  /// Number of state and control variables added in complex model
-  int n_null_, m_null_;
-
-  /// Nominal null state variables
-  Eigen::VectorXd x_null_nom_;
-
-  /// Declare the number of possible system ids (must match size of SystemID
-  /// enum)
-  static const int num_sys_id_ = 7;
-
-  /// Declare the number of possible function ids (must match size of FunctionID
-  /// enum)
-  static const int num_func_id_ = 3;
-
-  // Scale factor for Q and R
-  double Q_temporal_factor_, R_temporal_factor_;
-
-  // Feet location from feet to body COM in world frame
-  Eigen::MatrixXd foot_pos_body_;
-
-  // Foot locations in world frame
-  Eigen::MatrixXd foot_pos_world_;
-
-  // Foot velocities in world frame
-  Eigen::MatrixXd foot_vel_world_;
-
-  // Step length
-  double dt_;
+    // Step length
+    double dt_;
 
   // Friction coefficient
   double mu_;
@@ -656,270 +545,6 @@ class quadNLP : public TNLP {
 
   quadNLP &operator=(const quadNLP &);
   //@}
-=======
-#include "IpTNLP.hpp"
-
-#include "nmpc_controller/eval_g_leg.h"
-#include "nmpc_controller/eval_jac_g_leg.h"
-#include "nmpc_controller/eval_hess_g_leg.h"
-#include "nmpc_controller/eval_g_tail.h"
-#include "nmpc_controller/eval_jac_g_tail.h"
-#include "nmpc_controller/eval_hess_g_tail.h"
-#include "quad_utils/tail_type.h"
-#include <Eigen/Dense>
-#include <Eigen/Sparse>
-#include <vector>
-
-using namespace Ipopt;
-
-class quadNLP : public TNLP
-{
-public:
-    // Horizon length, state dimension, input dimension, and constraints dimension
-    int N_, n_, m_, g_;
-
-    int leg_input_start_idx_;
-
-    int type_;
-
-    bool known_leg_input_;
-
-    Eigen::MatrixXd leg_input_;
-
-    // State cost weighting, input cost weighting
-    Eigen::MatrixXd Q_, R_;
-
-    // Scale factor for Q and R
-    Eigen::MatrixXd Q_factor_, R_factor_;
-
-    // Feet location from feet to body COM in world frame
-    Eigen::MatrixXd feet_location_;
-
-    // Step length
-    double dt_;
-
-    // State bounds, input bounds, constraint bounds
-    Eigen::MatrixXd x_min_, x_max_, u_min_, u_max_, g_min_, g_max_;
-
-    // Ground height structure for the height bounds
-    Eigen::MatrixXd ground_height_;
-
-    // Initial guess
-    Eigen::MatrixXd w0_, z_L0_, z_U0_, lambda0_;
-
-    // State reference for computing cost
-    Eigen::MatrixXd x_reference_;
-
-    // Current state
-    Eigen::MatrixXd x_current_;
-
-    // Feet contact sequence
-    Eigen::MatrixXi contact_sequence_;
-
-    // Nonzero entrance number in the constraint jacobian matrix
-    int nnz_jac_g_, nnz_step_jac_g_;
-
-    std::vector<int> first_step_idx_jac_g_;
-
-    // Nonzero entrance row and column in the constraint jacobian matrix
-    Eigen::MatrixXi iRow_jac_g_, jCol_jac_g_;
-
-    // Nonzero entrance number in the pure hessian matrix (exclude the side jacobian part)
-    int nnz_h_, nnz_compact_h_, nnz_step_h_;
-
-    std::vector<int> first_step_idx_hess_g_;
-
-    // Nonzero entrance row and column in the pure hessian matrix (exclude the side jacobian part)
-    Eigen::MatrixXi iRow_h_, jCol_h_, iRow_compact_h_, jCol_compact_h_;
-
-    decltype(eval_g_leg_work) *eval_g_work_;
-    decltype(eval_g_leg_incref) *eval_g_incref_;
-    decltype(eval_g_leg_checkout) *eval_g_checkout_;
-    decltype(eval_g_leg) *eval_g_;
-    decltype(eval_g_leg_release) *eval_g_release_;
-    decltype(eval_g_leg_decref) *eval_g_decref_;
-
-    decltype(eval_hess_g_leg_work) *eval_hess_g_work_;
-    decltype(eval_hess_g_leg_incref) *eval_hess_g_incref_;
-    decltype(eval_hess_g_leg_checkout) *eval_hess_g_checkout_;
-    decltype(eval_hess_g_leg) *eval_hess_g_;
-    decltype(eval_hess_g_leg_release) *eval_hess_g_release_;
-    decltype(eval_hess_g_leg_decref) *eval_hess_g_decref_;
-    decltype(eval_hess_g_leg_sparsity_out) *eval_hess_g_sparsity_out_;
-
-    decltype(eval_jac_g_leg_work) *eval_jac_g_work_;
-    decltype(eval_jac_g_leg_incref) *eval_jac_g_incref_;
-    decltype(eval_jac_g_leg_checkout) *eval_jac_g_checkout_;
-    decltype(eval_jac_g_leg) *eval_jac_g_;
-    decltype(eval_jac_g_leg_release) *eval_jac_g_release_;
-    decltype(eval_jac_g_leg_decref) *eval_jac_g_decref_;
-    decltype(eval_jac_g_leg_sparsity_out) *eval_jac_g_sparsity_out_;
-
-    /** Default constructor */
-    quadNLP(
-        int type,
-        int N,
-        int n,
-        int m,
-        double dt,
-        Eigen::MatrixXd Q,
-        Eigen::MatrixXd R,
-        Eigen::MatrixXd Q_factor,
-        Eigen::MatrixXd R_factor,
-        Eigen::MatrixXd x_min,
-        Eigen::MatrixXd x_max,
-        Eigen::MatrixXd u_min,
-        Eigen::MatrixXd u_max);
-
-    /** Default destructor */
-    virtual ~quadNLP();
-
-    /**@name Overloaded from TNLP */
-    //@{
-    /** Method to return some info about the NLP */
-    virtual bool get_nlp_info(
-        Index &n,
-        Index &m,
-        Index &nnz_jac_g,
-        Index &nnz_h_lag,
-        IndexStyleEnum &index_style);
-
-    /** Method to return the bounds for my problem */
-    virtual bool get_bounds_info(
-        Index n,
-        Number *x_l,
-        Number *x_u,
-        Index m,
-        Number *g_l,
-        Number *g_u);
-
-    /** Method to return the starting point for the algorithm */
-    virtual bool get_starting_point(
-        Index n,
-        bool init_x,
-        Number *x,
-        bool init_z,
-        Number *z_L,
-        Number *z_U,
-        Index m,
-        bool init_lambda,
-        Number *lambda);
-
-    /** Method to return the objective value */
-    virtual bool eval_f(
-        Index n,
-        const Number *x,
-        bool new_x,
-        Number &obj_value);
-
-    /** Method to return the gradient of the objective */
-    virtual bool eval_grad_f(
-        Index n,
-        const Number *x,
-        bool new_x,
-        Number *grad_f);
-
-    /** Method to return the constraint residuals */
-    virtual bool eval_g(
-        Index n,
-        const Number *x,
-        bool new_x,
-        Index m,
-        Number *g);
-
-    /** Method to return:
-    *   1) The structure of the jacobian (if "values" is NULL)
-    *   2) The values of the jacobian (if "values" is not NULL)
-    */
-    virtual bool eval_jac_g(
-        Index n,
-        const Number *x,
-        bool new_x,
-        Index m,
-        Index nele_jac,
-        Index *iRow,
-        Index *jCol,
-        Number *values);
-
-    virtual void compute_nnz_jac_g();
-
-    /** Method to return:
-    *   1) The structure of the hessian of the lagrangian (if "values" is NULL)
-    *   2) The values of the hessian of the lagrangian (if "values" is not NULL)
-    */
-    virtual bool eval_h(
-        Index n,
-        const Number *x,
-        bool new_x,
-        Number obj_factor,
-        Index m,
-        const Number *lambda,
-        bool new_lambda,
-        Index nele_hess,
-        Index *iRow,
-        Index *jCol,
-        Number *values);
-
-    virtual void compute_nnz_h();
-
-    /** This method is called when the algorithm is complete so the TNLP can store/write the solution */
-    virtual void finalize_solution(
-        SolverReturn status,
-        Index n,
-        const Number *x,
-        const Number *z_L,
-        const Number *z_U,
-        Index m,
-        const Number *g,
-        const Number *lambda,
-        Number obj_value,
-        const IpoptData *ip_data,
-        IpoptCalculatedQuantities *ip_cq);
-
-    virtual void shift_initial_guess();
-
-    virtual void update_solver(
-        const Eigen::VectorXd &initial_state,
-        const Eigen::MatrixXd &ref_traj,
-        const Eigen::MatrixXd &foot_positions,
-        const std::vector<std::vector<bool>> &contact_schedule);
-
-    virtual void update_solver(
-        const Eigen::VectorXd &initial_state,
-        const Eigen::MatrixXd &ref_traj,
-        const Eigen::MatrixXd &foot_positions,
-        const std::vector<std::vector<bool>> &contact_schedule,
-        const Eigen::VectorXd &ground_height);
-
-    virtual void update_solver(
-        const Eigen::VectorXd &initial_state,
-        const Eigen::MatrixXd &ref_traj,
-        const Eigen::MatrixXd &foot_positions,
-        const std::vector<std::vector<bool>> &contact_schedule,
-        const Eigen::MatrixXd &state_traj,
-        const Eigen::MatrixXd &control_traj);
-
-    //@}
-
-private:
-    /**@name Methods to block default compiler methods.
-    *
-    * The compiler automatically generates the following three methods.
-    *  Since the default compiler implementation is generally not what
-    *  you want (for all but the most simple classes), we usually
-    *  put the declarations of these methods in the private section
-    *  and never implement them. This prevents the compiler from
-    *  implementing an incorrect "default" behavior without us
-    *  knowing. (See Scott Meyers book, "Effective C++")
-    */
-    //@{
-    quadNLP(
-        const quadNLP &);
-
-    quadNLP &operator=(
-        const quadNLP &);
-    //@}
->>>>>>> Switch build system to catkin_tools, switch spirit* to quad*
 };
 
 #endif

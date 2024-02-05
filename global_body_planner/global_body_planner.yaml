@@ -1,5 +1,4 @@
 global_body_planner:
-<<<<<<< HEAD
   update_rate: 20                         # Update rate of the ROS node (in Hz)
   num_calls: 1                            # Number of times to call the planner
   max_planning_time: 0.20                 # Maximum amount of time to run the planner
@@ -18,35 +17,3 @@ global_body_planner:
   t_s_max: 0.25                           # Maximum stance time, s
   dz0_min: 1.0                            # Minimum vertical velocity impulse, m/s
   dz0_max: 2.0                            # Maximum vertical velocity impulse, m/s
-=======
-  update_rate: 10
-  num_calls: 1            # Number of times to call the planner
-  max_planning_time: 2.0  # Minimum amount of time to run the planner (will replan to find better solutions until this duration is up)
-  start_state: [0.0,0.0,0.3,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0]
-  goal_state: [6.0,0.0,0.4,0.0,0,0.0,0.0,0.0,0.0,0.0,0.0,0.0]
-  state_error_threshold: 25 #0.25
-  startup_delay: 1.0      # Time to delay after starting node before planning
-  replanning: true        # Boolean to determine if replanning is allowed
-  H_MAX: 0.375            # Maximum height of leg base, m
-  H_MIN: 0.125            # Minimum ground clearance of body corners, m
-  V_MAX: 2.0              # Maximum robot velocity, m/s (4.0 for cheetah, 2.5 for anymal)
-  V_NOM: 0.5              # Nominal velocity, m/s (used during connect function)
-  DY_MAX: 2.0             # Maximum yaw rate
-  ROBOT_L: 0.4            # Length of robot body, m (0.6 cheetah, 0.554 ANYmal)
-  ROBOT_W: 0.3            # Width of robot body, m (0.256 cheetah, 0.232 ANYmal)
-  ROBOT_H: 0.05           # Vertical distance between leg base and bottom of robot, m (0.1 cheetah, 0.04 ANYmal)
-  M_CONST: 12.0           # Robot mass, kg (12 for quad, 43 for cheetah, 30 for anymal)
-  J_CONST: 1.0            # Moment of inertia about the robot's y axis (pitch)
-  G_CONST: 9.81           # Gravity constant, m/s^2
-  F_MAX: 400.0            # Maximum GRF, N (800 for cheetah, 500 for anymal)
-  MU: 0.5                 # Friction coefficient (1.0 for Cheetah, 0.5 for ANYmal)
-  T_S_MIN: 0.3            # Minimum stance time, s
-  T_S_MAX: 0.3            # Maximum stance time, s
-  T_F_MIN: 0.0            #  Minimum flight time, s
-  T_F_MAX: 0.5            # Maximum stance time, s
-  KINEMATICS_RES: 0.05    # Resolution of kinematic feasibility checks, s
-  BACKUP_TIME: 0.2        # Duration of backup after finding an invalid state, s
-  BACKUP_RATIO: 0.5       # Ratio of trajectory to back up after finding an invalid state, s
-  NUM_GEN_STATES: 6       # Number of actions computed for each extend function
-  GOAL_BOUNDS: 0.5        # Distance threshold on reaching the goal (only used for vanilla RRT, not RRT-Connect)
->>>>>>> Switch build system to catkin_tools, switch spirit* to quad*
