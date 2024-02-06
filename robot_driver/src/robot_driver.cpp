@@ -94,8 +94,6 @@ RobotDriver::RobotDriver(ros::NodeHandle nh, int argc, char **argv) {
   control_restart_flag_sub_ =
       nh_.subscribe(control_restart_flag_topic, 1,
                     &RobotDriver::controlRestartFlagCallback, this);
-  // grf_sub_ = nh.subscribe(grf_topic, 1,  &RobotDriver::grfCallback, this);
-
   grf_pub_ = nh_.advertise<quad_msgs::GRFArray>(grf_topic, 1);
   leg_command_array_pub_ =
       nh_.advertise<quad_msgs::LegCommandArray>(leg_command_array_topic, 1);
@@ -390,6 +388,13 @@ bool RobotDriver::updateState() {
     }
     // State information coming through sim subscribers, not hardware interface
     if (state_estimator_ != nullptr) {
+      // If Using EKF on hardware, initialize Start Robot State using FK
+      if (estimator_id_ == "ekf_filter" && initialized == false && control_mode_ == READY){
+        // ADD FK for Robot Body HERE
+        setInitialState(estimated_state_);
+        initialized == true;
+        ROS_INFO_STREAM("Initialized");
+      }
       return state_estimator_->updateOnce(last_robot_state_msg_);
     } else {
       ROS_WARN_THROTTLE(1, "No state estimator is initialized");
@@ -433,6 +438,35 @@ bool RobotDriver::updateState() {
     }
     return true;
   }
+}
+
+void RobotDriver::setInitialState(estimated_state_){
+  quad_msgs::RobotState initial_state_est;
+  initial_state_est.header.stamp = ros::Time::now();
+
+  // body
+  // Grab this Directly from the IMU
+  new_state_est.body.pose.orientation.w = qk.w();
+  new_state_est.body.pose.orientation.x = qk.x();
+  new_state_est.body.pose.orientation.y = qk.y();
+  new_state_est.body.pose.orientation.z = qk.z();
+
+  new_state_est.body.pose.position.x = X[0];
+  new_state_est.body.pose.position.y = X[1];
+  new_state_est.body.pose.position.z = X[2];
+
+  new_state_est.body.twist.linear.x = X[3];
+  new_state_est.body.twist.linear.y = X[4];
+  new_state_est.body.twist.linear.z = X[5];
+
+  // joint
+  new_state_est.joints.header.stamp = ros::Time::now();
+  // '8', '0', '1', '9', '2', '3', '10', '4', '5', '11', '6', '7'
+  new_state_est.joints.name = {"8",  "0", "1", "9",  "2", "3",
+                               "10", "4", "5", "11", "6", "7"};
+  new_state_est.joints.position = jkVector;
+  new_state_est.joints.velocity = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+  new_state_est.joints.effort = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 }
 
 void RobotDriver::publishState() {
