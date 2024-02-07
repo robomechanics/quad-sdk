@@ -20,11 +20,11 @@
 #include <eigen3/Eigen/Eigen>
 
 #include "robot_driver/controllers/grf_pid_controller.h"
-#include "robot_driver/controllers/inverse_dynamics_controller.h"
-#include "robot_driver/controllers/underbrush_inverse_dynamics.h"
 #include "robot_driver/controllers/inertia_estimation_controller.h"
+#include "robot_driver/controllers/inverse_dynamics_controller.h"
 #include "robot_driver/controllers/joint_controller.h"
 #include "robot_driver/controllers/leg_controller.h"
+#include "robot_driver/controllers/underbrush_inverse_dynamics.h"
 #include "robot_driver/estimators/comp_filter_estimator.h"
 #include "robot_driver/estimators/ekf_estimator.h"
 #include "robot_driver/estimators/state_estimator.h"
@@ -150,7 +150,7 @@ class RobotDriver {
   /**
    * @brief Function to set initial robot state for ekf state estimator
    */
-  void setInitialState();
+  void setInitialState(quad_msgs::RobotState& estimated_state_);
 
   /**
    * @brief Publish the most recent state message with the given data
