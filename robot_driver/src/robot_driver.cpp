@@ -425,12 +425,17 @@ bool RobotDriver::updateState() {
     // State information coming through sim subscribers, not hardware interface
     if (state_estimator_ != nullptr) {
       // If Using EKF on hardware, initialize Start Robot State using FK
-      if (estimator_id_ == "ekf_filter" && initialized == false) {
+      if (estimator_id_ == "ekf_filter" && initialized == false && control_mode_ == READY) {
         setInitialState(estimated_state_);
         initialized == true;
         ROS_INFO_STREAM("Initialized");
       }
+      if (initialized){
       return state_estimator_->updateOnce(estimated_state_);
+      }
+      else{
+        return false;
+      }
     } else {
       ROS_WARN_THROTTLE(1, "No state estimator is initialized");
       return false;
@@ -713,16 +718,16 @@ void RobotDriver::spin() {
   while (ros::ok()) {
     // Collect new messages on subscriber topics and publish heartbeat
     ros::spinOnce();
-    ROS_INFO_STREAM("Start Spin");
+    // ROS_INFO_STREAM("Start Spin");
     // Get the newest state information
     updateState();
-    ROS_INFO_STREAM("After Update State");
+    // ROS_INFO_STREAM("After Update State");
     // Compute the leg command and publish if valid
     bool is_valid = updateControl();
     publishControl(is_valid);
     // Publish state and heartbeat
     publishState();
-    ROS_INFO_STREAM("After Publish State");
+    // ROS_INFO_STREAM("After Publish State");
     publishHeartbeat();
 
     // Enforce update rate
