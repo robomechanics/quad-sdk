@@ -425,8 +425,7 @@ bool RobotDriver::updateState() {
     // State information coming through sim subscribers, not hardware interface
     if (state_estimator_ != nullptr) {
       // If Using EKF on hardware, initialize Start Robot State using FK
-      if (estimator_id_ == "ekf_filter" && initialized == false &&
-          control_mode_ == READY) {
+      if (estimator_id_ == "ekf_filter" && initialized == false) {
         setInitialState(estimated_state_);
         initialized == true;
         ROS_INFO_STREAM("Initialized");
