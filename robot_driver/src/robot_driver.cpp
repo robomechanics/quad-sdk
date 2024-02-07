@@ -446,27 +446,31 @@ void RobotDriver::setInitialState(estimated_state_){
 
   // body
   // Grab this Directly from the IMU
-  new_state_est.body.pose.orientation.w = qk.w();
-  new_state_est.body.pose.orientation.x = qk.x();
-  new_state_est.body.pose.orientation.y = qk.y();
-  new_state_est.body.pose.orientation.z = qk.z();
+  new_state_.body.pose.orientation.w = 0.00030045737195826113;
+  new_state_.body.pose.orientation.x = -0.01147174832360947;
+  new_state_.body.pose.orientation.y = 0.023850795430556244;
+  new_state_.body.pose.orientation.z = 0.9996496627684608;
 
-  new_state_est.body.pose.position.x = X[0];
-  new_state_est.body.pose.position.y = X[1];
-  new_state_est.body.pose.position.z = X[2];
+  new_state_.body.pose.position.x = 0.0;
+  new_state_.body.pose.position.y = 0.0;
+  new_state_.body.pose.position.z = 0.27;
 
-  new_state_est.body.twist.linear.x = X[3];
-  new_state_est.body.twist.linear.y = X[4];
-  new_state_est.body.twist.linear.z = X[5];
+  new_state_.body.twist.linear.x = 0;
+  new_state_.body.twist.linear.y = 0;
+  new_state_.body.twist.linear.z = 0;
 
   // joint
-  new_state_est.joints.header.stamp = ros::Time::now();
+  new_state_.joints.header.stamp = ros::Time::now();
   // '8', '0', '1', '9', '2', '3', '10', '4', '5', '11', '6', '7'
-  new_state_est.joints.name = {"8",  "0", "1", "9",  "2", "3",
+  new_state_.joints.name = {"8",  "0", "1", "9",  "2", "3",
                                "10", "4", "5", "11", "6", "7"};
-  new_state_est.joints.position = jkVector;
-  new_state_est.joints.velocity = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
-  new_state_est.joints.effort = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+  new_state_.joints.position = {0.014387194748858079, 0.8177457913203634, 
+  1.3820743272425506, 0.014804058922688768, 0.7921387720710005, 
+  1.321448812820032, -0.014398417914668116, 0.8178440394706996, 
+  1.381999190999604, -0.014668935486087165, 0.7921917478893041, 1.3212837914085984}
+  new_state_.joints.velocity = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+  new_state_.joints.effort = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+  estimated_state_ = new_state_
 }
 
 void RobotDriver::publishState() {
