@@ -431,7 +431,7 @@ bool RobotDriver::updateState() {
         initialized == true;
         ROS_INFO_STREAM("Initialized");
       }
-      return state_estimator_->updateOnce(last_robot_state_msg_);
+      return state_estimator_->updateOnce(estimated_state_);
     } else {
       ROS_WARN_THROTTLE(1, "No state estimator is initialized");
       return false;
