@@ -401,6 +401,7 @@ void RobotDriver::setInitialState(quad_msgs::RobotState &estimated_state_) {
   initial_state_est.joints.velocity = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
   initial_state_est.joints.effort = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
   estimated_state_ = initial_state_est;
+  ROS_INFO_STREAM("Set Robot Initial State");
   return;
 }
 
@@ -713,16 +714,16 @@ void RobotDriver::spin() {
   while (ros::ok()) {
     // Collect new messages on subscriber topics and publish heartbeat
     ros::spinOnce();
-    // ROS_INFO_STREAM("Start Spin");
+    ROS_INFO_STREAM("Start Spin");
     // Get the newest state information
     updateState();
-    // ROS_INFO_STREAM("After Update State");
+    ROS_INFO_STREAM("After Update State");
     // Compute the leg command and publish if valid
     bool is_valid = updateControl();
     publishControl(is_valid);
     // Publish state and heartbeat
     publishState();
-    // ROS_INFO_STREAM("After Publish State");
+    ROS_INFO_STREAM("After Publish State");
     publishHeartbeat();
 
     // Enforce update rate
