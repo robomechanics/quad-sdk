@@ -1,0 +1,93 @@
+<!-- 
+MIT License (modified)
+
+Copyright (c) 2020 The Trustees of the University of Pennsylvania
+Authors:
+Vasileios Vasilopoulos <vvasilo@seas.upenn.edu>
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this **file** (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE. 
+-->
+
+<launch>
+
+  <arg name="gui"             default="false"/>
+  <arg name="paused"          default="false"/>
+  <arg name="software"        default="true"/>
+  <arg name="controller"      default="inverse_dynamics"/>
+  <arg name="live_plot"       default="false"/>
+  <arg name="mblink"          default="false"/>
+  <arg name="world"           default="flat"/>
+
+  <include file="$(find spirit_utils)/launch/mapping.launch" >
+    <arg name="input_type" value="mesh"/>
+    <arg name="world" value="$(arg world)"/>
+  </include>
+
+  <group if="$(arg software)">
+    <include file="$(find spirit_utils)/launch/visualization.launch">
+      <arg name="live_plot" value="$(arg live_plot)"/>
+    </include>
+    <include file="$(find spirit_utils)/launch/robot_driver.launch">
+      <arg name="mblink" value="$(arg mblink)"/>
+      <arg name="controller" value="$(arg controller)"/>
+    </include>
+    <!-- <include file="$(find spirit_utils)/launch/planning.launch">
+      <arg name="global_planner" value="$(arg global_planner)"/>
+    </include>
+
+    <group if="$(eval global_planner == 'twist')">
+      <node name="twist_key_controller"
+        pkg="spirit_utils"
+        type="twist_key_controller.py"
+        respawn="false"
+        output="screen">
+      </node>
+    </group> -->
+  </group>
+
+  <!-- Launch the Spirit world with specific physics parameters -->
+  <include file="$(find gazebo_ros)/launch/empty_world.launch">
+    <arg name="paused" value="$(arg paused)"/>
+    <arg name="world_name" value="$(find gazebo_scripts)/worlds/$(arg world)/$(arg world).world"/>
+    <arg name="gui" value="$(arg gui)"/>
+    <arg name="physics" value="ode"/>
+  </include>
+
+  <!-- Load the parameters and the sdf description -->
+  <include file="$(find spirit_utils)/launch/load_params.launch" />
+  <param name="robot_description_sdf" textfile="$(find spirit_description)/sdf_mesh/spirit.sdf" />
+
+  <!-- Spawn SDF model -->
+  <node name="spawn_sdf_model" pkg="gazebo_ros" type="spawn_model" args="-sdf -param robot_description_sdf -model spirit -x 0.0 -y 0.0 -z 0.5" output="screen"/>
+
+  <rosparam file="$(find gazebo_scripts)/config/spirit_control.yaml" command="load"/>
+
+  <node name="controller_spawner"
+        pkg="controller_manager"
+        type="spawner"
+        respawn="false"
+        output="screen"
+        ns="/spirit"
+        args="joint_controller joint_state_controller">
+  </node>
+
+  <!-- Load the contact state publisher -->
+  <node name="contact_state_publisher" pkg="gazebo_scripts" type="contact_state_publisher_node" output="screen"/>
+  
+</launch>

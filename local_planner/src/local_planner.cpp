@@ -266,7 +266,7 @@ void LocalPlanner::getReference() {
       ROS_WARN_THROTTLE(1.0, "No cmd_vel data, setting twist cmd_vel to zero");
     }
 
-    // Set initial ground height
+        // Set initial ground height
     ref_ground_height_(0) = local_footstep_planner_->getTerrainHeight(
         current_state_(0), current_state_(1));
 
