@@ -1,4 +1,6 @@
-[![CircleCI](https://circleci.com/gh/robomechanics/quad-software/tree/main.svg?style=shield)](https://circleci.com/gh/robomechanics/quad-software/tree/main)
+[![CircleCI](https://circleci.com/gh/robomechanics/spirit-software/tree/main.svg?style=shield)](https://circleci.com/gh/robomechanics/spirit-software/tree/main)
+[![CircleCI](https://circleci.com/gh/robomechanics/quad-sdk/tree/main.svg?style=shield)](https://circleci.com/gh/robomechanics/quad-sdk/tree/main)
+![Example image](doc/quad_sdk_promo.png)
 
 ## Overview
 

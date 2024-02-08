@@ -274,8 +274,9 @@ void LocalPlanner::getReference() {
       ROS_WARN_THROTTLE(1.0, "No cmd_vel data, setting twist cmd_vel to zero");
     }
 
-    ref_ground_height_(i) = local_footstep_planner_->getTerrainHeight(ref_body_plan_(i, 0), ref_body_plan_(i, 1));
-  }
+        // Set initial ground height
+    ref_ground_height_(0) = local_footstep_planner_->getTerrainHeight(
+        current_state_(0), current_state_(1));
 
     // If it's not initialized, set to current positions
     if (stand_pose_(0) == std::numeric_limits<double>::max() &&
