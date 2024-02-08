@@ -128,8 +128,6 @@ RobotDriver::RobotDriver(ros::NodeHandle nh, int argc, char **argv) {
   // Initialize kinematics object
   quadKD_ = std::make_shared<quad_utils::QuadKD>();
 
-  initialized = false;
-
   // Initialize hardware interface
   if (is_hardware_) {
     if (robot_name == "spirit" || robot_name == "spirit_rotors") {
@@ -146,6 +144,7 @@ RobotDriver::RobotDriver(ros::NodeHandle nh, int argc, char **argv) {
 
   // Start sitting
   control_mode_ = SIT;
+  initialized_ = SIT;
   remote_heartbeat_received_time_ = std::numeric_limits<double>::max();
   last_state_time_ = std::numeric_limits<double>::max();
 
@@ -369,7 +368,7 @@ void RobotDriver::checkMessagesForSafety() {
   }
 }
 
-void RobotDriver::setInitialState(quad_msgs::RobotState &estimated_state_) {
+void RobotDriver::setInitialState(quad_msgs::RobotState &estimated_state_, const int &mode) {
   quad_msgs::RobotState initial_state_est;
   initial_state_est.header.stamp = ros::Time::now();
 
@@ -400,6 +399,15 @@ void RobotDriver::setInitialState(quad_msgs::RobotState &estimated_state_) {
       -0.014668935486087165, 0.7921917478893041, 1.3212837914085984};
   initial_state_est.joints.velocity = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
   initial_state_est.joints.effort = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+  if (mode == SIT){
+    initial_state_est.body.pose.position.z = 0.0;
+    initial_state_est.joints.position = {
+      0.014387194748858079,  0.8177457913203634, 1.3820743272425506,
+      0.014804058922688768,  0.7921387720710005, 1.321448812820032,
+      -0.014398417914668116, 0.8178440394706996, 1.381999190999604,
+      -0.014668935486087165, 0.7921917478893041, 1.3212837914085984};
+  }
+
   estimated_state_ = initial_state_est;
   ROS_INFO_STREAM("Set Robot Initial State");
   return;
@@ -424,31 +432,45 @@ bool RobotDriver::updateState() {
     }
     // State information coming through sim subscribers, not hardware interface
     if (state_estimator_ != nullptr) {
-      // If Using EKF on hardware, initialize Start Robot State using FK
-      if (estimator_id_ == "ekf_filter" && initialized == false && control_mode_ == READY) {
-        setInitialState(estimated_state_);
-        initialized == true;
-        ROS_INFO_STREAM("Initialized");
+      // If Running EKF Filter, Run State Initialization
+      if (estimator_id_ == "ekf_filter"){
+        // Robot is Standing, but State hasn't been Initialized
+        if(initialized_ == SIT && control_mode_ == READY){
+          setInitialState(last_robot_state_msg_, control_mode_);
+          state_estimate_ = last_robot_state_msg_;
+          initialized_ = READY;
+          ROS_INFO_STREAM("Initialized");
+        }
+        // Robot is Standing, State is Initialized
+        if(initialized_ == READY){
+          state_estimator_->updateOnce(last_robot_state_msg_);
+          state_estimate_ = last_robot_state_msg_;
+        }
+        // Robot is Sitting, State hasn't been Initialized
+        if(initialized_ == REST && control_mode_ == SIT){
+          setInitialState(last_robot_state_msg_, control_mode_);
+          // FIGURE OUT WHAT TO DO HERE
+        }
+        return true;
       }
-      if (initialized){
-      return state_estimator_->updateOnce(estimated_state_);
-      }
+      // Running Mocap, Update Like Normal
       else{
-        return false;
+        return state_estimator_->updateOnce(last_robot_state_msg_);
       }
-    } else {
+    } 
+    else {
       ROS_WARN_THROTTLE(1, "No state estimator is initialized");
       return false;
     }
   } else {  // If Operating in Sim
     if (state_estimator_ != nullptr) {
-      if (initialized == false && control_mode_ == READY) {
+      if (initialized_ == SIT && control_mode_ == READY) {
         ROS_INFO_STREAM("Intialized");
         estimated_state_ = last_robot_state_msg_;
         last_joint_state_msg_.position = last_robot_state_msg_.joints.position;
         last_joint_state_msg_.velocity = last_robot_state_msg_.joints.velocity;
         // ROS_INFO_STREAM(last_joint_state_msg_);
-        initialized = true;
+        initialized_ = true;
       }
       if (estimator_id_ == "comp_filter") {
         state_estimate_ = last_robot_state_msg_;
@@ -463,7 +485,7 @@ bool RobotDriver::updateState() {
       }
       if (estimator_id_ == "ekf_filter") {
         // Addded to make sure the robot can stand
-        if (initialized == false) {
+        if (initialized_ == SIT) {
           state_estimate_ = last_robot_state_msg_;
         }
         if (grf_array_msg_.vectors[0].x != 0 && control_mode_ == READY) {
@@ -481,15 +503,16 @@ bool RobotDriver::updateState() {
 }
 
 void RobotDriver::publishState() {
+
   if (is_hardware_) {
     imu_pub_.publish(last_imu_msg_);
     joint_state_pub_.publish(last_joint_state_msg_);
     robot_state_pub_.publish(last_robot_state_msg_);
-    state_estimate_pub_.publish(estimated_state_);
+    state_estimate_pub_.publish(state_estimate_);
   } else {
     if (control_mode_ == READY) {
       joint_state_pub_.publish(last_joint_state_msg_);
-      if (initialized) {
+      if (initialized_) {
         state_estimate_pub_.publish(estimated_state_);
       }
     }

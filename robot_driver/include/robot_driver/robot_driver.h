@@ -150,7 +150,7 @@ class RobotDriver {
   /**
    * @brief Function to set initial robot state for ekf state estimator
    */
-  void setInitialState(quad_msgs::RobotState& estimated_state_);
+  void setInitialState(quad_msgs::RobotState& estimated_state, const int &mode_);
 
   /**
    * @brief Publish the most recent state message with the given data
@@ -250,6 +250,9 @@ class RobotDriver {
   /// Robot mode
   int control_mode_;
 
+  /// Robot State Intialization
+  int initialized_;
+
   /// Torque limits
   std::vector<double> torque_limits_;
 
@@ -267,6 +270,9 @@ class RobotDriver {
 
   /// Define ids for control modes: Safety
   const int SAFETY = 4;
+
+  /// Define ids for for state initialization
+  const int REST = 5;
 
   /// Define ids for input types: none
   const int NONE = 0;
@@ -424,8 +430,6 @@ class RobotDriver {
 
   /// Required for some hardware interfaces
   int argc_;
-
-  bool initialized;
 
   /// Required for some hardware interfaces
   char** argv_;
