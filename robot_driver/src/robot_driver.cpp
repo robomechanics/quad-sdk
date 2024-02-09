@@ -368,7 +368,8 @@ void RobotDriver::checkMessagesForSafety() {
   }
 }
 
-void RobotDriver::setInitialState(quad_msgs::RobotState &estimated_state_, const int &mode) {
+void RobotDriver::setInitialState(quad_msgs::RobotState &estimated_state_,
+                                  const int &mode) {
   quad_msgs::RobotState initial_state_est;
   initial_state_est.header.stamp = ros::Time::now();
 
@@ -399,13 +400,13 @@ void RobotDriver::setInitialState(quad_msgs::RobotState &estimated_state_, const
       -0.014668935486087165, 0.7921917478893041, 1.3212837914085984};
   initial_state_est.joints.velocity = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
   initial_state_est.joints.effort = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
-  if (mode == SIT){
+  if (mode == SIT) {
     initial_state_est.body.pose.position.z = 0.05;
     initial_state_est.joints.position = {
-      -0.040472417167380925, 0.049068239799692215, 0.01104933258022367, 
-      -0.03527970549985948, 0.049363805226127155, 0.012144606796763213, 
-      0.04051345351657165, 0.04953529386537703, 0.012297179439886285, 
-      0.035384327250572944, 0.04836844469406376, 0.011035278398065174};
+        -0.040472417167380925, 0.049068239799692215, 0.01104933258022367,
+        -0.03527970549985948,  0.049363805226127155, 0.012144606796763213,
+        0.04051345351657165,   0.04953529386537703,  0.012297179439886285,
+        0.035384327250572944,  0.04836844469406376,  0.011035278398065174};
   }
 
   estimated_state_ = initial_state_est;
@@ -433,32 +434,31 @@ bool RobotDriver::updateState() {
     // State information coming through sim subscribers, not hardware interface
     if (state_estimator_ != nullptr) {
       // If Running EKF Filter, Run State Initialization
-      if (estimator_id_ == "ekf_filter"){
+      if (estimator_id_ == "ekf_filter") {
         // Robot is Standing, but State hasn't been Initialized
-        if(initialized_ == SIT && control_mode_ == READY){
+        if (initialized_ == SIT && control_mode_ == READY) {
           setInitialState(last_robot_state_msg_, control_mode_);
           state_estimate_ = last_robot_state_msg_;
           initialized_ = READY;
           ROS_INFO_STREAM("Initialized");
         }
         // Robot is Standing, State is Initialized
-        if(initialized_ == READY){
+        if (initialized_ == READY) {
           state_estimator_->updateOnce(last_robot_state_msg_);
           state_estimate_ = last_robot_state_msg_;
         }
         // Robot is Sitting, State hasn't been Initialized
-        if(initialized_ == REST && control_mode_ == SIT){
+        if (initialized_ == REST && control_mode_ == SIT) {
           setInitialState(last_robot_state_msg_, control_mode_);
           // FIGURE OUT WHAT TO DO HERE
         }
         return true;
       }
       // Running Mocap, Update Like Normal
-      else{
+      else {
         return state_estimator_->updateOnce(last_robot_state_msg_);
       }
-    } 
-    else {
+    } else {
       ROS_WARN_THROTTLE(1, "No state estimator is initialized");
       return false;
     }
@@ -503,7 +503,6 @@ bool RobotDriver::updateState() {
 }
 
 void RobotDriver::publishState() {
-
   if (is_hardware_) {
     imu_pub_.publish(last_imu_msg_);
     joint_state_pub_.publish(last_joint_state_msg_);
@@ -539,8 +538,10 @@ bool RobotDriver::updateControl() {
   // Define vectors for joint positions and velocities
   Eigen::VectorXd joint_positions(3 * num_feet_),
       joint_velocities(3 * num_feet_), body_state(12);
-  quad_utils::vectorToEigen(last_robot_state_msg_.joints.position, joint_positions);
-  quad_utils::vectorToEigen(last_robot_state_msg_.joints.velocity, joint_velocities);
+  quad_utils::vectorToEigen(last_robot_state_msg_.joints.position,
+                            joint_positions);
+  quad_utils::vectorToEigen(last_robot_state_msg_.joints.velocity,
+                            joint_velocities);
 
   // Initialize leg command message
   leg_command_array_msg_.leg_commands.resize(num_feet_);
@@ -567,8 +568,9 @@ bool RobotDriver::updateControl() {
       }
     }
   } else if (control_mode_ == READY) {
-    if (leg_controller_->computeLegCommandArray(
-            last_robot_state_msg_, leg_command_array_msg_, grf_array_msg_) == false) {
+    if (leg_controller_->computeLegCommandArray(last_robot_state_msg_,
+                                                leg_command_array_msg_,
+                                                grf_array_msg_) == false) {
       for (int i = 0; i < num_feet_; ++i) {
         leg_command_array_msg_.leg_commands.at(i).motor_commands.resize(3);
         for (int j = 0; j < 3; ++j) {
