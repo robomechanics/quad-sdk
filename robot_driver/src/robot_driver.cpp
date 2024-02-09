@@ -525,22 +525,22 @@ bool RobotDriver::updateControl() {
   bool valid_cmd = true;
   if (leg_controller_->overrideStateMachine()) {
     valid_cmd = leg_controller_->computeLegCommandArray(
-        state_estimate_, leg_command_array_msg_, grf_array_msg_);
+        last_robot_state_msg_, leg_command_array_msg_, grf_array_msg_);
     return valid_cmd;
   }
 
   // Check incoming messages to determine if we should enter safety mode
   checkMessagesForSafety();
 
-  if (state_estimate_.header.stamp.toSec() == 0) {
+  if (last_robot_state_msg_.header.stamp.toSec() == 0) {
     return false;
   }
 
   // Define vectors for joint positions and velocities
   Eigen::VectorXd joint_positions(3 * num_feet_),
       joint_velocities(3 * num_feet_), body_state(12);
-  quad_utils::vectorToEigen(state_estimate_.joints.position, joint_positions);
-  quad_utils::vectorToEigen(state_estimate_.joints.velocity, joint_velocities);
+  quad_utils::vectorToEigen(last_robot_state_msg_.joints.position, joint_positions);
+  quad_utils::vectorToEigen(last_robot_state_msg_.joints.velocity, joint_velocities);
 
   // Initialize leg command message
   leg_command_array_msg_.leg_commands.resize(num_feet_);
@@ -568,7 +568,7 @@ bool RobotDriver::updateControl() {
     }
   } else if (control_mode_ == READY) {
     if (leg_controller_->computeLegCommandArray(
-            state_estimate_, leg_command_array_msg_, grf_array_msg_) == false) {
+            last_robot_state_msg_, leg_command_array_msg_, grf_array_msg_) == false) {
       for (int i = 0; i < num_feet_; ++i) {
         leg_command_array_msg_.leg_commands.at(i).motor_commands.resize(3);
         for (int j = 0; j < 3; ++j) {
