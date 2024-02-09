@@ -440,7 +440,7 @@ bool RobotDriver::updateState() {
           setInitialState(last_robot_state_msg_, control_mode_);
           state_estimate_ = last_robot_state_msg_;
           initialized_ = READY;
-          ROS_INFO_STREAM("Initialized");
+          ROS_INFO_STREAM("Initialized the State");
         }
         // Robot is Standing, State is Initialized
         if (initialized_ == READY) {
@@ -448,13 +448,9 @@ bool RobotDriver::updateState() {
           state_estimate_ = last_robot_state_msg_;
         }
         // Robot is Sitting, State hasn't been Initialized
-        if (initialized_ == REST && control_mode_ == SIT) {
-          setInitialState(last_robot_state_msg_, control_mode_);
-          // FIGURE OUT WHAT TO DO HERE
-        }
         return true;
       }
-      // Running Mocap, Update Like Normal
+      // Running Comp Filter, Update Like Normal
       else {
         return state_estimator_->updateOnce(last_robot_state_msg_);
       }
@@ -507,7 +503,7 @@ void RobotDriver::publishState() {
     imu_pub_.publish(last_imu_msg_);
     joint_state_pub_.publish(last_joint_state_msg_);
     robot_state_pub_.publish(last_robot_state_msg_);
-    state_estimate_pub_.publish(state_estimate_);
+    // state_estimate_pub_.publish(state_estimate_);
   } else {
     if (control_mode_ == READY) {
       joint_state_pub_.publish(last_joint_state_msg_);

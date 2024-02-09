@@ -140,6 +140,7 @@ bool EKFEstimator::updateOnce(quad_msgs::RobotState& estimated_state_) {
     // (*last_robot_state_msg_).body.twist.linear); ROS_INFO_STREAM("Predict
     // Estimate" << X_pre.segment(3,3).transpose()); ROS_INFO_STREAM("Update
     // Estimate" << X.segment(3,3).transpose());
+    estimated_state_.joints = *last_joint_state_msg_;
     estimated_state_ = new_state_est;
   }
   return true;
