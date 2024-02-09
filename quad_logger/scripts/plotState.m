@@ -133,6 +133,7 @@ set(linearStateFig, 'Position', [100 100 1200 600])
 align_Ylabels(linearStateFig);
 
 %% Plot angular state data
+
 angularStateFig = figure(angularStateFig);
 angularStateFig.Name = "angular_states";
 
@@ -374,6 +375,7 @@ align_Ylabels(footVelocityFig);
 %% Export
 
 if nargout >0
+    %varargout{1} = [COMTrajFig,linearStateFig,footPositionFig, footVelocityFig];
     varargout{1} = [COMTrajFig, linearStateFig, angularStateFig, jointPositionFig, jointVelocityFig, ...
-        jointEffortFig, footPositionFig, footVelocityFig];
+         jointEffortFig, footPositionFig, footVelocityFig];
 end

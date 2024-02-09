@@ -1,0 +1,107 @@
+
+<launch>
+  <arg name="gui"             default="true"/>
+  <arg name="paused"          default="false"/>
+  <arg name="controller"      default="underbrush"/>
+  <arg name="live_plot"       default="false"/>
+  <arg name="world"           default="flat"/>
+  <arg name="robot_type"      default="spirit_rotors"/>
+
+  <include file="$(find quad_utils)/launch/quad_gazebo.launch" >
+    <arg name="gui"             value="$(arg gui)" />
+    <arg name="paused"          value="$(arg paused)" />
+    <arg name="controller"      value="$(arg controller)" />
+    <arg name="live_plot"       value="$(arg live_plot)" />
+    <arg name="world"           value="$(arg world)" />
+    <arg name="robot_type"      value="$(arg robot_type)" />
+  </include>
+
+  <!-- Load underbrush compliant elements -->
+  <param name="beam_description_sdf" textfile="$(find underbrush_description)/sdf/compliant_beam_horizontal.sdf" />
+
+  <param name="cord_description_sdf" textfile="$(find underbrush_description)/sdf/compliant_cord.sdf" />
+
+  <param name="plat_description_sdf" textfile="$(find underbrush_description)/sdf/compliant_platform_flat.sdf" />
+
+  <param name="plat_description_midfriction_sdf" textfile="$(find underbrush_description)/sdf/compliant_platform_flat_midfriction.sdf" />
+
+  <param name="plat_description_lowfriction_sdf" textfile="$(find underbrush_description)/sdf/compliant_platform_flat_lowfriction.sdf" />
+
+
+  <!--
+  <node name="spawn_underbrush1" pkg="gazebo_ros" type="spawn_model" args="-sdf -param cord_description_sdf -model underbrush1 -x 0.6 -y -0.5 -z 0.16" output="screen"/>
+
+  <node name="spawn_underbrush2" pkg="gazebo_ros" type="spawn_model" args="-sdf -param cord_description_sdf -model underbrush2 -x 0.6 -y -0.5 -z 0.08" output="screen"/>
+
+  <node name="spawn_underbrush3" pkg="gazebo_ros" type="spawn_model" args="-sdf -param cord_description_sdf -model underbrush3 -x 0.7 -y -0.5 -z 0.18" output="screen"/>
+  <node name="spawn_underbrush4" pkg="gazebo_ros" type="spawn_model" args="-sdf -param cord_description_sdf -model underbrush4 -x 1.0 -y -0.5 -z 0.06" output="screen"/>
+  <node name="spawn_underbrush5" pkg="gazebo_ros" type="spawn_model" args="-sdf -param cord_description_sdf -model underbrush5 -x 1.0 -y -0.5 -z 0.13" output="screen"/>
+  <node name="spawn_underbrush6" pkg="gazebo_ros" type="spawn_model" args="-sdf -param cord_description_sdf -model underbrush6 -x 1.3 -y -0.5 -z 0.17" output="screen"/>
+  <node name="spawn_underbrush7" pkg="gazebo_ros" type="spawn_model" args="-sdf -param cord_description_sdf -model underbrush7 -x 1.5 -y -0.5 -z 0.09" output="screen"/>
+  <node name="spawn_underbrush8" pkg="gazebo_ros" type="spawn_model" args="-sdf -param cord_description_sdf -model underbrush8 -x 1.8 -y -0.5 -z 0.2" output="screen"/>
+  -->
+
+  <!-- Actual experimental setup -->
+  
+  
+  <node name="spawn_underbrush" pkg="gazebo_ros" type="spawn_model" args="-sdf -param cord_description_sdf -model underbrush -x 0.6 -y -0.5 -z 0.2" output="screen"/>
+  <node name="spawn_underbrush1" pkg="gazebo_ros" type="spawn_model" args="-sdf -param cord_description_sdf -model underbrush1 -x 1.03 -y -0.5 -z 0.12" output="screen"/>
+  <node name="spawn_underbrush2" pkg="gazebo_ros" type="spawn_model" args="-sdf -param cord_description_sdf -model underbrush2 -x 1.03 -y -0.5 -z 0.23" output="screen"/>
+  <node name="spawn_underbrush3" pkg="gazebo_ros" type="spawn_model" args="-sdf -param cord_description_sdf -model underbrush3 -x 1.36 -y -0.5 -z 0.15" output="screen"/>
+  
+  
+  
+  
+  <!-- This part is only for testing including complaint beam in simualtion-->
+  
+  <node name="spawn_underbrush4" pkg="gazebo_ros" type="spawn_model" args="-sdf -param beam_description_sdf -model underbrush4 -x 0.8 -y -0.5 -z 0.08" output="screen"/>
+  <node name="spawn_underbrush5" pkg="gazebo_ros" type="spawn_model" args="-sdf -param beam_description_sdf -model underbrush5 -x 1.4 -y -0.5 -z 0.10" output="screen"/>
+  <node name="spawn_underbrush6" pkg="gazebo_ros" type="spawn_model" args="-sdf -param beam_description_sdf -model underbrush6 -x 1.9 -y -0.5 -z 0.13" output="screen"/>
+  
+  
+  <node name="plat" pkg="gazebo_ros" type="spawn_model" args="-sdf -param plat_description_sdf -model plat -x 0.5 -y -1.15 -z 0.01" output="screen"/>
+  <node name="plat2" pkg="gazebo_ros" type="spawn_model" args="-sdf -param plat_description_sdf -model plat2 -x 0.5 -y -1.0 -z 0.01" output="screen"/>
+  <node name="plat3" pkg="gazebo_ros" type="spawn_model" args="-sdf -param plat_description_sdf -model plat3 -x 0.5 -y -0.85 -z 0.01" output="screen"/>
+  <node name="plat4" pkg="gazebo_ros" type="spawn_model" args="-sdf -param plat_description_sdf -model plat4 -x 0.5 -y -0.70 -z 0.01" output="screen"/>
+  <node name="plat5" pkg="gazebo_ros" type="spawn_model" args="-sdf -param plat_description_sdf -model plat5 -x 0.5 -y -0.55 -z 0.01" output="screen"/>
+  <node name="plat6" pkg="gazebo_ros" type="spawn_model" args="-sdf -param plat_description_sdf -model plat6 -x 0.5 -y -0.40 -z 0.01" output="screen"/>
+  <node name="plat7" pkg="gazebo_ros" type="spawn_model" args="-sdf -param plat_description_sdf -model plat7 -x 0.5 -y -0.25 -z 0.01" output="screen"/>
+  <node name="plat8" pkg="gazebo_ros" type="spawn_model" args="-sdf -param plat_description_sdf -model plat8 -x 0.5 -y -0.10 -z 0.01" output="screen"/>
+  <node name="plat9" pkg="gazebo_ros" type="spawn_model" args="-sdf -param plat_description_sdf -model plat9 -x 0.5 -y 0.05 -z 0.01" output="screen"/>
+  <node name="plat10" pkg="gazebo_ros" type="spawn_model" args="-sdf -param plat_description_sdf -model plat11 -x 0.5 -y 0.20 -z 0.01" output="screen"/>
+  <node name="plat11" pkg="gazebo_ros" type="spawn_model" args="-sdf -param plat_description_sdf -model plat10 -x 0.5 -y 0.35 -z 0.01" output="screen"/>
+  <node name="plat12" pkg="gazebo_ros" type="spawn_model" args="-sdf -param plat_description_sdf -model plat12 -x 0.5 -y 0.50 -z 0.01" output="screen"/>
+
+
+
+
+
+  <node name="plat_low" pkg="gazebo_ros" type="spawn_model" args="-sdf -param plat_description_lowfriction_sdf -model plat_low -x 0.5 -y -1.10 -z 0.01" output="screen"/>
+  <node name="plat_low2" pkg="gazebo_ros" type="spawn_model" args="-sdf -param plat_description_lowfriction_sdf -model plat_low2 -x 0.5 -y -0.95 -z 0.01" output="screen"/>
+  <node name="plat_low3" pkg="gazebo_ros" type="spawn_model" args="-sdf -param plat_description_lowfriction_sdf -model plat_low3 -x 0.5 -y -0.8 -z 0.01" output="screen"/>
+  <node name="plat_low4" pkg="gazebo_ros" type="spawn_model" args="-sdf -param plat_description_lowfriction_sdf -model plat_low4 -x 0.5 -y -0.65 -z 0.01" output="screen"/>
+  <node name="plat_low5" pkg="gazebo_ros" type="spawn_model" args="-sdf -param plat_description_lowfriction_sdf -model plat_low5 -x 0.5 -y -0.50 -z 0.01" output="screen"/>
+  <node name="plat_low6" pkg="gazebo_ros" type="spawn_model" args="-sdf -param plat_description_lowfriction_sdf -model plat_low6 -x 0.5 -y -0.35 -z 0.01" output="screen"/>
+  <node name="plat_low7" pkg="gazebo_ros" type="spawn_model" args="-sdf -param plat_description_lowfriction_sdf -model plat_low7 -x 0.5 -y -0.20 -z 0.01" output="screen"/>
+  <node name="plat_low8" pkg="gazebo_ros" type="spawn_model" args="-sdf -param plat_description_lowfriction_sdf -model plat_low8 -x 0.5 -y -0.05 -z 0.01" output="screen"/>
+  <node name="plat_low9" pkg="gazebo_ros" type="spawn_model" args="-sdf -param plat_description_lowfriction_sdf -model plat_low9 -x 0.5 -y 0.10 -z 0.01" output="screen"/>
+  <node name="plat_low10" pkg="gazebo_ros" type="spawn_model" args="-sdf -param plat_description_lowfriction_sdf -model plat_low10 -x 0.5 -y 0.25 -z 0.01" output="screen"/>
+  <node name="plat_low11" pkg="gazebo_ros" type="spawn_model" args="-sdf -param plat_description_lowfriction_sdf -model plat_low11 -x 0.5 -y 0.40 -z 0.01" output="screen"/>
+  <node name="plat_low12" pkg="gazebo_ros" type="spawn_model" args="-sdf -param plat_description_lowfriction_sdf -model plat_low12 -x 0.5 -y 0.55 -z 0.01" output="screen"/>
+  
+
+ <node name="plat_mid" pkg="gazebo_ros" type="spawn_model" args="-sdf -param plat_description_midfriction_sdf -model plat_mid -x 0.5 -y -1.05 -z 0.01" output="screen"/>
+ <node name="plat_mid2" pkg="gazebo_ros" type="spawn_model" args="-sdf -param plat_description_midfriction_sdf -model plat_mid2 -x 0.5 -y -0.90 -z 0.01" output="screen"/>
+ <node name="plat_mid3" pkg="gazebo_ros" type="spawn_model" args="-sdf -param plat_description_midfriction_sdf -model plat_mid3 -x 0.5 -y -0.75 -z 0.01" output="screen"/>
+ <node name="plat_mid4" pkg="gazebo_ros" type="spawn_model" args="-sdf -param plat_description_midfriction_sdf -model plat_mid4 -x 0.5 -y -0.60 -z 0.01" output="screen"/>
+ <node name="plat_mid5" pkg="gazebo_ros" type="spawn_model" args="-sdf -param plat_description_midfriction_sdf -model plat_mid5 -x 0.5 -y -0.45 -z 0.01" output="screen"/>
+ <node name="plat_mid6" pkg="gazebo_ros" type="spawn_model" args="-sdf -param plat_description_midfriction_sdf -model plat_mid6 -x 0.5 -y -0.30 -z 0.01" output="screen"/>
+ <node name="plat_mid7" pkg="gazebo_ros" type="spawn_model" args="-sdf -param plat_description_midfriction_sdf -model plat_mid7 -x 0.5 -y -0.15 -z 0.01" output="screen"/>
+ <node name="plat_mid8" pkg="gazebo_ros" type="spawn_model" args="-sdf -param plat_description_midfriction_sdf -model plat_mid8 -x 0.5 -y 0.0 -z 0.01" output="screen"/>
+ <node name="plat_mid9" pkg="gazebo_ros" type="spawn_model" args="-sdf -param plat_description_midfriction_sdf -model plat_mid9 -x 0.5 -y 0.15 -z 0.01" output="screen"/>
+ <node name="plat_mid10" pkg="gazebo_ros" type="spawn_model" args="-sdf -param plat_description_midfriction_sdf -model plat_mid10 -x 0.5 -y 0.30 -z 0.01" output="screen"/>
+ <node name="plat_mid11" pkg="gazebo_ros" type="spawn_model" args="-sdf -param plat_description_midfriction_sdf -model plat_mid11 -x 0.5 -y 0.45 -z 0.01" output="screen"/>
+ <node name="plat_mid12" pkg="gazebo_ros" type="spawn_model" args="-sdf -param plat_description_midfriction_sdf -model plat_mid12 -x 0.5 -y 0.60 -z 0.01" output="screen"/>
+
+
+</launch>

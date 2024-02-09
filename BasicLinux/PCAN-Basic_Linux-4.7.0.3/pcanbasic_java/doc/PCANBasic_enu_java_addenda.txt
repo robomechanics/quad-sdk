@@ -1,0 +1,16 @@
+===============================================================================
+PCANBasic_enu_java_addenda.txt
+
+PCAN-Basic V4.6.0
+Copyright (c) 2022 PEAK-System Technik GmbH Darmstadt, Germany
+All rights reserved.
+===============================================================================
+
+Differences with documentation
+==============================
+
+Some features listed in the PCAN Basic documentation are changed due to incompatibilities with Java language.
+
+- The following parameters have a slightly different behaviour/usage than the one described in the documentation:
+	* PCAN_ATTACHED_CHANNELS: in GetValue function, 4th parameter BufferLength represents the size of the buffer passed as 3rd parameter. 
+		For this PCAN-Basic parameter, if the JNI library detects that the buffer (passed as 3rd parameter) is a TPCANChannelInformation array, then 4th parameter is ignored and the size is calculated from the length of the array.

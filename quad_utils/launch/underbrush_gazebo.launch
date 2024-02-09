@@ -4,7 +4,7 @@
   <arg name="paused"          default="false"/>
   <arg name="controller"      default="underbrush"/>
   <arg name="live_plot"       default="false"/>
-  <arg name="world"           default="flat"/>
+  <arg name="world"           default="slope_20_hole"/>
   <arg name="robot_type"      default="spirit_rotors"/>
 
   <include file="$(find quad_utils)/launch/quad_gazebo.launch" >
@@ -40,5 +40,11 @@
   <node name="spawn_underbrush1" pkg="gazebo_ros" type="spawn_model" args="-sdf -param cord_description_sdf -model underbrush1 -x 1.03 -y -0.5 -z 0.12" output="screen"/>
   <node name="spawn_underbrush2" pkg="gazebo_ros" type="spawn_model" args="-sdf -param cord_description_sdf -model underbrush2 -x 1.03 -y -0.5 -z 0.23" output="screen"/>
   <node name="spawn_underbrush3" pkg="gazebo_ros" type="spawn_model" args="-sdf -param cord_description_sdf -model underbrush3 -x 1.36 -y -0.5 -z 0.15" output="screen"/>
+  
+  <!-- This part is only for testing including complaint beam in simualtion-->
+  <node name="spawn_underbrush4" pkg="gazebo_ros" type="spawn_model" args="-sdf -param underbrush_description_sdf -model underbrush4 -x 0.8 -y -0.5 -z 0.10" output="screen"/>
+  <node name="spawn_underbrush5" pkg="gazebo_ros" type="spawn_model" args="-sdf -param underbrush_description_sdf -model underbrush5 -x 0.8 -y -0.1 -z 0.10" output="screen"/>
+  <node name="spawn_underbrush6" pkg="gazebo_ros" type="spawn_model" args="-sdf -param underbrush_description_sdf -model underbrush6 -x 0.8 -y 0.3 -z 0.10" output="screen"/>
+
   <!---->
 </launch>
