@@ -431,6 +431,7 @@ bool RobotDriver::updateState() {
     if (last_mocap_msg_ != NULL) {
       state_estimator_->loadMocapMsg(last_mocap_msg_);
     }
+    ROS_INFO_STREAM("1");
     // State information coming through sim subscribers, not hardware interface
     if (state_estimator_ != nullptr) {
       // If Running EKF Filter, Run State Initialization
@@ -444,6 +445,7 @@ bool RobotDriver::updateState() {
         }
         else{
         // Robot is Standing, State is Initialized
+        ROS_INFO_STREAM("2");
         state_estimator_->updateOnce(last_robot_state_msg_);
         state_estimate_ = last_robot_state_msg_;
         // Robot is Sitting, State hasn't been Initialized
@@ -453,6 +455,7 @@ bool RobotDriver::updateState() {
       }
       // Running Comp Filter, Update Like Normal
       else {
+        ROS_INFO_STREAM("3");
         return state_estimator_->updateOnce(last_robot_state_msg_);
       }
     } else {
@@ -517,9 +520,10 @@ void RobotDriver::publishState() {
 
 bool RobotDriver::updateControl() {
   // Check if state machine should be skipped
-
+  ROS_INFO_STREAM("6");
   bool valid_cmd = true;
   if (leg_controller_->overrideStateMachine()) {
+    ROS_INFO_STREAM("7");
     valid_cmd = leg_controller_->computeLegCommandArray(
         last_robot_state_msg_, leg_command_array_msg_, grf_array_msg_);
     return valid_cmd;
@@ -527,7 +531,7 @@ bool RobotDriver::updateControl() {
 
   // Check incoming messages to determine if we should enter safety mode
   checkMessagesForSafety();
-
+  ROS_INFO_STREAM("8");
   if (last_robot_state_msg_.header.stamp.toSec() == 0) {
     return false;
   }
@@ -542,7 +546,7 @@ bool RobotDriver::updateControl() {
 
   // Initialize leg command message
   leg_command_array_msg_.leg_commands.resize(num_feet_);
-
+  ROS_INFO_STREAM("9");
   // Enter state machine for filling motor command message
   if (control_mode_ == SAFETY) {
     for (int i = 0; i < num_feet_; ++i) {
