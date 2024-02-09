@@ -442,13 +442,14 @@ bool RobotDriver::updateState() {
           initialized_ = READY;
           ROS_INFO_STREAM("Initialized the State");
         }
+        else{
         // Robot is Standing, State is Initialized
-        if (initialized_ == READY) {
-          state_estimator_->updateOnce(last_robot_state_msg_);
-          state_estimate_ = last_robot_state_msg_;
-        }
+        state_estimator_->updateOnce(last_robot_state_msg_);
+        state_estimate_ = last_robot_state_msg_;
         // Robot is Sitting, State hasn't been Initialized
+        ROS_INFO_STREAM(last_robot_state_msg_);
         return true;
+        }
       }
       // Running Comp Filter, Update Like Normal
       else {

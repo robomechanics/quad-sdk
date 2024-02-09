@@ -143,6 +143,7 @@ bool EKFEstimator::updateOnce(quad_msgs::RobotState& estimated_state_) {
     estimated_state_.joints = *last_joint_state_msg_;
     estimated_state_ = new_state_est;
   }
+  estimated_state_.joints = *last_joint_state_msg_;
   return true;
 }
 
