@@ -40,16 +40,91 @@
 #include "nmpc_controller/gen/eval_g_new_platform.h"
 #include "nmpc_controller/gen/eval_hess_g_new_platform.h"
 #include "nmpc_controller/gen/eval_jac_g_new_platform.h"
+#include "nmpc_controller/gen/eval_g_new_platform.h"
+#include "nmpc_controller/gen/eval_hess_g_new_platform.h"
+#include "nmpc_controller/gen/eval_jac_g_new_platform.h"
 #include "quad_utils/function_timer.h"
 #include "quad_utils/quad_kd.h"
 
 using namespace Ipopt;
 
-class quadNLP : public TNLP
-{
-public:
-    // Horizon length, state dimension, input dimension, and constraints dimension
-    int N_, n_, m_, g_;
+enum SystemID {
+  SPIRIT,
+  A1,
+  NEW_PLATFORM,
+  SIMPLE_TO_SIMPLE,
+  SIMPLE_TO_COMPLEX,
+  COMPLEX_TO_COMPLEX,
+  COMPLEX_TO_SIMPLE
+};
+
+enum FunctionID { FUNC, JAC, HESS };
+
+// Struct for storing parameter information
+struct NLPConfig {
+  int x_dim_complex = 0;
+  int u_dim_complex = 0;
+  int g_dim_complex = 0;
+  int x_dim_cost_complex = 0;
+  int u_dim_cost_complex = 0;
+  int x_dim_simple = 0;
+  int u_dim_simple = 0;
+  int g_dim_simple = 0;
+  int x_dim_cost_simple = 0;
+  int u_dim_cost_simple = 0;
+  int x_dim_null = 0;
+  int u_dim_null = 0;
+
+  Eigen::VectorXd Q_complex;
+  Eigen::VectorXd R_complex;
+  Eigen::VectorXd x_min_complex;
+  Eigen::VectorXd x_max_complex;
+  Eigen::VectorXd x_min_complex_soft;
+  Eigen::VectorXd x_max_complex_soft;
+  Eigen::VectorXd u_min_complex;
+  Eigen::VectorXd u_max_complex;
+  Eigen::VectorXd g_min_complex;
+  Eigen::VectorXd g_max_complex;
+};
+
+// Struct for storing diagnostic information
+struct NLPDiagnostics {
+  double compute_time, cost;
+  int iterations, horizon_length;
+  Eigen::VectorXi complexity_schedule;
+  Eigen::VectorXd element_times;
+
+  void loadDiagnosticsMsg(quad_msgs::RobotPlanDiagnostics &msg) {
+    msg.compute_time = compute_time;
+    msg.cost = cost;
+    msg.iterations = iterations;
+    msg.horizon_length = horizon_length;
+
+    msg.complexity_schedule.resize(complexity_schedule.size());
+    msg.element_times.resize(element_times.size());
+    for (int i = 0; i < complexity_schedule.size(); i++) {
+      msg.complexity_schedule.at(i) = complexity_schedule[i];
+      msg.element_times.at(i) = element_times[i];
+    }
+  }
+};
+
+class quadNLP : public TNLP {
+ public:
+  /// Diagnostics struct for gathering metadata
+  NLPDiagnostics diagnostics_;
+
+  /// Config struct for storing meta parameters
+  NLPConfig config_;
+
+  /// Default system used for NLP (if not mixed complexity)
+  SystemID default_system_;
+
+  // QuadKD object for kinematics calculations
+  std::shared_ptr<quad_utils::QuadKD> quadKD_;
+
+  // Horizon length, state dimension, input dimension, and constraints dimension
+  int N_, g_relaxed_;
 
     int leg_input_start_idx_;
 
@@ -59,8 +134,34 @@ public:
 
     Eigen::MatrixXd leg_input_;
 
-    // State cost weighting, input cost weighting
-    Eigen::MatrixXd Q_, R_;
+  /// Boolean for whether to include the terrain in the foot height constraint
+  const bool use_terrain_constraint_ = false;
+
+  /// Boolean for whether to include the terrain in the foot height constraint
+  const bool remember_complex_elements_ = true;
+
+  const grid_map::InterpolationMethods interp_type_ =
+      grid_map::InterpolationMethods::INTER_LINEAR;
+
+  /// Map for constraint names
+  std::vector<std::vector<std::string>> constr_names_;
+
+  /// Number of variables , primal variables, slack variables, and constraints
+  int n_vars_, n_vars_primal_, n_vars_slack_, n_constraints_;
+
+  /// Number of state and control variables added in complex model
+  int n_null_, m_null_;
+
+  /// Nominal null state variables
+  Eigen::VectorXd x_null_nom_;
+
+  /// Declare the number of possible system ids (must match size of SystemID
+  /// enum)
+  static const int num_sys_id_ = 7;
+
+  /// Declare the number of possible function ids (must match size of FunctionID
+  /// enum)
+  static const int num_func_id_ = 3;
 
     // Scale factor for Q and R
     Eigen::MatrixXd Q_factor_, R_factor_;
