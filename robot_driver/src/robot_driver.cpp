@@ -71,6 +71,8 @@ RobotDriver::RobotDriver(ros::NodeHandle nh, int argc, char **argv) {
   // quad_utils::loadROSParam(nh_, "nmpc_controller/joints/x_lb", pos_limit_min);
   // quad_utils::loadROSParam(nh_, "nmpc_controller/joints/x_ub", pos_limit_max);
 
+  ROS_ERROR_STREAM("robot type: " << robot_name);
+
   // Setup pubs and subs
   local_plan_sub_ =
       nh_.subscribe(local_plan_topic, 1, &RobotDriver::localPlanCallback, this,
