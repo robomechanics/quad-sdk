@@ -2,15 +2,13 @@
 #define NMPC_CONTROLLER_H
 
 #include <math.h>
-// #include <eigen3/Eigen/Eigen>
 #include <quad_msgs/RobotPlan.h>
 #include <quad_msgs/MultiFootPlanDiscrete.h>
 #include <quad_msgs/GRFArray.h>
+#include <quad_msgs/LegCommand.h>
 #include <quad_msgs/RobotState.h>
-#include <quad_msgs/RobotStateTrajectory.h>
-// #include <local_planner/quadruped_mpc.h>
 #include <quad_utils/ros_utils.h>
-#include "quad_utils/matplotlibcpp.h"
+#include <ros/ros.h>
 #include <tf2_geometry_msgs/tf2_geometry_msgs.h>
 
 #include <Eigen/Dense>
