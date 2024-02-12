@@ -13,6 +13,8 @@
 #include <quad_msgs/MultiFootPlanDiscrete.h>
 #include <quad_msgs/GRFArray.h>
 #include <quad_utils/ros_utils.h>
+#include <quad_msgs/FootPlanDiscrete.h>
+#include <ros/ros.h>
 
 #include <tf2/LinearMath/Quaternion.h>
 #include <tf2_ros/transform_broadcaster.h>
@@ -202,7 +204,7 @@ class RVizInterface {
   double update_rate_;
 
   /// Number for showing orientation of plan
-  int orientation_subsample_num_;
+  int orientation_subsample_interval_;
 
   /// Handle for the map frame
   std::string map_frame_;
