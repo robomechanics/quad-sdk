@@ -11,7 +11,9 @@
 #include <quad_msgs/RobotPlan.h>
 #include <quad_msgs/RobotState.h>
 #include <quad_utils/quad_kd.h>
-#include "quad_utils/matplotlibcpp.h"
+#include <quad_utils/ros_utils.h>
+#include <ros/ros.h>
+
 #include <tf2_geometry_msgs/tf2_geometry_msgs.h>
 
 //! Local Body Planner library
@@ -205,7 +207,10 @@ class LocalPlanner {
   Eigen::MatrixXd ref_body_plan_;
 
   /// Vector of ground height along reference trajectory
-  Eigen::MatrixXd ref_ground_height_;
+  Eigen::VectorXd ref_ground_height_;
+
+  /// Vector of primitive along reference trajectory
+  Eigen::VectorXi ref_primitive_plan_;
 
   /// Matrix of grfs (N x Nu: rows correspond to individual arrays of GRFs in the horizon)
   Eigen::MatrixXd grf_plan_; 

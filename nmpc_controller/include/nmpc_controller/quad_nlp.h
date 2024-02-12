@@ -126,13 +126,19 @@ class quadNLP : public TNLP {
   // Horizon length, state dimension, input dimension, and constraints dimension
   int N_, g_relaxed_;
 
-    int leg_input_start_idx_;
+  // Number of states in different components
+  const int n_body_ = 12, n_foot_ = 24, n_joints_ = 24, n_tail_ = 4,
+            m_body_ = 12, m_foot_ = 24, m_tail_ = 2;
 
-    int type_;
+  /// Vectors of state and constraint dimension for each finite element
+  Eigen::VectorXi n_vec_, n_slack_vec_, m_vec_, g_vec_, g_slack_vec_,
+      n_cost_vec_, m_cost_vec_;
 
-    bool known_leg_input_;
+  /// Boolean for whether to apply panic variables for complex constraints
+  const bool apply_slack_to_complex_constr_ = true;
 
-    Eigen::MatrixXd leg_input_;
+  /// Boolean for whether to allow modifications of foot trajectory
+  const bool always_constrain_feet_ = false;
 
   /// Boolean for whether to include the terrain in the foot height constraint
   const bool use_terrain_constraint_ = false;
@@ -164,10 +170,16 @@ class quadNLP : public TNLP {
   static const int num_func_id_ = 3;
 
     // Scale factor for Q and R
-    Eigen::MatrixXd Q_factor_, R_factor_;
+    double Q_temporal_factor_, R_temporal_factor_;
 
     // Feet location from feet to body COM in world frame
-    Eigen::MatrixXd feet_location_;
+    Eigen::MatrixXd foot_pos_body_;
+
+    // Foot locations in world frame
+    Eigen::MatrixXd foot_pos_world_;
+
+    // Foot velocities in world frame
+    Eigen::MatrixXd foot_vel_world_;
 
     // Step length
     double dt_;

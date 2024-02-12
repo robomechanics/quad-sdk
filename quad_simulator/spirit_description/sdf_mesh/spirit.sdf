@@ -249,12 +249,6 @@ SOFTWARE.
           </contact>
           <friction>
             <ode />
-=======
-            <ode/>
-          </contact>
-          <friction>
-            <ode/>
->>>>>>> d5a072b3a89924f1b027bb8b8d27919519fafc18
           </friction>
         </surface>
       </collision>
@@ -264,9 +258,6 @@ SOFTWARE.
           <mesh>
             <uri>model:///meshes/Spirit40_Lower_Leg_transformed.stl</uri>
           </mesh>
-=======
-         </mesh>
->>>>>>> d5a072b3a89924f1b027bb8b8d27919519fafc18
         </geometry>
         <material>
           <script>

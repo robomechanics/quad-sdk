@@ -82,34 +82,6 @@ void GlobalBodyPlanner::terrainMapCallback(
       planner_config_.h_nom + planner_config_.terrain.getGroundHeight(
                                   goal_state_.pos[0], goal_state_.pos[1]);
 }
-=======
-void GlobalBodyPlanner::robotStateCallback(const quad_msgs::RobotState::ConstPtr& msg) {
-
-  // Quick check to make sure message data has been populated and is valid
-  geometry_msgs::Quaternion quat = msg->body.pose.orientation;
-  if (abs(sqrt(pow(quat.w,2) + pow(quat.x,2) + pow(quat.y,2) + pow(quat.z,2)) - 1.0) < 1e-3) {
-    // Get RPY from the state message
-    tf2::Quaternion q(quat.x, quat.y, quat.z, quat.w);
-    q.normalize();
-    tf2::Matrix3x3 m(q);
-    double roll, pitch, yaw;
-    m.getRPY(roll, pitch, yaw);
-
-    // Only need the states that will be used in planning (ignore roll and yaw)
-    robot_state_.clear();
-    robot_state_.push_back(msg->body.pose.position.x);
-    robot_state_.push_back(msg->body.pose.position.y);
-    robot_state_.push_back(msg->body.pose.position.z);
-    robot_state_.push_back(roll);
-    robot_state_.push_back(pitch);
-    robot_state_.push_back(yaw);
-    robot_state_.push_back(msg->body.twist.linear.x);
-    robot_state_.push_back(msg->body.twist.linear.y);
-    robot_state_.push_back(msg->body.twist.linear.z);
-    robot_state_.push_back(msg->body.twist.angular.x);
-    robot_state_.push_back(msg->body.twist.angular.y);
-    robot_state_.push_back(msg->body.twist.angular.z);
->>>>>>> d5a072b3a89924f1b027bb8b8d27919519fafc18
 
 void GlobalBodyPlanner::robotStateCallback(
     const quad_msgs::RobotState::ConstPtr& msg) {
