@@ -215,6 +215,7 @@ bool quadNLP::get_bounds_info_single_complex_fe(
       g_ub.segment(g_mm_idx + n_joints_ / 2 + 3 * j, 3).fill(2e19);
     }
   }
+  return true;
 }
 
 // Returns the variable bounds

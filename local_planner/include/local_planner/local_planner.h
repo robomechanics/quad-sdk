@@ -78,6 +78,11 @@ class LocalPlanner {
    */
   void getReference();
 
+   /**
+    * @brief Unwrap the yaw signal in the reference body plan
+    */
+  void unwrapYawReference();
+
   /**
    * @brief Function to compute the local plan
    * @return Boolean if local plan was found successfully

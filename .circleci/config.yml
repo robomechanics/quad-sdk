@@ -2,7 +2,7 @@ jobs:
   build-and-test:
     working_directory: /catkin_ws/src
     docker:
-      - image: osrf/ros:melodic-desktop-full
+      - image: osrf/ros:noetic-desktop-full
     steps:
       - checkout
       - run:
@@ -11,7 +11,7 @@ jobs:
       - run:
           name: "Call setup script and build"
           command: |
-            source /opt/ros/melodic/setup.bash
+            source /opt/ros/noetic/setup.bash
             chmod +x setup.sh
             ./setup.sh
             cd /catkin_ws
@@ -19,7 +19,7 @@ jobs:
       - run:
           name: "Load ROS params in the background"
           command: |
-            source /opt/ros/melodic/setup.bash
+            source /opt/ros/noetic/setup.bash
             source /catkin_ws/devel/setup.bash
             roslaunch quad_utils load_global_params.launch load_robot_params:=true
             roslaunch quad_utils load_params.launch
@@ -28,7 +28,7 @@ jobs:
           name: "Run tests"
           command: |
             cd /catkin_ws
-            source /opt/ros/melodic/setup.bash
+            source /opt/ros/noetic/setup.bash
             source /catkin_ws/devel/setup.bash
             catkin run_tests -j2 -l2 && catkin_test_results
       - run:
@@ -36,6 +36,6 @@ jobs:
           command: ./scripts/lint_soft.sh
 workflows:
   version: 2
-  melodic-build-and-test:
+  noetic-build-and-test:
     jobs:
       - build-and-test

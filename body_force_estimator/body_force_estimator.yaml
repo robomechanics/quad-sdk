@@ -1,0 +1,4 @@
+body_force_estimator:
+  update_rate: 250
+  K_O: 25 # 50
+  cancel_friction: 1
