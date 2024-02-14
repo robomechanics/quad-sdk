@@ -24,8 +24,8 @@ if nargin>0
     %namespace = varargin{2};
     namespace = 'robot_1';
 else
-    trialName = 'Constant_Speed_BFE_Baseline'; % Set to '' to load via GUI
-    trialName2 = 'Constant_Speed_BFE_8Kg'; % Second Bag to compare
+    trialName = '';%'Set to Baseline Walk to compare'; % Set to '' to load via GUI
+    trialName2 = '';%'Set to Payload Walk to compare'; % Second Bag to compare
     namespace = 'robot_1'; % Namespace of the robot bag, set to '' if none
 end
 
@@ -216,8 +216,16 @@ xd_dot(1,:) = [0,0,0];
 
 
 % Looping to calculate mass
+num_1 = length(Xd.time);
+num_2 = length(X.time);
 
-for(i = 2:length(Xd.time))
+if(num_1 < num_2)
+    time_bound = num_1;
+else
+    time_bound = num_2;
+end
+
+for(i = 2:time_bound)
 
        e(i,:) = X.position(i,:) - Xd.position(i,:);
        %xd_dot(i,:) = Xd.position(i,:)-Xd.position(i-1,:)/(X.time(i)-X.time(i-1));
@@ -237,7 +245,7 @@ for(i = 2:length(Xd.time))
 end
 
 
-plot(Xd.time, m_b);
+plot(time_bound, m_b);
 
 
 
