@@ -52,18 +52,18 @@ void EKFEstimator::init(ros::NodeHandle& nh) {
                                   true);
 
   // Setup subs
-  
+
   grf_sub_ = nh_.subscribe(grf_topic, 1, &EKFEstimator::grfCallback, this);
   contact_sub_ =
       nh_.subscribe(contact_topic, 1, &EKFEstimator::contactCallback, this);
 
   // In Sim, Grab IMU, Joint Encoders from Gazebo
-  if(!is_hardware_){
+  if (!is_hardware_) {
     imu_sub_ = nh_.subscribe(imu_topic, 1, &EKFEstimator::imuCallback, this);
-    joint_encoder_sub_ = nh_.subscribe(joint_encoder_topic, 1,
-                                     &EKFEstimator::jointEncoderCallback, this);
+    joint_encoder_sub_ = nh_.subscribe(
+        joint_encoder_topic, 1, &EKFEstimator::jointEncoderCallback, this);
     state_ground_truth_sub_ = nh_.subscribe(
-      ground_truth_topic, 1, &EKFEstimator::groundtruthCallback, this);
+        ground_truth_topic, 1, &EKFEstimator::groundtruthCallback, this);
   }
 
   // QuadKD class
@@ -71,8 +71,8 @@ void EKFEstimator::init(ros::NodeHandle& nh) {
   ROS_INFO_STREAM("Initialized EKF Estimator");
 }
 
-bool EKFEstimator::updateOnce(quad_msgs::RobotState& last_robot_state_msg_){
-  if (is_hardware_){
+bool EKFEstimator::updateOnce(quad_msgs::RobotState& last_robot_state_msg_) {
+  if (is_hardware_) {
     ROS_INFO_STREAM("Makes it Here in Update Once");
     ros::Time state_timestamp = ros::Time::now();
     last_robot_state_msg_.joints = last_joint_state_msg_;
@@ -80,7 +80,7 @@ bool EKFEstimator::updateOnce(quad_msgs::RobotState& last_robot_state_msg_){
     last_imu_msg_.header.stamp = state_timestamp;
     ROS_INFO_STREAM("Populates Message");
   }
-  
+
   // Define Initial State, Preallocated Space for State Vectors
   X0 = Eigen::VectorXd::Zero(num_state);
 

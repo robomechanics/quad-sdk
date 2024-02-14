@@ -150,7 +150,8 @@ class RobotDriver {
   /**
    * @brief Function to set initial robot state for ekf state estimator
    */
-  void setInitialState(quad_msgs::RobotState& estimated_state, const int &mode_);
+  void setInitialState(quad_msgs::RobotState& estimated_state,
+                       const int& mode_);
 
   /**
    * @brief Publish the most recent state message with the given data
