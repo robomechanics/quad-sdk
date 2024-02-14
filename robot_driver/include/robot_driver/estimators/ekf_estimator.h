@@ -34,7 +34,7 @@ class EKFEstimator : public StateEstimator {
   EKFEstimator();
 
   void init(ros::NodeHandle& nh);
-  bool updateOnce(quad_msgs::RobotState& estimated_state_);
+  bool updateOnce(quad_msgs::RobotState& last_robot_state_msg_);
 
   /**
    * @brief Calls ros spinOnce and pubs data at set frequency
@@ -136,33 +136,7 @@ class EKFEstimator : public StateEstimator {
   void update(const Eigen::VectorXd& jk, const Eigen::VectorXd& fk,
               const Eigen::VectorXd& vk, const Eigen::VectorXd& wk);
 
-  /**
-   * @brief read IMU data
-   * @param[in] last_imu_msg_ sensor_msgs::Imu::ConstPtr imu sensor message
-   * @param[out] fk Eigen::VectorXd linear acceleration (3 * 1)
-   * @param[out] wk Eigen::VectorXd angular acceleration (3 * 1)
-   * @param[out] qk Eigen::Quaterniond orientation in quaternion
-   */
-  // void readIMU(const sensor_msgs::Imu::ConstPtr& last_imu_msg_,
-  //              Eigen::VectorXd& fk, Eigen::VectorXd& wk,
-  //              Eigen::Quaterniond& qk);
 
-  // /**
-  //  * @brief read joint encoder data
-  //  * @param[in] last_joint_state_msg_ sensor_msgs::JointState::ConstPtr joint
-  //  * state sensor message
-  //  * @param[out] jk Eigen::VectorXd jointstate (12 * 1)
-  //  */
-  // void readJointEncoder(
-  //     const sensor_msgs::JointState::ConstPtr& last_joint_state_msg_,
-  //     Eigen::VectorXd& jk);
-
-  // /**
-  //  * @brief predict quaternion k+1 from k using dt, angular velocity, and qk
-  //  * @param[in] w Eigen::VectorXd angular velocity vector (3 * 1)
-  //  * @param[in] q Eigen::VectorXd quaternion k vector (4 * 1)
-  //  * @return Eigen vector of quaternion k+1 vector (4 * 1)
-  //  */
   Eigen::VectorXd quaternionDynamics(const Eigen::VectorXd& w,
                                      const Eigen::VectorXd& q);
 
@@ -213,7 +187,7 @@ class EKFEstimator : public StateEstimator {
   ros::Subscriber state_ground_truth_sub_;
 
   /// Last state ground_truth
-  quad_msgs::RobotState::ConstPtr last_robot_state_msg_;
+//   quad_msgs::RobotState::ConstPtr last_robot_state_msg_;
 
   // quad_msgs::RobotState last_estimated_state_;
 
@@ -245,10 +219,10 @@ class EKFEstimator : public StateEstimator {
   quad_msgs::ContactMode::ConstPtr last_contact_msg_;
 
   /// Most recent IMU callback (should be timestamped!)
-  sensor_msgs::Imu::ConstPtr last_imu_msg_;
+//   sensor_msgs::Imu::ConstPtr last_imu_msg_;
 
   /// Most recent encoder callback (should be timestamped!)
-  sensor_msgs::JointState::ConstPtr last_joint_state_msg_;
+//   sensor_msgs::JointState::ConstPtr last_joint_state_msg_;
 
   /// Maximum amount of time to still use joint state message in EKF data
   double joint_state_msg_time_diff_max_;

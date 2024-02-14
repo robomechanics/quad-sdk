@@ -144,7 +144,7 @@ RobotDriver::RobotDriver(ros::NodeHandle nh, int argc, char **argv) {
 
   // Start sitting
   control_mode_ = SIT;
-  initialized_ = SIT;
+  // initialized_ = SIT;
   remote_heartbeat_received_time_ = std::numeric_limits<double>::max();
   last_state_time_ = std::numeric_limits<double>::max();
 
@@ -182,8 +182,9 @@ void RobotDriver::initStateEstimator() {
   if (state_estimator_ != nullptr) {
     // Always Initialize the Defualt State Estimator
     state_estimator_->init(nh_);
-    if (estimator_id_ == "comp_filter") {
-      // Conditional for EKF Filter
+
+    if (estimator_id_ == "comp_filter" && is_hardware_ == false) {
+      // In Sim, Initialize both the comp filter and ekf for comparison
       ekf_estimator_->init(nh_);
     }
   }
@@ -431,33 +432,10 @@ bool RobotDriver::updateState() {
     if (last_mocap_msg_ != NULL) {
       state_estimator_->loadMocapMsg(last_mocap_msg_);
     }
-    ROS_INFO_STREAM("1");
+
     // State information coming through sim subscribers, not hardware interface
     if (state_estimator_ != nullptr) {
-      // If Running EKF Filter, Run State Initialization
-      if (estimator_id_ == "ekf_filter") {
-        // Robot is Standing, but State hasn't been Initialized
-        if (initialized_ == SIT && control_mode_ == READY) {
-          setInitialState(last_robot_state_msg_, control_mode_);
-          state_estimate_ = last_robot_state_msg_;
-          initialized_ = READY;
-          ROS_INFO_STREAM("Initialized the State");
-        }
-        else{
-        // Robot is Standing, State is Initialized
-        ROS_INFO_STREAM("2");
-        state_estimator_->updateOnce(last_robot_state_msg_);
-        state_estimate_ = last_robot_state_msg_;
-        // Robot is Sitting, State hasn't been Initialized
-        ROS_INFO_STREAM(last_robot_state_msg_);
-        return true;
-        }
-      }
-      // Running Comp Filter, Update Like Normal
-      else {
-        ROS_INFO_STREAM("3");
         return state_estimator_->updateOnce(last_robot_state_msg_);
-      }
     } else {
       ROS_WARN_THROTTLE(1, "No state estimator is initialized");
       return false;
@@ -465,7 +443,7 @@ bool RobotDriver::updateState() {
   } else {  // If Operating in Sim
     if (state_estimator_ != nullptr) {
       if (initialized_ == SIT && control_mode_ == READY) {
-        ROS_INFO_STREAM("Intialized");
+        ROS_INFO_STREAM("Initialized");
         estimated_state_ = last_robot_state_msg_;
         last_joint_state_msg_.position = last_robot_state_msg_.joints.position;
         last_joint_state_msg_.velocity = last_robot_state_msg_.joints.velocity;
@@ -520,10 +498,8 @@ void RobotDriver::publishState() {
 
 bool RobotDriver::updateControl() {
   // Check if state machine should be skipped
-  ROS_INFO_STREAM("6");
   bool valid_cmd = true;
   if (leg_controller_->overrideStateMachine()) {
-    ROS_INFO_STREAM("7");
     valid_cmd = leg_controller_->computeLegCommandArray(
         last_robot_state_msg_, leg_command_array_msg_, grf_array_msg_);
     return valid_cmd;
@@ -531,7 +507,7 @@ bool RobotDriver::updateControl() {
 
   // Check incoming messages to determine if we should enter safety mode
   checkMessagesForSafety();
-  ROS_INFO_STREAM("8");
+  // ROS_INFO_STREAM("8");
   if (last_robot_state_msg_.header.stamp.toSec() == 0) {
     return false;
   }
@@ -546,7 +522,7 @@ bool RobotDriver::updateControl() {
 
   // Initialize leg command message
   leg_command_array_msg_.leg_commands.resize(num_feet_);
-  ROS_INFO_STREAM("9");
+  // ROS_INFO_STREAM("9");
   // Enter state machine for filling motor command message
   if (control_mode_ == SAFETY) {
     for (int i = 0; i < num_feet_; ++i) {
