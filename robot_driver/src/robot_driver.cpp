@@ -369,52 +369,6 @@ void RobotDriver::checkMessagesForSafety() {
   }
 }
 
-void RobotDriver::setInitialState(quad_msgs::RobotState &estimated_state_,
-                                  const int &mode) {
-  quad_msgs::RobotState initial_state_est;
-  initial_state_est.header.stamp = ros::Time::now();
-
-  // body
-  // Grab this Directly from the IMU
-  initial_state_est.body.pose.orientation.w = 0.00030045737195826113;
-  initial_state_est.body.pose.orientation.x = -0.01147174832360947;
-  initial_state_est.body.pose.orientation.y = 0.023850795430556244;
-  initial_state_est.body.pose.orientation.z = 0.9996496627684608;
-
-  initial_state_est.body.pose.position.x = 0.0;
-  initial_state_est.body.pose.position.y = 0.0;
-  initial_state_est.body.pose.position.z = 0.27;
-
-  initial_state_est.body.twist.linear.x = 0;
-  initial_state_est.body.twist.linear.y = 0;
-  initial_state_est.body.twist.linear.z = 0;
-
-  // joint
-  initial_state_est.joints.header.stamp = ros::Time::now();
-  // '8', '0', '1', '9', '2', '3', '10', '4', '5', '11', '6', '7'
-  initial_state_est.joints.name = {"8",  "0", "1", "9",  "2", "3",
-                                   "10", "4", "5", "11", "6", "7"};
-  initial_state_est.joints.position = {
-      0.014387194748858079,  0.8177457913203634, 1.3820743272425506,
-      0.014804058922688768,  0.7921387720710005, 1.321448812820032,
-      -0.014398417914668116, 0.8178440394706996, 1.381999190999604,
-      -0.014668935486087165, 0.7921917478893041, 1.3212837914085984};
-  initial_state_est.joints.velocity = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
-  initial_state_est.joints.effort = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
-  if (mode == SIT) {
-    initial_state_est.body.pose.position.z = 0.05;
-    initial_state_est.joints.position = {
-        -0.040472417167380925, 0.049068239799692215, 0.01104933258022367,
-        -0.03527970549985948,  0.049363805226127155, 0.012144606796763213,
-        0.04051345351657165,   0.04953529386537703,  0.012297179439886285,
-        0.035384327250572944,  0.04836844469406376,  0.011035278398065174};
-  }
-
-  estimated_state_ = initial_state_est;
-  ROS_INFO_STREAM("Set Robot Initial State");
-  return;
-}
-
 bool RobotDriver::updateState() {
   // If Operating on Hardware
   if (is_hardware_) {

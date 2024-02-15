@@ -115,6 +115,8 @@ class EKFEstimator : public StateEstimator {
    * @brief execute EKF Update step, return state estimate
    * @return state estimate of custom type RobotState
    */
+
+  void localPlanCallback(const quad_msgs::RobotPlan::ConstPtr &msg);
   quad_msgs::RobotState StepOnce();
 
   /**
@@ -135,6 +137,11 @@ class EKFEstimator : public StateEstimator {
    */
   void update(const Eigen::VectorXd& jk, const Eigen::VectorXd& fk,
               const Eigen::VectorXd& vk, const Eigen::VectorXd& wk);
+
+  /**
+   * @brief Function to set initial robot state for ekf state estimator
+   */
+  void setInitialState(quad_msgs::RobotState& last_robot_state_msg_);
 
 
   Eigen::VectorXd quaternionDynamics(const Eigen::VectorXd& w,
@@ -186,11 +193,6 @@ class EKFEstimator : public StateEstimator {
   /// Subscriber for ground_truth RobotState messages
   ros::Subscriber state_ground_truth_sub_;
 
-  /// Last state ground_truth
-//   quad_msgs::RobotState::ConstPtr last_robot_state_msg_;
-
-  // quad_msgs::RobotState last_estimated_state_;
-
   /// Subscriber for joint encoder messages
   ros::Subscriber joint_encoder_sub_;
 
@@ -203,6 +205,9 @@ class EKFEstimator : public StateEstimator {
   /// Subscriber for contact detection messages
   ros::Subscriber contact_sub_;
 
+  /// ROS subscriber for local plan
+  ros::Subscriber local_plan_sub_;
+
   /// Nodehandle to pub to and sub from
   ros::NodeHandle nh_;
 
@@ -211,6 +216,9 @@ class EKFEstimator : public StateEstimator {
 
   /// Last state estimate
   quad_msgs::RobotState last_state_est_;
+
+  /// Most recent local plan
+  quad_msgs::RobotPlan::ConstPtr last_local_plan_msg_;
 
   /// Last grf control message
   quad_msgs::GRFArray::ConstPtr last_grf_msg_;
