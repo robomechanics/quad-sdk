@@ -9,14 +9,14 @@
         <pose frame=''>0 0 0 0 0 0</pose>
         <geometry>
           <box>
-            <size>0.3 0.3 0.5</size>
+            <size>0.2 0.3 0.08</size>
           </box>
         </geometry>
         <surface>
           <friction>
             <ode>
-              <mu>0.9</mu>
-              <mu2>0.1</mu2> <!-- Friction between box and ground-->
+              <mu>1.5</mu>
+              <mu2>1.5</mu2> <!-- Friction between box and ground-->
             </ode>
           </friction>
         </surface>
@@ -26,7 +26,7 @@
         <pose frame=''>0 0 0 0 0 0</pose>
         <geometry>
           <box>
-            <size>0.3 0.3 0.4</size>
+            <size>0.2 0.3 0.08</size>
           </box>
         </geometry>
         <material>

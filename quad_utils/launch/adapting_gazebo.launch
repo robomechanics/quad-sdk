@@ -36,7 +36,7 @@
 
   <!-- Actual experimental setup -->
   <!---->
-  <node name="spawn_underbrush" pkg="gazebo_ros" type="spawn_model" args="-sdf -param box_sdf -model underbrush -x 0.5 -y -0 -z 0.2" output="screen"/>
+  <node name="spawn_underbrush" pkg="gazebo_ros" type="spawn_model" args="-sdf -param box_sdf -model underbrush -x 0.1 -y -0 -z 0.8" output="screen"/>
  
   <!---->
 </launch>
