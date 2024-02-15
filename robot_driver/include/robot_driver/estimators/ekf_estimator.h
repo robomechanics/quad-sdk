@@ -170,11 +170,6 @@ class EKFEstimator : public StateEstimator {
    */
   void setNoise();
 
-  /**
-   * @brief set initial state variable
-   */
-  void setInitialState();
-
   // number of states position (3 * 1) + velocity (3 * 1) + quaternion (4 * 1) +
   // feet position (12 * 1) + bias_acc (3 * 1) + bias_gyro (3 * 1)
   static const int num_state = 18;

@@ -76,12 +76,12 @@ void EKFEstimator::init(ros::NodeHandle& nh) {
 
 bool EKFEstimator::updateOnce(quad_msgs::RobotState& last_robot_state_msg_) {
   if (is_hardware_) {
-    ROS_INFO_STREAM("Makes it Here in Update Once");
+    // ROS_INFO_STREAM("Makes it Here in Update Once");
     ros::Time state_timestamp = ros::Time::now();
     last_robot_state_msg_.joints = last_joint_state_msg_;
     last_joint_state_msg_.header.stamp = state_timestamp;
     last_imu_msg_.header.stamp = state_timestamp;
-    ROS_INFO_STREAM("Populates Message");
+    // ROS_INFO_STREAM("Populates Message");
   }
 
   // Define Initial State, Preallocated Space for State Vectors
@@ -90,10 +90,9 @@ bool EKFEstimator::updateOnce(quad_msgs::RobotState& last_robot_state_msg_) {
   // set noise
   this->setNoise();
 
-  ROS_INFO_STREAM(last_imu_msg_);
+  // ROS_INFO_STREAM(last_imu_msg_);
   // Run Step Once to Calculate Change in State Once Local Planner Starts
   if (last_local_plan_msg_ != nullptr) {
-    
     if (initialized) {
       // Set Start Time on Initialization
       last_time = ros::Time::now();
@@ -130,39 +129,23 @@ bool EKFEstimator::updateOnce(quad_msgs::RobotState& last_robot_state_msg_) {
   return true;
 }
 
-void EKFEstimator::setInitialState(quad_msgs::RobotState &estimated_state_) {
-  quad_msgs::RobotState initial_state_est;
-  initial_state_est.header.stamp = ros::Time::now();
+void EKFEstimator::setInitialState(quad_msgs::RobotState& last_robot_state_msg_){
+  last_robot_state_msg_.header.stamp = ros::Time::now();
 
   // body
   // Grab this Directly from the IMU
-  initial_state_est.body.pose.orientation.w = 0.00030045737195826113;
-  initial_state_est.body.pose.orientation.x = -0.01147174832360947;
-  initial_state_est.body.pose.orientation.y = 0.023850795430556244;
-  initial_state_est.body.pose.orientation.z = 0.9996496627684608;
+  last_robot_state_msg_.body.pose.orientation.w = 1.0;
+  last_robot_state_msg_.body.pose.orientation.x = 0.0;
+  last_robot_state_msg_.body.pose.orientation.y = 0.0;
+  last_robot_state_msg_.body.pose.orientation.z = 0.0;
 
-  initial_state_est.body.pose.position.x = 0.0;
-  initial_state_est.body.pose.position.y = 0.0;
-  initial_state_est.body.pose.position.z = 0.27;
+  last_robot_state_msg_.body.pose.position.x = 0.0;
+  last_robot_state_msg_.body.pose.position.y = 0.0;
+  last_robot_state_msg_.body.pose.position.z = 0.27;
 
-  initial_state_est.body.twist.linear.x = 0;
-  initial_state_est.body.twist.linear.y = 0;
-  initial_state_est.body.twist.linear.z = 0;
-
-  // joint
-  initial_state_est.joints.header.stamp = ros::Time::now();
-  // '8', '0', '1', '9', '2', '3', '10', '4', '5', '11', '6', '7'
-  initial_state_est.joints.name = {"8",  "0", "1", "9",  "2", "3",
-                                   "10", "4", "5", "11", "6", "7"};
-  initial_state_est.joints.position = {
-      0.014387194748858079,  0.8177457913203634, 1.3820743272425506,
-      0.014804058922688768,  0.7921387720710005, 1.321448812820032,
-      -0.014398417914668116, 0.8178440394706996, 1.381999190999604,
-      -0.014668935486087165, 0.7921917478893041, 1.3212837914085984};
-  initial_state_est.joints.velocity = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
-  initial_state_est.joints.effort = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
-
-  estimated_state_ = initial_state_est;
+  last_robot_state_msg_.body.twist.linear.x = 0;
+  last_robot_state_msg_.body.twist.linear.y = 0;
+  last_robot_state_msg_.body.twist.linear.z = 0;
   ROS_INFO_STREAM("Set Robot Initial State");
   return;
 }
