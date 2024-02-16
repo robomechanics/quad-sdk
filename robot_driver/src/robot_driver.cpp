@@ -389,7 +389,7 @@ bool RobotDriver::updateState() {
 
     // State information coming through sim subscribers, not hardware interface
     if (state_estimator_ != nullptr) {
-        return state_estimator_->updateOnce(last_robot_state_msg_);
+      return state_estimator_->updateOnce(last_robot_state_msg_);
     } else {
       ROS_WARN_THROTTLE(1, "No state estimator is initialized");
       return false;
@@ -444,7 +444,7 @@ void RobotDriver::publishState() {
     if (control_mode_ == READY) {
       joint_state_pub_.publish(last_joint_state_msg_);
       if (initialized_) {
-        state_estimate_pub_.publish(estimated_state_);
+        // state_estimate_pub_.publish(estimated_state_);
       }
     }
   }

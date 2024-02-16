@@ -116,7 +116,7 @@ class EKFEstimator : public StateEstimator {
    * @return state estimate of custom type RobotState
    */
 
-  void localPlanCallback(const quad_msgs::RobotPlan::ConstPtr &msg);
+  void localPlanCallback(const quad_msgs::RobotPlan::ConstPtr& msg);
   quad_msgs::RobotState StepOnce();
 
   /**
@@ -142,7 +142,6 @@ class EKFEstimator : public StateEstimator {
    * @brief Function to set initial robot state for ekf state estimator
    */
   void setInitialState(quad_msgs::RobotState& last_robot_state_msg_);
-
 
   Eigen::VectorXd quaternionDynamics(const Eigen::VectorXd& w,
                                      const Eigen::VectorXd& q);
@@ -222,10 +221,10 @@ class EKFEstimator : public StateEstimator {
   quad_msgs::ContactMode::ConstPtr last_contact_msg_;
 
   /// Most recent IMU callback (should be timestamped!)
-//   sensor_msgs::Imu::ConstPtr last_imu_msg_;
+  //   sensor_msgs::Imu::ConstPtr last_imu_msg_;
 
   /// Most recent encoder callback (should be timestamped!)
-//   sensor_msgs::JointState::ConstPtr last_joint_state_msg_;
+  //   sensor_msgs::JointState::ConstPtr last_joint_state_msg_;
 
   /// Maximum amount of time to still use joint state message in EKF data
   double joint_state_msg_time_diff_max_;

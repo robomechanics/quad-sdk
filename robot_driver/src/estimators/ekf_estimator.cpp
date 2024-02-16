@@ -59,7 +59,7 @@ void EKFEstimator::init(ros::NodeHandle& nh) {
   local_plan_sub_ =
       nh_.subscribe(local_plan_topic, 1, &EKFEstimator::localPlanCallback, this,
                     ros::TransportHints().tcpNoDelay(true));
-                    
+
   // In Sim, Grab IMU, Joint Encoders from Gazebo
   if (!is_hardware_) {
     imu_sub_ = nh_.subscribe(imu_topic, 1, &EKFEstimator::imuCallback, this);
@@ -75,9 +75,9 @@ void EKFEstimator::init(ros::NodeHandle& nh) {
 }
 
 bool EKFEstimator::updateOnce(quad_msgs::RobotState& last_robot_state_msg_) {
+  ros::Time state_timestamp = ros::Time::now();
   if (is_hardware_) {
     // ROS_INFO_STREAM("Makes it Here in Update Once");
-    ros::Time state_timestamp = ros::Time::now();
     last_robot_state_msg_.joints = last_joint_state_msg_;
     last_joint_state_msg_.header.stamp = state_timestamp;
     last_imu_msg_.header.stamp = state_timestamp;
@@ -89,6 +89,12 @@ bool EKFEstimator::updateOnce(quad_msgs::RobotState& last_robot_state_msg_) {
 
   // set noise
   this->setNoise();
+  if (initialized) {
+    setInitialState(last_robot_state_msg_);
+    quad_utils::fkRobotState(*quadKD_, last_robot_state_msg_);
+    quad_utils::updateStateHeaders(last_robot_state_msg_, state_timestamp,
+                                   "map", 0);
+  }
 
   // ROS_INFO_STREAM(last_imu_msg_);
   // Run Step Once to Calculate Change in State Once Local Planner Starts
@@ -125,6 +131,8 @@ bool EKFEstimator::updateOnce(quad_msgs::RobotState& last_robot_state_msg_) {
     }
     auto new_state_est = this->StepOnce();
     last_robot_state_msg_ = new_state_est;
+    quad_utils::updateStateHeaders(last_robot_state_msg_, state_timestamp,
+                                   "map", 0);
   }
   return true;
 }
