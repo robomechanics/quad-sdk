@@ -131,6 +131,8 @@ bool EKFEstimator::updateOnce(quad_msgs::RobotState& last_robot_state_msg_) {
     }
     auto new_state_est = this->StepOnce();
     last_robot_state_msg_ = new_state_est;
+    last_robot_state_msg_.joints = last_joint_state_msg_;
+    last_joint_state_msg_.header.stamp = state_timestamp;
     quad_utils::updateStateHeaders(last_robot_state_msg_, state_timestamp,
                                    "map", 0);
   }
@@ -139,8 +141,6 @@ bool EKFEstimator::updateOnce(quad_msgs::RobotState& last_robot_state_msg_) {
 
 void EKFEstimator::setInitialState(
     quad_msgs::RobotState& last_robot_state_msg_) {
-  last_robot_state_msg_.header.stamp = ros::Time::now();
-
   // body
   // Grab this Directly from the IMU
   last_robot_state_msg_.body.pose.orientation.w = 1.0;
@@ -155,7 +155,6 @@ void EKFEstimator::setInitialState(
   last_robot_state_msg_.body.twist.linear.x = 0;
   last_robot_state_msg_.body.twist.linear.y = 0;
   last_robot_state_msg_.body.twist.linear.z = 0;
-  ROS_INFO_STREAM("Set Robot Initial State");
   return;
 }
 
