@@ -6,8 +6,8 @@ void EKFEstimator::init(ros::NodeHandle& nh) {
   nh_ = nh;
 
   // Load rosparams from parameter server
-  std::string joint_encoder_topic, imu_topic, contact_topic, local_plan_topic, grf_topic,
-      state_estimate_topic, ground_truth_topic;
+  std::string joint_encoder_topic, imu_topic, contact_topic, local_plan_topic,
+      grf_topic, state_estimate_topic, ground_truth_topic;
 
   nh_.param<std::string>("topics/state/joints", joint_encoder_topic,
                          "/state/joints");
@@ -53,13 +53,13 @@ void EKFEstimator::init(ros::NodeHandle& nh) {
                                   true);
 
   // Setup subs
-
   grf_sub_ = nh_.subscribe(grf_topic, 1, &EKFEstimator::grfCallback, this);
   contact_sub_ =
       nh_.subscribe(contact_topic, 1, &EKFEstimator::contactCallback, this);
   local_plan_sub_ =
       nh_.subscribe(local_plan_topic, 1, &EKFEstimator::localPlanCallback, this,
                     ros::TransportHints().tcpNoDelay(true));
+                    
   // In Sim, Grab IMU, Joint Encoders from Gazebo
   if (!is_hardware_) {
     imu_sub_ = nh_.subscribe(imu_topic, 1, &EKFEstimator::imuCallback, this);
@@ -98,7 +98,7 @@ bool EKFEstimator::updateOnce(quad_msgs::RobotState& last_robot_state_msg_) {
       last_time = ros::Time::now();
       setInitialState(last_robot_state_msg_);
 
-      //Initialize Filter
+      // Initialize Filter
       P = P0_ * Eigen::MatrixXd::Identity(num_cov, num_cov);
       X0 << last_robot_state_msg_.body.pose.position.x,
           last_robot_state_msg_.body.pose.position.y,
@@ -129,7 +129,8 @@ bool EKFEstimator::updateOnce(quad_msgs::RobotState& last_robot_state_msg_) {
   return true;
 }
 
-void EKFEstimator::setInitialState(quad_msgs::RobotState& last_robot_state_msg_){
+void EKFEstimator::setInitialState(
+    quad_msgs::RobotState& last_robot_state_msg_) {
   last_robot_state_msg_.header.stamp = ros::Time::now();
 
   // body
@@ -149,7 +150,6 @@ void EKFEstimator::setInitialState(quad_msgs::RobotState& last_robot_state_msg_)
   ROS_INFO_STREAM("Set Robot Initial State");
   return;
 }
-
 
 void EKFEstimator::groundtruthCallback(
     const quad_msgs::RobotState::ConstPtr& msg) {
@@ -174,7 +174,8 @@ void EKFEstimator::grfCallback(const quad_msgs::GRFArray::ConstPtr& msg) {
   last_grf_msg_ = msg;
 }
 
-void EKFEstimator::localPlanCallback(const quad_msgs::RobotPlan::ConstPtr &msg) {
+void EKFEstimator::localPlanCallback(
+    const quad_msgs::RobotPlan::ConstPtr& msg) {
   last_local_plan_msg_ = msg;
 }
 
