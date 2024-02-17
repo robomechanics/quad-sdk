@@ -425,6 +425,8 @@ bool RobotDriver::updateState() {
               last_robot_state_msg_.joints.position;
           last_joint_state_msg_.velocity =
               last_robot_state_msg_.joints.velocity;
+          estimated_state_.joints = last_robot_state_msg_.joints;
+          ROS_INFO_STREAM("Estiamted State before update:" << estimated_state_);
           state_estimator_->updateOnce(estimated_state_);
           state_estimate_ = estimated_state_;
         }
