@@ -17,7 +17,7 @@
     <arg name="mocap" value="false"/>
     <arg name="is_hardware" value="false"/>
     <!-- Change Estimator Argument Here -->
-    <arg name="estimator" value="comp_filter"/>
+    <arg name="estimator" value="ekf_filter"/>
     <arg name="ground_truth" value="estimate"/>
   </include>
 

@@ -78,7 +78,7 @@ bool EKFEstimator::updateOnce(quad_msgs::RobotState& last_robot_state_msg_) {
   // ROS_INFO_STREAM("Estiamted State before update:" << last_robot_state_msg_);
   ros::Time state_timestamp = ros::Time::now();
   // std::cout << "Here"<< std::endl;
-  // ROS_INFO_STREAM("State Timestamp" << state_timestamp.toSec());
+  ROS_INFO_STREAM("State Timestamp" << state_timestamp.toSec());
   // std::cout << "After"<< std::endl;
   // ROS_INFO_STREAM("State Timestamp" << state_timestamp);
   if (is_hardware_) {
@@ -149,6 +149,7 @@ bool EKFEstimator::updateOnce(quad_msgs::RobotState& last_robot_state_msg_) {
     last_joint_state_msg_.header.stamp = state_timestamp;
     // std::cout << "5"<< std::endl;
   }
+  ROS_INFO_STREAM(last_robot_state_msg_);
   return true;
 }
 
@@ -168,6 +169,11 @@ void EKFEstimator::setInitialState(
   last_robot_state_msg_.body.twist.linear.x = 0;
   last_robot_state_msg_.body.twist.linear.y = 0;
   last_robot_state_msg_.body.twist.linear.z = 0;
+
+  last_robot_state_msg_.body.twist.angular.x = 0;
+  last_robot_state_msg_.body.twist.angular.y = 0;
+  last_robot_state_msg_.body.twist.angular.z = 0;
+
   return;
 }
 
