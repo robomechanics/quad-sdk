@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<package>
+  <name>quad_imu</name>
+  <version>0.1.2</version>
+  <description>
+    myahrs_driver is a driver package for the WITHROBOT's myAHRS+. The myAHRS+ is a low cost high performance AHRS(Attitude Heading Reference System) with USB/UART/I2C interface. The myAHRS+ board contains a 3-axis 16-bit gyroscope, a 3-axis 16-bit accelerometer and a 3-axis 13-bit magnetometer. The driver should also work with USB port.
+  </description>
+  <license>BSD</license>
+  <author email="pyo@robotis.com">Yoonseok Pyo</author>
+  <maintainer email="pyo@robotis.com">Yoonseok Pyo</maintainer>
+  <url type="bugtracker">https://github.com/robotpilot/myahrs_driver/issues</url>
+  <url type="repository">https://github.com/robotpilot/myahrs_driver</url>
+  <url type="website">http://wiki.ros.org/myahrs_driver</url>
+  <buildtool_depend>catkin</buildtool_depend>
+  <build_depend>roscpp</build_depend>
+  <build_depend>std_msgs</build_depend>
+  <build_depend>sensor_msgs</build_depend>
+  <build_depend>tf</build_depend>
+  <run_depend>roscpp</run_depend>
+  <run_depend>std_msgs</run_depend>
+  <run_depend>sensor_msgs</run_depend>
+  <run_depend>tf</run_depend>
+</package>

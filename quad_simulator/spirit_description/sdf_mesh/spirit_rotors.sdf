@@ -75,12 +75,18 @@ SOFTWARE.
       <gravity>1</gravity>
       <velocity_decay/>
     </link>
+    <!--
+    <joint name="world_fix" type="fixed">
+      <parent>world</parent>
+      <child>body</child>
+    </joint>
+    -->
 
     <link name='hip0'>
       <pose frame=''>0.2263 0.07 0 0 -0 0</pose>
       <inertial>
         <pose frame=''>0 0.03 0 0 -0 0</pose>
-        <mass>0.575</mass>
+        <mass>0.555</mass>
         <inertia>
           <ixx>0.000669635</ixx>
           <ixy>0</ixy>
@@ -128,6 +134,9 @@ SOFTWARE.
     <joint name='8' type='revolute'>
       <child>hip0</child>
       <parent>body</parent>
+      <physics>
+        <provide_feedback>true</provide_feedback>
+      </physics>
       <axis>
         <xyz>1 0 0</xyz>
         <limit>
@@ -149,15 +158,15 @@ SOFTWARE.
     <link name='upper0'>
       <pose frame=''>0.2263 0.17098 0 0 -0 0</pose>
       <inertial>
-        <pose frame=''>-0.0676 -0.041 0 0 -0 0</pose>
+        <pose frame=''>-0.049 -0.039 0.006 0 -0 0</pose>
         <mass>0.792</mass>
         <inertia>
-          <ixx>5e-03</ixx>
-          <ixy>0.0010</ixy>
+          <ixx>4e-04</ixx>
+          <ixy>-0.0012</ixy>
           <ixz>0</ixz>
-          <iyy>0.0049</iyy>
+          <iyy>0.0066</iyy>
           <iyz>0</iyz>
-          <izz>0.0049</izz>
+          <izz>0.0066</izz>
         </inertia>
       </inertial>
       <collision name='upper0_collision'>
@@ -197,6 +206,9 @@ SOFTWARE.
     <joint name='0' type='revolute'>
       <child>upper0</child>
       <parent>hip0</parent>
+      <physics>
+        <provide_feedback>true</provide_feedback>
+      </physics>
       <axis>
         <xyz>0 -1 0</xyz>
         <limit>
@@ -268,6 +280,9 @@ SOFTWARE.
     <joint name='1' type='revolute'>
       <child>lower0</child>
       <parent>upper0</parent>
+      <physics>
+        <provide_feedback>true</provide_feedback>
+      </physics>
       <axis>
         <xyz>0 1 0</xyz>
         <limit>
@@ -290,7 +305,7 @@ SOFTWARE.
       <pose frame=''>-0.2263 0.07 0 0 -0 0</pose>
       <inertial>
         <pose frame=''>0 0.03 0 0 -0 0</pose>
-        <mass>0.575</mass>
+        <mass>0.555</mass>
         <inertia>
           <ixx>0.000669635</ixx>
           <ixy>0</ixy>
@@ -338,6 +353,9 @@ SOFTWARE.
     <joint name='9' type='revolute'>
       <child>hip1</child>
       <parent>body</parent>
+      <physics>
+        <provide_feedback>true</provide_feedback>
+      </physics>
       <axis>
         <xyz>1 0 0</xyz>
         <limit>
@@ -359,15 +377,15 @@ SOFTWARE.
     <link name='upper1'>
       <pose frame=''>-0.2263 0.17098 0 0 -0 0</pose>
       <inertial>
-        <pose frame=''>-0.0676 -0.041 0 0 -0 0</pose>
+        <pose frame=''>-0.049 -0.039 0.006 0 -0 0</pose>
         <mass>0.792</mass>
         <inertia>
-          <ixx>5e-03</ixx>
-          <ixy>0.0010</ixy>
+          <ixx>4e-04</ixx>
+          <ixy>-0.0012</ixy>
           <ixz>0</ixz>
-          <iyy>0.0049</iyy>
+          <iyy>0.0066</iyy>
           <iyz>0</iyz>
-          <izz>0.0049</izz>
+          <izz>0.0066</izz>
         </inertia>
       </inertial>
       <collision name='upper1_collision'>
@@ -407,6 +425,9 @@ SOFTWARE.
     <joint name='2' type='revolute'>
       <child>upper1</child>
       <parent>hip1</parent>
+      <physics>
+        <provide_feedback>true</provide_feedback>
+      </physics>
       <axis>
         <xyz>0 -1 0</xyz>
         <limit>
@@ -478,6 +499,9 @@ SOFTWARE.
     <joint name='3' type='revolute'>
       <child>lower1</child>
       <parent>upper1</parent>
+      <physics>
+        <provide_feedback>true</provide_feedback>
+      </physics>
       <axis>
         <xyz>0 1 0</xyz>
         <limit>
@@ -501,7 +525,7 @@ SOFTWARE.
       <pose frame=''>0.2263 -0.07 0 0 -0 0</pose>
       <inertial>
         <pose frame=''>0 -0.03 0 0 -0 0</pose>
-        <mass>0.575</mass>
+        <mass>0.555</mass>
         <inertia>
           <ixx>0.000669635</ixx>
           <ixy>0</ixy>
@@ -549,6 +573,9 @@ SOFTWARE.
     <joint name='10' type='revolute'>
       <child>hip2</child>
       <parent>body</parent>
+      <physics>
+        <provide_feedback>true</provide_feedback>
+      </physics>
       <axis>
         <xyz>1 0 0</xyz>
         <limit>
@@ -570,15 +597,15 @@ SOFTWARE.
     <link name='upper2'>
       <pose frame=''>0.2263 -0.17098 0 0 -0 0</pose>
       <inertial>
-        <pose frame=''>-0.0676 0.041 0 0 -0 0</pose>
+        <pose frame=''>-0.049 0.039 0.006 0 -0 0</pose>
         <mass>0.792</mass>
         <inertia>
-          <ixx>5e-03</ixx>
-          <ixy>0.0010</ixy>
+          <ixx>4e-04</ixx>
+          <ixy>-0.0012</ixy>
           <ixz>0</ixz>
-          <iyy>0.0049</iyy>
+          <iyy>0.0066</iyy>
           <iyz>0</iyz>
-          <izz>0.0049</izz>
+          <izz>0.0066</izz>
         </inertia>
       </inertial>
       <collision name='upper2_collision'>
@@ -618,6 +645,9 @@ SOFTWARE.
     <joint name='4' type='revolute'>
       <child>upper2</child>
       <parent>hip2</parent>
+      <physics>
+        <provide_feedback>true</provide_feedback>
+      </physics>
       <axis>
         <xyz>0 -1 0</xyz>
         <limit>
@@ -689,6 +719,9 @@ SOFTWARE.
     <joint name='5' type='revolute'>
       <child>lower2</child>
       <parent>upper2</parent>
+      <physics>
+        <provide_feedback>true</provide_feedback>
+      </physics>
       <axis>
         <xyz>0 1 0</xyz>
         <limit>
@@ -711,7 +744,7 @@ SOFTWARE.
       <pose frame=''>-0.2263 -0.07 0 0 -0 0</pose>
       <inertial>
         <pose frame=''>0 -0.03 0 0 -0 0</pose>
-        <mass>0.575</mass>
+        <mass>0.555</mass>
         <inertia>
           <ixx>0.000669635</ixx>
           <ixy>0</ixy>
@@ -759,6 +792,9 @@ SOFTWARE.
     <joint name='11' type='revolute'>
       <child>hip3</child>
       <parent>body</parent>
+      <physics>
+        <provide_feedback>true</provide_feedback>
+      </physics>
       <axis>
         <xyz>1 0 0</xyz>
         <limit>
@@ -780,15 +816,15 @@ SOFTWARE.
     <link name='upper3'>
       <pose frame=''>-0.2263 -0.17098 0 0 -0 0</pose>
       <inertial>
-        <pose frame=''>-0.0676 0.041 0 0 -0 0</pose>
+        <pose frame=''>-0.049 0.039 0.006 0 -0 0</pose>
         <mass>0.792</mass>
         <inertia>
-          <ixx>5e-03</ixx>
-          <ixy>0.0010</ixy>
+          <ixx>4e-04</ixx>
+          <ixy>-0.0012</ixy>
           <ixz>0</ixz>
-          <iyy>0.0049</iyy>
+          <iyy>0.0066</iyy>
           <iyz>0</iyz>
-          <izz>0.0049</izz>
+          <izz>0.0066</izz>
         </inertia>
       </inertial>
       <collision name='upper3_collision'>
@@ -828,6 +864,9 @@ SOFTWARE.
     <joint name='6' type='revolute'>
       <child>upper3</child>
       <parent>hip3</parent>
+      <physics>
+        <provide_feedback>true</provide_feedback>
+      </physics>
       <axis>
         <xyz>0 -1 0</xyz>
         <limit>
@@ -899,6 +938,9 @@ SOFTWARE.
     <joint name='7' type='revolute'>
       <child>lower3</child>
       <parent>upper3</parent>
+      <physics>
+        <provide_feedback>true</provide_feedback>
+      </physics>
       <axis>
         <xyz>0 1 0</xyz>
         <limit>
@@ -1256,14 +1298,14 @@ SOFTWARE.
     <link name='abad0_rotor'>
       <pose frame=''>0.2263 0.07 0 0 0 0</pose>
       <inertial>
-        <mass>0.001</mass>
+        <mass>0.002</mass>
         <inertia>
-          <ixx>1.231E-4</ixx>
+          <ixx>1.0E-4</ixx>
           <ixy>0</ixy>
           <ixz>0</ixz>
-          <iyy>1.231E-4</iyy>
+          <iyy>1.0E-4</iyy>
           <iyz>0</iyz>
-          <izz>1.231E-4</izz>
+          <izz>1.0E-4</izz>
         </inertia>
       </inertial>
       <!--<visual name='abad0_rotor_visual'>
@@ -1297,14 +1339,14 @@ SOFTWARE.
     <link name='hip0_rotor'>
       <pose frame=''>0.2263 0.07 0 0 0 0</pose>
       <inertial>
-        <mass>0.001</mass>
+        <mass>0.002</mass>
         <inertia>
-          <ixx>1.231E-4</ixx>
+          <ixx>1.0E-4</ixx>
           <ixy>0</ixy>
           <ixz>0</ixz>
-          <iyy>1.231E-4</iyy>
+          <iyy>1.0E-4</iyy>
           <iyz>0</iyz>
-          <izz>1.231E-4</izz>
+          <izz>1.0E-4</izz>
         </inertia>
       </inertial>
       <!--<visual name='hip0_rotor_visual'>
@@ -1317,7 +1359,7 @@ SOFTWARE.
     </link>
     <joint name='hip0_gearing' type='gearbox'>
       <child>hip0_rotor</child>
-      <gearbox_reference_body>body</gearbox_reference_body>
+      <gearbox_reference_body>hip0</gearbox_reference_body>
       <parent>upper0</parent>
       <gearbox_ratio>-6</gearbox_ratio>
       <axis>
@@ -1329,7 +1371,7 @@ SOFTWARE.
     </joint>
     <joint name='hip0_gearbox' type='revolute'>
       <child>hip0_rotor</child>
-      <parent>body</parent>
+      <parent>hip0</parent>
       <axis>
         <xyz>0 1 0</xyz>
       </axis>
@@ -1338,14 +1380,14 @@ SOFTWARE.
     <link name='knee0_rotor'>
       <pose frame=''>0.2263 0.11 0 0 0 0</pose>
       <inertial>
-        <mass>0.001</mass>
+        <mass>0.002</mass>
         <inertia>
-          <ixx>1.231E-4</ixx>
+          <ixx>1.0E-4</ixx>
           <ixy>0</ixy>
           <ixz>0</ixz>
-          <iyy>1.231E-4</iyy>
+          <iyy>1.0E-4</iyy>
           <iyz>0</iyz>
-          <izz>1.231E-4</izz>
+          <izz>1.0E-4</izz>
         </inertia>
       </inertial>
       <!--<visual name='knee0_rotor_visual'>
@@ -1379,14 +1421,14 @@ SOFTWARE.
     <link name='abad1_rotor'>
       <pose frame=''>-0.2263 0.07 0 0 0 0</pose>
       <inertial>
-        <mass>0.001</mass>
+        <mass>0.002</mass>
         <inertia>
-          <ixx>1.231E-4</ixx>
+          <ixx>1.0E-4</ixx>
           <ixy>0</ixy>
           <ixz>0</ixz>
-          <iyy>1.231E-4</iyy>
+          <iyy>1.0E-4</iyy>
           <iyz>0</iyz>
-          <izz>1.231E-4</izz>
+          <izz>1.0E-4</izz>
         </inertia>
       </inertial>
       <!--<visual name='abad1_rotor_visual'>
@@ -1420,14 +1462,14 @@ SOFTWARE.
     <link name='hip1_rotor'>
       <pose frame=''>-0.2263 0.07 0 0 0 0</pose>
       <inertial>
-        <mass>0.001</mass>
+        <mass>0.002</mass>
         <inertia>
-          <ixx>1.231E-4</ixx>
+          <ixx>1.0E-4</ixx>
           <ixy>0</ixy>
           <ixz>0</ixz>
-          <iyy>1.231E-4</iyy>
+          <iyy>1.0E-4</iyy>
           <iyz>0</iyz>
-          <izz>1.231E-4</izz>
+          <izz>1.0E-4</izz>
         </inertia>
       </inertial>
       <!--<visual name='hip1_rotor_visual'>
@@ -1440,7 +1482,7 @@ SOFTWARE.
     </link>
     <joint name='hip1_gearing' type='gearbox'>
       <child>hip1_rotor</child>
-      <gearbox_reference_body>body</gearbox_reference_body>
+      <gearbox_reference_body>hip1</gearbox_reference_body>
       <parent>upper1</parent>
       <gearbox_ratio>-6</gearbox_ratio>
       <axis>
@@ -1452,7 +1494,7 @@ SOFTWARE.
     </joint>
     <joint name='hip1_gearbox' type='revolute'>
       <child>hip1_rotor</child>
-      <parent>body</parent>
+      <parent>hip1</parent>
       <axis>
         <xyz>0 1 0</xyz>
       </axis>
@@ -1461,14 +1503,14 @@ SOFTWARE.
     <link name='knee1_rotor'>
       <pose frame=''>-0.2263 0.11 0 0 0 0</pose>
       <inertial>
-        <mass>0.001</mass>
+        <mass>0.002</mass>
         <inertia>
-          <ixx>1.231E-4</ixx>
+          <ixx>1.0E-4</ixx>
           <ixy>0</ixy>
           <ixz>0</ixz>
-          <iyy>1.231E-4</iyy>
+          <iyy>1.0E-4</iyy>
           <iyz>0</iyz>
-          <izz>1.231E-4</izz>
+          <izz>1.0E-4</izz>
         </inertia>
       </inertial>
       <!--<visual name='knee1_rotor_visual'>
@@ -1502,14 +1544,14 @@ SOFTWARE.
     <link name='abad2_rotor'>
       <pose frame=''>0.2263 -0.07 0 0 0 0</pose>
       <inertial>
-        <mass>0.001</mass>
+        <mass>0.002</mass>
         <inertia>
-          <ixx>1.231E-4</ixx>
+          <ixx>1.0E-4</ixx>
           <ixy>0</ixy>
           <ixz>0</ixz>
-          <iyy>1.231E-4</iyy>
+          <iyy>1.0E-4</iyy>
           <iyz>0</iyz>
-          <izz>1.231E-4</izz>
+          <izz>1.0E-4</izz>
         </inertia>
       </inertial>
       <!--<visual name='abad2_rotor_visual'>
@@ -1543,14 +1585,14 @@ SOFTWARE.
     <link name='hip2_rotor'>
       <pose frame=''>0.2263 -0.07 0 0 0 0</pose>
       <inertial>
-        <mass>0.001</mass>
+        <mass>0.002</mass>
         <inertia>
-          <ixx>1.231E-4</ixx>
+          <ixx>1.0E-4</ixx>
           <ixy>0</ixy>
           <ixz>0</ixz>
-          <iyy>1.231E-4</iyy>
+          <iyy>1.0E-4</iyy>
           <iyz>0</iyz>
-          <izz>1.231E-4</izz>
+          <izz>1.0E-4</izz>
         </inertia>
       </inertial>
       <!--<visual name='hip2_rotor_visual'>
@@ -1563,7 +1605,7 @@ SOFTWARE.
     </link>
     <joint name='hip2_gearing' type='gearbox'>
       <child>hip2_rotor</child>
-      <gearbox_reference_body>body</gearbox_reference_body>
+      <gearbox_reference_body>hip2</gearbox_reference_body>
       <parent>upper2</parent>
       <gearbox_ratio>-6</gearbox_ratio>
       <axis>
@@ -1575,7 +1617,7 @@ SOFTWARE.
     </joint>
     <joint name='hip2_gearbox' type='revolute'>
       <child>hip2_rotor</child>
-      <parent>body</parent>
+      <parent>hip2</parent>
       <axis>
         <xyz>0 1 0</xyz>
       </axis>
@@ -1584,14 +1626,14 @@ SOFTWARE.
     <link name='knee2_rotor'>
       <pose frame=''>0.2263 -0.11 0 0 0 0</pose>
       <inertial>
-        <mass>0.001</mass>
+        <mass>0.002</mass>
         <inertia>
-          <ixx>1.231E-4</ixx>
+          <ixx>1.0E-4</ixx>
           <ixy>0</ixy>
           <ixz>0</ixz>
-          <iyy>1.231E-4</iyy>
+          <iyy>1.0E-4</iyy>
           <iyz>0</iyz>
-          <izz>1.231E-4</izz>
+          <izz>1.0E-4</izz>
         </inertia>
       </inertial>
       <!--<visual name='knee2_rotor_visual'>
@@ -1625,14 +1667,14 @@ SOFTWARE.
     <link name='abad3_rotor'>
       <pose frame=''>-0.2263 -0.07 0 0 0 0</pose>
       <inertial>
-        <mass>0.001</mass>
+        <mass>0.002</mass>
         <inertia>
-          <ixx>1.231E-4</ixx>
+          <ixx>1.0E-4</ixx>
           <ixy>0</ixy>
           <ixz>0</ixz>
-          <iyy>1.231E-4</iyy>
+          <iyy>1.0E-4</iyy>
           <iyz>0</iyz>
-          <izz>1.231E-4</izz>
+          <izz>1.0E-4</izz>
         </inertia>
       </inertial>
       <!--<visual name='abad0_rotor_visual'>
@@ -1666,14 +1708,14 @@ SOFTWARE.
     <link name='hip3_rotor'>
       <pose frame=''>-0.2263 -0.07 0 0 0 0</pose>
       <inertial>
-        <mass>0.001</mass>
+        <mass>0.002</mass>
         <inertia>
-          <ixx>1.231E-4</ixx>
+          <ixx>1.0E-4</ixx>
           <ixy>0</ixy>
           <ixz>0</ixz>
-          <iyy>1.231E-4</iyy>
+          <iyy>1.0E-4</iyy>
           <iyz>0</iyz>
-          <izz>1.231E-4</izz>
+          <izz>1.0E-4</izz>
         </inertia>
       </inertial>
       <!--<visual name='hip3_rotor_visual'>
@@ -1686,7 +1728,7 @@ SOFTWARE.
     </link>
     <joint name='hip3_gearing' type='gearbox'>
       <child>hip3_rotor</child>
-      <gearbox_reference_body>body</gearbox_reference_body>
+      <gearbox_reference_body>hip3</gearbox_reference_body>
       <parent>upper3</parent>
       <gearbox_ratio>-6</gearbox_ratio>
       <axis>
@@ -1698,7 +1740,7 @@ SOFTWARE.
     </joint>
     <joint name='hip3_gearbox' type='revolute'>
       <child>hip3_rotor</child>
-      <parent>body</parent>
+      <parent>hip3</parent>
       <axis>
         <xyz>0 1 0</xyz>
       </axis>
@@ -1707,14 +1749,14 @@ SOFTWARE.
     <link name='knee3_rotor'>
       <pose frame=''>-0.2263 -0.11 0 0 0 0</pose>
       <inertial>
-        <mass>0.001</mass>
+        <mass>0.002</mass>
         <inertia>
-          <ixx>1.231E-4</ixx>
+          <ixx>1.0E-4</ixx>
           <ixy>0</ixy>
           <ixz>0</ixz>
-          <iyy>1.231E-4</iyy>
+          <iyy>1.0E-4</iyy>
           <iyz>0</iyz>
-          <izz>1.231E-4</izz>
+          <izz>1.0E-4</izz>
         </inertia>
       </inertial>
       <!--<visual name='knee3_rotor_visual'>

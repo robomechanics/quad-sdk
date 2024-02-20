@@ -20,9 +20,11 @@
 #include <eigen3/Eigen/Eigen>
 
 #include "robot_driver/controllers/grf_pid_controller.h"
+#include "robot_driver/controllers/inertia_estimation_controller.h"
 #include "robot_driver/controllers/inverse_dynamics_controller.h"
 #include "robot_driver/controllers/joint_controller.h"
 #include "robot_driver/controllers/leg_controller.h"
+#include "robot_driver/controllers/underbrush_inverse_dynamics.h"
 #include "robot_driver/estimators/comp_filter_estimator.h"
 #include "robot_driver/estimators/ekf_estimator.h"
 #include "robot_driver/estimators/state_estimator.h"
@@ -74,6 +76,12 @@ class RobotDriver {
    * @brief Verifies and updates new control mode
    * @param[in] msg New control mode
    */
+  void grfCallback(const quad_msgs::GRFArray::ConstPtr& msg);
+
+  /**
+   * @brief execute EKF Update step, return state estimate
+   * @return state estimate of custom type RobotState
+   */
   void controlModeCallback(const std_msgs::UInt8::ConstPtr& msg);
 
   /**
@@ -105,6 +113,13 @@ class RobotDriver {
    * @param[in] msg Leg override commands
    */
   void singleJointCommandCallback(const geometry_msgs::Vector3::ConstPtr& msg);
+
+  /**
+   * @brief Callback to handle new body force estimates
+   * @param[in] msg body force estimates
+   */
+  void bodyForceEstimateCallback(
+      const quad_msgs::BodyForceEstimate::ConstPtr& msg);
 
   /**
    * @brief Callback to handle control restart flag messages
@@ -164,6 +179,9 @@ class RobotDriver {
   /// ROS subscriber for state estimate
   ros::Subscriber robot_state_sub_;
 
+  /// ROS subscriber for body force estimates
+  ros::Subscriber body_force_estimate_sub_;
+
   /// ROS subscriber for control restart flag
   ros::Subscriber control_restart_flag_sub_;
 
@@ -178,6 +196,9 @@ class RobotDriver {
 
   /// ROS subscriber for single joint command
   ros::Subscriber single_joint_cmd_sub_;
+
+  //   /// ROS subscriber for desired GRF
+  //   ros::Subscriber grf_sub_;
 
   /// ROS publisher for robot heartbeat
   ros::Publisher robot_heartbeat_pub_;
@@ -194,6 +215,9 @@ class RobotDriver {
   /// ROS publisher for joint data
   ros::Publisher joint_state_pub_;
 
+  /// Publisher for state estimate messages
+  ros::Publisher state_estimate_pub_;
+
   /// Nodehandle to pub to and sub from
   ros::NodeHandle nh_;
 
@@ -206,6 +230,9 @@ class RobotDriver {
   /// Estimator type
   std::string estimator_id_;
 
+  /// Ground Truth Source
+  std::string ground_truth_;
+
   /// Update rate for computing new controls;
   double update_rate_;
 
@@ -217,6 +244,9 @@ class RobotDriver {
 
   /// Robot mode
   int control_mode_;
+
+  /// Robot State Intialization
+  int initialized_;
 
   /// Torque limits
   std::vector<double> torque_limits_;
@@ -236,6 +266,9 @@ class RobotDriver {
   /// Define ids for control modes: Safety
   const int SAFETY = 4;
 
+  /// Define ids for for state initialization
+  const int REST = 5;
+
   /// Define ids for input types: none
   const int NONE = 0;
 
@@ -248,8 +281,14 @@ class RobotDriver {
   /// Most recent local plan
   quad_msgs::RobotPlan::ConstPtr last_local_plan_msg_;
 
-  /// Most recent state estimate
+  /// Ground Truth Robot State from Simulation
   quad_msgs::RobotState last_robot_state_msg_;
+
+  /// Robot State Estimate Used in Control
+  quad_msgs::RobotState state_estimate_;
+
+  /// EKF State Estimate Output
+  quad_msgs::RobotState estimated_state_;
 
   /// Most recent local plan
   quad_msgs::GRFArray::ConstPtr last_grf_array_msg_;
@@ -337,6 +376,9 @@ class RobotDriver {
 
   /// State Estimator template class
   std::shared_ptr<StateEstimator> state_estimator_;
+
+  /// State Estimator template class
+  std::shared_ptr<StateEstimator> ekf_estimator_;
 
   /// Mblink converter object
   std::shared_ptr<HardwareInterface> hardware_interface_;

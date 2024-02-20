@@ -2,27 +2,12 @@ cmake_minimum_required(VERSION 3.0.2)
 project(robot_driver)
 
 ## Compile as C++14, supported in ROS Melodic and newer
-add_compile_options(-std=c++14)
+add_compile_options(-std=c++17)
   
 ## Set default cmake build type to release
 if(NOT CMAKE_CONFIGURATION_TYPES AND NOT CMAKE_BUILD_TYPE)
   set(CMAKE_BUILD_TYPE Release)
 endif()
-
-## Setup MBLINK and MAVLINK
-set(CMAKE_CXX_STANDARD 17)
-set(MBLINK_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../external/mblink/)
-
-message(STATUS "Using architecture ${CMAKE_SYSTEM_PROCESSOR}")
-
-if (CMAKE_SYSTEM_PROCESSOR STREQUAL "arm" OR CMAKE_SYSTEM_PROCESSOR STREQUAL "aarch64")
-  set(GRMBLINK libgrmblink_tx2.a)
-else()
-  set(GRMBLINK libgrmblink_linux.a)
-endif()
-
-include_directories(${MBLINK_DIR}/include)
-link_directories(${MBLINK_DIR}/lib)
 
 find_package(Eigen3 REQUIRED)
 
@@ -53,9 +38,12 @@ catkin_package(
 ## Specify additional locations of header files
 ## Your package locations should be listed before other locations
 include_directories(
+  moteus_driver/include
   include
   ${catkin_INCLUDE_DIRS}
 )
+# Motors driver
+add_subdirectory(moteus_driver)
 
 ## Declare a C++ library for control
 add_library(robot_driver
@@ -63,6 +51,8 @@ add_library(robot_driver
   src/robot_driver_utils.cpp
   src/controllers/leg_controller.cpp
   src/controllers/inverse_dynamics_controller.cpp
+  src/controllers/underbrush_inverse_dynamics.cpp
+  src/controllers/inertia_estimation_controller.cpp
   src/controllers/grf_pid_controller.cpp
   src/controllers/joint_controller.cpp
   src/estimators/state_estimator.cpp
@@ -73,8 +63,7 @@ add_library(robot_driver
 )
 add_dependencies(robot_driver ${robot_driver_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
-target_link_libraries(robot_driver
-  ${GRMBLINK}
+target_link_libraries(robot_driver moteus_driver
   ${catkin_LIBRARIES}
 )
 
@@ -85,7 +74,7 @@ add_executable(robot_driver_node src/robot_driver_node.cpp)
 
 ## Specify libraries to link a library or executable target against
 target_link_libraries(robot_driver_node
-  robot_driver
+  robot_driver moteus_driver
 	${catkin_LIBRARIES}
 )
 

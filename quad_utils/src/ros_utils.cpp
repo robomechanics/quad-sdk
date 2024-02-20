@@ -2,8 +2,8 @@
 
 namespace quad_utils {
 
-void updateStateHeaders(quad_msgs::RobotState &msg, ros::Time stamp,
-                        std::string frame, int traj_index) {
+void updateStateHeaders(quad_msgs::RobotState &msg, const ros::Time &stamp,
+                        const std::string &frame, int traj_index) {
   // Fill in the data across the messages
   msg.header.stamp = stamp;
   msg.header.frame_id = frame;
@@ -22,7 +22,8 @@ void updateStateHeaders(quad_msgs::RobotState &msg, ros::Time stamp,
   }
 }
 
-void interpHeader(std_msgs::Header header_1, std_msgs::Header header_2,
+void interpHeader(const std_msgs::Header &header_1,
+                  const std_msgs::Header &header_2,
                   double t_interp, std_msgs::Header &interp_header) {
   // Copy everything from the first header
   interp_header.frame_id = header_1.frame_id;
@@ -36,7 +37,8 @@ void interpHeader(std_msgs::Header header_1, std_msgs::Header header_2,
   interp_header.stamp = header_1.stamp + ros::Duration(interp_duration);
 }
 
-void interpOdometry(quad_msgs::BodyState state_1, quad_msgs::BodyState state_2,
+void interpOdometry(const quad_msgs::BodyState &state_1,
+                    const quad_msgs::BodyState &state_2,
                     double t_interp, quad_msgs::BodyState &interp_state) {
   interpHeader(state_1.header, state_2.header, t_interp, interp_state.header);
 
@@ -71,8 +73,8 @@ void interpOdometry(quad_msgs::BodyState state_1, quad_msgs::BodyState state_2,
       state_1.twist.angular.z, state_2.twist.angular.z, t_interp);
 }
 
-void interpJointState(sensor_msgs::JointState state_1,
-                      sensor_msgs::JointState state_2, double t_interp,
+void interpJointState(const sensor_msgs::JointState &state_1,
+                      const sensor_msgs::JointState &state_2, double t_interp,
                       sensor_msgs::JointState &interp_state) {
   interpHeader(state_1.header, state_2.header, t_interp, interp_state.header);
 
@@ -92,8 +94,9 @@ void interpJointState(sensor_msgs::JointState state_1,
   }
 }
 
-void interpMultiFootState(quad_msgs::MultiFootState state_1,
-                          quad_msgs::MultiFootState state_2, double t_interp,
+void interpMultiFootState(const quad_msgs::MultiFootState &state_1,
+                          const quad_msgs::MultiFootState &state_2,
+                          double t_interp,
                           quad_msgs::MultiFootState &interp_state) {
   interpHeader(state_1.header, state_2.header, t_interp, interp_state.header);
 
@@ -133,7 +136,8 @@ void interpMultiFootState(quad_msgs::MultiFootState state_1,
   }
 }
 
-void interpGRFArray(quad_msgs::GRFArray state_1, quad_msgs::GRFArray state_2,
+void interpGRFArray(const quad_msgs::GRFArray &state_1,
+                    const quad_msgs::GRFArray &state_2,
                     double t_interp, quad_msgs::GRFArray &interp_state) {
   interpHeader(state_1.header, state_2.header, t_interp, interp_state.header);
 
@@ -161,8 +165,8 @@ void interpGRFArray(quad_msgs::GRFArray state_1, quad_msgs::GRFArray state_2,
   }
 }
 
-void interpRobotState(quad_msgs::RobotState state_1,
-                      quad_msgs::RobotState state_2, double t_interp,
+void interpRobotState(const quad_msgs::RobotState &state_1,
+                      const quad_msgs::RobotState &state_2, double t_interp,
                       quad_msgs::RobotState &interp_state) {
   // Interp individual elements
   interpHeader(state_1.header, state_2.header, t_interp, interp_state.header);
@@ -172,7 +176,7 @@ void interpRobotState(quad_msgs::RobotState state_1,
   interpMultiFootState(state_1.feet, state_2.feet, t_interp, interp_state.feet);
 }
 
-void interpRobotPlan(quad_msgs::RobotPlan msg, double t,
+void interpRobotPlan(const quad_msgs::RobotPlan &msg, double t,
                      quad_msgs::RobotState &interp_state,
                      int &interp_primitive_id,
                      quad_msgs::GRFArray &interp_grf) {
@@ -219,7 +223,7 @@ void interpRobotPlan(quad_msgs::RobotPlan msg, double t,
 }
 
 quad_msgs::MultiFootState interpMultiFootPlanContinuous(
-    quad_msgs::MultiFootPlanContinuous msg, double t) {
+    const quad_msgs::MultiFootPlanContinuous &msg, double t) {
   // Define some useful timing parameters
   ros::Time t0_ros = msg.states.front().header.stamp;
   ros::Time t_ros = t0_ros + ros::Duration(t);
@@ -257,53 +261,9 @@ quad_msgs::MultiFootState interpMultiFootPlanContinuous(
   return interp_state;
 }
 
-// quad_msgs::RobotState interpRobotStateTraj(quad_msgs::RobotStateTrajectory
-// msg,
-//                                            double t) {
-//   // Define some useful timing parameters
-//   ros::Time t0_ros = msg.states.front().header.stamp;
-//   ros::Time tf_ros = msg.states.back().header.stamp;
-//   ros::Duration traj_duration = tf_ros - t0_ros;
-
-//   t = std::max(std::min(t, traj_duration.toSec()), 0.0);
-//   ros::Time t_ros = t0_ros + ros::Duration(t);
-
-//   // Declare variables for interpolating between, both for input and output
-//   data quad_msgs::RobotState state_1, state_2, interp_state;
-
-//   // Find the correct index for interp (return the first index if t < 0)
-//   int index = 0;
-//   if (t >= 0) {
-//     for (int i = 0; i < msg.states.size() - 1; i++) {
-//       index = i;
-//       if (msg.states[i].header.stamp <= t_ros &&
-//           t_ros < msg.states[i + 1].header.stamp) {
-//         break;
-//       }
-//     }
-//   }
-
-//   // Extract correct states
-//   state_1 = msg.states[index];
-//   state_2 = msg.states[index + 1];
-
-//   // Compute t_interp = [0,1]
-//   double t1, t2;
-//   ros::Duration t1_ros = state_1.header.stamp - t0_ros;
-//   t1 = t1_ros.toSec();
-//   ros::Duration t2_ros = state_2.header.stamp - t0_ros;
-//   t2 = t2_ros.toSec();
-//   double t_interp = (t - t1) / (t2 - t1);
-
-//   // Compute interpolation
-//   interpRobotState(state_1, state_2, t_interp, interp_state);
-
-//   return interp_state;
-// }
-
 void ikRobotState(const quad_utils::QuadKD &kinematics,
-                  quad_msgs::BodyState body_state,
-                  quad_msgs::MultiFootState multi_foot_state,
+                  const quad_msgs::BodyState &body_state,
+                  const quad_msgs::MultiFootState &multi_foot_state,
                   sensor_msgs::JointState &joint_state) {
   joint_state.header = multi_foot_state.header;
   // If this message is empty set the joint names
@@ -391,8 +351,8 @@ void ikRobotState(const quad_utils::QuadKD &kinematics,
 }
 
 void fkRobotState(const quad_utils::QuadKD &kinematics,
-                  quad_msgs::BodyState body_state,
-                  sensor_msgs::JointState joint_state,
+                  const quad_msgs::BodyState &body_state,
+                  const sensor_msgs::JointState &joint_state,
                   quad_msgs::MultiFootState &multi_foot_state) {
   multi_foot_state.header = joint_state.header;
   // If this message is empty set the joint names
@@ -535,8 +495,8 @@ Eigen::VectorXd bodyStateMsgToEigen(const quad_msgs::BodyState &body) {
   return state;
 }
 
-void eigenToGRFArrayMsg(Eigen::VectorXd grf_array,
-                        quad_msgs::MultiFootState multi_foot_state_msg,
+void eigenToGRFArrayMsg(const Eigen::VectorXd &grf_array,
+                        const quad_msgs::MultiFootState &multi_foot_state_msg,
                         quad_msgs::GRFArray &grf_msg) {
   grf_msg.vectors.clear();
   grf_msg.points.clear();
@@ -619,9 +579,9 @@ void multiFootStateMsgToEigen(
   }
 }
 
-void eigenToFootStateMsg(Eigen::VectorXd foot_positions,
-                         Eigen::VectorXd foot_velocities,
-                         Eigen::VectorXd foot_acceleration,
+void eigenToFootStateMsg(const Eigen::VectorXd &foot_positions,
+                         const Eigen::VectorXd &foot_velocities,
+                         const Eigen::VectorXd &foot_acceleration,
                          quad_msgs::FootState &foot_state_msg) {
   eigenToFootStateMsg(foot_positions, foot_velocities, foot_state_msg);
 
@@ -630,8 +590,8 @@ void eigenToFootStateMsg(Eigen::VectorXd foot_positions,
   foot_state_msg.acceleration.z = foot_acceleration[2];
 }
 
-void eigenToFootStateMsg(Eigen::VectorXd foot_positions,
-                         Eigen::VectorXd foot_velocities,
+void eigenToFootStateMsg(const Eigen::VectorXd &foot_positions,
+                         const Eigen::VectorXd &foot_velocities,
                          quad_msgs::FootState &foot_state_msg) {
   foot_state_msg.position.x = foot_positions[0];
   foot_state_msg.position.y = foot_positions[1];

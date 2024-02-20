@@ -2,15 +2,16 @@
 
 namespace math_utils {
 
-std::vector<double> interpMat(const std::vector<double> input_vec,
-                              const std::vector<std::vector<double>> input_mat,
+std::vector<double> interpMat(const std::vector<double> &input_vec,
+                              const std::vector<std::vector<double>> &input_mat,
                               const double query_point) {
   // Check bounds, throw an error if invalid since this shouldn't ever happen
   if ((query_point < input_vec.front()) || (query_point > input_vec.back())) {
     throw std::runtime_error("Tried to interp out of bounds");
   }
 
-  // Declare variables for interpolating between, both for input and output data
+  // Declare variables for interpolating between, both for input and output
+  // data
   double t1, t2;
   std::vector<double> y1, y2, interp_data;
 
@@ -34,15 +35,16 @@ std::vector<double> interpMat(const std::vector<double> input_vec,
   return interp_data;
 }
 
-Eigen::Vector3d interpVector3d(const std::vector<double> input_vec,
-                               const std::vector<Eigen::Vector3d> input_mat,
+Eigen::Vector3d interpVector3d(const std::vector<double> &input_vec,
+                               const std::vector<Eigen::Vector3d> &input_mat,
                                const double query_point) {
   // Check bounds, throw an error if invalid since this shouldn't ever happen
   if ((query_point < input_vec.front()) || (query_point > input_vec.back())) {
     throw std::runtime_error("Tried to interp out of bounds");
   }
 
-  // Declare variables for interpolating between, both for input and output data
+  // Declare variables for interpolating between, both for input and output
+  // data
   double t1, t2;
   Eigen::Vector3d y1, y2, interp_data;
 
@@ -65,15 +67,16 @@ Eigen::Vector3d interpVector3d(const std::vector<double> input_vec,
 }
 
 std::vector<Eigen::Vector3d> interpMatVector3d(
-    const std::vector<double> input_vec,
-    const std::vector<std::vector<Eigen::Vector3d>> output_mat,
+    const std::vector<double> &input_vec,
+    const std::vector<std::vector<Eigen::Vector3d>> &output_mat,
     const double query_point) {
   // Check bounds, throw an error if invalid since this shouldn't ever happen
   if ((query_point < input_vec.front()) || (query_point > input_vec.back())) {
     throw std::runtime_error("Tried to interp out of bounds");
   }
 
-  // Declare variables for interpolating between, both for input and output data
+  // Declare variables for interpolating between, both for input and output
+  // data
   double t1, t2;
   std::vector<Eigen::Vector3d> y1, y2, interp_data;
 
@@ -99,14 +102,15 @@ std::vector<Eigen::Vector3d> interpMatVector3d(
   return interp_data;
 }
 
-int interpInt(const std::vector<double> input_vec, std::vector<int> output_vec,
-              const double query_point) {
+int interpInt(const std::vector<double> &input_vec,
+              std::vector<int> &output_vec, const double query_point) {
   // Check bounds, throw an error if invalid since this shouldn't ever happen
   if ((query_point < input_vec.front()) || (query_point > input_vec.back())) {
     throw std::runtime_error("Tried to interp out of bounds");
   }
 
-  // Declare variables for interpolating between, both for input and output data
+  // Declare variables for interpolating between, both for input and output
+  // data
   double t1, t2;
   Eigen::Vector3d y1, y2, interp_data;
 
@@ -121,12 +125,13 @@ int interpInt(const std::vector<double> input_vec, std::vector<int> output_vec,
   throw std::runtime_error("Didn't find the query point, something happened");
 }
 
-std::vector<double> movingAverageFilter(std::vector<double> data,
+std::vector<double> movingAverageFilter(const std::vector<double> &data,
                                         int window_size) {
   std::vector<double> filtered_data;
   int N = data.size();
 
-  // Check to ensure window size is an odd integer, if not add one to make it so
+  // Check to ensure window size is an odd integer, if not add one to make it
+  // so
   if ((window_size % 2) == 0) {
     window_size += 1;
     ROS_WARN_THROTTLE(
@@ -165,12 +170,12 @@ std::vector<double> movingAverageFilter(std::vector<double> data,
   return filtered_data;
 }
 
-std::vector<double> centralDiff(std::vector<double> data, double dt) {
+std::vector<double> centralDiff(const std::vector<double> &data, double dt) {
   std::vector<double> data_diff;
 
   for (int i = 0; i < data.size(); i++) {
-    // Compute lower and upper indices, with forward/backward difference at the
-    // ends
+    // Compute lower and upper indices, with forward/backward difference at
+    // the ends
     int lower_index = std::max(i - 1, 0);
     int upper_index = std::min(i + 1, (int)data.size() - 1);
 

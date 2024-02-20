@@ -22,6 +22,8 @@
         /$(arg namespace)/control/mode 
         /$(arg namespace)/foot_plan_continuous
         /$(arg namespace)/foot_plan_discrete
+        /$(arg namespace)/body_force/joint_torques
+        /$(arg namespace)/body_force/toe_forces
         /terrain_map" />
 
     <!-- Record timestamped bag in bag dir -->
@@ -40,6 +42,8 @@
         /$(arg namespace)/control/mode 
         /$(arg namespace)/foot_plan_continuous
         /$(arg namespace)/foot_plan_discrete
+        /$(arg namespace)/body_force/joint_torques
+        /$(arg namespace)/body_force/toe_forces
         /terrain_map" />
 
 </launch>

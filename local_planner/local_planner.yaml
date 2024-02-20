@@ -1,7 +1,7 @@
 local_planner:
   update_rate: 333 # Hz
   timestep: 0.03 # s
-  horizon_length: 26 # timesteps
+  horizon_length: 26 # timesteps # Try Increasing to 32
   desired_height: 0.27 # m
   toe_radius: 0.02 # m
   cmd_vel_filter_const: 0.10
@@ -13,7 +13,7 @@ local_planner:
 
 local_footstep_planner:
   grf_weight: 0.5
-  period: 0.36 # s
+  period: 0.54 # s
   ground_clearance: 0.07
   standing_error_threshold: 0.03 # m
   foothold_obj_threshold: 0.6 # Note: For now must match /grid_map_filters/traversability_mask_lower_threshold/lower_threshold

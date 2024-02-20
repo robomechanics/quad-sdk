@@ -20,6 +20,7 @@
             <arg name="ac" value="$(arg ac)" />
             <arg name="robot_type" value="$(arg robot_type)" />
             <arg name="namespace" value="$(arg namespace_1)" />
+            <arg name="twist_input" value="$(arg twist_input)" />
         </include>
     </group>
 
