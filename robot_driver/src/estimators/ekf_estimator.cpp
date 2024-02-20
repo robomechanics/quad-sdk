@@ -78,7 +78,6 @@ bool EKFEstimator::updateOnce(quad_msgs::RobotState& last_robot_state_msg_) {
   // ROS_INFO_STREAM("Estiamted State before update:" << last_robot_state_msg_);
   ros::Time state_timestamp = ros::Time::now();
   // std::cout << "Here"<< std::endl;
-  ROS_INFO_STREAM("State Timestamp" << state_timestamp.toSec());
   // std::cout << "After"<< std::endl;
   // ROS_INFO_STREAM("State Timestamp" << state_timestamp);
   if (is_hardware_) {
@@ -142,14 +141,15 @@ bool EKFEstimator::updateOnce(quad_msgs::RobotState& last_robot_state_msg_) {
     auto new_state_est = this->StepOnce();
     // std::cout << "3"<< std::endl;
     last_robot_state_msg_ = new_state_est;
-    quad_utils::updateStateHeaders(last_robot_state_msg_, state_timestamp,
-                                   "map", 0);
     // std::cout << "4"<< std::endl;
     last_robot_state_msg_.joints = last_joint_state_msg_;
     last_joint_state_msg_.header.stamp = state_timestamp;
     // std::cout << "5"<< std::endl;
   }
-  ROS_INFO_STREAM(last_robot_state_msg_);
+  quad_utils::updateStateHeaders(last_robot_state_msg_, state_timestamp,
+                                   "map", 0);
+  ROS_INFO_STREAM("HERE" << last_joint_state_msg_.header.stamp);
+  // ROS_INFO_STREAM(last_robot_state_msg_);
   return true;
 }
 
