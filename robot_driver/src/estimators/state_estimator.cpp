@@ -45,3 +45,7 @@ void StateEstimator::loadSensorMsg(
   last_imu_msg_ = last_imu_msg;
   last_joint_state_msg_ = last_joint_state_msg;
 }
+
+void StateEstimator::updateLocalPlanMsg(quad_msgs::RobotPlan::ConstPtr msg) {
+  last_local_plan_msg_ = msg;
+}

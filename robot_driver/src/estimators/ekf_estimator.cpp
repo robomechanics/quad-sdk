@@ -56,9 +56,9 @@ void EKFEstimator::init(ros::NodeHandle& nh) {
   grf_sub_ = nh_.subscribe(grf_topic, 1, &EKFEstimator::grfCallback, this);
   contact_sub_ =
       nh_.subscribe(contact_topic, 1, &EKFEstimator::contactCallback, this);
-  local_plan_sub_ =
-      nh_.subscribe(local_plan_topic, 1, &EKFEstimator::localPlanCallback, this,
-                    ros::TransportHints().tcpNoDelay(true));
+  // local_plan_sub_ =
+  //     nh_.subscribe(local_plan_topic, 1, &EKFEstimator::localPlanCallback, this,
+  //                   ros::TransportHints().tcpNoDelay(true));
 
   // In Sim, Grab IMU, Joint Encoders from Gazebo
   if (!is_hardware_) {
@@ -77,7 +77,7 @@ void EKFEstimator::init(ros::NodeHandle& nh) {
 bool EKFEstimator::updateOnce(quad_msgs::RobotState& last_robot_state_msg_) {
   // ROS_INFO_STREAM("State Timestamp" << state_timestamp);
   if (is_hardware_) {
-    ROS_INFO_STREAM("Makes it Here in Update Once");
+    // ROS_INFO_STREAM("Makes it Here in Update Once");
     last_robot_state_msg_.joints = last_joint_state_msg_;
     // ROS_INFO_STREAM("Populates Message");
   }
@@ -186,10 +186,10 @@ void EKFEstimator::grfCallback(const quad_msgs::GRFArray::ConstPtr& msg) {
   last_grf_msg_ = msg;
 }
 
-void EKFEstimator::localPlanCallback(
-    const quad_msgs::RobotPlan::ConstPtr& msg) {
-  last_local_plan_msg_ = msg;
-}
+// void EKFEstimator::localPlanCallback(
+//     const quad_msgs::RobotPlan::ConstPtr& msg) {
+//   last_local_plan_msg_ = msg;
+// }
 
 void EKFEstimator::setX(Eigen::VectorXd Xin) { X = Xin; }
 

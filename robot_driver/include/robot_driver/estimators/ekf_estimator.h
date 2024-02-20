@@ -116,7 +116,7 @@ class EKFEstimator : public StateEstimator {
    * @return state estimate of custom type RobotState
    */
 
-  void localPlanCallback(const quad_msgs::RobotPlan::ConstPtr& msg);
+//   void localPlanCallback(const quad_msgs::RobotPlan::ConstPtr& msg);
   quad_msgs::RobotState StepOnce();
 
   /**
