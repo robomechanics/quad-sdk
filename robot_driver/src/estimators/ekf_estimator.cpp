@@ -75,13 +75,11 @@ void EKFEstimator::init(ros::NodeHandle& nh) {
 }
 
 bool EKFEstimator::updateOnce(quad_msgs::RobotState& last_robot_state_msg_) {
-  // ROS_INFO_STREAM("State Timestamp" << state_timestamp);
   if (is_hardware_) {
     // ROS_INFO_STREAM("Makes it Here in Update Once");
     last_robot_state_msg_.joints = last_joint_state_msg_;
     // ROS_INFO_STREAM("Populates Message");
   }
-  // std::cout << "1"<< std::endl;
   // Define Initial State, Preallocated Space for State Vectors
   X0 = Eigen::VectorXd::Zero(num_state);
 
@@ -91,8 +89,6 @@ bool EKFEstimator::updateOnce(quad_msgs::RobotState& last_robot_state_msg_) {
     setInitialState(last_robot_state_msg_);
     quad_utils::fkRobotState(*quadKD_, last_robot_state_msg_);
   }
-
-  // ROS_INFO_STREAM(last_imu_msg_);
   // Run Step Once to Calculate Change in State Once Local Planner Starts
   if (last_local_plan_msg_ != nullptr) {
     if (initialized) {
@@ -134,7 +130,7 @@ bool EKFEstimator::updateOnce(quad_msgs::RobotState& last_robot_state_msg_) {
   quad_utils::updateStateHeaders(last_robot_state_msg_, state_timestamp,
                                    "map", 0);
   // Check State Headers are Updating
-  ROS_INFO_STREAM("HERE" << last_robot_state_msg_.header.stamp);
+  // ROS_INFO_STREAM("HERE" << last_robot_state_msg_.header.stamp);
   // ROS_INFO_STREAM(last_robot_state_msg_);
   return true;
 }

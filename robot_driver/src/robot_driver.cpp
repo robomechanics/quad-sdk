@@ -390,6 +390,7 @@ bool RobotDriver::updateState() {
 
     // State information coming through sim subscribers, not hardware interface
     if (state_estimator_ != nullptr) {
+      //Check the Message Here
       return state_estimator_->updateOnce(last_robot_state_msg_);
     } else {
       ROS_WARN_THROTTLE(1, "No state estimator is initialized");
@@ -677,14 +678,18 @@ void RobotDriver::spin() {
   while (ros::ok()) {
     // Collect new messages on subscriber topics and publish heartbeat
     ros::spinOnce();
-    // ROS_INFO_STREAM("Start Spin");
+    ROS_INFO_STREAM("--------------------");
     // Get the newest state information
+    ROS_INFO_STREAM("Should be empty at Start" << last_robot_state_msg_.header.stamp)
     updateState();
+    ROS_INFO_STREAM("After State Update" << last_robot_state_msg_.header.stamp)
     // ROS_INFO_STREAM("After Update State");
     // Compute the leg command and publish if valid
     bool is_valid = updateControl();
     publishControl(is_valid);
+    ROS_INFO_STREAM("After Control" << last_robot_state_msg_.header.stamp)
     // Publish state and heartbeat
+    //Before Publishgin control check time
     publishState();
     // ROS_INFO_STREAM("After Publish State");
     publishHeartbeat();
