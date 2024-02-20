@@ -15,20 +15,21 @@
 #include <ros/ros.h>
 #include <std_msgs/Bool.h>
 #include <std_msgs/UInt8.h>
-#include <sensor_msgs/Imu.h>
 
 #include <cmath>
 #include <eigen3/Eigen/Eigen>
 
 #include "robot_driver/controllers/grf_pid_controller.h"
+#include "robot_driver/controllers/inertia_estimation_controller.h"
 #include "robot_driver/controllers/inverse_dynamics_controller.h"
 #include "robot_driver/controllers/joint_controller.h"
 #include "robot_driver/controllers/leg_controller.h"
+#include "robot_driver/controllers/underbrush_inverse_dynamics.h"
 #include "robot_driver/estimators/comp_filter_estimator.h"
 #include "robot_driver/estimators/ekf_estimator.h"
 #include "robot_driver/estimators/state_estimator.h"
 #include "robot_driver/hardware_interfaces/hardware_interface.h"
-#include "robot_driver/hardware_interfaces/ylo2_interface.h"
+#include "robot_driver/hardware_interfaces/spirit_interface.h"
 #include "robot_driver/robot_driver_utils.h"
 
 #define MATH_PI 3.141592
@@ -75,7 +76,7 @@ class RobotDriver {
    * @brief Verifies and updates new control mode
    * @param[in] msg New control mode
    */
-   void grfCallback(const quad_msgs::GRFArray::ConstPtr& msg);
+  void grfCallback(const quad_msgs::GRFArray::ConstPtr& msg);
 
   /**
    * @brief execute EKF Update step, return state estimate
@@ -114,6 +115,13 @@ class RobotDriver {
   void singleJointCommandCallback(const geometry_msgs::Vector3::ConstPtr& msg);
 
   /**
+   * @brief Callback to handle new body force estimates
+   * @param[in] msg body force estimates
+   */
+  void bodyForceEstimateCallback(
+      const quad_msgs::BodyForceEstimate::ConstPtr& msg);
+
+  /**
    * @brief Callback to handle control restart flag messages
    */
   void controlRestartFlagCallback(const std_msgs::Bool::ConstPtr& msg);
@@ -123,13 +131,6 @@ class RobotDriver {
    * @param[in] msg Remote heartbeat message
    */
   void remoteHeartbeatCallback(const std_msgs::Header::ConstPtr& msg);
-
-  /**
-   * @brief Callback to handle new IMU messages
-   * @param[in] msg Remote heartbeat message
-   */
-  void imuCallback(const sensor_msgs::Imu::ConstPtr& msg);
-
 
   /**
    * @brief Check to make sure required messages are fresh
@@ -178,6 +179,9 @@ class RobotDriver {
   /// ROS subscriber for state estimate
   ros::Subscriber robot_state_sub_;
 
+  /// ROS subscriber for body force estimates
+  ros::Subscriber body_force_estimate_sub_;
+
   /// ROS subscriber for control restart flag
   ros::Subscriber control_restart_flag_sub_;
 
@@ -190,14 +194,11 @@ class RobotDriver {
   /// ROS subscriber for remote heartbeat
   ros::Subscriber remote_heartbeat_sub_;
 
-  /// Subscriber for the IMU data
-  ros::Subscriber imu_sub_;
-  
   /// ROS subscriber for single joint command
   ros::Subscriber single_joint_cmd_sub_;
 
-//   /// ROS subscriber for desired GRF
-//   ros::Subscriber grf_sub_;
+  //   /// ROS subscriber for desired GRF
+  //   ros::Subscriber grf_sub_;
 
   /// ROS publisher for robot heartbeat
   ros::Publisher robot_heartbeat_pub_;
@@ -244,6 +245,9 @@ class RobotDriver {
   /// Robot mode
   int control_mode_;
 
+  /// Robot State Intialization
+  int initialized_;
+
   /// Torque limits
   std::vector<double> torque_limits_;
 
@@ -262,6 +266,9 @@ class RobotDriver {
   /// Define ids for control modes: Safety
   const int SAFETY = 4;
 
+  /// Define ids for for state initialization
+  const int REST = 5;
+
   /// Define ids for input types: none
   const int NONE = 0;
 
@@ -277,7 +284,7 @@ class RobotDriver {
   /// Ground Truth Robot State from Simulation
   quad_msgs::RobotState last_robot_state_msg_;
 
-  /// Robot State Estimate Used in Control 
+  /// Robot State Estimate Used in Control
   quad_msgs::RobotState state_estimate_;
 
   /// EKF State Estimate Output
@@ -418,8 +425,6 @@ class RobotDriver {
 
   /// Required for some hardware interfaces
   int argc_;
-
-  bool initialized;
 
   /// Required for some hardware interfaces
   char** argv_;

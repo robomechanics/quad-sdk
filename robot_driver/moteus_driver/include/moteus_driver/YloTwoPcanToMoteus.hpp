@@ -10,9 +10,14 @@
 #include <string.h>
 #include <unistd.h>
 #include <ros/ros.h>
+#include <sensor_msgs/Imu.h>
+
 #include <PCANBasic.h> // Peak m2canFd board lib
-#include "mraa/common.hpp"
-#include "mraa/gpio.hpp" // for GPIO security switch
+
+#include "mraa/common.hpp" // for GPIO security switch
+#include "mraa/gpio.hpp"
+
+#include <cmath> // pour la fonction champ_standup
 
 // define GPIO switch port
 #define BTN_PIN      29
@@ -24,21 +29,25 @@
 #define PCAN_DEV4	PCAN_PCIBUS4
 
 /* moteus controllers TX bytes adress */
+
 #define MSGTX_ADDR_POSITION     0x06 
 #define MSGTX_ADDR_VELOCITY     0x0A
 #define MSGTX_ADDR_FFTORQUE     0x0E
 #define MSGTX_ADDR_KP           0x12
 #define MSGTX_ADDR_KD           0x16
 #define MSGTX_ADDR_MAXTORQUE    0x1A
+#define MSGTX_ADDR_STOP_MODE    0x1E 
+#define MSGTX_ADDR_WATCHDOG_    0x22 
+#define MSGTX_ADDR_TARG_VEL     0x26 
+#define MSGTX_ADDR_TARG_ACC     0x2A
 
 /* moteus controllers RX bytes adress */
 #define MSGRX_ADDR_POSITION     0x02
 #define MSGRX_ADDR_VELOCITY     0x06
 #define MSGRX_ADDR_TORQUE       0x0A
-#define MSGRX_ADDR_VOLTAGE      0x16
-#define MSGRX_ADDR_TEMPERATURE  0x1A
-#define MSGRX_ADDR_FAULT        0x1E
-
+#define MSGRX_ADDR_VOLTAGE      0x0E
+#define MSGRX_ADDR_TEMPERATURE  0x12
+#define MSGRX_ADDR_FAULT        0x16
 
 // about moteus controllers faults errors:
 /*  32 - calibration fault - the encoder was not able to sense a magnet during calibration
@@ -49,8 +58,8 @@
     37 - pwm cycle overrun - an internal firmware error
     38 - over temperature - the maximum configured temperature has been exceeded
     39 - outside limit - an attempt was made to start position control while outside the bounds configured by servopos.position_min and servopos.position_max.*/
-/* power board RX bytes adress */ // TODO check adresses
 
+/* power board RX bytes adress */ // TODO check adresses
 #define MSGPBRX_ADDR_STATE          0x02 // 2 bytes per value (int16)   
 #define MSGPBRX_ADDR_FAULT_CODE     0x04  
 #define MSGPBRX_ADDR_SWITCH_STATUS  0x06
@@ -103,10 +112,10 @@ struct MotorAdapter{
 
 // the YloTwoPcanToMoteus class
 class YloTwoPcanToMoteus{
+
   public:
 
     /* SECURITY RED SWITCH
-      GPIO usage under Up extreme i7, with mraa lib
       wires diagram : 
         - black is ground (pin 1); 
         - red is +3.3vcc with 10k resistor (pin 6); 
@@ -114,25 +123,35 @@ class YloTwoPcanToMoteus{
     bool security_switch();
 
     /* PEAK BOARD M2 4 CANFD PORTS
-       initialize and reset all 4 ports*/
-    bool init_and_reset();
+       initialize all 4 ports*/
+    bool Can_init();
 
-    /* zero each moteus controller*/
+    /* reset all 4 ports*/
+    bool Can_reset();
+
+    /* Imu functions */
+    static sensor_msgs::Imu ylo3_imu; // the imu variable
+    void subscribeToImuData();
+    void imuCallback(const sensor_msgs::Imu::ConstPtr& imu_msg);
+    sensor_msgs::Imu getYlo3Imu();
+
+    /* zero a single moteus controller*/
     bool send_moteus_zero_order(int id, int port, float position);
 
-    /* send a canFD STOP frame command, 
+    /* send a single canFD STOP frame command to clear any faults, 
        and query informations about moteus controller*/
     bool send_moteus_stop_order(int id, int port);
 
-    /* send a canFD TORQUE frame
-       and query informations about moteus controller*/
-    bool send_moteus_TX_frame(int id, int port, float pos, float vel, float fftorque, float kp, float kd);
+    /* sending a velocity command */
+    bool send_to_moteus(int id, int port, float pos, float vel, float fftorque, float kp, float kd, float target_vel, float target_accel);
+    bool send_to_moteus(int id, int port, float pos, float vel, float fftorque, float kp, float kd);
 
-    /* query canFD RX Queue, 
+    /* query a single canFD RX Queue, 
        and read ID params*/
     bool read_moteus_RX_queue(int id, int port, float& position, float& velocity, float& torque, float& voltage, float& temperature, float& fault);
+    bool read_moteus_RX_queue(int id, int port, float& voltage, float& temperature, float& fault);
 
-    /* send a canFD command frame
+    /* send a single canFD command frame
        ask informations about moteus power board*/
     bool send_power_board_order();
 
@@ -148,8 +167,7 @@ class YloTwoPcanToMoteus{
 
     /*1/ zero joints with initial_ground_joints_pose vector
       2/ check angle error between asked rezero, and read position
-      3/ loop until success
-      4/ stand up robot */
+      3/ loop until success */
     bool check_initial_ground_pose();
 
     uint32_t _id; // ID of a moteus controller
@@ -171,21 +189,24 @@ class YloTwoPcanToMoteus{
     float RX_temp  = 0.0;
     float RX_fault = 0;
 
-    float _comm_position      = 0.0; // NAN for torque mode
-    float _comm_velocity      = 0.0;
-    float _comm_fftorque      = 0.0; // variable Tau
-    float _comm_kp            = 0.0;
-    float _comm_kd            = 0.0;
-    float _comm_maxtorque     = 1.0; // Max possible torque is NAN value
+    //for moteus TX
+    float _comm_position          = 0.0; // NAN for torque mode
+    float _comm_velocity          = 0.0;
+    float _comm_fftorque          = 1.0; // variable Tau
+    float _comm_kp                = 10.0;
+    float _comm_kd                = 1.0;
+    float _comm_maxtorque         = 0.10; // Max possible torque is NAN value
+    float _comm_stop_mode         = NAN;
+    float _comm_watchdog_timeout  = 10;
+    float _comm_target_vel        = 0.6;
+    float _comm_target_acc        = 0.3;
+
 
     // for mraa library GPIO (security switch)
-    mraa_gpio_context btnPin; //  Will be used to represnt the button pin     //TODO create private class
-
-    // for use with security button status
-    bool security_button_flag = 1;
+    mraa_gpio_context btnPin; //  Will be used to represnt the button pin
 
   private:
-    
+
     // for pcanbasic library
     TPCANStatus Status; // the return of a command, to check success
 
@@ -206,10 +227,10 @@ class YloTwoPcanToMoteus{
     int idx_;
     int sign_;
     int port_;
-    int leg_index_;
-    int joint_index_;
     int stop_pos_low_;
     int stop_pos_high_;
+
+
 
     /* query variables for moteus controllers */
     float _position     = 0.0;
@@ -230,13 +251,21 @@ class YloTwoPcanToMoteus{
     float _board_temp     = 0.0;
     float _energy         = 0.0;
 
-      //  zero position of controllers, to check
-    std::vector<float>initial_ground_joints_pose = {-0.058065, -0.1830422580242157, 0.3962658643722534,  //  3, 1, 2
-                                                     0.055634, -0.18712398409843445, 0.4280807077884674,  //  9, 7, 8
-                                                     0.058340, 0.1817300021648407, -0.4297744333744049,  //  6, 4, 5
-                                                    -0.062968, 0.18036942183971405, -0.4263542890548706}; // 12, 10, 11
 
-    float calibration_error = 0.02;
+    //  robot position is sitted
+    std::vector<float>sit_down_joints_pose = { -0.0461273193359375, -0.1825408935546875,  0.371002197265625,  // 3, 1, 2
+                                                0.0385894775390625, -0.1865081787109375,  0.371063232421875,  // 9, 7, 8
+                                                0.04315185546875,    0.18280029296875,   -0.373260498046875,  // 6, 4, 5
+                                               -0.04425048828125,    0.188568115234375,  -0.372222900390625}; // 12, 10, 11
+
+
+    //  stand up target pose (en tours/s) - pattes un peu trop écartées, dues a leur position au sol !
+    std::vector<float>standup_joints_pose = {        0.000582622, 0.1629, -0.28942,
+                                                     0.000582622, -0.1629, 0.28942,
+                                                    -0.000582622, 0.1629, -0.28942,
+                                                    -0.000582622, -0.1629, 0.28942};
+
+    float calibration_error = 0.03; // 10.8 degrees  ca passe aussi avec 0.01 (3.6 degrees)
 };
 
 #endif // PCANTOMOTEUS_HPP

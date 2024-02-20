@@ -11,12 +11,12 @@ NMPCController::NMPCController(ros::NodeHandle &nh, int robot_id) {
       default_system = SPIRIT;
       break;
     case 1:
-      robot_ns_ = "ylo2";
-      default_system = YLO2;
+      robot_ns_ = "a1";
+      default_system = A1;
       break;
     default:
-      robot_ns_ = "ylo2";
-      default_system = YLO2;
+      robot_ns_ = "spirit";
+      default_system = SPIRIT;
       break;
   }
 
@@ -206,7 +206,7 @@ NMPCController::NMPCController(ros::NodeHandle &nh, int robot_id) {
 
   app_->Options()->SetStringValue("print_timing_statistics", "no");
   app_->Options()->SetStringValue("linear_solver", "ma27");
-  app_->Options()->SetIntegerValue("print_level", 0);
+  app_->Options()->SetIntegerValue("print_level", 0);  // default=0, verbose=5
   app_->Options()->SetNumericValue("ma57_pre_alloc", 1.5);
   app_->Options()->SetStringValue("fixed_variable_treatment",
                                   "make_parameter_nodual");

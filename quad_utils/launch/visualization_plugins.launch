@@ -1,6 +1,6 @@
 <launch>
     <arg name="namespace" default="robot_1" />
-    <arg name="robot_type" default="ylo2"/>
+    <arg name="robot_type" default="spirit"/>
 
     <include file="$(find quad_utils)/launch/load_robot_params.launch">
         <arg name="robot_type" value="$(arg robot_type)"/>

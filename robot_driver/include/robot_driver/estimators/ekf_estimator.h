@@ -3,11 +3,12 @@
 
 #include <gtest/gtest.h>
 #include <quad_msgs/ContactMode.h>
-#include <quad_msgs/RobotState.h>
 #include <quad_msgs/GRFArray.h>
+#include <quad_msgs/RobotState.h>
+#include <quad_utils/math_utils.h>
 #include <quad_utils/quad_kd.h>
 #include <quad_utils/ros_utils.h>
-#include <quad_utils/math_utils.h>
+#include <robot_driver/estimators/state_estimator.h>
 #include <ros/ros.h>
 #include <sensor_msgs/Imu.h>
 #include <sensor_msgs/JointState.h>
@@ -16,7 +17,6 @@
 
 #include <eigen3/Eigen/Eigen>
 #include <vector>
-#include <robot_driver/estimators/state_estimator.h>
 
 //! Implements online EKF based state estimation
 /*!
@@ -24,7 +24,7 @@
    that does any initialization required and an update method called at some
    frequency.
 */
-class EKFEstimator: public StateEstimator {
+class EKFEstimator : public StateEstimator {
  public:
   /**
    * @brief Constructor for EKFEstimator
@@ -34,12 +34,12 @@ class EKFEstimator: public StateEstimator {
   EKFEstimator();
 
   void init(ros::NodeHandle& nh);
-  bool updateOnce(quad_msgs::RobotState& estimated_state_);
+  bool updateOnce(quad_msgs::RobotState& last_robot_state_msg_);
 
   /**
    * @brief Calls ros spinOnce and pubs data at set frequency
    */
-  //void spin(); Commented Out, Doesn't Exist, Spins with Robot Driver
+  // void spin(); Commented Out, Doesn't Exist, Spins with Robot Driver
 
   /**
    * @brief set X as Xin
@@ -115,6 +115,8 @@ class EKFEstimator: public StateEstimator {
    * @brief execute EKF Update step, return state estimate
    * @return state estimate of custom type RobotState
    */
+
+  void localPlanCallback(const quad_msgs::RobotPlan::ConstPtr& msg);
   quad_msgs::RobotState StepOnce();
 
   /**
@@ -133,35 +135,14 @@ class EKFEstimator: public StateEstimator {
    * @param[in] vk Eigen::VectorXd joint encoder velcoity data (12 * 1)
    * @param[in] wk Eigen::VectorXd imu angular acceleration data (3 * 1)
    */
-  void update(const Eigen::VectorXd& jk, const Eigen::VectorXd& fk, const Eigen::VectorXd& vk, const Eigen::VectorXd& wk);
+  void update(const Eigen::VectorXd& jk, const Eigen::VectorXd& fk,
+              const Eigen::VectorXd& vk, const Eigen::VectorXd& wk);
 
   /**
-   * @brief read IMU data
-   * @param[in] last_imu_msg_ sensor_msgs::Imu::ConstPtr imu sensor message
-   * @param[out] fk Eigen::VectorXd linear acceleration (3 * 1)
-   * @param[out] wk Eigen::VectorXd angular acceleration (3 * 1)
-   * @param[out] qk Eigen::Quaterniond orientation in quaternion
+   * @brief Function to set initial robot state for ekf state estimator
    */
-  // void readIMU(const sensor_msgs::Imu::ConstPtr& last_imu_msg_,
-  //              Eigen::VectorXd& fk, Eigen::VectorXd& wk,
-  //              Eigen::Quaterniond& qk);
+  void setInitialState(quad_msgs::RobotState& last_robot_state_msg_);
 
-  // /**
-  //  * @brief read joint encoder data
-  //  * @param[in] last_joint_state_msg_ sensor_msgs::JointState::ConstPtr joint
-  //  * state sensor message
-  //  * @param[out] jk Eigen::VectorXd jointstate (12 * 1)
-  //  */
-  // void readJointEncoder(
-  //     const sensor_msgs::JointState::ConstPtr& last_joint_state_msg_,
-  //     Eigen::VectorXd& jk);
-
-  // /**
-  //  * @brief predict quaternion k+1 from k using dt, angular velocity, and qk
-  //  * @param[in] w Eigen::VectorXd angular velocity vector (3 * 1)
-  //  * @param[in] q Eigen::VectorXd quaternion k vector (4 * 1)
-  //  * @return Eigen vector of quaternion k+1 vector (4 * 1)
-  //  */
   Eigen::VectorXd quaternionDynamics(const Eigen::VectorXd& w,
                                      const Eigen::VectorXd& q);
 
@@ -188,11 +169,6 @@ class EKFEstimator: public StateEstimator {
    */
   void setNoise();
 
-  /**
-   * @brief set initial state variable
-   */
-  void setInitialState();
-
   // number of states position (3 * 1) + velocity (3 * 1) + quaternion (4 * 1) +
   // feet position (12 * 1) + bias_acc (3 * 1) + bias_gyro (3 * 1)
   static const int num_state = 18;
@@ -211,11 +187,6 @@ class EKFEstimator: public StateEstimator {
   /// Subscriber for ground_truth RobotState messages
   ros::Subscriber state_ground_truth_sub_;
 
-  /// Last state ground_truth
-  quad_msgs::RobotState::ConstPtr last_robot_state_msg_;
-
-  // quad_msgs::RobotState last_estimated_state_;
-
   /// Subscriber for joint encoder messages
   ros::Subscriber joint_encoder_sub_;
 
@@ -228,6 +199,9 @@ class EKFEstimator: public StateEstimator {
   /// Subscriber for contact detection messages
   ros::Subscriber contact_sub_;
 
+  /// ROS subscriber for local plan
+  ros::Subscriber local_plan_sub_;
+
   /// Nodehandle to pub to and sub from
   ros::NodeHandle nh_;
 
@@ -237,6 +211,9 @@ class EKFEstimator: public StateEstimator {
   /// Last state estimate
   quad_msgs::RobotState last_state_est_;
 
+  /// Most recent local plan
+  quad_msgs::RobotPlan::ConstPtr last_local_plan_msg_;
+
   /// Last grf control message
   quad_msgs::GRFArray::ConstPtr last_grf_msg_;
 
@@ -244,10 +221,10 @@ class EKFEstimator: public StateEstimator {
   quad_msgs::ContactMode::ConstPtr last_contact_msg_;
 
   /// Most recent IMU callback (should be timestamped!)
-  sensor_msgs::Imu::ConstPtr last_imu_msg_;
+  //   sensor_msgs::Imu::ConstPtr last_imu_msg_;
 
   /// Most recent encoder callback (should be timestamped!)
-  sensor_msgs::JointState::ConstPtr last_joint_state_msg_;
+  //   sensor_msgs::JointState::ConstPtr last_joint_state_msg_;
 
   /// Maximum amount of time to still use joint state message in EKF data
   double joint_state_msg_time_diff_max_;
@@ -272,7 +249,7 @@ class EKFEstimator: public StateEstimator {
 
   // prediction state vector (28 * 1)
   Eigen::Matrix<double, num_measure, num_state> SC;
-  
+
   Eigen::Matrix<double, num_measure, num_measure> S;
 
   // rotation matrix generated from imu quaternion (3 * 3)
@@ -309,7 +286,7 @@ class EKFEstimator: public StateEstimator {
   Eigen::VectorXd foot_state;
 
   // error measurement displacement vector (18 * 1)
-  Eigen::Matrix<double, num_measure, 1>  error_y;
+  Eigen::Matrix<double, num_measure, 1> error_y;
 
   // measurement Generated from Leg Kinematics (18 * 1)
   Eigen::VectorXd y;
@@ -374,7 +351,7 @@ class EKFEstimator: public StateEstimator {
   double P0_;
   // weight on foot contact value
   double contact_w_;
-   // Innovation Norm Threshold, Reject Measurement Update if too large
+  // Innovation Norm Threshold, Reject Measurement Update if too large
   double thresh_out;
   // initialized the estimator
   bool initialized = true;

@@ -1,7 +1,7 @@
 <launch>
-    <arg name="robot_type" default="ylo2"/>
-    <arg name="namespace" default="ylo2"/>
-    
+    <arg name="robot_type" default="spirit"/>
+    <arg name="namespace" default="ylo3"/>
+
     <include file="$(find quad_utils)/launch/load_global_params.launch">
         <arg name="robot_type" value="$(arg robot_type)"/>
     </include>
@@ -10,8 +10,14 @@
     <arg name="logging" default="false" />
     <arg name="controller" default="inverse_dynamics" />
     <arg name="is_hardware" default="true" />
-    <arg name="estimator" default="ekf_filter" />
+    <arg name="estimator" default="comp_filter" />
     <arg name="ground_truth" default="sim" />
+
+    <!-- Launch the imu node -->
+    <node pkg="quad_imu" type="quad_imu" name="quad_imu">
+        <param name="port" value="/dev/ttyACM0" />
+        <param name="baud_rate" value="115200" />
+    </node>
 
     <!-- Launch the robot driver node -->
     <group if="$(arg is_hardware)">
@@ -20,14 +26,12 @@
                 <arg name="robot_type" value="$(arg robot_type)"/>
             </include>
             <node name="robot_driver" pkg="robot_driver" type="robot_driver_node" output="screen">
-                <param name="robot_type" value="$(arg robot_type)"/>
                 <param name="controller" value="$(arg controller)" />
                 <param name ="estimator" value= "$(arg estimator)" />
                 <param name="is_hardware" value="$(arg is_hardware)" />
             </node>
         </group>
     </group>
-    
     <group unless="$(arg is_hardware)">
         <include file="$(find quad_utils)/launch/load_robot_params.launch">
             <arg name="robot_type" value="$(arg robot_type)"/>

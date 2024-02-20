@@ -1,5 +1,5 @@
 <launch>
-    <arg name="robot_type" default="ylo2"/>
+    <arg name="robot_type" default="spirit"/>
     <!-- Specify the type of input (grid, mesh, cloud) -->
     <arg name="input_type" default="grid"/>
 

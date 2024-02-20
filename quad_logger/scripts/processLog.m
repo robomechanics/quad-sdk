@@ -22,7 +22,7 @@ if nargin>0
     trialName = varargin{1};
     namespace = varargin{2};
 else
-    trialName = 'robot_1_quad_log_bag'; % Set to '' to load via GUI
+    trialName = ''; % Set to '' to load via GUI
     namespace = 'robot_1'; % Namespace of the robot bag, set to '' if none
 end
 

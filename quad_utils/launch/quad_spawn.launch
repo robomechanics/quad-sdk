@@ -1,8 +1,8 @@
 <launch>
   <arg name="controller"    default="inverse_dynamics"/>
-  <arg name="init_pose"     default="-x 1.5 -y 3.0 -z 1.5"/>
+  <arg name="init_pose"     default="-x 1.5 -y 0.0 -z 0.5"/>
   <arg name="namespace"     default="robot_1"/>
-  <arg name="robot_type"    default="ylo2"/>
+  <arg name="robot_type"    default="spirit"/>
 
   <!-- Declare tf prefix for plugins -->
   <param name="tf_prefix"   value="$(arg namespace)" />
@@ -17,7 +17,6 @@
     <arg name="mocap" value="false"/>
     <arg name="is_hardware" value="false"/>
     <!-- Change Estimator Argument Here -->
-    <!-- <arg name="estimator" value="ekf_filter"/> -->
     <arg name="estimator" value="ekf_filter"/>
     <arg name="ground_truth" value="estimate"/>
   </include>

@@ -1,18 +1,10 @@
 <launch>
-    <arg name="robot_type" default="ylo2"/>
+    <arg name="robot_type" default="spirit"/>
 
     <include file="$(find quad_utils)/launch/load_global_params.launch">
         <arg name="robot_type" value="$(arg robot_type)"/>
     </include>
 
-    <!-- Start Imu publisher -->
-    <node pkg="quad_imu" type="quad_imu" name="quad_imu">
-        <param name="port" value="/dev/ttyACM0" />
-        <param name="baud_rate" value="115200" />
-        <param name="frame_id" value="trunk" />
-        <param name="parent_frame_id" value="world" />
-    </node>
-    
     <arg name="logging" default="false" />
     <arg name="live_plot" default="false" />
     <arg name="dash" default="false" />
@@ -35,6 +27,6 @@
     </group>
 
     <!-- Start the heartbeat node -->
-    <!--<node name="remote_heartbeat" pkg="quad_utils" type="remote_heartbeat_node" output="screen" />-->
+    <node name="remote_heartbeat" pkg="quad_utils" type="remote_heartbeat_node" output="screen" />
 
 </launch>

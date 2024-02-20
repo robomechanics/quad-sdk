@@ -32,7 +32,7 @@ cmake_policy(SET CMP0054 NEW)
 cmake_policy(SET CMP0045 NEW)
 
 ## Compile as C++14, supported in ROS Melodic and newer
-add_compile_options(-std=c++17)
+add_compile_options(-std=c++14)
 
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)

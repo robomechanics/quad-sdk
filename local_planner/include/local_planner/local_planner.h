@@ -79,6 +79,11 @@ class LocalPlanner {
    */
   void getReference();
 
+   /**
+    * @brief Unwrap the yaw signal in the reference body plan
+    */
+  void unwrapYawReference();
+
   /**
    * @brief Function to compute the local plan
    * @return Boolean if local plan was found successfully
@@ -90,7 +95,7 @@ class LocalPlanner {
    */
   void publishLocalPlan();
 
-  /// Robot type: A1 or Ylo2
+  /// Robot type: A1 or Spirit
   std::string robot_name_;
 
   /// ROS subscriber for incoming terrain_map

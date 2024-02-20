@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.0.2)
 project(nmpc_controller)
 
 ## Compile as C++14, supported in ROS Melodic and newer
-add_compile_options(-std=c++17 -ffast-math)
+add_compile_options(-std=c++14 -ffast-math)
   
 ## Set default cmake build type to release
 if(NOT CMAKE_CONFIGURATION_TYPES AND NOT CMAKE_BUILD_TYPE)
@@ -49,15 +49,12 @@ link_directories(/usr/local/lib)
 
 ## Declare a C++ library for control
 add_library(nmpc_controller
-
-  src/gen/eval_g_ylo2.cpp
-  src/gen/eval_jac_g_ylo2.cpp
-  src/gen/eval_hess_g_ylo2.cpp
-  
   src/gen/eval_g_spirit.cpp
   src/gen/eval_jac_g_spirit.cpp
   src/gen/eval_hess_g_spirit.cpp
-
+  src/gen/eval_g_a1.cpp
+  src/gen/eval_jac_g_a1.cpp
+  src/gen/eval_hess_g_a1.cpp
   src/gen/eval_g_leg_simple.cpp
   src/gen/eval_jac_g_leg_simple.cpp
   src/gen/eval_hess_g_leg_simple.cpp

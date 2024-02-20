@@ -3,7 +3,7 @@
     <arg name="logging"         default="false" />
     <arg name="twist_input"     default="none" />
     <arg name="namespace"       default="robot_1" />
-    <arg name="robot_type" default="ylo2"/>
+    <arg name="robot_type" default="spirit"/>
     <arg name="leaping" default="true" />
     <arg name="ac" default="false" />
 
@@ -38,6 +38,9 @@
 
     <param name="nmpc_controller/enable_adaptive_complexity" value="$(arg ac)" />
     <node name="local_planner" pkg="local_planner" type="local_planner_node" output="screen" />
+
+    <!-- Launch the node to publish body forece estimate messages-->
+    <node name="body_force_estimator" pkg="body_force_estimator" type="body_force_estimator_node" output="screen"/>
 
     <group if="$(arg logging)">
         <include file="$(find quad_utils)/launch/logging.launch">

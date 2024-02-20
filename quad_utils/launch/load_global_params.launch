@@ -1,11 +1,12 @@
 <launch>
-    <arg name="robot_type" default="ylo2"/>
+    <arg name="robot_type" default="spirit"/>
     <arg name="load_robot_params" default="false"/>
 
     <rosparam command="load" file="$(find global_body_planner)/global_body_planner.yaml" />
     <rosparam command="load" file="$(find local_planner)/local_planner.yaml" />
     <rosparam command="load" file="$(find nmpc_controller)/nmpc_controller.yaml" />
     <rosparam command="load" file="$(find robot_driver)/robot_driver.yaml" />
+    <rosparam command="load" file="$(find body_force_estimator)/body_force_estimator.yaml" />
     <rosparam command="load" file="$(find quad_utils)/config/terrain_map_publisher.yaml" />
     <rosparam command="load" file="$(find quad_utils)/config/grid_map_visualization.yaml" />
     <rosparam command="load" file="$(find quad_utils)/config/remote_heartbeat.yaml" />
@@ -19,10 +20,14 @@
         <param name="robot_description" command="cat $(find spirit_description)/urdf/spirit.urdf" />
     </group>
 
-    <group if="$(eval arg('robot_type') == 'ylo2')">
-        <rosparam command="load" file="$(find quad_utils)/config/ylo2.yaml" />
-        <param name="robot_description_sdf" textfile="$(find ylo2_description)/sdf_mesh/ylo2.sdf" />
-        <param name="robot_description" command="cat $(find ylo2_description)/urdf/ylo2.urdf" />
+    <group if="$(eval arg('robot_type') == 'spirit_rotors')">
+        <param name="robot_description_sdf" textfile="$(find spirit_description)/sdf_mesh/spirit.sdf" />
+        <param name="robot_description" command="cat $(find spirit_description)/urdf/spirit.urdf" />
+    </group>
+
+    <group if="$(eval arg('robot_type') == 'a1')">
+        <param name="robot_description_sdf" textfile="$(find a1_description)/sdf_mesh/a1.sdf" />
+        <param name="robot_description" command="cat $(find a1_description)/urdf/a1.urdf" />
     </group>
 
     <group if="$(arg load_robot_params)">

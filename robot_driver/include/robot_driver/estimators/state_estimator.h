@@ -44,7 +44,7 @@ class StateEstimator {
    * @param[out] wk Angular acceleration
    * @param[out] qk Orientation in quaternion
    */
-  void readIMU(const sensor_msgs::Imu::ConstPtr& last_imu_msg,
+  void readIMU(const sensor_msgs::Imu& last_imu_msg,
                Eigen::VectorXd& fk, Eigen::VectorXd& wk,
                Eigen::Quaterniond& qk);
 
@@ -55,7 +55,7 @@ class StateEstimator {
    * @param[out] vk Joint velocity in vector (12 * 1)
    */
   void readJointEncoder(
-      const sensor_msgs::JointState::ConstPtr& last_joint_state_msg,
+      const sensor_msgs::JointState& last_joint_state_msg,
       Eigen::VectorXd& jk, Eigen::VectorXd& vk);
 
   /**
