@@ -75,34 +75,21 @@ void EKFEstimator::init(ros::NodeHandle& nh) {
 }
 
 bool EKFEstimator::updateOnce(quad_msgs::RobotState& last_robot_state_msg_) {
-  // ROS_INFO_STREAM("Estiamted State before update:" << last_robot_state_msg_);
-  ros::Time state_timestamp = ros::Time::now();
-  // std::cout << "Here"<< std::endl;
-  // std::cout << "After"<< std::endl;
   // ROS_INFO_STREAM("State Timestamp" << state_timestamp);
   if (is_hardware_) {
-    // ROS_INFO_STREAM("Makes it Here in Update Once");
+    ROS_INFO_STREAM("Makes it Here in Update Once");
     last_robot_state_msg_.joints = last_joint_state_msg_;
     // ROS_INFO_STREAM("Populates Message");
   }
   // std::cout << "1"<< std::endl;
   // Define Initial State, Preallocated Space for State Vectors
-  last_joint_state_msg_.header.stamp = state_timestamp;
-  last_imu_msg_.header.stamp = state_timestamp;
   X0 = Eigen::VectorXd::Zero(num_state);
 
   // set noise
   this->setNoise();
   if (initialized) {
-    // std::cout << "4"<< std::endl;
     setInitialState(last_robot_state_msg_);
-    // std::cout << "5"<< std::endl;
-    // ROS_INFO_STREAM(last_robot_state_msg_);
     quad_utils::fkRobotState(*quadKD_, last_robot_state_msg_);
-    // std::cout << "6"<< std::endl;
-    // quad_utils::updateStateHeaders(last_robot_state_msg_, state_timestamp,
-                                  //  "map", 0);
-    // std::cout << "7"<< std::endl;
   }
 
   // ROS_INFO_STREAM(last_imu_msg_);
@@ -137,17 +124,16 @@ bool EKFEstimator::updateOnce(quad_msgs::RobotState& last_robot_state_msg_) {
       last_X = X0;
       initialized = false;
     }
-    // std::cout << "2"<< std::endl;
     auto new_state_est = this->StepOnce();
-    // std::cout << "3"<< std::endl;
     last_robot_state_msg_ = new_state_est;
-    // std::cout << "4"<< std::endl;
     last_robot_state_msg_.joints = last_joint_state_msg_;
-    // last_joint_state_msg_.header.stamp = state_timestamp;
-    // std::cout << "5"<< std::endl;
   }
+  ros::Time state_timestamp = ros::Time::now();
+  last_joint_state_msg_.header.stamp = state_timestamp;
+  last_imu_msg_.header.stamp = state_timestamp;
   quad_utils::updateStateHeaders(last_robot_state_msg_, state_timestamp,
                                    "map", 0);
+  // Check State Headers are Updating
   ROS_INFO_STREAM("HERE" << last_robot_state_msg_.header.stamp);
   // ROS_INFO_STREAM(last_robot_state_msg_);
   return true;
@@ -262,7 +248,7 @@ quad_msgs::RobotState EKFEstimator::StepOnce() {
   // last_X = X;
 
   /// publish new message
-  new_state_est.header.stamp = ros::Time::now();
+  // new_state_est.header.stamp = ros::Time::now();
 
   // body
   // Grab this Directly from the IMU
@@ -280,7 +266,7 @@ quad_msgs::RobotState EKFEstimator::StepOnce() {
   new_state_est.body.twist.linear.z = X[5];
 
   // joint
-  new_state_est.joints.header.stamp = ros::Time::now();
+  // new_state_est.joints.header.stamp = ros::Time::now();
   // '8', '0', '1', '9', '2', '3', '10', '4', '5', '11', '6', '7'
   new_state_est.joints.name = {"8",  "0", "1", "9",  "2", "3",
                                "10", "4", "5", "11", "6", "7"};
