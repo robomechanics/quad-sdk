@@ -75,11 +75,15 @@ void EKFEstimator::init(ros::NodeHandle& nh) {
 }
 
 bool EKFEstimator::updateOnce(quad_msgs::RobotState& last_robot_state_msg_) {
+  ros::Time state_timestamp = ros::Time::now();
+  last_joint_state_msg_.header.stamp = state_timestamp;
+  last_imu_msg_.header.stamp = state_timestamp;
   if (is_hardware_) {
     // ROS_INFO_STREAM("Makes it Here in Update Once");
     last_robot_state_msg_.joints = last_joint_state_msg_;
     // ROS_INFO_STREAM("Populates Message");
   }
+
   // Define Initial State, Preallocated Space for State Vectors
   X0 = Eigen::VectorXd::Zero(num_state);
 
@@ -87,6 +91,7 @@ bool EKFEstimator::updateOnce(quad_msgs::RobotState& last_robot_state_msg_) {
   this->setNoise();
   if (initialized) {
     setInitialState(last_robot_state_msg_);
+    // last_joint_state_msg_.header.stamp = state_timestamp;
     quad_utils::fkRobotState(*quadKD_, last_robot_state_msg_);
   }
   // Run Step Once to Calculate Change in State Once Local Planner Starts
@@ -124,9 +129,7 @@ bool EKFEstimator::updateOnce(quad_msgs::RobotState& last_robot_state_msg_) {
     last_robot_state_msg_ = new_state_est;
     last_robot_state_msg_.joints = last_joint_state_msg_;
   }
-  ros::Time state_timestamp = ros::Time::now();
   last_joint_state_msg_.header.stamp = state_timestamp;
-  last_imu_msg_.header.stamp = state_timestamp;
   quad_utils::updateStateHeaders(last_robot_state_msg_, state_timestamp,
                                    "map", 0);
   // Check State Headers are Updating
@@ -146,7 +149,7 @@ void EKFEstimator::setInitialState(
 
   last_robot_state_msg_.body.pose.position.x = 0.0;
   last_robot_state_msg_.body.pose.position.y = 0.0;
-  last_robot_state_msg_.body.pose.position.z = 0.27;
+  last_robot_state_msg_.body.pose.position.z = 0.267;
 
   last_robot_state_msg_.body.twist.linear.x = 0;
   last_robot_state_msg_.body.twist.linear.y = 0;
