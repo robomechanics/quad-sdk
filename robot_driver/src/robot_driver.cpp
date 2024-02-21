@@ -680,14 +680,14 @@ void RobotDriver::spin() {
     ros::spinOnce();
     ROS_INFO_STREAM("--------------------");
     // Get the newest state information
-    ROS_INFO_STREAM("Should be empty at Start" << last_robot_state_msg_.header.stamp)
+    ROS_INFO_STREAM("Should be empty at Start" << last_robot_state_msg_.header.stamp);
     updateState();
-    ROS_INFO_STREAM("After State Update" << last_robot_state_msg_.header.stamp)
+    ROS_INFO_STREAM("After State Update" << last_robot_state_msg_.header.stamp);
     // ROS_INFO_STREAM("After Update State");
     // Compute the leg command and publish if valid
     bool is_valid = updateControl();
     publishControl(is_valid);
-    ROS_INFO_STREAM("After Control" << last_robot_state_msg_.header.stamp)
+    ROS_INFO_STREAM("After Control" << last_robot_state_msg_.header.stamp);
     // Publish state and heartbeat
     //Before Publishgin control check time
     publishState();
