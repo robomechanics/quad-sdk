@@ -95,7 +95,7 @@ bool EKFEstimator::updateOnce(quad_msgs::RobotState& last_robot_state_msg_) {
     quad_utils::fkRobotState(*quadKD_, last_robot_state_msg_);
   }
 
-  if last_local_plan_msg_ != nullptr){
+  if (last_local_plan_msg_ != nullptr){
     planning = true;
   }
 
