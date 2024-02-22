@@ -212,7 +212,7 @@ class EKFEstimator : public StateEstimator {
   quad_msgs::RobotState last_state_est_;
 
   /// Most recent local plan
-  quad_msgs::RobotPlan::ConstPtr last_local_plan_msg_;
+//   quad_msgs::RobotPlan::ConstPtr last_local_plan_msg_;
 
   /// Last grf control message
   quad_msgs::GRFArray::ConstPtr last_grf_msg_;

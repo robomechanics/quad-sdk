@@ -282,6 +282,7 @@ void RobotDriver::localPlanCallback(const quad_msgs::RobotPlan::ConstPtr &msg) {
       (t_now - last_local_plan_msg_->state_timestamp).toSec();
 
   leg_controller_->updateLocalPlanMsg(last_local_plan_msg_, t_now);
+  // ROS_INFO_STREAM("ALERT");
   state_estimator_->updateLocalPlanMsg(last_local_plan_msg_);
 }
 
@@ -678,21 +679,22 @@ void RobotDriver::spin() {
   while (ros::ok()) {
     // Collect new messages on subscriber topics and publish heartbeat
     ros::spinOnce();
-    ROS_INFO_STREAM("--------------------");
+    // ROS_INFO_STREAM("--------------------");
     // Get the newest state information
-    ROS_INFO_STREAM("Should be empty at Start" << last_robot_state_msg_.header.stamp);
+    // ROS_INFO_STREAM("Should be empty at Start" << last_robot_state_msg_.header.stamp);
     updateState();
-    ROS_INFO_STREAM("After State Update" << last_robot_state_msg_.header.stamp);
+    // ROS_INFO_STREAM("After State Update" << last_robot_state_msg_.header.stamp);
     // ROS_INFO_STREAM("After Update State");
     // Compute the leg command and publish if valid
     bool is_valid = updateControl();
     publishControl(is_valid);
-    ROS_INFO_STREAM("After Control" << last_robot_state_msg_.header.stamp);
+    // ROS_INFO_STREAM("After Control" << last_robot_state_msg_.header.stamp);
     // Publish state and heartbeat
     //Before Publishgin control check time
     publishState();
     // ROS_INFO_STREAM("After Publish State");
     publishHeartbeat();
+    // ROS_INFO_STREAM("Last Local Plan" << last_local_plan_msg_);
 
     // Enforce update rate
     r.sleep();
