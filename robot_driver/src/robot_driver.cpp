@@ -682,7 +682,7 @@ void RobotDriver::spin() {
     // Get the newest state information
     // ROS_INFO_STREAM("Should be empty at Start" << last_robot_state_msg_.header.stamp);
     updateState();
-    // ROS_INFO_STREAM("After State Update" << last_robot_state_msg_.header.stamp);
+    ROS_INFO_STREAM("After State Update" << last_robot_state_msg_);
     // ROS_INFO_STREAM("After Update State");
     // Compute the leg command and publish if valid
     bool is_valid = updateControl();

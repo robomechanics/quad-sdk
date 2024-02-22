@@ -94,8 +94,13 @@ bool EKFEstimator::updateOnce(quad_msgs::RobotState& last_robot_state_msg_) {
     // last_joint_state_msg_.header.stamp = state_timestamp;
     quad_utils::fkRobotState(*quadKD_, last_robot_state_msg_);
   }
+
+  if last_local_plan_msg_ != nullptr){
+    planning = true;
+  }
+
   // Run Step Once to Calculate Change in State Once Local Planner Starts
-  if (last_local_plan_msg_ != nullptr) {
+  if (planning) {
     if (initialized) {
       // Set Start Time on Initialization
       last_time = ros::Time::now();

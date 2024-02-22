@@ -355,6 +355,7 @@ class EKFEstimator : public StateEstimator {
   double thresh_out;
   // initialized the estimator
   bool initialized = true;
+  bool planning = false;
 
   // Record whether we have good imu and joint state data
   bool good_imu = false;
