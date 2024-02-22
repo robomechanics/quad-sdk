@@ -72,7 +72,7 @@ class StateEstimator {
   void loadSensorMsg(sensor_msgs::Imu last_imu_msg,
                      sensor_msgs::JointState last_joint_state_msg);
 
-  void updateLocalPlanMsg(quad_msgs::RobotPlan::ConstPtr msg);
+  void updateLocalPlanMsg(quad_msgs::RobotPlan::ConstPtr msg, int position);
 
  protected:
   /// Last state estimate
