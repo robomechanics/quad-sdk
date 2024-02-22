@@ -96,6 +96,8 @@ class StateEstimator {
   /// Last local plan message
   quad_msgs::RobotPlan::ConstPtr last_local_plan_msg_;
 
+  int control_mode_;
+
 };
 
 #endif  // STATE_ESTIMATOR_H

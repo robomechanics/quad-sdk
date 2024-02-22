@@ -282,7 +282,7 @@ void RobotDriver::localPlanCallback(const quad_msgs::RobotPlan::ConstPtr &msg) {
       (t_now - last_local_plan_msg_->state_timestamp).toSec();
 
   leg_controller_->updateLocalPlanMsg(last_local_plan_msg_, t_now);
-  state_estimator_->updateLocalPlanMsg(last_local_plan_msg_);
+  state_estimator_->updateLocalPlanMsg(last_local_plan_msg_, control_mode_);
 }
 
 void RobotDriver::mocapCallback(
