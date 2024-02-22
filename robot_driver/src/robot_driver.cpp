@@ -282,7 +282,6 @@ void RobotDriver::localPlanCallback(const quad_msgs::RobotPlan::ConstPtr &msg) {
       (t_now - last_local_plan_msg_->state_timestamp).toSec();
 
   leg_controller_->updateLocalPlanMsg(last_local_plan_msg_, t_now);
-  // ROS_INFO_STREAM("ALERT");
   state_estimator_->updateLocalPlanMsg(last_local_plan_msg_);
 }
 

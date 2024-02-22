@@ -40,7 +40,6 @@ void CompFilterEstimator::init(ros::NodeHandle& nh) {
 bool CompFilterEstimator::updateOnce(
     quad_msgs::RobotState& last_robot_state_msg_) {
   ros::Time state_timestamp = ros::Time::now();
-  ROS_INFO_STREAM("Timestamp" << state_timestamp.toSec());
   last_robot_state_msg_.body.twist.angular = last_imu_msg_.angular_velocity;
   last_robot_state_msg_.joints = last_joint_state_msg_;
   last_joint_state_msg_.header.stamp = state_timestamp;
