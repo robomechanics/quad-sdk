@@ -42,6 +42,10 @@ bool InverseDynamicsController::computeLegCommandArray(
     // time of plan receipt double t_now = (ros::Time::now() -
     // t_first_state).toSec(); // Use time of first state in plan
 
+    ROS_INFO_STREAM("Updated Tnow: " << t_now);
+
+
+
     if ((t_now <
          (last_local_plan_msg_->states.front().header.stamp - t_first_state)
              .toSec()) ||
