@@ -283,6 +283,10 @@ void RobotDriver::localPlanCallback(const quad_msgs::RobotPlan::ConstPtr &msg) {
 
   leg_controller_->updateLocalPlanMsg(last_local_plan_msg_, t_now);
   state_estimator_->updateLocalPlanMsg(last_local_plan_msg_, control_mode_);
+  if (estimator_id_ == "comp_filter") {
+      // In Sim, Initialize both the comp filter and ekf for comparison
+      ekf_estimator_->updateLocalPlanMsg(last_local_plan_msg_, control_mode_);;
+    }
 }
 
 void RobotDriver::mocapCallback(
@@ -403,11 +407,10 @@ bool RobotDriver::updateState() {
         estimated_state_ = last_robot_state_msg_;
         last_joint_state_msg_.position = last_robot_state_msg_.joints.position;
         last_joint_state_msg_.velocity = last_robot_state_msg_.joints.velocity;
-        // ROS_INFO_STREAM(last_joint_state_msg_);
         initialized_ = true;
       }
       if (estimator_id_ == "comp_filter") {
-        state_estimate_ = last_robot_state_msg_;
+        estimated_state_ = last_robot_state_msg_;
         // Update State Estimate once GRF's are being Published
         if (grf_array_msg_.vectors[0].x != 0 && control_mode_ == READY) {
           last_joint_state_msg_.position =
@@ -448,7 +451,7 @@ void RobotDriver::publishState() {
     if (control_mode_ == READY) {
       joint_state_pub_.publish(last_joint_state_msg_);
       if (initialized_) {
-        // state_estimate_pub_.publish(estimated_state_);
+        state_estimate_pub_.publish(estimated_state_);
       }
     }
   }

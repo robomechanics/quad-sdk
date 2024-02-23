@@ -246,6 +246,9 @@ quad_msgs::RobotState EKFEstimator::StepOnce() {
   // std::cout << "this is X update" << X.transpose() << std::endl;
 
   // last_X = X;
+  Eigen::Matrix3d rot = qk.toRotationMatrix();
+  Eigen::Vector3d linear_vel(X[3], X[4], X[5]);
+  Eigen::Vector3d ang_vel = rot.inverse()*linear_vel;
 
   /// publish new message
   // new_state_est.header.stamp = ros::Time::now();
@@ -265,6 +268,10 @@ quad_msgs::RobotState EKFEstimator::StepOnce() {
   new_state_est.body.twist.linear.y = X[4];
   new_state_est.body.twist.linear.z = X[5];
 
+  new_state_est.body.twist.angular.x = ang_vel[0];
+  new_state_est.body.twist.angular.y = ang_vel[1];
+  new_state_est.body.twist.angular.z = ang_vel[2];
+
   // joint
   // new_state_est.joints.header.stamp = ros::Time::now();
   // '8', '0', '1', '9', '2', '3', '10', '4', '5', '11', '6', '7'
@@ -273,7 +280,7 @@ quad_msgs::RobotState EKFEstimator::StepOnce() {
   new_state_est.joints.position = jkVector;
   new_state_est.joints.velocity = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
   new_state_est.joints.effort = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
-
+  // ROS_INFO_STREAM("State Estimate: " << new_state_est);
   // feet
 
   return new_state_est;
