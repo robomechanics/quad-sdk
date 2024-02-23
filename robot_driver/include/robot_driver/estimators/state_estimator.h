@@ -44,9 +44,8 @@ class StateEstimator {
    * @param[out] wk Angular acceleration
    * @param[out] qk Orientation in quaternion
    */
-  void readIMU(const sensor_msgs::Imu& last_imu_msg,
-               Eigen::VectorXd& fk, Eigen::VectorXd& wk,
-               Eigen::Quaterniond& qk);
+  void readIMU(const sensor_msgs::Imu& last_imu_msg, Eigen::VectorXd& fk,
+               Eigen::VectorXd& wk, Eigen::Quaterniond& qk);
 
   /**
    * @brief Read joint encoder data
@@ -54,9 +53,8 @@ class StateEstimator {
    * @param[out] jk Joint state in vector (12 * 1)
    * @param[out] vk Joint velocity in vector (12 * 1)
    */
-  void readJointEncoder(
-      const sensor_msgs::JointState& last_joint_state_msg,
-      Eigen::VectorXd& jk, Eigen::VectorXd& vk);
+  void readJointEncoder(const sensor_msgs::JointState& last_joint_state_msg,
+                        Eigen::VectorXd& jk, Eigen::VectorXd& vk);
 
   /**
    * @brief Load Mocap data to protected variable
@@ -97,7 +95,6 @@ class StateEstimator {
   quad_msgs::RobotPlan::ConstPtr last_local_plan_msg_;
 
   int control_mode_;
-
 };
 
 #endif  // STATE_ESTIMATOR_H

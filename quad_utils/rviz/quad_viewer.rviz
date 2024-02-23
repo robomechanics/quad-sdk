@@ -171,116 +171,21 @@ Visualization Manager:
       Update Interval: 0
       Value: true
       Visual Enabled: true
-    - Alpha: 1
+    - Alpha: 0.8
       Class: rviz/RobotModel
       Collision Enabled: false
-      Enabled: true
+      Enabled: false
       Links:
         All Links Enabled: true
         Expand Joint Details: false
         Expand Link Details: false
         Expand Tree: false
         Link Tree Style: Links in Alphabetic Order
-        body:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        hip0:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        hip1:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        hip2:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        hip3:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        lower0:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        lower1:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        lower2:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        lower3:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        text_left:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        text_right:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        toe0:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        toe1:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        toe2:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        toe3:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        upper0:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        upper1:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        upper2:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        upper3:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-      Name: Robot 1 State Estimate
+      Name: Robot 1 Estimated State
       Robot Description: robot_description
-      TF Prefix: robot_1_state_estimate
+      TF Prefix: robot_1_estimate
       Update Interval: 0
-      Value: true
+      Value: false
       Visual Enabled: true
     - Alpha: 1
       Class: rviz/RobotModel

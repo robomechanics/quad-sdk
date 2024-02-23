@@ -127,11 +127,10 @@ bool EKFEstimator::updateOnce(quad_msgs::RobotState& last_robot_state_msg_) {
     // Update Foot Positions using Forward Kinematics
     quad_utils::fkRobotState(*quadKD_, last_robot_state_msg_);
     // Consider using Filter output to see if thats more reliable
-
   }
   last_joint_state_msg_.header.stamp = state_timestamp;
-  quad_utils::updateStateHeaders(last_robot_state_msg_, state_timestamp,
-                                   "map", 0);
+  quad_utils::updateStateHeaders(last_robot_state_msg_, state_timestamp, "map",
+                                 0);
   return true;
 }
 
@@ -239,7 +238,7 @@ quad_msgs::RobotState EKFEstimator::StepOnce() {
   // last_X = X;
   Eigen::Matrix3d rot = qk.toRotationMatrix();
   Eigen::Vector3d linear_vel(X[3], X[4], X[5]);
-  Eigen::Vector3d ang_vel = rot.inverse()*linear_vel;
+  Eigen::Vector3d ang_vel = rot.inverse() * linear_vel;
 
   /// publish new message
   // new_state_est.header.stamp = ros::Time::now();

@@ -284,9 +284,9 @@ void RobotDriver::localPlanCallback(const quad_msgs::RobotPlan::ConstPtr &msg) {
   leg_controller_->updateLocalPlanMsg(last_local_plan_msg_, t_now);
   state_estimator_->updateLocalPlanMsg(last_local_plan_msg_, control_mode_);
   if (estimator_id_ == "comp_filter") {
-      // In Sim, Initialize both the comp filter and ekf for comparison
-      ekf_estimator_->updateLocalPlanMsg(last_local_plan_msg_, control_mode_);;
-    }
+    // In Sim, Initialize both the comp filter and ekf for comparison
+    ekf_estimator_->updateLocalPlanMsg(last_local_plan_msg_, control_mode_);
+  }
 }
 
 void RobotDriver::mocapCallback(
@@ -394,7 +394,7 @@ bool RobotDriver::updateState() {
 
     // State information coming through sim subscribers, not hardware interface
     if (state_estimator_ != nullptr) {
-      //Check the Message Here
+      // Check the Message Here
       return state_estimator_->updateOnce(last_robot_state_msg_);
     } else {
       ROS_WARN_THROTTLE(1, "No state estimator is initialized");
@@ -431,7 +431,6 @@ bool RobotDriver::updateState() {
           last_joint_state_msg_.velocity =
               last_robot_state_msg_.joints.velocity;
           estimated_state_.joints = last_robot_state_msg_.joints;
-          // ROS_INFO_STREAM("Estiamted State before update:" << estimated_state_);
           state_estimator_->updateOnce(estimated_state_);
           state_estimate_ = estimated_state_;
         }
@@ -468,7 +467,6 @@ bool RobotDriver::updateControl() {
 
   // Check incoming messages to determine if we should enter safety mode
   checkMessagesForSafety();
-  // ROS_INFO_STREAM("8");
   if (last_robot_state_msg_.header.stamp.toSec() == 0) {
     return false;
   }
@@ -483,7 +481,6 @@ bool RobotDriver::updateControl() {
 
   // Initialize leg command message
   leg_command_array_msg_.leg_commands.resize(num_feet_);
-  // ROS_INFO_STREAM("9");
   // Enter state machine for filling motor command message
   if (control_mode_ == SAFETY) {
     for (int i = 0; i < num_feet_; ++i) {
@@ -646,7 +643,6 @@ void RobotDriver::publishControl(bool is_valid) {
   leg_command_array_msg_.header.stamp = ros::Time::now();
   leg_command_array_pub_.publish(leg_command_array_msg_);
   grf_array_msg_.header.stamp = leg_command_array_msg_.header.stamp;
-  // ROS_INFO_STREAM("Publishing grfs");
   grf_pub_.publish(grf_array_msg_);
   // }
 
@@ -681,22 +677,14 @@ void RobotDriver::spin() {
   while (ros::ok()) {
     // Collect new messages on subscriber topics and publish heartbeat
     ros::spinOnce();
-    // ROS_INFO_STREAM("--------------------");
     // Get the newest state information
-    // ROS_INFO_STREAM("Should be empty at Start" << last_robot_state_msg_.header.stamp);
     updateState();
-    // ROS_INFO_STREAM("After State Update" << last_robot_state_msg_);
-    // ROS_INFO_STREAM("After Update State");
     // Compute the leg command and publish if valid
     bool is_valid = updateControl();
     publishControl(is_valid);
-    // ROS_INFO_STREAM("After Control" << last_robot_state_msg_.header.stamp);
     // Publish state and heartbeat
-    //Before Publishgin control check time
     publishState();
-    // ROS_INFO_STREAM("After Publish State");
     publishHeartbeat();
-    // ROS_INFO_STREAM("Last Local Plan" << last_local_plan_msg_);
 
     // Enforce update rate
     r.sleep();
