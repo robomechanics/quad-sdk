@@ -56,9 +56,6 @@ void EKFEstimator::init(ros::NodeHandle& nh) {
   grf_sub_ = nh_.subscribe(grf_topic, 1, &EKFEstimator::grfCallback, this);
   contact_sub_ =
       nh_.subscribe(contact_topic, 1, &EKFEstimator::contactCallback, this);
-  // local_plan_sub_ =
-  //     nh_.subscribe(local_plan_topic, 1, &EKFEstimator::localPlanCallback, this,
-  //                   ros::TransportHints().tcpNoDelay(true));
 
   // In Sim, Grab IMU, Joint Encoders from Gazebo
   if (!is_hardware_) {
@@ -79,9 +76,7 @@ bool EKFEstimator::updateOnce(quad_msgs::RobotState& last_robot_state_msg_) {
   last_joint_state_msg_.header.stamp = state_timestamp;
   last_imu_msg_.header.stamp = state_timestamp;
   if (is_hardware_) {
-    // ROS_INFO_STREAM("Makes it Here in Update Once");
     last_robot_state_msg_.joints = last_joint_state_msg_;
-    // ROS_INFO_STREAM("Populates Message");
   }
 
   // Define Initial State, Preallocated Space for State Vectors
@@ -91,7 +86,6 @@ bool EKFEstimator::updateOnce(quad_msgs::RobotState& last_robot_state_msg_) {
   this->setNoise();
   if (initialized) {
     setInitialState(last_robot_state_msg_);
-    // last_joint_state_msg_.header.stamp = state_timestamp;
     quad_utils::fkRobotState(*quadKD_, last_robot_state_msg_);
   }
 
@@ -129,13 +123,15 @@ bool EKFEstimator::updateOnce(quad_msgs::RobotState& last_robot_state_msg_) {
     auto new_state_est = this->StepOnce();
     last_robot_state_msg_ = new_state_est;
     last_robot_state_msg_.joints = last_joint_state_msg_;
+
+    // Update Foot Positions using Forward Kinematics
+    quad_utils::fkRobotState(*quadKD_, last_robot_state_msg_);
+    // Consider using Filter output to see if thats more reliable
+
   }
   last_joint_state_msg_.header.stamp = state_timestamp;
   quad_utils::updateStateHeaders(last_robot_state_msg_, state_timestamp,
                                    "map", 0);
-  // Check State Headers are Updating
-  // ROS_INFO_STREAM("HERE" << last_robot_state_msg_.header.stamp);
-  // ROS_INFO_STREAM(last_robot_state_msg_);
   return true;
 }
 
@@ -185,11 +181,6 @@ void EKFEstimator::contactCallback(
 void EKFEstimator::grfCallback(const quad_msgs::GRFArray::ConstPtr& msg) {
   last_grf_msg_ = msg;
 }
-
-// void EKFEstimator::localPlanCallback(
-//     const quad_msgs::RobotPlan::ConstPtr& msg) {
-//   last_local_plan_msg_ = msg;
-// }
 
 void EKFEstimator::setX(Eigen::VectorXd Xin) { X = Xin; }
 
@@ -280,8 +271,9 @@ quad_msgs::RobotState EKFEstimator::StepOnce() {
   new_state_est.joints.position = jkVector;
   new_state_est.joints.velocity = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
   new_state_est.joints.effort = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
-  // ROS_INFO_STREAM("State Estimate: " << new_state_est);
+
   // feet
+  // Grab Foot Positions from output from the state vector
 
   return new_state_est;
 }
@@ -293,6 +285,7 @@ void EKFEstimator::predict(const double& dt, const Eigen::VectorXd& fk,
   // Double Check if this needs a transpose or not
   // Eigen::Matrix3d C1 = (qk.toRotationMatrix()).transpose();
   C1 = (qk.toRotationMatrix());
+  // Maybe use the built in Quad-KD for cleanliness
 
   // q = Eigen::VectorXd::Zero(4);
   // q << qk.w(), qk.x(), qk.y(), qk.z();
