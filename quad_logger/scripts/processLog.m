@@ -112,6 +112,7 @@ while(t2==0)
         t2 = k;
         break;
     end
+
     k = k+1;
 
 end
@@ -166,86 +167,98 @@ X.footVelocity{4} = stateGroundTruth2.footVelocity{4}(t2:end,:);
 
 %% Plotting states comparison between payload on and off
 
-% stateGT_positions_1 = [stateGroundTruth.time(t1:end),stateGroundTruth.position(t1:end,:)];
-% stateGT_positions_2 = [stateGroundTruth2.time(t2:end),stateGroundTruth2.position(t2:end,:)];
-% stateGT_vel_1 = [stateGroundTruth.time(t1:end), stateGroundTruth.velocity(t1:end,:)];
-% stateGT_vel_2 = [stateGroundTruth2.time(t2:end), stateGroundTruth2.velocity(t2:end,:)];
+stateGT_positions_1 = [stateGroundTruth.time(t1:end),stateGroundTruth.position(t1:end,:)];
+stateGT_positions_2 = [stateGroundTruth2.time(t2:end),stateGroundTruth2.position(t2:end,:)];
+stateGT_vel_1 = [stateGroundTruth.time(t1:end), stateGroundTruth.velocity(t1:end,:)];
+stateGT_vel_2 = [stateGroundTruth2.time(t2:end), stateGroundTruth2.velocity(t2:end,:)];
 
-% figure('Name','Position State Data');
-% subplot(3,1,1);
-% plot(stateGT_positions_1(:,1), stateGT_positions_1(:,2),'-r', stateGT_positions_2(:,1), stateGT_positions_2(:,2),'-b');
-% title('X Position Vs. Time');
-% subplot(3,1,2);
-% plot(stateGT_positions_1(:,1), stateGT_positions_1(:,3),'-r', stateGT_positions_2(:,1), stateGT_positions_2(:,3),'-b');
-% title('Y Position Vs. Time');
-% subplot(3,1,3);
-% plot(stateGT_positions_1(:,1), stateGT_positions_1(:,4),'-r', stateGT_positions_2(:,1), stateGT_positions_2(:,4),'-b');
-% title('Z Position Vs. Time');
-% 
-% 
-% figure('Name','Velocity State Data');
-% subplot(3,1,1);
-% plot(stateGT_vel_1(:,1), stateGT_vel_1(:,2),'-r', stateGT_vel_2(:,1), stateGT_vel_2(:,2),'-b');
-% title('X Position Vs. Time');
-% subplot(3,1,2);
-% plot(stateGT_vel_1(:,1), stateGT_vel_1(:,3),'-r', stateGT_vel_2(:,1), stateGT_vel_2(:,3),'-b');
-% title('Y Position Vs. Time');
-% subplot(3,1,3);
-% plot(stateGT_vel_1(:,1), stateGT_vel_1(:,4),'-r', stateGT_vel_2(:,1), stateGT_vel_2(:,4),'-b');
-% title('Z Position Vs. Time');
+% Red = Baseline States
+figure('Name','Position State Data');
+subplot(3,1,1);
+plot(stateGT_positions_1(:,1), stateGT_positions_1(:,2),'-r', stateGT_positions_2(:,1), stateGT_positions_2(:,2),'-b');
+title('X Position Vs. Time');
+subplot(3,1,2);
+plot(stateGT_positions_1(:,1), stateGT_positions_1(:,3),'-r', stateGT_positions_2(:,1), stateGT_positions_2(:,3),'-b');
+title('Y Position Vs. Time');
+subplot(3,1,3);
+plot(stateGT_positions_1(:,1), stateGT_positions_1(:,4),'-r', stateGT_positions_2(:,1), stateGT_positions_2(:,4),'-b');
+title('Z Position Vs. Time');
+
+
+figure('Name','Velocity State Data');
+subplot(3,1,1);
+plot(stateGT_vel_1(:,1), stateGT_vel_1(:,2),'-r', stateGT_vel_2(:,1), stateGT_vel_2(:,2),'-b');
+title('X Velocity Vs. Time');
+subplot(3,1,2);
+plot(stateGT_vel_1(:,1), stateGT_vel_1(:,3),'-r', stateGT_vel_2(:,1), stateGT_vel_2(:,3),'-b');
+title('Y Velocity Vs. Time');
+subplot(3,1,3);
+plot(stateGT_vel_1(:,1), stateGT_vel_1(:,4),'-r', stateGT_vel_2(:,1), stateGT_vel_2(:,4),'-b');
+title('Z Velocity Vs. Time');
 
 %% IMPLEMENTATION OF MAS UPDATE CALCULATION
 
-% vectors needed
-e = [];
-e_dot = [];
-x = [];
-xd_dot = [];
-xd_ddot = [];
-m_b = [];
-s = [];
-lambda = 0.001; % Error Multiplier 
-R_m = 8; % Adaptation Law Gain
-
-%Initializaing states
-m_b(1) = [13]; %Initial mass for Spirit is 13 Kg
-e(1,:) = [0,0,0];
-e_dot(1,:) = [0,0,0];
-s(1,:) = [0,0,0];
-xd_dot(1,:) = [0,0,0];
-
-
-% Looping to calculate mass
-num_1 = length(Xd.time);
-num_2 = length(X.time);
-
-if(num_1 < num_2)
-    time_bound = num_1;
-else
-    time_bound = num_2;
-end
-
-for(i = 2:time_bound)
-
-       e(i,:) = X.position(i,:) - Xd.position(i,:);
-       %xd_dot(i,:) = Xd.position(i,:)-Xd.position(i-1,:)/(X.time(i)-X.time(i-1));
-       xd_dot(i,:) = Xd.velocity(i,:);
-       %e_dot(i,:) = (X.position(i,:)-X.position(i-1,:) - (Xd.position(i,:)-Xd.position(i-1,:)))/(X.time(i)-X.time(i-1));
-       e_dot(i,:) = X.velocity(i,:) - Xd.velocity(i,:);
-       s(i,:) = e_dot(i,:) + lambda*e(i,:);
-       xd_ddot(i,:) = (xd_dot(i,:) - xd_dot(i-1,:))/(Xd.time(i)-Xd.time(i-1));
-       %xd_ddot(i,:) = [0,0,0];
-       % Calculating Ym transitional
-       Ym = xd_dot(i,:) - lambda*e_dot(i,:);
-
-       % Mass update
-       m_b(i) = (-R_m*Ym*s(i,:)')*(X.time(i)-X.time(i-1)) + m_b(i-1);
-       
-
-end
-
-
-plot(time_bound, m_b);
+% % vectors needed
+% e = [];
+% e_dot = [];
+% x = [];
+% xd_dot = [];
+% xd_ddot = [];
+% m_b = [];
+% s = [];
+% 
+% % For Data run thru spirit
+% lambda = 0.001; % Error Multiplier 
+% R_m = 8; % Adaptation Law Gain
+% 
+% % lambda = 0.001;
+% % R_m = 20;
+% 
+% %Initializaing states
+% m_b(1) = [13]; %Initial mass for Spirit is 13 Kg
+% e(1,:) = [0,0,0];
+% e_dot(1,:) = [0,0,0];
+% s(1,:) = [0,0,0];
+% xd_dot(1,:) = [0,0,0];
+% 
+% 
+% % Looping to calculate mass
+% num_1 = length(Xd.time);
+% num_2 = length(X.time);
+% 
+% if(num_1 < num_2)
+%     time_bound = num_1;
+% else
+%     time_bound = num_2;
+% end
+% 
+% for(i = 2:time_bound)
+% 
+%        e(i,:) = X.position(i,:) - Xd.position(i,:);
+%        %xd_dot(i,:) = Xd.position(i,:)-Xd.position(i-1,:)/(X.time(i)-X.time(i-1));
+%        xd_dot(i,:) = Xd.velocity(i,:);
+%        %e_dot(i,:) = (X.position(i,:)-X.position(i-1,:) - (Xd.position(i,:)-Xd.position(i-1,:)))/(X.time(i)-X.time(i-1));
+%        e_dot(i,:) = X.velocity(i,:) - Xd.velocity(i,:);
+%        s(i,:) = e_dot(i,:) + lambda*e(i,:);
+%        xd_ddot(i,:) = (xd_dot(i,:) - xd_dot(i-1,:))/(Xd.time(i)-Xd.time(i-1));
+%        %xd_ddot(i,:) = [0,0,0];
+%        % Calculating Ym transitional
+%        Ym = xd_dot(i,:) - lambda*e_dot(i,:);
+% 
+%        % Mass update
+%        m_b(i) = (-R_m*Ym*s(i,:)')*(X.time(i)-X.time(i-1)) + m_b(i-1);
+% 
+% 
+% end
+% 
+% figure('Name','Measured Mass Update')
+% subplot(2,1,1)
+% plot(1:time_bound, m_b,'-r');
+% title("Mass Update")
+% subplot(2,1,2)
+% plot(1:time_bound, m_b-13, '-b');
+% title("Mass Error")
+% 
 
 
 
@@ -254,37 +267,37 @@ plot(time_bound, m_b);
 
 % Plot the state
  stateFigs = [];
-% stateFigs2 = [];
-% if ~isempty(stateGroundTruth)
-%     [stateFigs] = plotState(stateGroundTruth, tWindowStates,'-', bTitles, stateFigs);
-%     [stateFigs2] = plotState(stateGroundTruth2, tWindowStates, '-', bTitles, stateFigs2);
-% end
-% if ~isempty(stateTrajectory)
-%      [stateFigs] = plotState(stateTrajectory,tWindowStates, ':', bTitles, stateFigs);
-%      [sttateFigs2] = plotState(stateTrajectory2, tWindowStates2, ':', bTitles, stateFigs2);
-% end
-% if ~isempty(stateEstimate)
-%     [stateFigs] = plotState(stateEstimate,tWindowStates, '--', bTitles, stateFigs);
-% end
-% 
-% % Plot the control
-% controlFigs = [];
-% if ~isempty(stateGRFs)
-%     controlFigs = plotControl(stateGRFs,tWindowControl,'-', bTitles, controlFigs);
-% end
-% if ~isempty(controlGRFs)
-%     controlFigs = plotControl(controlGRFs,tWindowControl,':', bTitles,controlFigs);
-% end
-% 
-% % Plot local plan information if desired
-% localPlanFigs = [];
-% if bPlotLocalPlanInfo && ~isempty(localPlan)
-%      localPlanFigs = plotLocalPlan(localPlan,tWindowLocalPlan,'-', bTitles,localPlanFigs);
-% end
-% 
-% % Add figures to array
-% figArray = [stateFigs, controlFigs, localPlanFigs];
-% %figArray = [stateFigs, stateFigs2, controlFigs];
+ %stateFigs2 = [];
+if ~isempty(stateGroundTruth)
+    [stateFigs] = plotState(stateGroundTruth, tWindowStates,'-', bTitles, stateFigs);
+    %[stateFigs2] = plotState(stateGroundTruth2, tWindowStates, '-', bTitles, stateFigs2);
+end
+if ~isempty(stateTrajectory)
+     [stateFigs] = plotState(stateTrajectory,tWindowStates, ':', bTitles, stateFigs);
+     %[stateFigs2] = plotState(stateTrajectory2, tWindowStates2, ':', bTitles, stateFigs2);
+end
+if ~isempty(stateEstimate)
+    [stateFigs] = plotState(stateEstimate,tWindowStates, '--', bTitles, stateFigs);
+end
+
+% Plot the control
+controlFigs = [];
+if ~isempty(stateGRFs)
+    controlFigs = plotControl(stateGRFs,tWindowControl,'-', bTitles, controlFigs);
+end
+if ~isempty(controlGRFs)
+    controlFigs = plotControl(controlGRFs,tWindowControl,':', bTitles,controlFigs);
+end
+
+% Plot local plan information if desired
+localPlanFigs = [];
+if bPlotLocalPlanInfo && ~isempty(localPlan)
+     localPlanFigs = plotLocalPlan(localPlan,tWindowLocalPlan,'-', bTitles,localPlanFigs);
+end
+
+% Add figures to array
+figArray = [stateFigs, controlFigs, localPlanFigs];
+%figArray = [stateFigs, stateFigs2, controlFigs];
 
 %% Save the logs and figures in one directory
 logDir = [];

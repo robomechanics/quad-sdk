@@ -1,0 +1,22 @@
+prefix=${pcfiledir}/../..
+exec_prefix=${pcfiledir}/../..
+libdir=${pcfiledir}/../../lib64
+bindir=${pcfiledir}/../../bin
+pkglibdir=${pcfiledir}/../../lib64/proxsuite
+includedir=${pcfiledir}/../../include
+datarootdir=${pcfiledir}/../../share
+pkgdatarootdir=${pcfiledir}/../../share
+docdir=
+doxygendocdir=
+
+Name: proxsuite
+Description: The Advanced Proximal Optimization Toolbox
+URL: http://github.com/Simple-Robotics/proxsuite
+Version: 0.3.2
+Requires: eigen3 >= 3.0.5, simde
+Conflicts: 
+Libs: -L${libdir} 
+Libs.private: 
+Cflags:  -I${includedir}
+
+

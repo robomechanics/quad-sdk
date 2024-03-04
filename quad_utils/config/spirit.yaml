@@ -13,7 +13,7 @@ global_body_planner:
 
 local_footstep_planner:
   hip_clearance: 0.1
-  foothold_search_radius: 0.25
+  foothold_search_radius: 0.35
 
 nmpc_controller:
   body:

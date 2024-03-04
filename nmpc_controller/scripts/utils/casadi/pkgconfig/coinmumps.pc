@@ -1,0 +1,15 @@
+prefix=/work/build/external_projects
+#prefix=${pcfiledir}/../..
+exec_prefix=${prefix}
+libdir=${exec_prefix}/lib
+includedir=${prefix}/include/coin-or/mumps
+
+Name: Mumps
+Description: Multifrontal Massively Parallel sparse direct Solver
+URL: https://github.com/coin-or-tools/ThirdParty-Mumps
+Version: 3.0.1
+Cflags: -I${includedir}
+Libs: -L${libdir} -lcoinmumps
+Requires.private: 
+#Libs: -L${libdir} -lcoinmumps -L/work/build/external_projects/lib -lcoinmetis -lm  -L/work/build/external_projects/lib -lcasadi-tp-openblas   -L/opt/rh/devtoolset-10/root/usr/lib/gcc/x86_64-redhat-linux/10 -L/opt/rh/devtoolset-10/root/usr/lib/gcc/x86_64-redhat-linux/10/../../../../lib64 -L/lib/../lib64 -L/usr/lib/../lib64 -L/opt/rh/devtoolset-10/root/usr/lib/gcc/x86_64-redhat-linux/10/../../.. -lgfortran -lm -lquadmath -lpthread 
+#Requires: 

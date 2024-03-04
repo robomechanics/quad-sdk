@@ -1,0 +1,12 @@
+prefix=/work/build/external_projects
+exec_prefix=${prefix}
+libdir=${exec_prefix}/lib
+includedir=${prefix}/include/coin
+
+Name: CLP
+Description: COIN-OR Linear Programming Solver
+URL: https://projects.coin-or.org/Clp
+Version: 1.17.9
+Libs: -L${libdir} -lClpSolver -lClp 
+Cflags: -I${includedir}
+Requires: coinmumps coinutils 

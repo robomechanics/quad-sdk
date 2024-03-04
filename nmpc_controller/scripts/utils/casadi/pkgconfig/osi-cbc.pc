@@ -1,0 +1,12 @@
+prefix=/work/build/external_projects
+exec_prefix=${prefix}
+libdir=${exec_prefix}/lib
+includedir=${prefix}/include/coin
+
+Name: OsiCbc
+Description: COIN-OR Open Solver Interface for CBC
+URL: https://projects.coin-or.org/Osi
+Version: 2.10.11
+Libs: -L${libdir} -lOsiCbc
+Cflags: -I${includedir}
+Requires: cbc

@@ -4,7 +4,7 @@
   <arg name="paused"          default="false"/>
   <arg name="controller"      default="inverse_dynamics"/>
   <arg name="live_plot"       default="false"/>
-  <arg name="world"           default="flat"/>
+  <arg name="world"           default="flat_long"/>
   <arg name="robot_type"      default="spirit_rotors"/>
 
   <include file="$(find quad_utils)/launch/quad_gazebo.launch" >
@@ -35,8 +35,15 @@
   -->
 
   <!-- Actual experimental setup -->
-  <!---->
+  
+
+  <!--
+  
+  -->
+  
   <node name="spawn_underbrush" pkg="gazebo_ros" type="spawn_model" args="-sdf -param box_sdf -model underbrush -x 0.1 -y -0 -z 0.8" output="screen"/>
  
+
+  
   <!---->
 </launch>

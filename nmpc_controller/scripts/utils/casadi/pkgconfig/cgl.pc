@@ -1,0 +1,12 @@
+prefix=/work/build/external_projects
+exec_prefix=${prefix}
+libdir=${exec_prefix}/lib
+includedir=${prefix}/include/coin
+
+Name: CGL
+Description: COIN-OR Cut Generation Library
+URL: https://projects.coin-or.org/Cgl
+Version: 0.60.8
+Libs: -L${libdir} -lCgl 
+Cflags: -I${includedir}
+Requires: osi-clp clp osi coinutils 

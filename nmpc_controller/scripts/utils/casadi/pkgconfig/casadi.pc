@@ -1,0 +1,12 @@
+prefix=/work/install
+exec_prefix=/work/install/casadi
+libdir=/work/install/casadi
+includedir=/work/install/casadi/include
+
+Name: casadi
+Description: CasADi is a symbolic framework for automatic differentation and numeric optimization
+URL: http://casadi.org
+Version: 3.6.4
+Requires: 
+Libs: -L${libdir} -lcasadi
+Cflags: -I${includedir}

@@ -1,0 +1,10 @@
+prefix=/work/build/external_projects
+exec_prefix=${prefix}
+includedir=${prefix}/include
+libdir=${exec_prefix}/lib
+
+Name: sleqp
+Description: Active set-based NLP solver
+Version: 1.0.1
+Cflags: -I${includedir}
+Libs: -L${libdir} -lsleqp

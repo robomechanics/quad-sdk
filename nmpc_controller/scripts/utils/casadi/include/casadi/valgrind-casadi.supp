@@ -1,0 +1,511 @@
+# Error in DSDP
+{
+   DSDP/Conditional jump or move depends on uninitialised value
+   Memcheck:Cond
+   fun:DTPUMatInvert
+}
+
+# Error in MA57
+{
+   ma57od_
+   Memcheck:Cond
+   fun:ma57od_
+}
+
+#Error in lapack
+{
+   lapack
+   Memcheck:Cond
+   fun:dstemr_
+   fun:dsyevr_
+   fun:DSDPGetEigs
+}
+
+#Error in cplex
+{
+   cplex1
+   Memcheck:Addr8
+   fun:_f48900ce40e1adc4a63fb41dbac2fe81
+}
+
+{
+   cplex2
+   Memcheck:Addr8
+   fun:__intel_new_memcpy
+   fun:_intel_fast_memcpy.J
+   fun:_4d2ac877ba09cac66b36bc7c5f27a638
+}
+
+{
+   some mystery
+   Memcheck:Addr4
+   fun:PyObject_GC_Del
+   obj:/usr/bin/python2.7
+   fun:_PyObject_GC_Malloc
+   fun:PyType_GenericAlloc
+   obj:/usr/bin/python2.7
+   fun:PyObject_Call
+   fun:SWIG_Python_NewShadowInstance.isra.12
+}
+
+{
+   mystery1
+   Memcheck:Addr4
+   fun:PyObject_GC_Del
+   fun:collect.48998
+   fun:_PyObject_GC_Malloc
+   fun:PyType_GenericAlloc
+   fun:tp_new_wrapper.25464
+   fun:PyObject_Call
+   fun:SWIG_Python_NewShadowInstance.isra.12
+}
+
+{
+   mystery2
+   Memcheck:Value8
+   fun:PyObject_GC_Del
+   obj:/usr/bin/python2.7
+   fun:_PyObject_GC_Malloc
+   fun:PyType_GenericAlloc
+   obj:/usr/bin/python2.7
+   fun:PyObject_Call
+   fun:SWIG_Python_NewShadowInstance.isra.12
+}
+
+{
+   mystery3
+   Memcheck:Cond
+   fun:PyObject_GC_Del
+   obj:/usr/bin/python2.7
+   fun:_PyObject_GC_Malloc
+   fun:PyType_GenericAlloc
+   obj:/usr/bin/python2.7
+   fun:PyObject_Call
+   fun:SWIG_Python_NewShadowInstance.isra.12
+}
+
+{
+   mystery4
+   Memcheck:Addr4
+   fun:PyObject_GC_Del
+   obj:/usr/bin/python2.7
+   fun:_PyObject_GC_Malloc
+   fun:PyType_GenericAlloc
+   obj:/usr/bin/python2.7
+   fun:PyObject_Call
+   fun:SWIG_Python_NewShadowInstance.isra.12
+}
+
+{
+   mystery5
+   Memcheck:Addr4
+   fun:PyObject_GC_Del
+   obj:/usr/bin/python2.7
+   fun:_PyObject_GC_Malloc
+   fun:PyType_GenericAlloc
+   obj:/usr/bin/python2.7
+   fun:PyObject_Call
+   fun:SWIG_Python_NewShadowInstance
+   fun:SWIG_Python_NewPointerObj
+   fun:_wrap_DM___radd____SWIG_0
+}
+
+#Error in swig
+{
+   swigerror1
+   Memcheck:Cond
+   fun:PyObject_GC_Del
+   fun:collect.48998
+   fun:_PyObject_GC_Malloc
+   fun:PyType_GenericAlloc
+   fun:tp_new_wrapper.25464
+   fun:PyObject_Call
+   fun:SWIG_Python_NewShadowInstance
+   fun:SWIG_Python_NewPointerObj
+   fun:_ZN4swig15traits_from_ptrIN6CasADi2MXEE4fromEPS2_i
+   fun:_ZN4swig11traits_fromIN6CasADi2MXEE4fromERKS2_
+   fun:_ZN4swig4fromIN6CasADi2MXEEEP7_objectRKT_
+   fun:_ZN4swig18traits_from_stdseqISt6vectorIN6CasADi2MXESaIS3_EES3_E4fromERKS5_
+}
+
+{
+   swigerror2
+   Memcheck:Value8
+   fun:PyObject_GC_Del
+   fun:collect.48998
+   fun:_PyObject_GC_Malloc
+   fun:PyType_GenericAlloc
+   fun:tp_new_wrapper.25464
+   fun:PyObject_Call
+   fun:SWIG_Python_NewShadowInstance
+   fun:SWIG_Python_NewPointerObj
+   fun:_ZN4swig15traits_from_ptrIN6CasADi2MXEE4fromEPS2_i
+   fun:_ZN4swig11traits_fromIN6CasADi2MXEE4fromERKS2_
+   fun:_ZN4swig4fromIN6CasADi2MXEEEP7_objectRKT_
+   fun:_ZN4swig18traits_from_stdseqISt6vectorIN6CasADi2MXESaIS3_EES3_E4fromERKS5_
+}
+
+{
+   swigerror3
+   Memcheck:Addr4
+   fun:PyObject_GC_Del
+   fun:collect.48998
+   fun:_PyObject_GC_Malloc
+   fun:PyType_GenericAlloc
+   fun:tp_new_wrapper.25464
+   fun:PyObject_Call
+   fun:SWIG_Python_NewShadowInstance
+   fun:SWIG_Python_NewPointerObj
+   fun:_ZN4swig15traits_from_ptrIN6CasADi2MXEE4fromEPS2_i
+   fun:_ZN4swig11traits_fromIN6CasADi2MXEE4fromERKS2_
+   fun:_ZN4swig4fromIN6CasADi2MXEEEP7_objectRKT_
+   fun:_ZN4swig18traits_from_stdseqISt6vectorIN6CasADi2MXESaIS3_EES3_E4fromERKS5_
+}
+
+{
+   swigerror4
+   Memcheck:Addr4
+   fun:PyObject_GC_Del
+   obj:/usr/bin/python2.7
+   fun:_PyObject_GC_Malloc
+   fun:PyType_GenericAlloc
+   obj:/usr/bin/python2.7
+   fun:PyObject_Call
+   fun:SWIG_Python_NewShadowInstance
+   fun:SWIG_Python_NewPointerObj
+}
+
+{
+   swigerror5
+   Memcheck:Value8
+   fun:PyObject_GC_Del
+   obj:/usr/bin/python2.7
+   fun:_PyObject_GC_New
+   fun:PyDict_New
+   fun:SWIG_Python_NewShadowInstance.isra.12
+}
+
+{
+   swigerror6
+   Memcheck:Cond
+   fun:PyObject_GC_Del
+   obj:/usr/bin/python2.7
+   fun:_PyObject_GC_New
+   fun:PyDict_New
+   fun:SWIG_Python_NewShadowInstance.isra.12
+}
+
+{
+   dsdp2
+   Memcheck:Cond
+   fun:dstemr_
+   fun:dsyevr_
+   fun:DSDPGetEigs
+}
+
+{
+   False positive suspected by Joel
+   Memcheck:Leak
+   match-leak-kinds: definite
+   fun:malloc
+   fun:_dl_map_object_deps
+   fun:dl_open_worker
+   fun:_dl_catch_error
+   fun:_dl_open
+   fun:dlopen_doit
+   fun:_dl_catch_error
+   fun:_dlerror_run
+   fun:dlopen@@GLIBC_2.2.5
+   fun:_ZN6casadi15PluginInterfaceINS_16ConicInternalEE10load_pluginERKSs
+}
+
+{
+   False positive generalisation
+   Memcheck:Leak
+   match-leak-kinds: definite
+   fun:malloc
+   fun:_dl_map_object_deps
+   fun:dl_open_worker
+   fun:_dl_catch_error
+   fun:_dl_open
+   fun:dlopen_doit
+   fun:_dl_catch_error
+   fun:_dlerror_run
+}
+
+{
+   Mysterious error in sdp
+   Memcheck:Leak
+   match-leak-kinds: definite
+   fun:malloc
+   fun:dl_open_worker
+   fun:_dl_catch_error
+   fun:_dl_open
+   fun:dlopen_doit
+   fun:_dl_catch_error
+   fun:_dlerror_run
+   fun:dlopen@@GLIBC_2.2.5
+   fun:_PyImport_GetDynLoadFunc
+   fun:_PyImport_LoadDynamicModule
+   fun:import_submodule.lto_priv.1588
+   fun:ensure_fromlist.lto_priv.1420
+}
+
+{
+   leaks
+   Memcheck:Leak
+   match-leak-kinds: definite
+   fun:malloc
+   fun:dl_open_worker
+   fun:_dl_catch_error
+   fun:_dl_open
+}
+
+
+
+{
+   Error in mosek (bis)
+   Memcheck:Cond
+   ...
+   fun:MSK_*
+}
+
+{
+   Error in mosek (2)
+   Memcheck:Addr16
+   fun:__intel_sse2_str*
+   ...
+   obj:*socpsolver_mosek*
+}
+
+{
+   Error in mosek (3)
+   Memcheck:Addr16
+   fun:__intel_sse2_str*
+   ...
+   fun:*MosekSocpInterface*
+}
+
+{
+   Error in mosek (3bis)
+   Memcheck:Addr4
+   fun:__intel_sse2_str*
+   ...
+   fun:*MosekSocpInterface*
+}
+
+{
+   Error in mosek (3tris)
+   Memcheck:Addr16
+   fun:__intel_sse2_str*
+   ...
+   obj:*libiomp*
+}
+
+
+{
+   Error in mosek (4)
+   Memcheck:Addr16
+   fun:MSK_strlength
+}
+
+
+{
+   Error in mosek (5)
+   Memcheck:Addr16
+   fun:MSKP_strdupenv
+   ...
+   fun:*MosekSocpInterface*
+}
+
+{
+   Error in mosek (6)
+   Memcheck:Leak
+   match-leak-kinds: definite
+   fun:calloc
+   fun:defaultcalloc
+   fun:MSK_memman_*
+   ...
+   fun:_ZN6casadi18MosekSocpInterface4initEv
+}
+
+{
+   Error in mosek (7)
+   Memcheck:Leak
+   match-leak-kinds: definite
+   fun:calloc
+   fun:defaultcalloc
+   ...
+   fun:_ZN6casadi18MosekSocpInterface4initEv
+}
+
+
+
+
+{
+   Error in mosek (6bis)
+   Memcheck:Leak
+   match-leak-kinds: definite
+   fun:malloc
+   fun:defaultmalloc
+   fun:MSK_memman_*
+   ...
+   fun:_ZN6casadi18MosekSocpInterface4initEv
+}
+
+{
+   Error in mosek (7bis)
+   Memcheck:Leak
+   match-leak-kinds: definite
+   fun:malloc
+   fun:defaultmalloc
+   fun:MSK_memman_*
+   ...
+   fun:_ZN6casadi18MosekSocpInterface4initEv
+}
+
+{
+   Error in worhp -- suspicious since nlp passes without this
+   Memcheck:Cond
+   ...
+   obj:*worhp*
+}
+
+
+{
+   Scipy issues
+   Memcheck:Leak
+   match-leak-kinds: definite
+   fun:malloc
+   obj:*sparsetools*
+}
+
+{
+  flush issues
+  Memcheck:Param
+  write(buf)
+  fun:__write_nocancel
+  fun:_IO_file_write@@GLIBC_2.2.5
+  fun:new_do_write
+  fun:_IO_do_write@@GLIBC_2.2.5
+  fun:_IO_file_sync@@GLIBC_2.2.5
+  fun:fflush
+}
+
+{
+more stuff
+Memcheck:Param
+write(buf)
+fun:__write_nocancel
+fun:_IO_file_write@@GLIBC_2.2.5
+fun:new_do_write
+fun:_IO_do_write@@GLIBC_2.2.5
+fun:_IO_new_file_xsputn
+fun:_IO_file_xsputn@@GLIBC_2.2.5
+fun:vfprintf
+fun:printf
+obj:*libworhp*
+}
+
+{
+   Memory leak in ECOS
+   Memcheck:Leak
+   match-leak-kinds: definite
+   fun:malloc
+   fun:ECOS_setup
+}
+
+# OpenMP
+{
+   Some issue with openmp
+   Memcheck:Param
+   sched_setaffinity(mask)
+   fun:syscall
+   fun:__kmp_affinity_determine_capable
+   fun:_Z20__kmp_env_initializePKc
+   fun:*kmp_do_serial_initialize*
+   fun:__kmp_get_global_thread_id_reg
+   fun:GOMP_parallel_start@@VERSION
+}
+
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   match-leak-kinds: definite
+   fun:malloc
+   fun:_dl_exception_create
+   fun:_dl_signal_error
+   fun:_dl_map_object
+   fun:dl_open_worker
+   fun:_dl_catch_exception
+   fun:_dl_open
+   fun:dlopen_doit
+   fun:_dl_catch_exception
+   fun:_dl_catch_error
+   fun:_dlerror_run
+   fun:dlopen@@GLIBC_2.2.5
+}
+
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   match-leak-kinds: definite
+   fun:malloc
+   fun:resize_scopes
+   fun:dl_open_worker
+   fun:_dl_catch_exception
+   fun:_dl_open
+   fun:dlopen_doit
+   fun:_dl_catch_exception
+   fun:_dl_catch_error
+   fun:_dlerror_run
+   fun:dlopen@@GLIBC_2.2.5
+   fun:_PyImport_FindSharedFuncptr
+   fun:_PyImport_LoadDynamicModuleWithSpec
+   fun:_imp_create_dynamic_impl.isra.21
+   fun:_imp_create_dynamic
+   fun:cfunction_vectorcall_FASTCALL
+}
+
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Cond
+   fun:__intel_sse2_strcpy
+   obj:/home/jgillis/programs/knitro/knitro-13.1.0-Linux-64/lib/libknitro1310.so
+}
+
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   match-leak-kinds: definite
+   fun:_Znwm
+   fun:_ZN6Bonmin11IpoptSolver16newUnsolvedErrorEiN5Ipopt8SmartPtrINS_11TMINLP2TNLPEEENSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEE
+}
+
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   match-leak-kinds: definite
+   fun:_Znam
+   fun:_ZN5Ipopt11TNLPAdapter16CheckDerivativesENS0_18DerivativeTestEnumEi
+}
+
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   match-leak-kinds: definite
+   fun:malloc
+   ...
+   fun:dlopen@@GLIBC_2.2.5
+   ...
+   fun:*PluginInterface*
+}
+
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Cond
+   ...
+   fun:*proxsuite6proxqp*
+   fun:*ProxqpInterface*
+}
+

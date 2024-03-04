@@ -1,0 +1,13 @@
+prefix=/work/build/external_projects
+#prefix=${pcfiledir}/../..
+exec_prefix=${prefix}
+libdir=${exec_prefix}/lib
+includedir=${prefix}/include/coin-or/metis
+
+Name: Metis
+Description: Serial Graph Partitioning and Fill-reducing Matrix Ordering
+URL: https://github.com/coin-or-tools/ThirdParty-Metis
+Version: 2.0.0
+Cflags: -I${includedir}
+Libs: -L${libdir} -lcoinmetis
+#Libs: -L${libdir} -lcoinmetis -lm 

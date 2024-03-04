@@ -1,0 +1,15 @@
+prefix=/work/build/external_projects
+#prefix=${pcfiledir}/../..
+exec_prefix=${prefix}
+libdir=${exec_prefix}/lib
+includedir=${prefix}/include/coin-or
+
+Name: Ipopt
+Description: Interior Point Optimizer
+URL: https://github.com/coin-or/Ipopt
+Version: 3.14.11
+Cflags: -I${includedir}
+Libs: -L${libdir} -lipopt
+Requires.private:  
+#Libs: -L${libdir} -lipopt -L/work/build/external_projects/lib -lspral -lgfortran -lm -lcoinmetis  -L/work/build/external_projects/lib -lcasadi-tp-openblas -L/work/build/external_projects/lib -Wl,--whole-archive -lcoinmumps -Wl,--no-whole-archive    -L/work/build/external_projects/lib -lcasadi-tp-openblas -lm  -ldl
+#Requires:  

@@ -1,0 +1,12 @@
+prefix=/work/build/external_projects
+exec_prefix=${prefix}
+libdir=${exec_prefix}/lib
+includedir=${prefix}/include/coin
+
+Name: OsiClp
+Description: COIN-OR Open Solver Interface for CLP
+URL: https://projects.coin-or.org/Osi
+Version: 1.17.9
+Libs: -L${libdir} -lOsiClp 
+Cflags: -I${includedir}
+Requires: clp osi 

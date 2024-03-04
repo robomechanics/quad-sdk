@@ -9,7 +9,7 @@
         <pose frame=''>0 0 0 0 0 0</pose>
         <geometry>
           <box>
-            <size>0.2 0.3 0.08</size>
+            <size>0.2 0.2 0.08</size>
           </box>
         </geometry>
         <surface>
@@ -26,7 +26,7 @@
         <pose frame=''>0 0 0 0 0 0</pose>
         <geometry>
           <box>
-            <size>0.2 0.3 0.08</size>
+            <size>0.2 0.2 0.08</size>
           </box>
         </geometry>
         <material>
@@ -36,7 +36,7 @@
 
       <inertial>
         <pose frame=''>0 0 0 0 0 0</pose>
-        <mass>8</mass>
+        <mass>2</mass>
         <!--inertia>
           <ixx>2</ixx>
           <ixy>2</ixy>

@@ -1,11 +1,14 @@
 clear all; clc; close all;
 
-addpath('./utils')
+%addpath('./utils')
+addpath('utils')
+
 
 %% Physics parameter
 parameter.physics.gravitational_constant=9.81; % Gravity
 
 parameter.physics.sim2real_scale_factor=(13.3-11.6620+5.75)/5.75; % Real spirit
+% parameter.physics.sim2real_scale_factor=(13.3-11.6620+5.75)/5.75; % Real spirit OG before testing adaptability
 % parameter.physics.sim2real_scale_factor=1; % Sim spirit or A1
 
 parameter.physics.mass_body_body=parameter.physics.sim2real_scale_factor*5.75; % Only body weight of spirit

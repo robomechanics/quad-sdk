@@ -1,0 +1,11 @@
+libdir=/work/build/external_projects/lib
+libsuffix=
+includedir=/work/build/external_projects/include/openblas
+
+openblas_config=USE_64BITINT= NO_CBLAS= NO_LAPACK= NO_LAPACKE= DYNAMIC_ARCH=OFF DYNAMIC_OLDER=OFF NO_AFFINITY=ON USE_OPENMP=OFF CORE2 MAX_THREADS=16 
+Name: OpenBLAS
+Description: OpenBLAS is an optimized BLAS library based on GotoBLAS2 1.13 BSD version
+Version: 
+URL: https://github.com/xianyi/OpenBLAS
+Libs:  -L${libdir} -lcasadi-tp-openblas${libsuffix} 
+Cflags: -I${includedir}

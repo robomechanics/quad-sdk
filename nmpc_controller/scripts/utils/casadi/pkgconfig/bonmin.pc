@@ -1,0 +1,12 @@
+prefix=/work/build/external_projects
+exec_prefix=${prefix}
+libdir=${exec_prefix}/lib
+includedir=${prefix}/include/coin
+
+Name: Bonmin
+Description: Basic Open-source Nonlinear Mixed Integer programming
+URL: https://projects.coin-or.org/Bonmin
+Version: 1.8.9
+Libs: -L${libdir} -lbonmin 
+Cflags: -I${includedir}
+Requires: cbc osi-clp ipopt 

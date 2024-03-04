@@ -10,11 +10,13 @@ end
 
 function loadDynamics(parameter)
 
-addpath('./utils')
-addpath('./generated_codes/matlab')
+addpath('utils')
+addpath('generated_codes/matlab')
 
 % Require CasADi for autodiff
-addpath('./utils/casadi')
+addpath('utils/casadi')
+%addpath('utils/casadi')
+
 import casadi.*
 
 x0 = SX.sym('x0', [parameter.n, 1]); % First finite element
