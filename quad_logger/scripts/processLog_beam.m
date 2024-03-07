@@ -1,4 +1,4 @@
-function processLog(varargin)
+function processLog_beam(varargin)
 % processLog Process a quad data log file to generate figures
 %   processLog uses the default 'quad_log_current' file name to
 %   yield a data structure containing select topic data. If this bag does
@@ -28,7 +28,7 @@ end
 
 %% Set parameters
 
-bSave = true;                       % Save the figures/videos
+bSave = false;                       % Save the figures/videos
 bAnimate = false;                   % Animate the trajectory (no translation)
 bTitles = true;                     % Turn on figure titles
 bPlotLocalPlanInfo = true;          % Turn on to plot local plan information
@@ -39,45 +39,54 @@ tWindowLocalPlan = [];              % Specify time window for local plan (use []
 %% Load the data
 
 % Load the data
-[data, trialName] = parseQuadBag(trialName, namespace);
+[data, trialName] = parseQuadBag_beam(trialName, namespace);
 stateEstimate = data.stateEstimate;
 stateGroundTruth = data.stateGroundTruth;
 stateTrajectory = data.stateTrajectory;
 stateGRFs = data.stateGRFs;
 controlGRFs = data.controlGRFs;
 localPlan = data.localPlan;
+%Checking Joint Torques
+jointTorques = data.jointTorques;
+
+%% Extracting vectors needed for beam walking LQR analysis
+[torqueInputs, statesMatrix, contactSchedule] = beamStructToVectors(data);
 
 %% Plot the data
 
 % Plot the state
-stateFigs = [];
-if ~isempty(stateGroundTruth)
-    [stateFigs] = plotState(stateGroundTruth,tWindowStates,'-', bTitles, stateFigs);
-end
-if ~isempty(stateTrajectory)
-    [stateFigs] = plotState(stateTrajectory,tWindowStates, ':', bTitles, stateFigs);
-end
-if ~isempty(stateEstimate)
-    [stateFigs] = plotState(stateEstimate,tWindowStates, '--', bTitles, stateFigs);
-end
-
-% Plot the control
-controlFigs = [];
-if ~isempty(stateGRFs)
-    controlFigs = plotControl(stateGRFs,tWindowControl,'-', bTitles, controlFigs);
-end
-if ~isempty(controlGRFs)
-    controlFigs = plotControl(controlGRFs,tWindowControl,':', bTitles,controlFigs);
-end
-
-% Plot local plan information if desired
-localPlanFigs = [];
-if bPlotLocalPlanInfo && ~isempty(localPlan)
-    localPlanFigs = plotLocalPlan(localPlan,tWindowLocalPlan,'-', bTitles,localPlanFigs);
-end
+% stateFigs = [];
+% if ~isempty(stateGroundTruth)
+%     [stateFigs] = plotState(stateGroundTruth,tWindowStates,'-', bTitles, stateFigs);
+% end
+% if ~isempty(stateTrajectory)
+%     [stateFigs] = plotState(stateTrajectory,tWindowStates, ':', bTitles, stateFigs);
+% end
+% if ~isempty(stateEstimate)
+%     [stateFigs] = plotState(stateEstimate,tWindowStates, '--', bTitles, stateFigs);
+% end
+% 
+% % Plot the control
+% controlFigs = [];
+% if ~isempty(stateGRFs)
+%     controlFigs = plotControl(stateGRFs,tWindowControl,'-', bTitles, controlFigs);
+% end
+% if ~isempty(controlGRFs)
+%     controlFigs = plotControl(controlGRFs,tWindowControl,':', bTitles,controlFigs);
+% end
+% 
+% % Plot local plan information if desired
+% localPlanFigs = [];
+% if bPlotLocalPlanInfo && ~isempty(localPlan)
+%     localPlanFigs = plotLocalPlan(localPlan,tWindowLocalPlan,'-', bTitles,localPlanFigs);
+% end
 
 % Add figures to array
-figArray = [stateFigs, controlFigs, localPlanFigs];
+% figArray = [stateFigs, controlFigs, localPlanFigs];
+
+%% Saving struct to test data
+
+% save('dataStructSample_1.mat','data');
 
 %% Save the logs and figures in one directory
 logDir = [];
