@@ -28,7 +28,7 @@ def path_following():
     # Parameters
     rate = 100
     ros_rate = rospy.Rate(rate) # Rate
-    speed = 0.30 # Forward velocity
+    speed = 0.25 # Forward velocity
     y_pt = 0.0 # Lateral shift
     yaw_pt = 0.0 #math.pi # Yaw angle
     y_gain = 1.0 # Lateral P gain in m/s per m (or Hz)

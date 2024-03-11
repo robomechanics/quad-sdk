@@ -226,6 +226,7 @@ end
 
 %% Localize time to the first message
 startTime = stateGroundTruth.time(1);
+startTimeTorques = joint_torques.time(1);
 data = struct;
 
 % Update time of existing messages and pack into struct

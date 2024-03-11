@@ -6,7 +6,7 @@
   <arg name="controller" default="inverse_dynamics" />
   <arg name="live_plot" default="false" />
   <arg name="dash" default="false" />
-  <arg name="world" default="single_beam_v4" />
+  <arg name="world" default="single_beam_03m_width" />
   <arg name="logging" default="false" />
   <param name="/use_sim_time" value="true" />
 
