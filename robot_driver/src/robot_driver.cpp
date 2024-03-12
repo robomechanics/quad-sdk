@@ -409,6 +409,9 @@ bool RobotDriver::updateState() {
 
     if (last_mocap_msg_ != NULL) {
       state_estimator_->loadMocapMsg(last_mocap_msg_);
+      if (estimator_id_ == "ekf_filter"){
+        comp_estimator_->loadMocapMsg(last_mocap_msg_);
+      }
     }
 
     // State information coming through sim subscribers, not hardware interface
