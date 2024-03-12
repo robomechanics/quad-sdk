@@ -150,7 +150,7 @@ RobotDriver::RobotDriver(ros::NodeHandle nh, int argc, char **argv) {
 
   // Initialize timing
   last_robot_state_msg_.header.stamp = ros::Time::now();
-  // state_estimate_.header.stamp = ros::Time::now();
+  state_estimate_.header.stamp = ros::Time::now();
   t_pub_ = ros::Time::now();
 
   // Initialize state and control data structures
@@ -173,6 +173,7 @@ void RobotDriver::initStateEstimator() {
   } else if (estimator_id_ == "ekf_filter") {
     ROS_INFO("EKF Filter");
     state_estimator_ = std::make_shared<EKFEstimator>();
+    comp_estimator_ = std::make_shared<CompFilterEstimator>();
   } else {
     ROS_ERROR_STREAM("Invalid estimator id " << estimator_id_
                                              << ", returning nullptr");
@@ -187,6 +188,13 @@ void RobotDriver::initStateEstimator() {
       // In Sim, Initialize both the comp filter and ekf for comparison
       ekf_estimator_->init(nh_);
     }
+    if (estimator_id_ == "comp_filter" && is_hardware_ == true) {
+      ekf_estimator_->init(nh_);
+    }
+    if (estimator_id_ == "ekf_filter" && is_hardware_ == true) {
+      comp_estimator_->init(nh_);
+    }
+    
   }
 }
 
@@ -287,6 +295,10 @@ void RobotDriver::localPlanCallback(const quad_msgs::RobotPlan::ConstPtr &msg) {
     // In Sim, Initialize both the comp filter and ekf for comparison
     ekf_estimator_->updateLocalPlanMsg(last_local_plan_msg_, control_mode_);
   }
+  if (estimator_id_ == "ekf_filter") {
+    // In Sim, Initialize both the comp filter and ekf for comparison
+    comp_estimator_->updateLocalPlanMsg(last_local_plan_msg_, control_mode_);
+  }
 }
 
 void RobotDriver::mocapCallback(
@@ -383,6 +395,13 @@ bool RobotDriver::updateState() {
 
     // load robot sensor message to state estimator class
     if (fully_populated) {
+      if (estimator_id_=="comp_filter"){
+        ekf_estimator_->loadSensorMsg(last_imu_msg_, last_joint_state_msg_);
+      }
+      if (estimator_id_ == "ekf_filter"){
+        comp_estimator_->loadSensorMsg(last_imu_msg_, last_joint_state_msg_);
+      }
+
       state_estimator_->loadSensorMsg(last_imu_msg_, last_joint_state_msg_);
     } else {
       ROS_WARN_THROTTLE(1, "No imu or joint state (robot) recieved");
@@ -395,6 +414,12 @@ bool RobotDriver::updateState() {
     // State information coming through sim subscribers, not hardware interface
     if (state_estimator_ != nullptr) {
       // Check the Message Here
+      if (estimator_id_=="comp_filter"){
+        ekf_estimator_->updateOnce(state_estimate_);
+      }
+      if (estimator_id_ == "ekf_filter"){
+        comp_estimator_->updateOnce(state_estimate_);
+      }
       return state_estimator_->updateOnce(last_robot_state_msg_);
     } else {
       ROS_WARN_THROTTLE(1, "No state estimator is initialized");
@@ -446,6 +471,7 @@ void RobotDriver::publishState() {
     joint_state_pub_.publish(last_joint_state_msg_);
     robot_state_pub_.publish(last_robot_state_msg_);
     // state_estimate_pub_.publish(state_estimate_);
+    state_estimate_pub_.publish(state_estimate_);
   } else {
     if (control_mode_ == READY) {
       joint_state_pub_.publish(last_joint_state_msg_);

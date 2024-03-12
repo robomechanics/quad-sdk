@@ -272,7 +272,8 @@ quad_msgs::RobotState EKFEstimator::StepOnce() {
   new_state_est.joints.effort = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 
   // feet
-  // Grab Foot Positions from output from the state vector
+  // Grab Foot Positions from output from the state vector  
+  
 
   return new_state_est;
 }

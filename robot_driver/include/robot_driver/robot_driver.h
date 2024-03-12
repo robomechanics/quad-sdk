@@ -380,6 +380,9 @@ class RobotDriver {
   /// State Estimator template class
   std::shared_ptr<StateEstimator> ekf_estimator_;
 
+  /// State Estimator template class
+  std::shared_ptr<StateEstimator> comp_estimator_;
+
   /// Mblink converter object
   std::shared_ptr<HardwareInterface> hardware_interface_;
 
