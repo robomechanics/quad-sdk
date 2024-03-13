@@ -242,9 +242,9 @@ quad_msgs::RobotState EKFEstimator::StepOnce() {
   Eigen::Matrix3d rot;
   if(is_hardware_){
     // Rotate the IMU to account for swap
-    Eigen::Quaterniond q1(0, 1, 0, 0);
-    Eigen::Quaterniond qt = q1 * qk;
-    rot = (qt.toRotationMatrix().transpose());
+    // Eigen::Quaterniond q1(0, 1, 0, 0);
+    // Eigen::Quaterniond qt = q1 * qk;
+    rot = (qk.toRotationMatrix().transpose());
   }
   else{
     rot = (qk.toRotationMatrix().transpose());
@@ -299,9 +299,9 @@ void EKFEstimator::predict(const double& dt, const Eigen::VectorXd& fk,
   // Eigen::Matrix3d C1 = (qk.toRotationMatrix()).transpose();
   if(is_hardware_){
     // Rotate the IMU to account for swap
-    Eigen::Quaterniond q1(0, 1, 0, 0);
-    Eigen::Quaterniond qt = q1 * qk;
-    C1 = (qt.toRotationMatrix().transpose());
+    // Eigen::Quaterniond q1(0, 1, 0, 0);
+    // Eigen::Quaterniond qt = q1 * qk;
+    C1 = (qk.toRotationMatrix().transpose());
   }
   else{
     C1 = (qk.toRotationMatrix().transpose());

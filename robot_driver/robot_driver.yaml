@@ -37,5 +37,5 @@ robot_driver:
   nfk: 0.001 # noise in forward kinematics 0.001
   ne: 0.001 # noise in encoder 0.001
   P0: 3
-  contact_w: 1000 # Contact weight 1000
+  contact_w: 0.1 # Contact weight 1000
   thresh_out: 1000  #Norm Measurement Rejection Threshold, (Check for Outliers)

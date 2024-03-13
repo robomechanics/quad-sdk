@@ -86,7 +86,7 @@ SOFTWARE.
           <rpyOffset>0 0 0</rpyOffset>
           <frameName>imu_link</frameName>
         </plugin>
-        <pose frame='body'>0 0 0 0 -0 1.570796</pose>
+        <pose frame='body'>0 0 0 0 -0 0</pose>
       </sensor>
       <gravity>1</gravity>
       <velocity_decay />
