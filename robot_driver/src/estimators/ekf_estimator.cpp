@@ -68,6 +68,7 @@ void EKFEstimator::init(ros::NodeHandle& nh) {
 
   // QuadKD class
   quadKD_ = std::make_shared<quad_utils::QuadKD>();
+  ROS_INFO_STREAM("P value" << P0_);
   ROS_INFO_STREAM("Initialized EKF Estimator");
 }
 
@@ -85,8 +86,10 @@ bool EKFEstimator::updateOnce(quad_msgs::RobotState& last_robot_state_msg_) {
   // set noise
   this->setNoise();
   if (initialized) {
+    if (is_hardware_){
     setInitialState(last_robot_state_msg_);
     quad_utils::fkRobotState(*quadKD_, last_robot_state_msg_);
+    }
   }
 
   // Run Step Once to Calculate Change in State Once Local Planner Starts
@@ -236,7 +239,17 @@ quad_msgs::RobotState EKFEstimator::StepOnce() {
   // std::cout << "this is X update" << X.transpose() << std::endl;
 
   // last_X = X;
-  Eigen::Matrix3d rot = qk.toRotationMatrix();
+  Eigen::Matrix3d rot;
+  if(is_hardware_){
+    // Rotate the IMU to account for swap
+    Eigen::Quaterniond q1(0, 1, 0, 0);
+    Eigen::Quaterniond qt = q1 * qk;
+    rot = (qt.toRotationMatrix().transpose());
+  }
+  else{
+    rot = (qk.toRotationMatrix().transpose());
+  }
+
   Eigen::Vector3d linear_vel(X[3], X[4], X[5]);
   Eigen::Vector3d ang_vel = rot.inverse() * linear_vel;
 
@@ -284,7 +297,15 @@ void EKFEstimator::predict(const double& dt, const Eigen::VectorXd& fk,
   // Generate Conversion Matrix to Rotate the Body Frame IMU into World Frame
   // Double Check if this needs a transpose or not
   // Eigen::Matrix3d C1 = (qk.toRotationMatrix()).transpose();
-  C1 = (qk.toRotationMatrix());
+  if(is_hardware_){
+    // Rotate the IMU to account for swap
+    Eigen::Quaterniond q1(0, 1, 0, 0);
+    Eigen::Quaterniond qt = q1 * qk;
+    C1 = (qt.toRotationMatrix().transpose());
+  }
+  else{
+    C1 = (qk.toRotationMatrix().transpose());
+  }
   // Maybe use the built in Quad-KD for cleanliness
 
   // q = Eigen::VectorXd::Zero(4);

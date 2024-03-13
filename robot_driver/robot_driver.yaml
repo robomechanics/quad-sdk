@@ -22,20 +22,20 @@ robot_driver:
 
   # Extended Kalman filter estimator coefficients
   joint_state_max_time: 20 # Milliseconds until we disregard last joint state message
-  update_rate: 200 # 200 in the original, reduced to 100 for testing
+  update_rate: 500 # 200 in the original, reduced to 100 for testing
   bias_x: 0.10 # actual measurement of bias_acc x is 0.083616044
   bias_y: -0.156 # actual measurement of bias_acc y is 0.060205998
   bias_z: 0.0 # actual measurement of bias_acc z is 0.00
   bias_r: 0.00000 # actual measurement of bias_gyro r is 0.00009
   bias_p: 0.00000 # actual measurement of bias_gyro p is 0.00003
   bias_w: 0.00000 # actual measurement of bias_gyro y is 0.00002
-  na: 0.01 # noise in accelerometer 0.01
+  na: 0.01
   ng: 0.01 # noise in gyro 0.01
   ba: 0.01 # bias in accelerometer 0.01
   bg: 0.001 # bias in gyro 0.001
-  nf: 0.001 # noise in feet 0.001
+  nf: 0.01
   nfk: 0.001 # noise in forward kinematics 0.001
   ne: 0.001 # noise in encoder 0.001
-  P0: 3 # Initial Value of Covariance Matrix 3
+  P0: 3
   contact_w: 1000 # Contact weight 1000
   thresh_out: 1000  #Norm Measurement Rejection Threshold, (Check for Outliers)

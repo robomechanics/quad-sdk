@@ -74,19 +74,19 @@ SOFTWARE.
       </visual>
       <sensor name='imu_sensor' type='imu'>
         <always_on>1</always_on>
-        <update_rate>1000</update_rate>
+        <update_rate>500</update_rate>
         <visualize>1</visualize>
         <topic>robot_1_state_imu</topic>
         <plugin name='imu_plugin' filename='libgazebo_ros_imu_sensor.so'>
           <topicName>/robot_1/state/imu</topicName>
           <bodyName>imu_link</bodyName>
-          <updateRateHZ>100.0</updateRateHZ>
+          <updateRateHZ>500.0</updateRateHZ>
           <gaussianNoise>0.02</gaussianNoise>
           <xyzOffset>0 0 0</xyzOffset>
           <rpyOffset>0 0 0</rpyOffset>
           <frameName>imu_link</frameName>
         </plugin>
-        <pose frame=''>0 0 0 0 -0 0</pose>
+        <pose frame='body'>0 0 0 0 -0 1.570796</pose>
       </sensor>
       <gravity>1</gravity>
       <velocity_decay />
@@ -1317,7 +1317,6 @@ SOFTWARE.
 
     <!-- Publish imu sensor readings -->
     <include>
-      <!-- <uri>model://imu</uri> -->
       <uri>model://imu</uri>
       <pose>0 0 0 0 0 0 </pose>
     </include>

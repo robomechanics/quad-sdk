@@ -62,17 +62,51 @@ stateGroundTruth = data.stateGroundTruth;
 % state_estimate_vel_x = state_estimate_vel_x(t_ind_se: end);
 % ground_truth_pos_x = ground_truth_pos_x(t_ind_gt: end);
 % ground_truth_vel_x = ground_truth_vel_x(t_ind_gt: end);
-
-
 figure(1)
+t = tiledlayout(3,1);
+nexttile
+% subplot(3,1,1);
+hold on
+plot(stateGroundTruth.time, stateGroundTruth.position(:,1), 'b-','LineWidth',2)
+plot(stateEstimate.time, stateEstimate.position(:,1), 'r-', 'LineWidth',2)
+% xlim([2 7])
+% ylim([-3 3])
+title("X position")
+legend("Ground Truth", "State Estimate")
+grid on
+nexttile
+% subplot(3,1,2);
+hold on
+plot(stateGroundTruth.time, stateGroundTruth.position(:,2), 'b', 'LineWidth',2 )
+plot(stateEstimate.time, stateEstimate.position(:,2), 'r-' , 'LineWidth',2)
+% xlim([2 7])
+% ylim([-1.5 1.5])
+title("Y position")
+legend("Ground Truth", "State Estimate")
+grid on
+nexttile
+% subplot(3,1,3);
+hold on
+plot(stateGroundTruth.time, stateGroundTruth.position(:,3), 'b-','LineWidth',2)
+plot(stateEstimate.time, stateEstimate.position(:,3), 'r-','LineWidth',2)
+% xlim([2 7])
+% ylim([-1.5 1.5])
+title("Z position")
+legend("Ground Truth", "State Estimate")
+grid on
+
+xlabel(t, "Time (s)")
+ylabel(t, 'Body position (m/s)')
+
+figure(2)
 t = tiledlayout(3,1);
 nexttile
 % subplot(3,1,1);
 hold on
 plot(stateGroundTruth.time, stateGroundTruth.velocity(:,1), 'b-','LineWidth',2)
 plot(stateEstimate.time, stateEstimate.velocity(:,1), 'r-', 'LineWidth',2)
-xlim([2 7])
-ylim([-3 3])
+% xlim([2 7])
+% ylim([-3 3])
 title("X Velocity")
 legend("Ground Truth", "State Estimate")
 grid on
@@ -81,8 +115,8 @@ nexttile
 hold on
 plot(stateGroundTruth.time, stateGroundTruth.velocity(:,2), 'b', 'LineWidth',2 )
 plot(stateEstimate.time, stateEstimate.velocity(:,2), 'r-' , 'LineWidth',2)
-xlim([2 7])
-ylim([-1.5 1.5])
+% xlim([2 7])
+% ylim([-1.5 1.5])
 title("Y Velocity")
 legend("Ground Truth", "State Estimate")
 grid on
@@ -91,8 +125,8 @@ nexttile
 hold on
 plot(stateGroundTruth.time, stateGroundTruth.velocity(:,3), 'b-','LineWidth',2)
 plot(stateEstimate.time, stateEstimate.velocity(:,3), 'r-','LineWidth',2)
-xlim([2 7])
-ylim([-1.5 1.5])
+% xlim([2 7])
+% ylim([-1.5 1.5])
 title("Z Velocity")
 legend("Ground Truth", "State Estimate")
 grid on

@@ -144,7 +144,7 @@ RobotDriver::RobotDriver(ros::NodeHandle nh, int argc, char **argv) {
 
   // Start sitting
   control_mode_ = SIT;
-  // initialized_ = SIT;
+  initialized_ = SIT; // Only Used in Sim to Denote Start of Filter
   remote_heartbeat_received_time_ = std::numeric_limits<double>::max();
   last_state_time_ = std::numeric_limits<double>::max();
 
@@ -291,13 +291,15 @@ void RobotDriver::localPlanCallback(const quad_msgs::RobotPlan::ConstPtr &msg) {
 
   leg_controller_->updateLocalPlanMsg(last_local_plan_msg_, t_now);
   state_estimator_->updateLocalPlanMsg(last_local_plan_msg_, control_mode_);
-  if (estimator_id_ == "comp_filter") {
-    // In Sim, Initialize both the comp filter and ekf for comparison
-    ekf_estimator_->updateLocalPlanMsg(last_local_plan_msg_, control_mode_);
-  }
-  if (estimator_id_ == "ekf_filter") {
-    // In Sim, Initialize both the comp filter and ekf for comparison
-    comp_estimator_->updateLocalPlanMsg(last_local_plan_msg_, control_mode_);
+  if (is_hardware_){
+    if (estimator_id_ == "comp_filter") {
+      // In Sim, Initialize both the comp filter and ekf for comparison
+      ekf_estimator_->updateLocalPlanMsg(last_local_plan_msg_, control_mode_);
+    }
+    if (estimator_id_ == "ekf_filter") {
+      // In Sim, Initialize both the comp filter and ekf for comparison
+      comp_estimator_->updateLocalPlanMsg(last_local_plan_msg_, control_mode_);
+    }
   }
 }
 
@@ -436,6 +438,8 @@ bool RobotDriver::updateState() {
         last_joint_state_msg_.position = last_robot_state_msg_.joints.position;
         last_joint_state_msg_.velocity = last_robot_state_msg_.joints.velocity;
         initialized_ = true;
+        ROS_INFO_STREAM("Initializes Filter");
+        ROS_INFO_STREAM(estimated_state_);
       }
       if (estimator_id_ == "comp_filter") {
         estimated_state_ = last_robot_state_msg_;
@@ -448,22 +452,22 @@ bool RobotDriver::updateState() {
           ekf_estimator_->updateOnce(estimated_state_);
         }
       }
+
       if (estimator_id_ == "ekf_filter") {
         // Addded to make sure the robot can stand
-        if (initialized_ == SIT) {
-          state_estimate_ = last_robot_state_msg_;
-        }
         if (grf_array_msg_.vectors[0].x != 0 && control_mode_ == READY) {
           last_joint_state_msg_.position =
               last_robot_state_msg_.joints.position;
           last_joint_state_msg_.velocity =
               last_robot_state_msg_.joints.velocity;
-          estimated_state_.joints = last_robot_state_msg_.joints;
+          // estimated_state_.joints = last_robot_state_msg_.joints;
           state_estimator_->updateOnce(estimated_state_);
-          state_estimate_ = estimated_state_;
+          ROS_INFO_STREAM("Updating");
+          // state_estimate_ = estimated_state_;
         }
       }
     }
+    // ROS_INFO_STREAM(estimated_state_);
     return true;
   }
 }
@@ -478,14 +482,19 @@ void RobotDriver::publishState() {
   } else {
     if (control_mode_ == READY) {
       joint_state_pub_.publish(last_joint_state_msg_);
-      if (initialized_) {
-        state_estimate_pub_.publish(estimated_state_);
+      state_estimate_pub_.publish(estimated_state_);
       }
     }
   }
-}
 
 bool RobotDriver::updateControl() {
+
+  //
+  // if (estimator_id_ == "ekf_filter" && is_hardware_){
+  //   state 
+  //   last_robot_state_msg_ = estimated_state_; 
+  // }
+
   // Check if state machine should be skipped
   bool valid_cmd = true;
   if (leg_controller_->overrideStateMachine()) {
