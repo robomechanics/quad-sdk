@@ -86,9 +86,9 @@ bool EKFEstimator::updateOnce(quad_msgs::RobotState& last_robot_state_msg_) {
   // set noise
   this->setNoise();
   if (initialized) {
-    if (is_hardware_){
-    setInitialState(last_robot_state_msg_);
-    quad_utils::fkRobotState(*quadKD_, last_robot_state_msg_);
+    if (is_hardware_) {
+      setInitialState(last_robot_state_msg_);
+      quad_utils::fkRobotState(*quadKD_, last_robot_state_msg_);
     }
   }
 
@@ -241,14 +241,13 @@ quad_msgs::RobotState EKFEstimator::StepOnce() {
   // last_X = X;
   Eigen::Matrix3d rot;
   Eigen::Quaterniond qt;
-  if(is_hardware_){
+  if (is_hardware_) {
     // Rotate the IMU to account for swap
     Eigen::Quaterniond q1;
     q1 = Eigen::AngleAxisd(M_PI - 0.18, Eigen::Vector3d::UnitZ());
     Eigen::Quaterniond qt = q1 * qk;
     rot = (qt.toRotationMatrix().transpose());
-  }
-  else{
+  } else {
     rot = (qk.toRotationMatrix().transpose());
   }
 
@@ -260,13 +259,12 @@ quad_msgs::RobotState EKFEstimator::StepOnce() {
 
   // body
   // Grab this Directly from the IMU
-  if (is_hardware_){
+  if (is_hardware_) {
     new_state_est.body.pose.orientation.w = qt.w();
     new_state_est.body.pose.orientation.x = qt.x();
     new_state_est.body.pose.orientation.y = qt.y();
     new_state_est.body.pose.orientation.z = qt.z();
-  }
-  else{
+  } else {
     new_state_est.body.pose.orientation.w = qk.w();
     new_state_est.body.pose.orientation.x = qk.x();
     new_state_est.body.pose.orientation.y = qk.y();
@@ -295,8 +293,7 @@ quad_msgs::RobotState EKFEstimator::StepOnce() {
   new_state_est.joints.effort = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 
   // feet
-  // Grab Foot Positions from output from the state vector  
-  
+  // Grab Foot Positions from output from the state vector
 
   return new_state_est;
 }
@@ -307,14 +304,13 @@ void EKFEstimator::predict(const double& dt, const Eigen::VectorXd& fk,
   // Generate Conversion Matrix to Rotate the Body Frame IMU into World Frame
   // Double Check if this needs a transpose or not
   // Eigen::Matrix3d C1 = (qk.toRotationMatrix()).transpose();
-  if(is_hardware_){
+  if (is_hardware_) {
     // Rotate the IMU to account for swap
     Eigen::Quaterniond q1;
     q1 = Eigen::AngleAxisd(M_PI - 0.18, Eigen::Vector3d::UnitZ());
     Eigen::Quaterniond qt = q1 * qk;
     C1 = (qt.toRotationMatrix().transpose());
-  }
-  else{
+  } else {
     C1 = (qk.toRotationMatrix().transpose());
   }
   // Maybe use the built in Quad-KD for cleanliness

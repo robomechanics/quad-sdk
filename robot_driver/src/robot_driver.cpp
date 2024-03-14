@@ -144,7 +144,7 @@ RobotDriver::RobotDriver(ros::NodeHandle nh, int argc, char **argv) {
 
   // Start sitting
   control_mode_ = SIT;
-  initialized_ = SIT; // Only Used in Sim to Denote Start of Filter
+  initialized_ = SIT;  // Only Used in Sim to Denote Start of Filter
   remote_heartbeat_received_time_ = std::numeric_limits<double>::max();
   last_state_time_ = std::numeric_limits<double>::max();
 
@@ -194,7 +194,6 @@ void RobotDriver::initStateEstimator() {
     if (estimator_id_ == "ekf_filter" && is_hardware_ == true) {
       comp_estimator_->init(nh_);
     }
-    
   }
 }
 
@@ -291,7 +290,7 @@ void RobotDriver::localPlanCallback(const quad_msgs::RobotPlan::ConstPtr &msg) {
 
   leg_controller_->updateLocalPlanMsg(last_local_plan_msg_, t_now);
   state_estimator_->updateLocalPlanMsg(last_local_plan_msg_, control_mode_);
-  if (is_hardware_){
+  if (is_hardware_) {
     if (estimator_id_ == "comp_filter") {
       // In Sim, Initialize both the comp filter and ekf for comparison
       ekf_estimator_->updateLocalPlanMsg(last_local_plan_msg_, control_mode_);
@@ -397,10 +396,10 @@ bool RobotDriver::updateState() {
 
     // load robot sensor message to state estimator class
     if (fully_populated) {
-      if (estimator_id_=="comp_filter"){
+      if (estimator_id_ == "comp_filter") {
         ekf_estimator_->loadSensorMsg(last_imu_msg_, last_joint_state_msg_);
       }
-      if (estimator_id_ == "ekf_filter"){
+      if (estimator_id_ == "ekf_filter") {
         comp_estimator_->loadSensorMsg(last_imu_msg_, last_joint_state_msg_);
       }
 
@@ -411,7 +410,7 @@ bool RobotDriver::updateState() {
 
     if (last_mocap_msg_ != NULL) {
       state_estimator_->loadMocapMsg(last_mocap_msg_);
-      if (estimator_id_ == "ekf_filter"){
+      if (estimator_id_ == "ekf_filter") {
         comp_estimator_->loadMocapMsg(last_mocap_msg_);
       }
     }
@@ -419,10 +418,10 @@ bool RobotDriver::updateState() {
     // State information coming through sim subscribers, not hardware interface
     if (state_estimator_ != nullptr) {
       // Check the Message Here
-      if (estimator_id_=="comp_filter"){
+      if (estimator_id_ == "comp_filter") {
         ekf_estimator_->updateOnce(state_estimate_);
       }
-      if (estimator_id_ == "ekf_filter"){
+      if (estimator_id_ == "ekf_filter") {
         comp_estimator_->updateOnce(state_estimate_);
       }
       return state_estimator_->updateOnce(last_robot_state_msg_);
@@ -462,7 +461,6 @@ bool RobotDriver::updateState() {
               last_robot_state_msg_.joints.velocity;
           // estimated_state_.joints = last_robot_state_msg_.joints;
           state_estimator_->updateOnce(estimated_state_);
-          ROS_INFO_STREAM("Updating");
           // state_estimate_ = estimated_state_;
         }
       }
@@ -483,16 +481,15 @@ void RobotDriver::publishState() {
     if (control_mode_ == READY) {
       joint_state_pub_.publish(last_joint_state_msg_);
       state_estimate_pub_.publish(estimated_state_);
-      }
     }
   }
+}
 
 bool RobotDriver::updateControl() {
-
   //
   // if (estimator_id_ == "ekf_filter" && is_hardware_){
-  //   state 
-  //   last_robot_state_msg_ = estimated_state_; 
+  //   state
+  //   last_robot_state_msg_ = estimated_state_;
   // }
 
   // Check if state machine should be skipped
