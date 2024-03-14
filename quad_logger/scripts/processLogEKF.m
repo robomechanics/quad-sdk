@@ -134,6 +134,123 @@ grid on
 xlabel(t, "Time (s)")
 ylabel(t, 'Body Velocity (m/s)')
 
+figure(3)
+t = tiledlayout(4,1);
+nexttile
+% subplot(3,1,1);
+hold on
+plot(stateGroundTruth.time, stateGroundTruth.orientationQuat(:,1), 'b-','LineWidth',2)
+plot(stateEstimate.time, stateEstimate.orientationQuat(:,1), 'r-', 'LineWidth',2)
+% xlim([2 7])
+% ylim([-3 3])
+title("W Orientation")
+legend("Ground Truth", "State Estimate")
+grid on
+nexttile
+% subplot(3,1,2);
+hold on
+plot(stateGroundTruth.time, stateGroundTruth.orientationQuat(:,2), 'b', 'LineWidth',2 )
+plot(stateEstimate.time, stateEstimate.orientationQuat(:,2), 'r-' , 'LineWidth',2)
+% xlim([2 7])
+% ylim([-1.5 1.5])
+title("X Orientation")
+legend("Ground Truth", "State Estimate")
+grid on
+nexttile
+% subplot(3,1,3);
+hold on
+plot(stateGroundTruth.time, stateGroundTruth.orientationQuat(:,3), 'b-','LineWidth',2)
+plot(stateEstimate.time, stateEstimate.orientationQuat(:,3), 'r-','LineWidth',2)
+% xlim([2 7])
+% ylim([-1.5 1.5])
+title("Y Orientation")
+legend("Ground Truth", "State Estimate")
+grid on
+nexttile
+
+hold on
+plot(stateGroundTruth.time, stateGroundTruth.orientationQuat(:,4), 'b-','LineWidth',2)
+plot(stateEstimate.time, stateEstimate.orientationQuat(:,4), 'r-','LineWidth',2)
+% xlim([2 7])
+% ylim([-1.5 1.5])
+title("Z Orientation")
+legend("Ground Truth", "State Estimate")
+grid on
+
+xlabel(t, "Time (s)")
+
+figure(4)
+t = tiledlayout(3,1);
+nexttile
+% subplot(3,1,1);
+hold on
+plot(stateGroundTruth.time, stateGroundTruth.orientationRPY(:,1), 'b-','LineWidth',2)
+plot(stateEstimate.time, stateEstimate.orientationRPY(:,1), 'r-', 'LineWidth',2)
+% xlim([2 7])
+% ylim([-3 3])
+title("Roll")
+legend("Ground Truth", "State Estimate")
+grid on
+nexttile
+% subplot(3,1,2);
+hold on
+plot(stateGroundTruth.time, stateGroundTruth.orientationRPY(:,2), 'b', 'LineWidth',2 )
+plot(stateEstimate.time, stateEstimate.orientationRPY(:,2), 'r-' , 'LineWidth',2)
+% xlim([2 7])
+% ylim([-1.5 1.5])
+title("Pitch")
+legend("Ground Truth", "State Estimate")
+grid on
+nexttile
+% subplot(3,1,3);
+hold on
+plot(stateGroundTruth.time, stateGroundTruth.orientationRPY(:,3), 'b-','LineWidth',2)
+plot(stateEstimate.time, stateEstimate.orientationRPY(:,3), 'r-','LineWidth',2)
+% xlim([2 7])
+% ylim([-1.5 1.5])
+title("Yaw")
+legend("Ground Truth", "State Estimate")
+grid on
+
+xlabel(t, "Time (s)")
+
+figure(5)
+t = tiledlayout(3,1);
+nexttile
+% subplot(3,1,1);
+hold on
+plot(stateGroundTruth.time, stateGroundTruth.angularVelocity(:,1), 'b-','LineWidth',2)
+plot(stateEstimate.time, stateEstimate.angularVelocity(:,1), 'r-', 'LineWidth',2)
+% xlim([2 7])
+% ylim([-3 3])
+title("Angular Vel X")
+legend("Ground Truth", "State Estimate")
+grid on
+nexttile
+% subplot(3,1,2);
+hold on
+plot(stateGroundTruth.time, stateGroundTruth.angularVelocity(:,2), 'b', 'LineWidth',2 )
+plot(stateEstimate.time, stateEstimate.angularVelocity(:,2), 'r-' , 'LineWidth',2)
+% xlim([2 7])
+% ylim([-1.5 1.5])
+title("Angular Vel Y")
+legend("Ground Truth", "State Estimate")
+grid on
+nexttile
+% subplot(3,1,3);
+hold on
+plot(stateGroundTruth.time, stateGroundTruth.angularVelocity(:,3), 'b-','LineWidth',2)
+plot(stateEstimate.time, stateEstimate.angularVelocity(:,3), 'r-','LineWidth',2)
+% xlim([2 7])
+% ylim([-1.5 1.5])
+title("Angular Vel Z")
+legend("Ground Truth", "State Estimate")
+grid on
+
+xlabel(t, "Time (s)")
+
+
+
 %% Plot the data
 
 % Plot the state

@@ -240,11 +240,13 @@ quad_msgs::RobotState EKFEstimator::StepOnce() {
 
   // last_X = X;
   Eigen::Matrix3d rot;
+  Eigen::Quaterniond qt;
   if(is_hardware_){
     // Rotate the IMU to account for swap
-    // Eigen::Quaterniond q1(0, 1, 0, 0);
-    // Eigen::Quaterniond qt = q1 * qk;
-    rot = (qk.toRotationMatrix().transpose());
+    Eigen::Quaterniond q1;
+    q1 = Eigen::AngleAxisd(M_PI - 0.18, Eigen::Vector3d::UnitZ());
+    Eigen::Quaterniond qt = q1 * qk;
+    rot = (qt.toRotationMatrix().transpose());
   }
   else{
     rot = (qk.toRotationMatrix().transpose());
@@ -258,10 +260,18 @@ quad_msgs::RobotState EKFEstimator::StepOnce() {
 
   // body
   // Grab this Directly from the IMU
-  new_state_est.body.pose.orientation.w = qk.w();
-  new_state_est.body.pose.orientation.x = qk.x();
-  new_state_est.body.pose.orientation.y = qk.y();
-  new_state_est.body.pose.orientation.z = qk.z();
+  if (is_hardware_){
+    new_state_est.body.pose.orientation.w = qt.w();
+    new_state_est.body.pose.orientation.x = qt.x();
+    new_state_est.body.pose.orientation.y = qt.y();
+    new_state_est.body.pose.orientation.z = qt.z();
+  }
+  else{
+    new_state_est.body.pose.orientation.w = qk.w();
+    new_state_est.body.pose.orientation.x = qk.x();
+    new_state_est.body.pose.orientation.y = qk.y();
+    new_state_est.body.pose.orientation.z = qk.z();
+  }
 
   new_state_est.body.pose.position.x = X[0];
   new_state_est.body.pose.position.y = X[1];
@@ -299,9 +309,10 @@ void EKFEstimator::predict(const double& dt, const Eigen::VectorXd& fk,
   // Eigen::Matrix3d C1 = (qk.toRotationMatrix()).transpose();
   if(is_hardware_){
     // Rotate the IMU to account for swap
-    // Eigen::Quaterniond q1(0, 1, 0, 0);
-    // Eigen::Quaterniond qt = q1 * qk;
-    C1 = (qk.toRotationMatrix().transpose());
+    Eigen::Quaterniond q1;
+    q1 = Eigen::AngleAxisd(M_PI - 0.18, Eigen::Vector3d::UnitZ());
+    Eigen::Quaterniond qt = q1 * qk;
+    C1 = (qt.toRotationMatrix().transpose());
   }
   else{
     C1 = (qk.toRotationMatrix().transpose());
