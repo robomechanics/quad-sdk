@@ -9,7 +9,7 @@
 
   <!-- Spawn SDF model -->
   <node name="spawn_sdf_model" pkg="gazebo_ros" type="spawn_model" args="-sdf -param robot_description_sdf -model $(arg namespace) $(arg init_pose)" output="screen"/>
-  
+
   <!-- Start Quad-SDK robot driver -->
   <include file="$(find quad_utils)/launch/robot_driver.launch">
     <arg name="robot_type" value="$(arg robot_type)"/>
@@ -32,7 +32,6 @@
   <!-- Load the contact state publisher -->
   <node name="contact_state_publisher" pkg="gazebo_scripts" type="contact_state_publisher_node" output="screen"/>
   
-  <!-- Load the imu published in sim-->
-  <!-- <node name="imu_plugin" pkg="gazebo_scripts" type="imu_plugin" output="screen"/>
-   -->
+  <!-- Echo Sim IMU to the Robot -->
+  <node pkg="topic_tools" type="relay" name="imu_relay" args="/state/imu /$(arg namespace)/state/imu" />
 </launch>

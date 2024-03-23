@@ -461,7 +461,6 @@ bool RobotDriver::updateState() {
               last_robot_state_msg_.joints.velocity;
           // estimated_state_.joints = last_robot_state_msg_.joints;
           state_estimator_->updateOnce(estimated_state_);
-          // state_estimate_ = estimated_state_;
         }
       }
     }

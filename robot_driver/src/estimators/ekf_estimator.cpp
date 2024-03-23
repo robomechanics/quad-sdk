@@ -29,6 +29,8 @@ void EKFEstimator::init(ros::NodeHandle& nh) {
                            joint_state_msg_time_diff_max_);
   quad_utils::loadROSParamDefault(nh_, "robot_driver/is_hardware", is_hardware_,
                                   true);
+  quad_utils::loadROSParamDefault(nh_, "robot_type", robot_name_,
+                                  std::string("spirit"));
 
   // Load initial IMU bias from robot_driver yaml
   quad_utils::loadROSParam(nh_, "/robot_driver/bias_x", bias_x_);
@@ -140,6 +142,14 @@ bool EKFEstimator::updateOnce(quad_msgs::RobotState& last_robot_state_msg_) {
 void EKFEstimator::setInitialState(
     quad_msgs::RobotState& last_robot_state_msg_) {
   // body
+  Eigen::VectorXd fk = Eigen::VectorXd::Zero(3);
+  // IMU reading angular acceleration
+  Eigen::VectorXd wk = Eigen::VectorXd::Zero(3);
+  // IMU orientation (w, x, y, z)
+  Eigen::Quaterniond qk(1, 0, 0, 0);
+  // if there is good imu data: read data from bag file
+  this->readIMU(last_imu_msg_, fk, wk, qk);
+
   // Grab this Directly from the IMU
   last_robot_state_msg_.body.pose.orientation.w = 1.0;
   last_robot_state_msg_.body.pose.orientation.x = 0.0;
@@ -224,9 +234,40 @@ quad_msgs::RobotState EKFEstimator::StepOnce() {
   Eigen::VectorXd vk = Eigen::VectorXd::Zero(12);
   this->readJointEncoder(last_joint_state_msg_, jk, vk);
   std::vector<double> jkVector(jk.data(), jk.data() + jk.rows() * jk.cols());
+
+  // Extract Rotation Matricies
+  Eigen::Matrix3d R_w_imu; // Rotation World frame to IMU frame
+  Eigen::Matrix3d R_imu_w; // Rotation IMU frame to World frame
+
+  Eigen::Matrix3d R_b_imu; // Static Rotation from IMU frame to Robot Body Frame
+  Eigen::Matrix3d R_imu_b; // Static Rotation from Robot Body Frame to IMU Frame
+  Eigen::Matrix3d R_w_b; // Rotation World frame to Robot Body frame
+  Eigen::Quaterniond qb; // Body Orientation in the World Frame
+
+  if (robot_name_ == "spirit" && is_hardware_){
+    // IMU on Spirit is flipped pi/2 along the Z axis clockwise
+    // See Ghost Documentation
+    R_b_imu << 0, -1, 0, 
+              -1, 0, 0,
+               0, 0, 1;
+    R_imu_b = R_b_imu.transpose();
+  }
+  else{ 
+    // In Simulation or if not using Spirit assume IMU is oriented correctly
+    R_b_imu = Eigen::Matrix3d::Identity(3, 3);
+    R_imu_b = Eigen::Matrix3d::Identity(3, 3);
+    qb = qk;
+    qb.normalize();
+  }
+
+  R_w_imu = qk.toRotationMatrix();
+  R_imu_w = R_w_imu.inverse();
+  R_w_b = R_w_imu * R_imu_b;
+
+
   /// Prediction Step
   // std::cout << "this is X before" << X.transpose() << std::endl;
-  this->predict(dt, fk, wk, qk);
+  this->predict(dt, fk, wk, R_w_imu);
   // std::cout << "this is X predict" << X_pre.transpose() << std::endl;
 
   // for testing prediction step
@@ -235,41 +276,21 @@ quad_msgs::RobotState EKFEstimator::StepOnce() {
   // last_X = X;
 
   /// Update Step
-  this->update(jk, fk, vk, wk);  // Uncomment for Update Step
+  this->update(jk, fk, vk, wk, R_w_imu);  // Uncomment for Update Step
   // std::cout << "this is X update" << X.transpose() << std::endl;
 
   // last_X = X;
-  Eigen::Matrix3d rot;
-  Eigen::Quaterniond qt;
-  if (is_hardware_) {
-    // Rotate the IMU to account for swap
-    Eigen::Quaterniond q1;
-    q1 = Eigen::AngleAxisd(M_PI - 0.18, Eigen::Vector3d::UnitZ());
-    Eigen::Quaterniond qt = q1 * qk;
-    rot = (qt.toRotationMatrix().transpose());
-  } else {
-    rot = (qk.toRotationMatrix().transpose());
-  }
-
-  Eigen::Vector3d linear_vel(X[3], X[4], X[5]);
-  Eigen::Vector3d ang_vel = rot.inverse() * linear_vel;
 
   /// publish new message
   // new_state_est.header.stamp = ros::Time::now();
 
   // body
   // Grab this Directly from the IMU
-  if (is_hardware_) {
-    new_state_est.body.pose.orientation.w = qt.w();
-    new_state_est.body.pose.orientation.x = qt.x();
-    new_state_est.body.pose.orientation.y = qt.y();
-    new_state_est.body.pose.orientation.z = qt.z();
-  } else {
-    new_state_est.body.pose.orientation.w = qk.w();
-    new_state_est.body.pose.orientation.x = qk.x();
-    new_state_est.body.pose.orientation.y = qk.y();
-    new_state_est.body.pose.orientation.z = qk.z();
-  }
+  new_state_est.body.pose.orientation.w = qb.w();
+  new_state_est.body.pose.orientation.x = qb.x();
+  new_state_est.body.pose.orientation.y = qb.y();
+  new_state_est.body.pose.orientation.z = qb.z();
+
 
   new_state_est.body.pose.position.x = X[0];
   new_state_est.body.pose.position.y = X[1];
@@ -279,9 +300,9 @@ quad_msgs::RobotState EKFEstimator::StepOnce() {
   new_state_est.body.twist.linear.y = X[4];
   new_state_est.body.twist.linear.z = X[5];
 
-  new_state_est.body.twist.angular.x = ang_vel[0];
-  new_state_est.body.twist.angular.y = ang_vel[1];
-  new_state_est.body.twist.angular.z = ang_vel[2];
+  new_state_est.body.twist.angular.x = wk[0];
+  new_state_est.body.twist.angular.y = wk[1];
+  new_state_est.body.twist.angular.z = wk[2];
 
   // joint
   // new_state_est.joints.header.stamp = ros::Time::now();
@@ -300,20 +321,8 @@ quad_msgs::RobotState EKFEstimator::StepOnce() {
 
 void EKFEstimator::predict(const double& dt, const Eigen::VectorXd& fk,
                            const Eigen::VectorXd& wk,
-                           const Eigen::Quaterniond& qk) {
-  // Generate Conversion Matrix to Rotate the Body Frame IMU into World Frame
-  // Double Check if this needs a transpose or not
-  // Eigen::Matrix3d C1 = (qk.toRotationMatrix()).transpose();
-  if (is_hardware_) {
-    // Rotate the IMU to account for swap
-    Eigen::Quaterniond q1;
-    q1 = Eigen::AngleAxisd(M_PI - 0.18, Eigen::Vector3d::UnitZ());
-    Eigen::Quaterniond qt = q1 * qk;
-    C1 = (qt.toRotationMatrix().transpose());
-  } else {
-    C1 = (qk.toRotationMatrix().transpose());
-  }
-  // Maybe use the built in Quad-KD for cleanliness
+                           const Eigen::Matrix3d R_w_imu) {
+
 
   // q = Eigen::VectorXd::Zero(4);
   // q << qk.w(), qk.x(), qk.y(), qk.z();
@@ -372,7 +381,7 @@ void EKFEstimator::predict(const double& dt, const Eigen::VectorXd& fk,
   // Generate Control Input U
   // May Need to add a Rotation Matrix to Compensate for Frames Here
   g = Eigen::Vector3d(0, 0, -9.81);
-  u = C1 * fk + g;
+  u = R_w_imu * fk + g;
 
   // Solve for Process Prediction State and Covariance
   X_pre = (F * last_X) + B * u;         // (18 x 1)
@@ -381,7 +390,9 @@ void EKFEstimator::predict(const double& dt, const Eigen::VectorXd& fk,
 
 void EKFEstimator::update(const Eigen::VectorXd& jk, const Eigen::VectorXd& fk,
                           const Eigen::VectorXd& vk,
-                          const Eigen::VectorXd& wk) {
+                          const Eigen::VectorXd& wk,
+                          const Eigen::Matrix3d R_w_imu) {
+
   // debug for update step, set the predicted state to be ground truth:
   // Preallocate Space and Generate C
   Eigen::MatrixXd C(num_measure, num_state);
@@ -397,16 +408,16 @@ void EKFEstimator::update(const Eigen::VectorXd& jk, const Eigen::VectorXd& fk,
   R = Eigen::MatrixXd::Identity(num_measure, num_measure);
   for (int i = 0; i < num_feet; ++i) {
     if ((*last_grf_msg_).contact_states[i]) {
-      R.block<3, 3>(3 * i, 3 * i) = na_ * Eigen::MatrixXd::Identity(3, 3);
+      R.block<3, 3>(3 * i, 3 * i) = nfk_ * Eigen::MatrixXd::Identity(3, 3);
       R.block<3, 3>(12 + 3 * i, 12 + 3 * i) =
           na_ * Eigen::MatrixXd::Identity(3, 3);
-      R(24 + i, 24 + i) = nf_;
+      R(24 + i, 24 + i) = nfk_;
     } else {
       R.block<3, 3>(3 * i, 3 * i) =
-          na_ * (1.0 + contact_w_) * Eigen::MatrixXd::Identity(3, 3);
+          nfk_ * (1.0 + contact_w_) * Eigen::MatrixXd::Identity(3, 3);
       R.block<3, 3>(12 + 3 * i, 12 + 3 * i) =
           na_ * (1.0 + contact_w_) * Eigen::MatrixXd::Identity(3, 3);
-      R(24 + i, 24 + i) = nf_ * (1.0 + contact_w_);
+      R(24 + i, 24 + i) = nfk_ * (1.0 + contact_w_);
     }
   }
 
@@ -447,7 +458,9 @@ void EKFEstimator::update(const Eigen::VectorXd& jk, const Eigen::VectorXd& fk,
     toe_body_pos.setZero();
     joint_state_i = jk.segment(3 * i, 3);
     quadKD_->bodyToFootFKBodyFrame(i, joint_state_i, toe_body_pos);
-    y.segment(3 * i, 3) = C1 * (toe_body_pos);
+
+
+    y.segment(3 * i, 3) = R_w_imu * (toe_body_pos);     // Double Check this is working by subtacting world frame positions to find toe body relative
 
     // Solve for Foot Heights
     y(24 + i) = (1.0 - (*last_grf_msg_).contact_states[i]) *
@@ -458,19 +471,27 @@ void EKFEstimator::update(const Eigen::VectorXd& jk, const Eigen::VectorXd& fk,
     Eigen::VectorXd leg_v(3);
     Eigen::MatrixXd acc;
 
-    acc = calcSkewsym(wk);
+    acc = calcSkewsym(wk); // Might have to rotate this value by Spirit's offset 
     leg_v = -(lin_foot_vel.segment(3 * i, 3)) - (acc * toe_body_pos);
     y.segment(12 + 3 * i, 3) =
-        (*last_grf_msg_).contact_states[i] * C1 * leg_v +
+        (*last_grf_msg_).contact_states[i] * R_w_imu * leg_v +
         last_X.segment(3, 3) * (1.0 - (*last_grf_msg_).contact_states[i]);
   }
 
+  // Check that Foot Velocities Match the Expected
+  Eigen::VectorXd foot_pos_rel_world(12);
+  Eigen::VectorXd body_world_pose = last_X.segment(0,3); // Body Pose in the World Frame
+  for(int i = 0; i < num_feet; ++i){
+    foot_pos_rel_world.segment(3*i, 3) = last_X.segment(3*i + 6 , 3) - body_world_pose; // Body Pose - Foot Pose is 
+  }
+  std::cout << "Filter Output" << y.segment(0,12).transpose() << std::endl;
+  std::cout << "Sanity Check" << foot_pos_rel_world.transpose() << std::endl;
+
   // Solve for Error between Measured Y Residual and Process Residual
   error_y = y - (C * X_pre);
-  // ROS_INFO_STREAM("Innovation Norm" << error_y.norm());
-  // ROS_INFO("Worked");
   // Skip Update if the Innovation is too High
   if (error_y.norm() < thresh_out) {
+  // if(1){
     S = C * P_pre * C.transpose() + R;
     // ROS_INFO_STREAM("This is S" << S);
     S = 0.5 *

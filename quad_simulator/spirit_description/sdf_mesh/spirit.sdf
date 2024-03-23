@@ -72,7 +72,7 @@ SOFTWARE.
           </script>
         </material>
       </visual>
-      <sensor name='imu_sensor' type='imu'>
+      <!-- <sensor name='imu_sensor' type='imu'>
         <always_on>1</always_on>
         <update_rate>500</update_rate>
         <visualize>1</visualize>
@@ -81,13 +81,13 @@ SOFTWARE.
           <topicName>/robot_1/state/imu</topicName>
           <bodyName>imu_link</bodyName>
           <updateRateHZ>500.0</updateRateHZ>
-          <gaussianNoise>0.02</gaussianNoise>
+          <gaussianNoise>0.0</gaussianNoise>
           <xyzOffset>0 0 0</xyzOffset>
           <rpyOffset>0 0 0</rpyOffset>
           <frameName>imu_link</frameName>
         </plugin>
-        <pose frame='body'>0 0 0 0 -0 0</pose>
-      </sensor>
+        <pose frame=''>0 0 0 0 -0 0</pose>
+      </sensor> -->
       <gravity>1</gravity>
       <velocity_decay />
     </link>

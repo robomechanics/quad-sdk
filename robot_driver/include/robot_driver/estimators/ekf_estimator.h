@@ -116,7 +116,7 @@ class EKFEstimator : public StateEstimator {
    * @return state estimate of custom type RobotState
    */
 
-//   void localPlanCallback(const quad_msgs::RobotPlan::ConstPtr& msg);
+  //   void localPlanCallback(const quad_msgs::RobotPlan::ConstPtr& msg);
   quad_msgs::RobotState StepOnce();
 
   /**
@@ -127,7 +127,7 @@ class EKFEstimator : public StateEstimator {
    * @param[in] qk Eigen::Quaterniond orientation in quaternion (4 * 1)
    */
   void predict(const double& dt, const Eigen::VectorXd& fk,
-               const Eigen::VectorXd& wk, const Eigen::Quaterniond& qk);
+               const Eigen::VectorXd& wk, const Eigen::Matrix3d R_w_imu);
 
   /**
    * @brief EKF update step
@@ -136,12 +136,16 @@ class EKFEstimator : public StateEstimator {
    * @param[in] wk Eigen::VectorXd imu angular acceleration data (3 * 1)
    */
   void update(const Eigen::VectorXd& jk, const Eigen::VectorXd& fk,
-              const Eigen::VectorXd& vk, const Eigen::VectorXd& wk);
+              const Eigen::VectorXd& vk, const Eigen::VectorXd& wk,
+              const Eigen::Matrix3d R_w_imu);
 
   /**
    * @brief Function to set initial robot state for ekf state estimator
    */
   void setInitialState(quad_msgs::RobotState& last_robot_state_msg_);
+
+  // void updateAngVel(const double& dt, Eigen::Quaterniond& q, 
+  //                   Eigen::Vector3d& last_rpy, const Eigen::VectorXd& wk, Eigen::Vector3d& ang_vel);
 
   Eigen::VectorXd quaternionDynamics(const Eigen::VectorXd& w,
                                      const Eigen::VectorXd& q);
@@ -212,7 +216,7 @@ class EKFEstimator : public StateEstimator {
   quad_msgs::RobotState last_state_est_;
 
   /// Most recent local plan
-//   quad_msgs::RobotPlan::ConstPtr last_local_plan_msg_;
+  //   quad_msgs::RobotPlan::ConstPtr last_local_plan_msg_;
 
   /// Last grf control message
   quad_msgs::GRFArray::ConstPtr last_grf_msg_;
@@ -293,6 +297,8 @@ class EKFEstimator : public StateEstimator {
 
   Eigen::VectorXd q;
 
+  Eigen::Vector3d last_rpy;
+
   // previous time variable
   ros::Time last_time;
 
@@ -356,6 +362,8 @@ class EKFEstimator : public StateEstimator {
   // initialized the estimator
   bool initialized = true;
   bool planning = false;
+
+  std::string robot_name_;
 
   // Record whether we have good imu and joint state data
   bool good_imu = false;

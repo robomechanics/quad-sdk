@@ -51,43 +51,45 @@ t_start = stateEstimate.time(index);
 est_time = stateEstimate.time(index:end);
 gt_time = stateGroundTruth.time(ind:end);
 
-gt_x = stateGroundTruth.position(index:end,1)
-gt_y = stateGroundTruth.position(index:end,2)
-gt_z = stateGroundTruth.position(index:end,3)
-gt_vel_x = stateGroundTruth.velocity(index:end,1)
-gt_vel_y = stateGroundTruth.velocity(index:end,2)
-gt_vel_z = stateGroundTruth.velocity(index:end,3)
+% gt_x = stateGroundTruth.position(index:end,1)
+% gt_y = stateGroundTruth.position(index:end,2)
+% gt_z = stateGroundTruth.position(index:end,3)
+gt_vel_x = stateGroundTruth.velocity(ind:end,1);
+gt_vel_y = stateGroundTruth.velocity(ind:end,2);
+gt_vel_z = stateGroundTruth.velocity(ind:end,3);
 
-est_x = stateEstimate.position(index:end,1)
-est_y = stateEstimate.position(index:end,2)
-est_z = stateEstimate.position(index:end,3)
-est_vel_x = stateEstimate.velocity(index:end,1)
-est_vel_y = stateEstimate.velocity(index:end,2)
-est_vel_z = stateEstimate.velocity(index:end,3)
+% est_x = stateEstimate.position(index:end,1)
+% est_y = stateEstimate.position(index:end,2)
+% est_z = stateEstimate.position(index:end,3)
+est_vel_x = stateEstimate.velocity(index:end,1);
+est_vel_y = stateEstimate.velocity(index:end,2);
+est_vel_z = stateEstimate.velocity(index:end,3);
 
+est_vel_x(0:10)
+gt_vel_x(0:10)
 % Interpolate the Shorter Vector
-interp_est_time = interp1(groundTruth.time, groundTruth.position, stateEstimate.time);
-interp_est_time = interp1(groundTruth.time, groundTruth.position, stateEstimate.time);
-interp_est_time = interp1(groundTruth.time, groundTruth.position, stateEstimate.time);
-interp_est_time = interp1(groundTruth.time, groundTruth.position, stateEstimate.time);
-interp_est_time = interp1(groundTruth.time, groundTruth.position, stateEstimate.time);
-interp_est_time = interp1(groundTruth.time, groundTruth.position, stateEstimate.time);
-interp_est_time = interp1(groundTruth.time, groundTruth.position, stateEstimate.time);
+% interp_est_time = interp1(groundTruth.time, groundTruth.position, stateEstimate.time);
+% % interp_est_time = interp1(groundTruth.time, groundTruth.position, stateEstimate.time);
+% % interp_est_time = interp1(groundTruth.time, groundTruth.position, stateEstimate.time);
+% % interp_est_time = interp1(groundTruth.time, groundTruth.position, stateEstimate.time);
+% interp_est_vel_x = interp1(stategroundTruth.time, groundTruth.position, stateEstimate.time);
+% interp_est_vel_y = interp1(stategroundTruth.time, groundTruth.position, stateEstimate.time);
+% interp_est_vel_z = interp1(stategroundTruth.time, groundTruth.position, stateEstimate.time);
+% 
+% 
+% % Compute the RMSE
+% % rmse_x = sqrt(mean((gt_x - interp_est_pose_x));
+% % rmse_y = sqrt(mean((gt_y - interp_est_pos_y).^2));
+% % rmse_z = sqrt(mean((gt_z - interp_est_pos_x).^2));
+rmse_vel_x = sqrt(mean((gt_vel_x - est_vel_x).^2));
+rmse_vel_y = sqrt(mean((gt_vel_y - est_vel_y).^2));
+rmse_vel_z = sqrt(mean((gt_vel_z - est_vel_z).^2));
 
 
-% Compute the RMSE
-rmse_x = sqrt(mean((gt_x - interp_est_pose_x));
-rmse_y = sqrt(mean((gt_y - interp_est_pos_y).^2));
-rmse_z = sqrt(mean((gt_z - interp_est_pos_x).^2));
-rmse_vel_x = sqrt(mean((gt_vel_x - interp_est_vel_x).^2));
-rmse_vel_y = sqrt(mean((gt_vel_y - interp_est_vel_y).^2));
-rmse_vel_z = sqrt(mean((gt_vel_z - interp_est_vel_z).^2));
+disp(rmse_vel_x)
+disp(rmse_vel_y)
+disp(rmse_vel_z)
 
-
-
-
-length(est_time)
-length(gt_time)
 
 % n = length(stateEstimate.time)
 % m = length(stateGroundTruth.time)

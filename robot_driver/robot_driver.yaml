@@ -33,9 +33,9 @@ robot_driver:
   ng: 0.01 # noise in gyro 0.01
   ba: 0.01 # bias in accelerometer 0.01
   bg: 0.001 # bias in gyro 0.001
-  nf: 0.1  # noise in the feet
+  nf: 0.01  # noise in the feet
   nfk: 0.001 # noise in forward kinematics 0.001
   ne: 0.001 # noise in encoder 0.001
   P0: 3
   contact_w: 1000 # Contact weight 1000
-  thresh_out: 1000  #Norm Measurement Rejection Threshold, (Check for Outliers)
+  thresh_out: 250  #Norm Measurement Rejection Threshold, (Check for Outliers)
