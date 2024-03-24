@@ -64,9 +64,14 @@ void EKFEstimator::init(ros::NodeHandle& nh) {
     imu_sub_ = nh_.subscribe(imu_topic, 1, &EKFEstimator::imuCallback, this);
     joint_encoder_sub_ = nh_.subscribe(
         joint_encoder_topic, 1, &EKFEstimator::jointEncoderCallback, this);
-    state_ground_truth_sub_ = nh_.subscribe(
+  }
+
+  // Debugging the Estimator in Sim, Start a Ground Truth Subscriber
+  if (debug){
+        state_ground_truth_sub_ = nh_.subscribe(
         ground_truth_topic, 1, &EKFEstimator::groundtruthCallback, this);
   }
+  
 
   // QuadKD class
   quadKD_ = std::make_shared<quad_utils::QuadKD>();
@@ -173,7 +178,7 @@ void EKFEstimator::setInitialState(
 
 void EKFEstimator::groundtruthCallback(
     const quad_msgs::RobotState::ConstPtr& msg) {
-  last_robot_state_msg_ = *msg;
+  last_robot_ground_truth_ = *msg;
 }
 
 void EKFEstimator::jointEncoderCallback(
@@ -480,12 +485,16 @@ void EKFEstimator::update(const Eigen::VectorXd& jk, const Eigen::VectorXd& fk,
 
   // Check that Foot Velocities Match the Expected
   Eigen::VectorXd foot_pos_rel_world(12);
-  Eigen::VectorXd body_world_pose = last_X.segment(0,3); // Body Pose in the World Frame
+  Eigen::VectorXd body_world_pose(3) << last_robot_ground_truth_.body.pose.position.x,
+          last_robot_ground_truth_.body.pose.position.y,
+          last_robot_ground_truth_.body.pose.position.z;
+  // Eigen::VectorXd body_world_pose = last_X.segment(0,3); // Body Pose in the World Frame
   for(int i = 0; i < num_feet; ++i){
     foot_pos_rel_world.segment(3*i, 3) = last_X.segment(3*i + 6 , 3) - body_world_pose; // Body Pose - Foot Pose is 
   }
+
   std::cout << "Filter Output" << y.segment(0,12).transpose() << std::endl;
-  std::cout << "Sanity Check" << foot_pos_rel_world.transpose() << std::endl;
+  // std::cout << "Sanity Check" << foot_pos_rel_world.transpose() << std::endl;
 
   // Solve for Error between Measured Y Residual and Process Residual
   error_y = y - (C * X_pre);

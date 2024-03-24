@@ -213,8 +213,7 @@ class EKFEstimator : public StateEstimator {
   double update_rate_;
 
   /// Last state estimate
-  quad_msgs::RobotState last_state_est_;
-
+  quad_msgs::RobotState last_robot_ground_truth_;
   /// Most recent local plan
   //   quad_msgs::RobotPlan::ConstPtr last_local_plan_msg_;
 
@@ -362,6 +361,7 @@ class EKFEstimator : public StateEstimator {
   // initialized the estimator
   bool initialized = true;
   bool planning = false;
+  bool debug = true;
 
   std::string robot_name_;
 
