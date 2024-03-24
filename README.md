@@ -18,6 +18,11 @@ Maintainer: Ardalan Tajbakhsh, atajbakh@andrew.cmu.edu**
 The packages in Quad-SDK have been tested under [ROS] Melodic on Ubuntu 18.04.
 This is research code, expect that it changes often and any fitness for a particular purpose is disclaimed.
 
+### Updates
+
+* **10-01-2023** -- Quad-SDK Update: Estimation, Underbrush, and Other Improvements<br />
+Quad-SDK now incorporates an Extended Kalman Filter (EKF) for reliable onboard state estimation. Additionally, a specialized controller designed for walking through entanglements has been added, allowing the robot to disentangle itself from vine-like obstructions. Both serve to enable more reliable outdoor locomotion. Refer to the [abstract](http://www.andrew.cmu.edu/user/amj1/papers/QuadSDK_IROS23_Update.pdf) for more details.
+
 ### Publications
 
 If you use this work in an academic context, please cite the following publications as relevant:
