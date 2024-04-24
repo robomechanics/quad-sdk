@@ -620,6 +620,7 @@ void LocalPlanner::spin() {
         // Get the reference plan and robot state into the desired data
         // structures
         getReference();
+        ROS_INFO_STREAM(update_rate_);
 
         // Compute the local plan and publish if it solved successfully,
         // otherwise just sleep

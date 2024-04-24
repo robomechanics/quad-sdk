@@ -137,7 +137,8 @@ class EKFEstimator : public StateEstimator {
    */
   void update(const Eigen::VectorXd& jk, const Eigen::VectorXd& fk,
               const Eigen::VectorXd& vk, const Eigen::VectorXd& wk,
-              const Eigen::Matrix3d R_w_imu);
+              const Eigen::Quaterniond& qk,
+              const Eigen::Matrix3d& R_w_imu);
 
   /**
    * @brief Function to set initial robot state for ekf state estimator

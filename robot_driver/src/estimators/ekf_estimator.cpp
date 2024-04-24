@@ -135,7 +135,12 @@ bool EKFEstimator::updateOnce(quad_msgs::RobotState& last_robot_state_msg_) {
     last_robot_state_msg_.joints = last_joint_state_msg_;
 
     // Update Foot Positions using Forward Kinematics
-    quad_utils::fkRobotState(*quadKD_, last_robot_state_msg_);
+    quad_utils::fkRobotState(*quadKD_, last_robot_state_msg_);  // for(int i = 0; i < num_feet; ++i){
+  //   foot_pos_rel_world.segment(3*i, 3) = last_X.segment(3*i + 6 , 3) - body_world_pose; // Body Pose - Foot Pose is 
+  // }
+
+  // std::cout << "Filter Output" << y.segment(0,12).transpose() << std::endl;
+  // std::cout << "Sanity Check" << foot_pos_rel_world.transpose() << std::endl;
     // Consider using Filter output to see if thats more reliable
   }
   last_joint_state_msg_.header.stamp = state_timestamp;
@@ -281,7 +286,7 @@ quad_msgs::RobotState EKFEstimator::StepOnce() {
   // last_X = X;
 
   /// Update Step
-  this->update(jk, fk, vk, wk, R_w_imu);  // Uncomment for Update Step
+  this->update(jk, fk, vk, wk, qk, R_w_imu);  // Uncomment for Update Step
   // std::cout << "this is X update" << X.transpose() << std::endl;
 
   // last_X = X;
@@ -396,7 +401,8 @@ void EKFEstimator::predict(const double& dt, const Eigen::VectorXd& fk,
 void EKFEstimator::update(const Eigen::VectorXd& jk, const Eigen::VectorXd& fk,
                           const Eigen::VectorXd& vk,
                           const Eigen::VectorXd& wk,
-                          const Eigen::Matrix3d R_w_imu) {
+                          const Eigen::Quaterniond& qk,
+                          const Eigen::Matrix3d& R_w_imu) {
 
   // debug for update step, set the predicted state to be ground truth:
   // Preallocate Space and Generate C
@@ -438,14 +444,20 @@ void EKFEstimator::update(const Eigen::VectorXd& jk, const Eigen::VectorXd& fk,
   Eigen::VectorXd joint_state(num_state);
   Eigen::VectorXd joint_velocity(num_state);
   Eigen::VectorXd joint_velocities(num_state);
-  Eigen::VectorXd rbs(6);
+  // Eigen::VectorXd rbs(6);
   Eigen::MatrixXd jacobian = Eigen::MatrixXd::Zero(12, 18);
-  joint_state << jk, r_pre, v_pre;
-  // joint_velocity << vk, v_pre, C1*fk;
-  rbs << r_pre, v_pre;
+  
+  Eigen::Vector3d rpy = qk.toRotationMatrix().eulerAngles(0, 1, 2);
+
+  joint_state << jk, r_pre, rpy; // Change v_pre in rpy from before
+  joint_velocity << vk; // , v_pre, wk;
+  // rbs << r_pre, v_pre;
 
   // Solve for Linear Foot Velocities in the Body Frame
   quadKD_->getJacobianBodyAngVel(joint_state, jacobian);
+  // Check the Shape of the Jacobain to Determine Input Vector
+  // ROS_INFO_STREAM("Rows: " << jacobian.rows()); // 12
+  // ROS_INFO_STREAM("Cols: " << jacobian.cols()); // 18
   Eigen::VectorXd lin_foot_vel;
 
   // Method for Joint Velocity
@@ -453,8 +465,9 @@ void EKFEstimator::update(const Eigen::VectorXd& jk, const Eigen::VectorXd& fk,
   //     math_utils::sdlsInv(jacobian.leftCols(12)) *
   //     (vk - jacobian.rightCols(6) * rbs.tail(6));
 
-  lin_foot_vel = jacobian.leftCols(12) * vk;
-  // lin_foot_vel = jacobian*joint_velocity;
+  // lin_foot_vel = jacobian.leftCols(12) * vk;
+  lin_foot_vel = jacobian.block(0,0,12,12)*joint_velocity; 
+  // Exclude Pose and Orientation Compoenents
 
   for (int i = 0; i < num_feet; ++i) {
     // Solve for Foot Relative Positions
@@ -483,23 +496,29 @@ void EKFEstimator::update(const Eigen::VectorXd& jk, const Eigen::VectorXd& fk,
         last_X.segment(3, 3) * (1.0 - (*last_grf_msg_).contact_states[i]);
   }
 
-  // Check that Foot Velocities Match the Expected
-  Eigen::VectorXd foot_pos_rel_world(12);
-  Eigen::VectorXd body_world_pose(3) << last_robot_ground_truth_.body.pose.position.x,
-          last_robot_ground_truth_.body.pose.position.y,
-          last_robot_ground_truth_.body.pose.position.z;
-  // Eigen::VectorXd body_world_pose = last_X.segment(0,3); // Body Pose in the World Frame
-  for(int i = 0; i < num_feet; ++i){
-    foot_pos_rel_world.segment(3*i, 3) = last_X.segment(3*i + 6 , 3) - body_world_pose; // Body Pose - Foot Pose is 
-  }
+  // Check that Foot Velocities Match the Expected, Reference the Ground Truth Subscriber Here
+  
+  // Eigen::VectorXd foot_pos_rel_world(12);
+  // Eigen::VectorXd body_world_pose(3);
+  // Eigen::VectorXd feet_world_pose(12);
+  // body_world_pose << last_robot_ground_truth_.body.pose.position.x,
+  //         last_robot_ground_truth_.body.pose.position.y,
+  //         last_robot_ground_truth_.body.pose.position.z;
+  // feet_world_pose << last_robot_ground_truth_.feet.feet[0].position.x,last_robot_ground_truth_.feet.feet[0].position.y,last_robot_ground_truth_.feet.feet[0].position.z,
+  //                                       last_robot_ground_truth_.feet.feet[1].position.x,last_robot_ground_truth_.feet.feet[1].position.y,last_robot_ground_truth_.feet.feet[1].position.z,
+  //                                       last_robot_ground_truth_.feet.feet[2].position.x,last_robot_ground_truth_.feet.feet[2].position.y,last_robot_ground_truth_.feet.feet[2].position.z,
+  //                                       last_robot_ground_truth_.feet.feet[3].position.x,last_robot_ground_truth_.feet.feet[3].position.y,last_robot_ground_truth_.feet.feet[3].position.z;
 
-  std::cout << "Filter Output" << y.segment(0,12).transpose() << std::endl;
-  // std::cout << "Sanity Check" << foot_pos_rel_world.transpose() << std::endl;
+  // // Eigen::VectorXd body_world_pose = last_X.segment(0,3); // Body Pose in the World Frame
+  // for(int i = 0; i < 4; ++i){
+  //   foot_pos_rel_world.segment(3*i, 3) = feet_world_pose.segment(3*i, 3) - body_world_pose; // Body Pose - Foot Pose is 
+  // }
 
   // Solve for Error between Measured Y Residual and Process Residual
   error_y = y - (C * X_pre);
+  // std::cout << error_y;
   // Skip Update if the Innovation is too High
-  if (error_y.norm() < thresh_out) {
+  // if (error_y.norm() < thresh_out) {
   // if(1){
     S = C * P_pre * C.transpose() + R;
     // ROS_INFO_STREAM("This is S" << S);
@@ -522,10 +541,10 @@ void EKFEstimator::update(const Eigen::VectorXd& jk, const Eigen::VectorXd& fk,
       P.block<16, 2>(2, 0).setZero();
       P.block<2, 2>(0, 0) /= 10.0;
     }
-  } else {
-    X = X_pre;
-    P = P_pre;
-  }
+  // } else {
+  //   X = X_pre;
+  //   P = P_pre;
+  // }
   last_X = X;
 }
 
