@@ -16,7 +16,7 @@ Affiliation: [The Robomechanics Lab at Carnegie Mellon University](https://www.c
 Maintainer: Ardalan Tajbakhsh, atajbakh@andrew.cmu.edu**
 
 The packages in Quad-SDK have been tested under [ROS] Melodic on Ubuntu 18.04 and [ROS] Noetic on Ubuntu 20.04.
-Refer to the main branch for [ROS] Melodic Implementation and devel branch for [ROS] Noetic.
+Refer to the main branch for [ROS] Melodic and devel branch for [ROS] Noetic.
 This is research code, expect that it changes often and any fitness for a particular purpose is disclaimed.
 
 ### Updates
