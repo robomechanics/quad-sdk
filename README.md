@@ -15,7 +15,8 @@ The source code is released under a [MIT License](LICENSE).
 Affiliation: [The Robomechanics Lab at Carnegie Mellon University](https://www.cmu.edu/me/robomechanicslab/)<br />
 Maintainer: Ardalan Tajbakhsh, atajbakh@andrew.cmu.edu**
 
-The packages in Quad-SDK have been tested under [ROS] Melodic on Ubuntu 18.04.
+The packages in Quad-SDK have been tested under [ROS] Melodic on Ubuntu 18.04 and [ROS] Noetic on Ubuntu 20.04.
+Refer to the main branch for [ROS] Melodic Implementation and devel branch for [ROS] Noetic.
 This is research code, expect that it changes often and any fitness for a particular purpose is disclaimed.
 
 ### Updates
@@ -58,7 +59,7 @@ Legged Robots, May 2022. ([paper])
 
 ## Installation
 
-Refer to the [Quad-SDK Wiki](https://github.com/robomechanics/quad-sdk/wiki/1.-Getting-Started-with-Quad-SDK) for installation, dependency, and unit testing information. Currently Quad-SDK requires ROS Melodic on Ubuntu 18.04. All other dependencies are installed with the included setup script.
+Refer to the [Quad-SDK Wiki](https://github.com/robomechanics/quad-sdk/wiki/1.-Getting-Started-with-Quad-SDK) for installation, dependency, and unit testing information. Currently Quad-SDK requires either ROS Melodic on Ubuntu 18.04 or ROS Noetic on Ubuntu 20.04. All other dependencies are installed with the included setup script.
 
 ## Usage
 
