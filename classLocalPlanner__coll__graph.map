@@ -1,4 +1,5 @@
 <map id="LocalPlanner" name="LocalPlanner">
-<area shape="rect" id="node1" title="Local Body Planner library." alt="" coords="13,93,111,119"/>
-<area shape="rect" id="node2" href="$classFastTerrainMap.html" title="A terrain map class built for fast and efficient sampling." alt="" coords="5,5,119,31"/>
+<area shape="rect" id="Node000001" title="Local Body Planner library." alt="" coords="13,94,110,120"/>
+<area shape="rect" id="Node000002" href="$classFastTerrainMap.html" title="A terrain map class built for fast and efficient sampling." alt="" coords="5,5,118,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="64,47,64,94,59,94,59,47"/>
 </map>

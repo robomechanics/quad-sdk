@@ -1,7 +1,7 @@
 var searchData=
 [
   ['edges_0',['edges',['../classGraphClass.html#ab931f0784548afda6c934ac3b097cebd',1,'GraphClass']]],
-  ['ekfestimator_1',['EKFEstimator',['../classEKFEstimator.html',1,'EKFEstimator'],['../classEKFEstimator.html#a0827d3b38a8660ab6e73fc023c3989ac',1,'EKFEstimator::EKFEstimator()']]],
+  ['ekfestimator_1',['ekfestimator',['../classEKFEstimator.html',1,'EKFEstimator'],['../classEKFEstimator.html#a0827d3b38a8660ab6e73fc023c3989ac',1,'EKFEstimator::EKFEstimator()']]],
   ['elapsed_5ftotal_5f_2',['elapsed_total_',['../classRRT.html#a8c6c748c3d1f9a48b62c8332c9c563c2',1,'RRT']]],
   ['enable_5fadaptive_5fcomplexity_5f_3',['enable_adaptive_complexity_',['../classNMPCController.html#a8faf574d3ff89e259f65d1beb72d77fb',1,'NMPCController']]],
   ['enable_5fmixed_5fcomplexity_5f_4',['enable_mixed_complexity_',['../classNMPCController.html#a385ffe1206f62c2052a9b361d77b250f',1,'NMPCController']]],

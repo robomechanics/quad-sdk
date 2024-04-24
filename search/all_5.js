@@ -1,6 +1,6 @@
 var searchData=
 [
-  ['fastterrainmap_0',['FastTerrainMap',['../classFastTerrainMap.html',1,'FastTerrainMap'],['../classFastTerrainMap.html#ab243ccba0680afb064c70bead54bf126',1,'FastTerrainMap::FastTerrainMap()']]],
+  ['fastterrainmap_0',['fastterrainmap',['../classFastTerrainMap.html',1,'FastTerrainMap'],['../classFastTerrainMap.html#ab243ccba0680afb064c70bead54bf126',1,'FastTerrainMap::FastTerrainMap()']]],
   ['fe_5fidxs_5f_1',['fe_idxs_',['../classquadNLP.html#a6f1510355a278b410ab6acff10e618f9',1,'quadNLP']]],
   ['filter_2',['Filter',['../structCompFilterEstimator_1_1Filter.html',1,'CompFilterEstimator']]],
   ['filter_5fsmoothing_5fconstant_5f_3',['filter_smoothing_constant_',['../classLocalPlanner.html#a87615696d79cd93456359cd0def78890',1,'LocalPlanner']]],
@@ -32,9 +32,8 @@ var searchData=
   ['foothold_5fsearch_5fradius_5f_29',['foothold_search_radius_',['../classLocalFootstepPlanner.html#afdafe5ddfa4cb33320ff944a718610a0',1,'LocalFootstepPlanner']]],
   ['footplancontinuouscallback_30',['footPlanContinuousCallback',['../classRVizInterface.html#acc6831d9da43282226268aeb62a551b2',1,'RVizInterface']]],
   ['footplandiscretecallback_31',['footPlanDiscreteCallback',['../classRVizInterface.html#ae02c4a53f319e72f28ece7228065048f',1,'RVizInterface']]],
-  ['force_5fmode_5f_32',['force_mode_',['../classUnderbrushInverseDynamicsController.html#a4669b2bd0f26a854f15c0a5cfb3e5e2d',1,'UnderbrushInverseDynamicsController']]],
-  ['front_5fleft_5fcolor_5f_33',['front_left_color_',['../classRVizInterface.html#a82079c15a1930f8207761083ce06b00f',1,'RVizInterface']]],
-  ['fullstate_34',['FullState',['../structplanning__utils_1_1FullState.html',1,'planning_utils']]],
-  ['function_5fname_5f_35',['function_name_',['../classquad__utils_1_1FunctionTimer.html#a64d6ff784ac603af68a7bd33788a3908',1,'quad_utils::FunctionTimer']]],
-  ['functiontimer_36',['FunctionTimer',['../classquad__utils_1_1FunctionTimer.html#a40c057ce946d2e2b9bb122b6cc352aa0',1,'quad_utils::FunctionTimer::FunctionTimer()'],['../classquad__utils_1_1FunctionTimer.html',1,'quad_utils::FunctionTimer']]]
+  ['front_5fleft_5fcolor_5f_32',['front_left_color_',['../classRVizInterface.html#a82079c15a1930f8207761083ce06b00f',1,'RVizInterface']]],
+  ['fullstate_33',['FullState',['../structplanning__utils_1_1FullState.html',1,'planning_utils']]],
+  ['function_5fname_5f_34',['function_name_',['../classquad__utils_1_1FunctionTimer.html#a64d6ff784ac603af68a7bd33788a3908',1,'quad_utils::FunctionTimer']]],
+  ['functiontimer_35',['functiontimer',['../classquad__utils_1_1FunctionTimer.html',1,'quad_utils::FunctionTimer'],['../classquad__utils_1_1FunctionTimer.html#a40c057ce946d2e2b9bb122b6cc352aa0',1,'quad_utils::FunctionTimer::FunctionTimer()']]]
 ];

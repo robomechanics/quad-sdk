@@ -1,4 +1,0 @@
-<map id="UnderbrushInverseDynamicsController" name="UnderbrushInverseDynamicsController">
-<area shape="rect" id="node1" title="Implements inverse dynamics as a controller within the ROS framework." alt="" coords="5,79,195,119"/>
-<area shape="rect" id="node2" href="$classLegController.html" title="Implements an abstract class for leg controllers." alt="" coords="51,5,149,31"/>
-</map>

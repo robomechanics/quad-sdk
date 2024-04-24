@@ -26,7 +26,6 @@ var searchData=
   ['foot_5fvelocities_5fworld_5f_23',['foot_velocities_world_',['../classLocalPlanner.html#a6cb124ec2d32d928a04dca81175fae58',1,'LocalPlanner']]],
   ['foothold_5fobj_5fthreshold_5f_24',['foothold_obj_threshold_',['../classLocalFootstepPlanner.html#a0cbf6f72c9cf9db26ad2149e8c3b0ed4',1,'LocalFootstepPlanner']]],
   ['foothold_5fsearch_5fradius_5f_25',['foothold_search_radius_',['../classLocalFootstepPlanner.html#afdafe5ddfa4cb33320ff944a718610a0',1,'LocalFootstepPlanner']]],
-  ['force_5fmode_5f_26',['force_mode_',['../classUnderbrushInverseDynamicsController.html#a4669b2bd0f26a854f15c0a5cfb3e5e2d',1,'UnderbrushInverseDynamicsController']]],
-  ['front_5fleft_5fcolor_5f_27',['front_left_color_',['../classRVizInterface.html#a82079c15a1930f8207761083ce06b00f',1,'RVizInterface']]],
-  ['function_5fname_5f_28',['function_name_',['../classquad__utils_1_1FunctionTimer.html#a64d6ff784ac603af68a7bd33788a3908',1,'quad_utils::FunctionTimer']]]
+  ['front_5fleft_5fcolor_5f_26',['front_left_color_',['../classRVizInterface.html#a82079c15a1930f8207761083ce06b00f',1,'RVizInterface']]],
+  ['function_5fname_5f_27',['function_name_',['../classquad__utils_1_1FunctionTimer.html#a64d6ff784ac603af68a7bd33788a3908',1,'quad_utils::FunctionTimer']]]
 ];

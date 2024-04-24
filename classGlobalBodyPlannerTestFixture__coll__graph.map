@@ -1,6 +1,10 @@
 <map id="GlobalBodyPlannerTestFixture" name="GlobalBodyPlannerTestFixture">
-<area shape="rect" id="node1" title="A test fixture for the global body planning class." alt="" coords="48,181,245,207"/>
-<area shape="rect" id="node2" title=" " alt="" coords="5,93,99,119"/>
-<area shape="rect" id="node3" href="$structplanning__utils_1_1PlannerConfig.html" title="Planner Configuration." alt="" coords="217,93,404,119"/>
-<area shape="rect" id="node4" href="$classFastTerrainMap.html" title="A terrain map class built for fast and efficient sampling." alt="" coords="111,5,225,31"/>
+<area shape="rect" id="Node000001" title="A test fixture for the global body planning class." alt="" coords="48,183,244,208"/>
+<area shape="rect" id="Node000002" title=" " alt="" coords="5,94,98,120"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="77,128,135,180,131,184,74,132"/>
+<area shape="rect" id="Node000003" href="$structplanning__utils_1_1PlannerConfig.html" title="Planner Configuration." alt="" coords="216,94,402,120"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="274,130,170,184,168,180,271,125"/>
+<area shape="rect" id="Node000004" href="$classFastTerrainMap.html" title="A terrain map class built for fast and efficient sampling." alt="" coords="111,5,224,31"/>
+<area shape="poly" id="edge4_Node000001_Node000004" title=" " alt="" coords="166,47,160,94,150,183,145,182,155,94,161,46"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="201,37,290,91,288,96,199,42"/>
 </map>

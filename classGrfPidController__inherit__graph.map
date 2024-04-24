@@ -1,4 +1,5 @@
 <map id="GrfPidController" name="GrfPidController">
-<area shape="rect" id="node1" title="Implements inverse dynamics as a controller within the ROS framework." alt="" coords="5,79,120,104"/>
-<area shape="rect" id="node2" href="$classLegController.html" title="Implements an abstract class for leg controllers." alt="" coords="13,5,112,31"/>
+<area shape="rect" id="Node000001" title="Implements inverse dynamics as a controller within the ROS framework." alt="" coords="5,79,119,105"/>
+<area shape="rect" id="Node000002" href="$classLegController.html" title="Implements an abstract class for leg controllers." alt="" coords="13,5,111,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="65,46,65,79,59,79,59,46"/>
 </map>

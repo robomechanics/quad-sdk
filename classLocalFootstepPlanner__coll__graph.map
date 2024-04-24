@@ -1,4 +1,5 @@
 <map id="LocalFootstepPlanner" name="LocalFootstepPlanner">
-<area shape="rect" id="node1" title="A local footstep planning class for quad." alt="" coords="5,93,155,119"/>
-<area shape="rect" id="node2" href="$classFastTerrainMap.html" title="A terrain map class built for fast and efficient sampling." alt="" coords="23,5,137,31"/>
+<area shape="rect" id="Node000001" title="A local footstep planning class for quad." alt="" coords="5,94,154,120"/>
+<area shape="rect" id="Node000002" href="$classFastTerrainMap.html" title="A terrain map class built for fast and efficient sampling." alt="" coords="23,5,136,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="82,47,82,94,77,94,77,47"/>
 </map>

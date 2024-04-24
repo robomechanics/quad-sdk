@@ -1,4 +1,9 @@
 <map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
-<area shape="rect" id="node1" href="$classHardwareInterface.html" title="Implements an abstract class for robot hardware interfaces." alt="" coords="5,5,135,31"/>
-<area shape="rect" id="node2" href="$classSpiritInterface.html" title="Hardware interface for the Spirit40 quadruped from Ghost Robotics." alt="" coords="183,5,285,31"/>
+<area shape="rect" id="Node000000" href="$classLegController.html" title="Implements an abstract class for leg controllers." alt="" coords="5,55,104,80"/>
+<area shape="rect" id="Node000001" href="$classGrfPidController.html" title="Implements inverse dynamics as a controller within the ROS framework." alt="" coords="183,5,297,31"/>
+<area shape="poly" id="edge5_Node000000_Node000001" title=" " alt="" coords="118,48,188,29,189,34,120,53"/>
+<area shape="rect" id="Node000002" href="$classInverseDynamicsController.html" title="Implements inverse dynamics as a controller within the ROS framework." alt="" coords="152,55,328,80"/>
+<area shape="poly" id="edge6_Node000000_Node000002" title=" " alt="" coords="119,65,151,65,151,70,119,70"/>
+<area shape="rect" id="Node000003" href="$classJointController.html" title="Implements inverse dynamics as a controller within the ROS framework." alt="" coords="188,104,292,130"/>
+<area shape="poly" id="edge7_Node000000_Node000003" title=" " alt="" coords="120,82,189,101,188,106,118,87"/>
 </map>

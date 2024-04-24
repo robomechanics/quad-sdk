@@ -1,4 +1,0 @@
-<map id="InertiaEstimationController" name="InertiaEstimationController">
-<area shape="rect" id="node1" title="Special&#45;purpose inertia parameter estimation leg controller." alt="" coords="5,79,180,104"/>
-<area shape="rect" id="node2" href="$classLegController.html" title="Implements an abstract class for leg controllers." alt="" coords="43,5,142,31"/>
-</map>

@@ -1,4 +1,6 @@
 var searchData=
 [
-  ['meshtogridmapconverter_0',['MeshToGridMapConverter',['../classmesh__to__grid__map_1_1MeshToGridMapConverter.html',1,'mesh_to_grid_map']]]
+  ['nlpconfig_0',['NLPConfig',['../structNLPConfig.html',1,'']]],
+  ['nlpdiagnostics_1',['NLPDiagnostics',['../structNLPDiagnostics.html',1,'']]],
+  ['nmpccontroller_2',['NMPCController',['../classNMPCController.html',1,'']]]
 ];

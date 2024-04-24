@@ -1,8 +1,9 @@
 <map id="LegController" name="LegController">
-<area shape="rect" id="node1" title="Implements an abstract class for leg controllers." alt="" coords="5,104,104,129"/>
-<area shape="rect" id="node2" href="$classGrfPidController.html" title="Implements inverse dynamics as a controller within the ROS framework." alt="" coords="189,5,304,31"/>
-<area shape="rect" id="node3" href="$classInertiaEstimationController.html" title="Special&#45;purpose inertia parameter estimation leg controller." alt="" coords="159,55,334,80"/>
-<area shape="rect" id="node4" href="$classInverseDynamicsController.html" title="Implements inverse dynamics as a controller within the ROS framework." alt="" coords="158,104,335,129"/>
-<area shape="rect" id="node5" href="$classJointController.html" title="Implements inverse dynamics as a controller within the ROS framework." alt="" coords="194,153,299,179"/>
-<area shape="rect" id="node6" href="$classUnderbrushInverseDynamicsController.html" title="Implements inverse dynamics as a controller within the ROS framework." alt="" coords="152,203,341,243"/>
+<area shape="rect" id="Node000001" title="Implements an abstract class for leg controllers." alt="" coords="182,5,281,31"/>
+<area shape="rect" id="Node000002" href="$classGrfPidController.html" title="Implements inverse dynamics as a controller within the ROS framework." alt="" coords="5,79,119,105"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="190,40,92,81,90,76,187,35"/>
+<area shape="rect" id="Node000003" href="$classInverseDynamicsController.html" title="Implements inverse dynamics as a controller within the ROS framework." alt="" coords="143,79,320,105"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="234,46,234,79,229,79,229,46"/>
+<area shape="rect" id="Node000004" href="$classJointController.html" title="Implements inverse dynamics as a controller within the ROS framework." alt="" coords="343,79,448,105"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="274,35,368,76,366,81,272,40"/>
 </map>

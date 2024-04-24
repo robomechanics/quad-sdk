@@ -1,7 +1,11 @@
 <map id="GlobalBodyPlanner" name="GlobalBodyPlanner">
-<area shape="rect" id="node1" title="A global body planning class for legged robots." alt="" coords="158,211,290,236"/>
-<area shape="rect" id="node2" href="$classGlobalBodyPlan.html" title="A class to contain global plan data along with helper functions." alt="" coords="5,93,120,119"/>
-<area shape="rect" id="node3" href="$structplanning__utils_1_1FullState.html" title="Define full state with Eigen data." alt="" coords="145,93,303,119"/>
-<area shape="rect" id="node4" href="$structplanning__utils_1_1PlannerConfig.html" title="Planner Configuration." alt="" coords="328,93,515,119"/>
-<area shape="rect" id="node5" href="$classFastTerrainMap.html" title="A terrain map class built for fast and efficient sampling." alt="" coords="365,5,478,31"/>
+<area shape="rect" id="Node000001" title="A global body planning class for legged robots." alt="" coords="156,213,288,238"/>
+<area shape="rect" id="Node000002" href="$classGlobalBodyPlan.html" title="A class to contain global plan data along with helper functions." alt="" coords="5,94,119,120"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="81,130,106,159,137,186,184,210,181,214,134,191,102,163,77,134"/>
+<area shape="rect" id="Node000003" href="$structplanning__utils_1_1FullState.html" title="Define full state with Eigen data." alt="" coords="143,94,301,120"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="225,135,225,212,219,212,219,135"/>
+<area shape="rect" id="Node000004" href="$structplanning__utils_1_1PlannerConfig.html" title="Planner Configuration." alt="" coords="325,94,511,120"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="392,131,301,191,252,215,250,210,298,186,389,127"/>
+<area shape="rect" id="Node000005" href="$classFastTerrainMap.html" title="A terrain map class built for fast and efficient sampling." alt="" coords="362,5,474,31"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="421,47,421,94,415,94,415,47"/>
 </map>

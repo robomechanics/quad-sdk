@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['local_20planner_0',['Local Planner',['../md_local_planner_README.html',1,'']]]
+  ['controller_0',['NMPC Controller',['../md_nmpc__controller_2README.html',1,'']]]
 ];

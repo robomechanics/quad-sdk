@@ -1,5 +1,7 @@
 <map id="CompFilterEstimator" name="CompFilterEstimator">
-<area shape="rect" id="node1" title="Implements complementary filter as an estimator within the ROS framework." alt="" coords="63,123,203,148"/>
-<area shape="rect" id="node2" href="$classStateEstimator.html" title=" " alt="" coords="5,13,113,38"/>
-<area shape="rect" id="node3" href="$structCompFilterEstimator_1_1Filter.html" title="Struct of second&#45;order low/high pass filter with derivative/intergral." alt="" coords="137,5,277,45"/>
+<area shape="rect" id="Node000001" title="Implements complementary filter as an estimator within the ROS framework." alt="" coords="63,124,202,150"/>
+<area shape="rect" id="Node000002" href="$classStateEstimator.html" title=" " alt="" coords="5,13,113,39"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="78,50,127,122,122,125,73,53"/>
+<area shape="rect" id="Node000003" href="$structCompFilterEstimator_1_1Filter.html" title="Struct of second&#45;order low/high pass filter with derivative/intergral." alt="" coords="137,5,277,46"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="187,61,143,125,138,122,183,58"/>
 </map>

@@ -8,7 +8,7 @@ var searchData=
   ['sit_5fkp_5f_5',['sit_kp_',['../classRobotDriver.html#a5590cd801e2c3c88046d7f38ea005e98',1,'RobotDriver']]],
   ['sit_5fto_5fready_6',['SIT_TO_READY',['../classRobotDriver.html#aa75a96830b4c9d26e0f9a46234c0fc38',1,'RobotDriver']]],
   ['solve_5ftime_5finfo_5f_7',['solve_time_info_',['../classGlobalBodyPlanner.html#ae431f7b02f8c58d4fa354faeed6714e9',1,'GlobalBodyPlanner']]],
-  ['stance_5fkp_5f_8',['stance_kp_',['../classLegController.html#a04e9dd70c4a2c23e4304a4871656e290',1,'LegController::stance_kp_()'],['../classRobotDriver.html#a9178b717746ff2f539daf9ef24b377a5',1,'RobotDriver::stance_kp_()']]],
+  ['stance_5fkp_5f_8',['stance_kp_',['../classLegController.html#a04e9dd70c4a2c23e4304a4871656e290',1,'LegController::stance_kp_'],['../classRobotDriver.html#a9178b717746ff2f539daf9ef24b377a5',1,'RobotDriver::stance_kp_']]],
   ['stand_5fcmd_5fvel_5fthreshold_5f_9',['stand_cmd_vel_threshold_',['../classLocalPlanner.html#a8575a310b6da60b8f1fb0ae25bc275e5',1,'LocalPlanner']]],
   ['stand_5fjoint_5fangles_5f_10',['stand_joint_angles_',['../classRobotDriver.html#a437b32b34bbef848f0de6c066b1c4549',1,'RobotDriver']]],
   ['stand_5fkp_5f_11',['stand_kp_',['../classRobotDriver.html#a032b0cd8b61275c106daca13f90a5689',1,'RobotDriver']]],
@@ -24,7 +24,7 @@ var searchData=
   ['state_5festimate_5ftrace_5fmsg_5f_21',['state_estimate_trace_msg_',['../classRVizInterface.html#a2ede575845cc6ee05a96e8b2c0628b6d',1,'RVizInterface']]],
   ['state_5festimate_5ftrace_5fpub_5f_22',['state_estimate_trace_pub_',['../classRVizInterface.html#a3284f619b2ee52e17336138b0db3a518',1,'RVizInterface']]],
   ['state_5festimator_5f_23',['state_estimator_',['../classRobotDriver.html#a43b9c016205ab09a37d3d322379ad773',1,'RobotDriver']]],
-  ['state_5fsequence_5f_24',['state_sequence_',['../classGlobalBodyPlan.html#a872ce36ac5bae1ae8368a67f4745b2c3',1,'GlobalBodyPlan::state_sequence_()'],['../classGlobalBodyPlanner.html#a50df2ef4bdaca844a07ece58a468de64',1,'GlobalBodyPlanner::state_sequence_()']]],
+  ['state_5fsequence_5f_24',['state_sequence_',['../classGlobalBodyPlan.html#a872ce36ac5bae1ae8368a67f4745b2c3',1,'GlobalBodyPlan::state_sequence_'],['../classGlobalBodyPlanner.html#a50df2ef4bdaca844a07ece58a468de64',1,'GlobalBodyPlanner::state_sequence_']]],
   ['state_5ftimeout_5f_25',['state_timeout_',['../classRobotDriver.html#a5fedfc4a72ec8f704430e59411343815',1,'RobotDriver']]],
   ['step1_5f_26',['step1_',['../classTerrainMapPublisher.html#a2f00504173e8c5a28086d49bbcaf7cab',1,'TerrainMapPublisher']]],
   ['step2_5f_27',['step2_',['../classTerrainMapPublisher.html#a47e7ef579a01dfb7381f1295b32ef983',1,'TerrainMapPublisher']]],
@@ -32,7 +32,7 @@ var searchData=
   ['sub_5fcommand_5f_29',['sub_command_',['../classeffort__controllers_1_1QuadController.html#a36eae34cd269a4a185105fca616b716c',1,'effort_controllers::QuadController']]],
   ['success_5f_30',['success_',['../classRRT.html#a7b14718259e98e018720dbef643222bf',1,'RRT']]],
   ['successors_31',['successors',['../classGraphClass.html#a2e6c5c4d16682dafe430d71b0f8678a5',1,'GraphClass']]],
-  ['swing_5fkp_5f_32',['swing_kp_',['../classLegController.html#ac258def697db9798d10346700e5a02ae',1,'LegController::swing_kp_()'],['../classRobotDriver.html#a4130164497f840604b0b1bade17a6e67',1,'RobotDriver::swing_kp_()']]],
-  ['swing_5fkp_5fcart_5f_33',['swing_kp_cart_',['../classLegController.html#a7025c3ab1296ae0ac9b4de24a2ee30f1',1,'LegController::swing_kp_cart_()'],['../classRobotDriver.html#ab318583e279218a94550207df50450c6',1,'RobotDriver::swing_kp_cart_()']]],
+  ['swing_5fkp_5f_32',['swing_kp_',['../classLegController.html#ac258def697db9798d10346700e5a02ae',1,'LegController::swing_kp_'],['../classRobotDriver.html#a4130164497f840604b0b1bade17a6e67',1,'RobotDriver::swing_kp_']]],
+  ['swing_5fkp_5fcart_5f_33',['swing_kp_cart_',['../classLegController.html#a7025c3ab1296ae0ac9b4de24a2ee30f1',1,'LegController::swing_kp_cart_'],['../classRobotDriver.html#ab318583e279218a94550207df50450c6',1,'RobotDriver::swing_kp_cart_']]],
   ['sys_5fid_5fschedule_5f_34',['sys_id_schedule_',['../classquadNLP.html#ab006ef94cfc10cbfa51a67c300b10de4',1,'quadNLP']]]
 ];

@@ -1,4 +1,5 @@
 <map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
-<area shape="rect" id="node1" title=" " alt="" coords="5,5,99,31"/>
-<area shape="rect" id="node2" href="$classGlobalBodyPlannerTestFixture.html" title="A test fixture for the global body planning class." alt="" coords="147,5,344,31"/>
+<area shape="rect" id="Node000000" title=" " alt="" coords="5,5,62,31"/>
+<area shape="rect" id="Node000001" href="$classquadNLP.html" title=" " alt="" coords="110,5,186,31"/>
+<area shape="poly" id="edge16_Node000000_Node000001" title=" " alt="" coords="77,16,109,16,109,21,77,21"/>
 </map>

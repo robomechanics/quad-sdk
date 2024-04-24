@@ -9,5 +9,5 @@ var searchData=
   ['joint_5fstate_5fpub_5f_6',['joint_state_pub_',['../classRobotDriver.html#a1e0e334f25d0d2c171d370f9b50da985',1,'RobotDriver']]],
   ['joint_5ftorque_5f_7',['joint_torque_',['../classJointController.html#a2174736c91bede614e9aaca242937000',1,'JointController']]],
   ['joint_5furdfs_5f_8',['joint_urdfs_',['../classeffort__controllers_1_1QuadController.html#a347e053197665e93c885e67947cda6da',1,'effort_controllers::QuadController']]],
-  ['jointcontroller_9',['JointController',['../classJointController.html',1,'JointController'],['../classJointController.html#a631714afbcbd9325d41d63cb9e0ee094',1,'JointController::JointController()']]]
+  ['jointcontroller_9',['jointcontroller',['../classJointController.html',1,'JointController'],['../classJointController.html#a631714afbcbd9325d41d63cb9e0ee094',1,'JointController::JointController()']]]
 ];

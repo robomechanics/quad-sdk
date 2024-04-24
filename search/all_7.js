@@ -1,7 +1,7 @@
 var searchData=
 [
   ['hardware_5finterface_5f_0',['hardware_interface_',['../classRobotDriver.html#aa0c594560946f57966d7f6d27059132b',1,'RobotDriver']]],
-  ['hardwareinterface_1',['HardwareInterface',['../classHardwareInterface.html',1,'HardwareInterface'],['../classHardwareInterface.html#a1ab7cedbe71c6779316115cbcbbb8069',1,'HardwareInterface::HardwareInterface()']]],
+  ['hardwareinterface_1',['hardwareinterface',['../classHardwareInterface.html',1,'HardwareInterface'],['../classHardwareInterface.html#a1ab7cedbe71c6779316115cbcbbb8069',1,'HardwareInterface::HardwareInterface()']]],
   ['heartbeat_5ftimeout_5f_2',['heartbeat_timeout_',['../classRobotDriver.html#a0a2ee309c59d8d86a7ef2b36869c8248',1,'RobotDriver']]],
   ['high_5fpass_5fa_5f_3',['high_pass_a_',['../classCompFilterEstimator.html#af26144a6fba5bb2e5f1f866e86e5a9f1',1,'CompFilterEstimator']]],
   ['high_5fpass_5ffilter_4',['high_pass_filter',['../classCompFilterEstimator.html#ad439061b8b965ac398542bba651703d7',1,'CompFilterEstimator']]],

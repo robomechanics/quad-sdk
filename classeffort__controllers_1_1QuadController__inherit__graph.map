@@ -1,4 +1,5 @@
 <map id="effort_controllers::QuadController" name="effort_controllers::QuadController">
-<area shape="rect" id="node1" title="Forward command controller for quad." alt="" coords="49,108,167,148"/>
-<area shape="rect" id="node2" title=" " alt="" coords="5,5,211,60"/>
+<area shape="rect" id="Node000001" title="Forward command controller for quad." alt="" coords="49,109,166,150"/>
+<area shape="rect" id="Node000002" title=" " alt="" coords="5,5,210,61"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="110,77,110,109,105,109,105,77"/>
 </map>

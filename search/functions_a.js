@@ -1,6 +1,6 @@
 var searchData=
 [
-  ['legbasetofootiklegbaseframe_0',['legbaseToFootIKLegbaseFrame',['../classquad__utils_1_1QuadKD.html#ab8be68d7d6fdd91376e00672242d9ac0',1,'quad_utils::QuadKD']]],
+  ['legbasetofootiklegbaseframe_0',['legbaseToFootIKLegbaseFrame',['../classquad__utils_1_1QuadKD.html#adf92afd5586ed1453ae76a4f8142b81e',1,'quad_utils::QuadKD']]],
   ['legcontroller_1',['LegController',['../classLegController.html#a43d9c5ab90cb2ea4c2242ea7e1795c00',1,'LegController']]],
   ['load_2',['Load',['../classgazebo_1_1ContactPlugin.html#a492c5a81b81a97054723ceceee6d9058',1,'gazebo::ContactPlugin']]],
   ['loadcasadifuncs_3',['loadCasadiFuncs',['../classquadNLP.html#a5b9997c66fb689f66b3e96a760f07bb1',1,'quadNLP']]],
@@ -12,7 +12,7 @@ var searchData=
   ['loadflat_9',['loadFlat',['../classFastTerrainMap.html#ab9c483d6d2e30a045f0c731427586150',1,'FastTerrainMap']]],
   ['loadflatelevated_10',['loadFlatElevated',['../classFastTerrainMap.html#a0cee2a4343a1ffbfb71a8e96e7379b38',1,'FastTerrainMap']]],
   ['loadfootplanmsgs_11',['loadFootPlanMsgs',['../classLocalFootstepPlanner.html#a616b9bc487a93b0554d9db7eb4183b3e',1,'LocalFootstepPlanner']]],
-  ['loadinterface_12',['loadInterface',['../classSpiritInterface.html#ac03865f681a3e86f33cbb963e3b72c9d',1,'SpiritInterface::loadInterface()'],['../classHardwareInterface.html#adfc4b1c2eca98ebf167de66e9fcfd632',1,'HardwareInterface::loadInterface()']]],
+  ['loadinterface_12',['loadinterface',['../classHardwareInterface.html#adfc4b1c2eca98ebf167de66e9fcfd632',1,'HardwareInterface::loadInterface()'],['../classSpiritInterface.html#ac03865f681a3e86f33cbb963e3b72c9d',1,'SpiritInterface::loadInterface()']]],
   ['loadmapfromcsv_13',['loadMapFromCSV',['../classTerrainMapPublisher.html#a633f664cc608dc2478948c829c22c97d',1,'TerrainMapPublisher']]],
   ['loadmapfromimage_14',['loadMapFromImage',['../classTerrainMapPublisher.html#a5d8c63f68d1256f06db6159876ce2100',1,'TerrainMapPublisher']]],
   ['loadmocapmsg_15',['loadMocapMsg',['../classStateEstimator.html#ad16c9f32dd766182c13ed5150ecdccb5',1,'StateEstimator']]],
@@ -22,6 +22,6 @@ var searchData=
   ['loadslope_19',['loadSlope',['../classFastTerrainMap.html#a55e2bd4c8ea5965617cefa22e3137465',1,'FastTerrainMap']]],
   ['loadstep_20',['loadStep',['../classFastTerrainMap.html#a425d3d5f692f9954c85860e5322551c1',1,'FastTerrainMap']]],
   ['localfootstepplanner_21',['LocalFootstepPlanner',['../classLocalFootstepPlanner.html#a22d834ccd2d0a87303c58dbee0b788ab',1,'LocalFootstepPlanner']]],
-  ['localplancallback_22',['localPlanCallback',['../classBodyForceEstimator.html#a8204bab9ac666e427c67aec0c20cbdb4',1,'BodyForceEstimator::localPlanCallback()'],['../classRobotDriver.html#a3464086a1d20973cc7518d8a7fa2a648',1,'RobotDriver::localPlanCallback()']]],
+  ['localplancallback_22',['localPlanCallback',['../classRobotDriver.html#a3464086a1d20973cc7518d8a7fa2a648',1,'RobotDriver']]],
   ['localplanner_23',['LocalPlanner',['../classLocalPlanner.html#a50f903442aa6ed440b040a2b6c810c05',1,'LocalPlanner']]]
 ];

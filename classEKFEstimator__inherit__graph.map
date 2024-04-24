@@ -1,4 +1,5 @@
 <map id="EKFEstimator" name="EKFEstimator">
-<area shape="rect" id="node1" title="Implements Extended Kalman Filter as an estimator within the ROS framework." alt="" coords="8,79,111,104"/>
-<area shape="rect" id="node2" href="$classStateEstimator.html" title=" " alt="" coords="5,5,113,31"/>
+<area shape="rect" id="Node000001" title="Implements Extended Kalman Filter as an estimator within the ROS framework." alt="" coords="8,79,110,105"/>
+<area shape="rect" id="Node000002" href="$classStateEstimator.html" title=" " alt="" coords="5,5,113,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="62,46,62,79,56,79,56,46"/>
 </map>

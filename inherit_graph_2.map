@@ -1,3 +1,5 @@
 <map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
-<area shape="rect" id="node1" href="$classContactStatePublisher.html" title="Publishes contact states from gazebo." alt="" coords="5,5,157,31"/>
+<area shape="rect" id="Node000000" title=" " alt="" coords="5,5,137,46"/>
+<area shape="rect" id="Node000001" href="$classeffort__controllers_1_1QuadController.html" title="Forward command controller for quad." alt="" coords="185,5,302,46"/>
+<area shape="poly" id="edge1_Node000000_Node000001" title=" " alt="" coords="152,23,184,23,184,28,152,28"/>
 </map>
