@@ -72,6 +72,22 @@ SOFTWARE.
           </script>
         </material>
       </visual>
+      <sensor name='imu_sensor' type='imu'>
+        <always_on>1</always_on>
+        <update_rate>1000</update_rate>
+        <visualize>1</visualize>
+        <topic>robot_1_state_imu</topic>
+        <plugin name='imu_plugin' filename='libgazebo_ros_imu_sensor.so'>
+          <topicName>/robot_1/state/imu</topicName>
+          <bodyName>imu_link</bodyName>
+          <updateRateHZ>100.0</updateRateHZ>
+          <gaussianNoise>0.02</gaussianNoise>
+          <xyzOffset>0 0 0</xyzOffset>
+          <rpyOffset>0 0 0</rpyOffset>
+          <frameName>imu_link</frameName>
+        </plugin>
+        <pose frame=''>0 0 0 0 -0 0</pose>
+      </sensor>
       <gravity>1</gravity>
       <velocity_decay />
     </link>
@@ -79,7 +95,7 @@ SOFTWARE.
     <link name='hip0'>
       <pose frame=''>0.2263 0.07 0 0 -0 0</pose>
       <inertial>
-        <pose frame=''>0 0 0 0 -0 0</pose>
+        <pose frame=''>0 0.03 0 0 -0 0</pose>
         <mass>0.575</mass>
         <inertia>
           <ixx>0.000669635</ixx>
@@ -128,6 +144,9 @@ SOFTWARE.
     <joint name='8' type='revolute'>
       <child>hip0</child>
       <parent>body</parent>
+      <physics>
+        <provide_feedback>true</provide_feedback>
+      </physics>
       <axis>
         <xyz>1 0 0</xyz>
         <limit>
@@ -149,15 +168,15 @@ SOFTWARE.
     <link name='upper0'>
       <pose frame=''>0.2263 0.17098 0 0 -0 0</pose>
       <inertial>
-        <pose frame=''>-0.040 -0.041 0 0 -0 0</pose>
+        <pose frame=''>-0.049 -0.039 0.006 0 -0 0</pose>
         <mass>0.792</mass>
         <inertia>
-          <ixx>5e-03</ixx>
-          <ixy>0</ixy>
+          <ixx>4e-04</ixx>
+          <ixy>-0.0012</ixy>
           <ixz>0</ixz>
-          <iyy>0.0070</iyy>
+          <iyy>0.0066</iyy>
           <iyz>0</iyz>
-          <izz>0.0070</izz>
+          <izz>0.0066</izz>
         </inertia>
       </inertial>
       <collision name='upper0_collision'>
@@ -197,6 +216,9 @@ SOFTWARE.
     <joint name='0' type='revolute'>
       <child>upper0</child>
       <parent>hip0</parent>
+      <physics>
+        <provide_feedback>true</provide_feedback>
+      </physics>
       <axis>
         <xyz>0 -1 0</xyz>
         <limit>
@@ -268,6 +290,9 @@ SOFTWARE.
     <joint name='1' type='revolute'>
       <child>lower0</child>
       <parent>upper0</parent>
+      <physics>
+        <provide_feedback>true</provide_feedback>
+      </physics>
       <axis>
         <xyz>0 1 0</xyz>
         <limit>
@@ -289,7 +314,7 @@ SOFTWARE.
     <link name='hip1'>
       <pose frame=''>-0.2263 0.07 0 0 -0 0</pose>
       <inertial>
-        <pose frame=''>0 0 0 0 -0 0</pose>
+        <pose frame=''>0 0.03 0 0 -0 0</pose>
         <mass>0.575</mass>
         <inertia>
           <ixx>0.000669635</ixx>
@@ -338,6 +363,9 @@ SOFTWARE.
     <joint name='9' type='revolute'>
       <child>hip1</child>
       <parent>body</parent>
+      <physics>
+        <provide_feedback>true</provide_feedback>
+      </physics>
       <axis>
         <xyz>1 0 0</xyz>
         <limit>
@@ -359,15 +387,15 @@ SOFTWARE.
     <link name='upper1'>
       <pose frame=''>-0.2263 0.17098 0 0 -0 0</pose>
       <inertial>
-        <pose frame=''>-0.040 -0.041 0 0 -0 0</pose>
+        <pose frame=''>-0.049 -0.039 0.006 0 -0 0</pose>
         <mass>0.792</mass>
         <inertia>
-          <ixx>5e-03</ixx>
-          <ixy>0</ixy>
+          <ixx>4e-04</ixx>
+          <ixy>-0.0012</ixy>
           <ixz>0</ixz>
-          <iyy>0.0070</iyy>
+          <iyy>0.0066</iyy>
           <iyz>0</iyz>
-          <izz>0.0070</izz>
+          <izz>0.0066</izz>
         </inertia>
       </inertial>
       <collision name='upper1_collision'>
@@ -407,6 +435,9 @@ SOFTWARE.
     <joint name='2' type='revolute'>
       <child>upper1</child>
       <parent>hip1</parent>
+      <physics>
+        <provide_feedback>true</provide_feedback>
+      </physics>
       <axis>
         <xyz>0 -1 0</xyz>
         <limit>
@@ -478,6 +509,9 @@ SOFTWARE.
     <joint name='3' type='revolute'>
       <child>lower1</child>
       <parent>upper1</parent>
+      <physics>
+        <provide_feedback>true</provide_feedback>
+      </physics>
       <axis>
         <xyz>0 1 0</xyz>
         <limit>
@@ -500,7 +534,7 @@ SOFTWARE.
     <link name='hip2'>
       <pose frame=''>0.2263 -0.07 0 0 -0 0</pose>
       <inertial>
-        <pose frame=''>0 0 0 0 -0 0</pose>
+        <pose frame=''>0 -0.03 0 0 -0 0</pose>
         <mass>0.575</mass>
         <inertia>
           <ixx>0.000669635</ixx>
@@ -549,6 +583,9 @@ SOFTWARE.
     <joint name='10' type='revolute'>
       <child>hip2</child>
       <parent>body</parent>
+      <physics>
+        <provide_feedback>true</provide_feedback>
+      </physics>
       <axis>
         <xyz>1 0 0</xyz>
         <limit>
@@ -570,15 +607,15 @@ SOFTWARE.
     <link name='upper2'>
       <pose frame=''>0.2263 -0.17098 0 0 -0 0</pose>
       <inertial>
-        <pose frame=''>-0.040 0.041 0 0 -0 0</pose>
+        <pose frame=''>-0.049 0.039 0.006 0 -0 0</pose>
         <mass>0.792</mass>
         <inertia>
-          <ixx>5e-03</ixx>
-          <ixy>0</ixy>
+          <ixx>4e-04</ixx>
+          <ixy>-0.0012</ixy>
           <ixz>0</ixz>
-          <iyy>0.0070</iyy>
+          <iyy>0.0066</iyy>
           <iyz>0</iyz>
-          <izz>0.0070</izz>
+          <izz>0.0066</izz>
         </inertia>
       </inertial>
       <collision name='upper2_collision'>
@@ -618,6 +655,9 @@ SOFTWARE.
     <joint name='4' type='revolute'>
       <child>upper2</child>
       <parent>hip2</parent>
+      <physics>
+        <provide_feedback>true</provide_feedback>
+      </physics>
       <axis>
         <xyz>0 -1 0</xyz>
         <limit>
@@ -689,6 +729,9 @@ SOFTWARE.
     <joint name='5' type='revolute'>
       <child>lower2</child>
       <parent>upper2</parent>
+      <physics>
+        <provide_feedback>true</provide_feedback>
+      </physics>
       <axis>
         <xyz>0 1 0</xyz>
         <limit>
@@ -710,7 +753,7 @@ SOFTWARE.
     <link name='hip3'>
       <pose frame=''>-0.2263 -0.07 0 0 -0 0</pose>
       <inertial>
-        <pose frame=''>0 0 0 0 -0 0</pose>
+        <pose frame=''>0 -0.03 0 0 -0 0</pose>
         <mass>0.575</mass>
         <inertia>
           <ixx>0.000669635</ixx>
@@ -759,6 +802,9 @@ SOFTWARE.
     <joint name='11' type='revolute'>
       <child>hip3</child>
       <parent>body</parent>
+      <physics>
+        <provide_feedback>true</provide_feedback>
+      </physics>
       <axis>
         <xyz>1 0 0</xyz>
         <limit>
@@ -780,15 +826,15 @@ SOFTWARE.
     <link name='upper3'>
       <pose frame=''>-0.2263 -0.17098 0 0 -0 0</pose>
       <inertial>
-        <pose frame=''>-0.040 0.041 0 0 -0 0</pose>
+        <pose frame=''>-0.049 0.039 0.006 0 -0 0</pose>
         <mass>0.792</mass>
         <inertia>
-          <ixx>5e-03</ixx>
-          <ixy>0</ixy>
+          <ixx>4e-04</ixx>
+          <ixy>-0.0012</ixy>
           <ixz>0</ixz>
-          <iyy>0.0070</iyy>
+          <iyy>0.0066</iyy>
           <iyz>0</iyz>
-          <izz>0.0070</izz>
+          <izz>0.0066</izz>
         </inertia>
       </inertial>
       <collision name='upper3_collision'>
@@ -828,6 +874,9 @@ SOFTWARE.
     <joint name='6' type='revolute'>
       <child>upper3</child>
       <parent>hip3</parent>
+      <physics>
+        <provide_feedback>true</provide_feedback>
+      </physics>
       <axis>
         <xyz>0 -1 0</xyz>
         <limit>
@@ -899,6 +948,9 @@ SOFTWARE.
     <joint name='7' type='revolute'>
       <child>lower3</child>
       <parent>upper3</parent>
+      <physics>
+        <provide_feedback>true</provide_feedback>
+      </physics>
       <axis>
         <xyz>0 1 0</xyz>
         <limit>
@@ -1265,6 +1317,7 @@ SOFTWARE.
 
     <!-- Publish imu sensor readings -->
     <include>
+      <!-- <uri>model://imu</uri> -->
       <uri>model://imu</uri>
       <pose>0 0 0 0 0 0 </pose>
     </include>

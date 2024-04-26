@@ -1,87 +1,76 @@
 #ifndef SPIRIT_INTERFACE_H
 #define SPIRIT_INTERFACE_H
 
+#pragma once
 #include <quad_msgs/LegCommandArray.h>
 #include <robot_driver/hardware_interfaces/hardware_interface.h>
+#include "moteus_driver/YloTwoPcanToMoteus.hpp" // ylo2 library
 #include <sensor_msgs/Imu.h>
 #include <sensor_msgs/JointState.h>
 #include <tf2/LinearMath/Quaternion.h>
 #include <tf2_geometry_msgs/tf2_geometry_msgs.h>
-
 #include <eigen3/Eigen/Eigen>
-#include <mblink/mblink.hpp>
+#include <thread> // to call imu subscriber loop under a thread
 
-using gr::MBLink;
+#define MATH_PI 3.141592
 
-struct LimbCmd_t {
-  Eigen::Vector3f pos, vel, tau;
-  short kp[3];
-  short kd[3];
-  bool restart_flag;
-};
-
-typedef std::unordered_map<std::string, Eigen::VectorXf> MBData_t;
-
-//! Hardware interface for the Spirit40 quadruped from Ghost Robotics.
-/*!
-   SpiritInterface listens for joint control messages and outputs low level
-   commands to the mainboard over mblink.
-*/
 class SpiritInterface : public HardwareInterface {
- public:
-  /**
-   * @brief Constructor for SpiritInterface
-   * @return Constructed object of type SpiritInterface
-   */
-  SpiritInterface();
 
-  /**
-   * @brief Load the hardware interface
-   * @param[in] argc Argument count
-   * @param[in] argv Argument vector
-   */
-  virtual void loadInterface(int argc, char** argv);
+   private:
+   
+      /* send a canFD MOVE frame command to send power to motors at very low fftorque, 
+      this avoids shocks at moves start, and query informations about moteus controller*/
+      bool booting_motors();
 
-  /**
-   * @brief Unload the hardware interface
-   */
-  virtual void unloadInterface();
+      /** @brief Sends a zero command to the robot */
+      bool send_zero_command();
 
-  /**
-   * @brief Send commands to the robot via the mblink protocol
-   * @param[in] leg_command_array_msg Message containing leg commands
-   * @param[in] user_data Vector containing user data
-   * @return boolean indicating success of transmission
-   */
-  virtual bool send(const quad_msgs::LegCommandArray& leg_command_array_msg,
-                    const Eigen::VectorXd& user_tx_data);
+      /** @brief Executes the robot's startup routine */
+      bool startup_routine();
 
-  /**
-   * @brief Recieve data from the robot via the mblink protocol
-   * @param[out] joint_state_msg Message containing joint state information
-   * @param[out] imu_msg Message containing imu information
-   * @param[out] user_data Vector containing user data
-   * @return Boolean for whether data was successfully received
-   */
-  virtual bool recv(sensor_msgs::JointState& joint_state_msg,
-                    sensor_msgs::Imu& imu_msg, Eigen::VectorXd& user_rx_data);
+      // 2*PI
+      const float TWO_M_PI = 6.28318531;
 
-  /// Pointer to MBLink object
-  MBLink mblink_;
+      // flag to authorize walk
+      bool is_up_flag = false;
 
-  /// Mainboard data
-  MBData_t mbdata_;
+      //  robot position is sitted
+      std::vector<float>sit_down_joints_pose = { -0.0461273193359375, -0.1825408935546875,  0.371002197265625,  // 3, 1, 2
+                                            0.04315185546875,    0.18280029296875,   -0.373260498046875,  // 6, 4, 5
+                                            0.0385894775390625, -0.1865081787109375,  0.371063232421875,  // 9, 7, 8
+                                           -0.04425048828125,    0.188568115234375,  -0.372222900390625}; // 12, 10, 11
 
-  /// Vector of joint names
-  std::vector<std::string> joint_names_ = {"8",  "0", "1", "9",  "2", "3",
+   public:
+
+      SpiritInterface();
+
+      virtual void loadInterface(int argc, char** argv) override;
+
+      virtual void unloadInterface() override;
+
+      virtual bool send(const quad_msgs::LegCommandArray& leg_command_array_msg,
+                    const Eigen::VectorXd& user_tx_data) override;
+
+      virtual bool recv(sensor_msgs::JointState& joint_state_msg,
+                    sensor_msgs::Imu& imu_msg, Eigen::VectorXd& user_rx_data) override;
+  
+      /// Vector of joint names
+      std::vector<std::string> joint_names_ = {"8",  "0", "1", "9",  "2", "3",
                                            "10", "4", "5", "11", "6", "7"};
 
-  /// Vector denoting joint indices
-  std::vector<int> joint_indices_ = {8, 0, 1, 9, 2, 3, 10, 4, 5, 11, 6, 7};
+      /// Vector denoting joint indices
+      std::vector<int> joint_indices_ = {8, 0, 1, 9, 2, 3, 10, 4, 5, 11, 6, 7};
 
-  /// Vector of kt values for each joint
-  std::vector<double> kt_vec_ = {0.546, 0.546, 1.092, 0.546, 0.546, 1.092,
+      /// Vector of kt values for each joint
+      std::vector<double> kt_vec_ = {0.546, 0.546, 1.092, 0.546, 0.546, 1.092,
                                  0.546, 0.546, 1.092, 0.546, 0.546, 1.092};
-};
+
+      float joint_position = 0.0;
+      float joint_velocity = 0.0;
+      float joint_fftorque = 0.0;
+      float joint_kp       = 0.0;
+      float joint_kd       = 0.0;
+
+}; // end class
 
 #endif  // SPIRIT_INTERFACE_H

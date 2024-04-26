@@ -68,7 +68,7 @@
         <geometry>
           <mesh>
             <scale>1 1 1</scale>
-            <uri>model://a1_description/meshes/trunk.dae</uri>
+            <uri>model:///meshes/trunk.dae</uri>
           </mesh>
         </geometry>
         <material>
@@ -154,7 +154,7 @@
         <geometry>
           <mesh>
             <scale>1 1 1</scale>
-            <uri>model://a1_description/meshes/hip.dae</uri>
+            <uri>model:///meshes/hip.dae</uri>
           </mesh>
         </geometry>
         <material>
@@ -170,6 +170,9 @@
     <joint name='10' type='revolute'>
       <child>hip2</child>
       <parent>body</parent>
+      <physics>
+        <provide_feedback>true</provide_feedback>
+      </physics>
       <axis>
         <xyz>1 0 0</xyz>
         <limit>
@@ -228,7 +231,7 @@
         <geometry>
           <mesh>
             <scale>1 1 1</scale>
-            <uri>model://a1_description/meshes/thigh_mirror.dae</uri>
+            <uri>model:///meshes/thigh_mirror.dae</uri>
           </mesh>
         </geometry>
         <material>
@@ -245,6 +248,9 @@
     <joint name='4' type='revolute'>
       <child>upper2</child>
       <parent>hip2</parent>
+      <physics>
+        <provide_feedback>true</provide_feedback>
+      </physics>
       <axis>
         <xyz>0 -1 0</xyz>
         <limit>
@@ -300,7 +306,7 @@
         <geometry>
           <mesh>
             <scale>1 1 1</scale>
-            <uri>model://a1_description/meshes/calf.dae</uri>
+            <uri>model:///meshes/calf.dae</uri>
           </mesh>
         </geometry>
         <material>
@@ -317,6 +323,9 @@
     <joint name='5' type='revolute'>
       <child>lower2</child>
       <parent>upper2</parent>
+      <physics>
+        <provide_feedback>true</provide_feedback>
+      </physics>
       <axis>
         <xyz>0 1 0</xyz>
         <limit>
@@ -465,7 +474,7 @@
         <geometry>
           <mesh>
             <scale>1 1 1</scale>
-            <uri>model://a1_description/meshes/hip.dae</uri>
+            <uri>model:///meshes/hip.dae</uri>
           </mesh>
         </geometry>
         <material>
@@ -481,6 +490,9 @@
     <joint name='11' type='revolute'>
       <child>hip3</child>
       <parent>body</parent>
+      <physics>
+        <provide_feedback>true</provide_feedback>
+      </physics>
       <axis>
         <xyz>1 0 0</xyz>
         <limit>
@@ -539,7 +551,7 @@
         <geometry>
           <mesh>
             <scale>1 1 1</scale>
-            <uri>model://a1_description/meshes/thigh_mirror.dae</uri>
+            <uri>model:///meshes/thigh_mirror.dae</uri>
           </mesh>
         </geometry>
         <material>
@@ -556,6 +568,9 @@
     <joint name='6' type='revolute'>
       <child>upper3</child>
       <parent>hip3</parent>
+      <physics>
+        <provide_feedback>true</provide_feedback>
+      </physics>
       <axis>
         <xyz>0 -1 0</xyz>
         <limit>
@@ -611,7 +626,7 @@
         <geometry>
           <mesh>
             <scale>1 1 1</scale>
-            <uri>model://a1_description/meshes/calf.dae</uri>
+            <uri>model:///meshes/calf.dae</uri>
           </mesh>
         </geometry>
         <material>
@@ -628,6 +643,9 @@
     <joint name='7' type='revolute'>
       <child>lower3</child>
       <parent>upper3</parent>
+      <physics>
+        <provide_feedback>true</provide_feedback>
+      </physics>
       <axis>
         <xyz>0 1 0</xyz>
         <limit>
@@ -776,7 +794,7 @@
         <geometry>
           <mesh>
             <scale>1 1 1</scale>
-            <uri>model://a1_description/meshes/hip.dae</uri>
+            <uri>model:///meshes/hip.dae</uri>
           </mesh>
         </geometry>
         <material>
@@ -792,6 +810,9 @@
     <joint name='8' type='revolute'>
       <child>hip0</child>
       <parent>body</parent>
+      <physics>
+        <provide_feedback>true</provide_feedback>
+      </physics>
       <axis>
         <xyz>1 0 0</xyz>
         <limit>
@@ -850,7 +871,7 @@
         <geometry>
           <mesh>
             <scale>1 1 1</scale>
-            <uri>model://a1_description/meshes/thigh.dae</uri>
+            <uri>model:///meshes/thigh.dae</uri>
           </mesh>
         </geometry>
         <material>
@@ -867,6 +888,9 @@
     <joint name='0' type='revolute'>
       <child>upper0</child>
       <parent>hip0</parent>
+      <physics>
+        <provide_feedback>true</provide_feedback>
+      </physics>
       <axis>
         <xyz>0 -1 0</xyz>
         <limit>
@@ -922,7 +946,7 @@
         <geometry>
           <mesh>
             <scale>1 1 1</scale>
-            <uri>model://a1_description/meshes/calf.dae</uri>
+            <uri>model:///meshes/calf.dae</uri>
           </mesh>
         </geometry>
         <material>
@@ -939,6 +963,9 @@
     <joint name='1' type='revolute'>
       <child>lower0</child>
       <parent>upper0</parent>
+      <physics>
+        <provide_feedback>true</provide_feedback>
+      </physics>
       <axis>
         <xyz>0 1 0</xyz>
         <limit>
@@ -1087,7 +1114,7 @@
         <geometry>
           <mesh>
             <scale>1 1 1</scale>
-            <uri>model://a1_description/meshes/hip.dae</uri>
+            <uri>model:///meshes/hip.dae</uri>
           </mesh>
         </geometry>
         <material>
@@ -1103,6 +1130,9 @@
     <joint name='9' type='revolute'>
       <child>hip1</child>
       <parent>body</parent>
+      <physics>
+        <provide_feedback>true</provide_feedback>
+      </physics>
       <axis>
         <xyz>1 0 0</xyz>
         <limit>
@@ -1161,7 +1191,7 @@
         <geometry>
           <mesh>
             <scale>1 1 1</scale>
-            <uri>model://a1_description/meshes/thigh.dae</uri>
+            <uri>model:///meshes/thigh.dae</uri>
           </mesh>
         </geometry>
         <material>
@@ -1178,6 +1208,9 @@
     <joint name='2' type='revolute'>
       <child>upper1</child>
       <parent>hip1</parent>
+      <physics>
+        <provide_feedback>true</provide_feedback>
+      </physics>
       <axis>
         <xyz>0 -1 0</xyz>
         <limit>
@@ -1233,7 +1266,7 @@
         <geometry>
           <mesh>
             <scale>1 1 1</scale>
-            <uri>model://a1_description/meshes/calf.dae</uri>
+            <uri>model:///meshes/calf.dae</uri>
           </mesh>
         </geometry>
         <material>
@@ -1250,6 +1283,9 @@
     <joint name='3' type='revolute'>
       <child>lower1</child>
       <parent>upper1</parent>
+      <physics>
+        <provide_feedback>true</provide_feedback>
+      </physics>
       <axis>
         <xyz>0 1 0</xyz>
         <limit>
