@@ -34,7 +34,7 @@ class EKFEstimator : public StateEstimator {
   EKFEstimator();
 
   void init(ros::NodeHandle& nh);
-  bool updateOnce(quad_msgs::RobotState& last_robot_state_msg_);
+  bool updateOnce(quad_msgs::RobotState& last_robot_state_msg_, int& control_mode_);
 
   /**
    * @brief Calls ros spinOnce and pubs data at set frequency

@@ -28,7 +28,7 @@ class CompFilterEstimator : public StateEstimator {
    * @brief Perform CF update once
    * @param[out] last_robot_state_msg
    */
-  bool updateOnce(quad_msgs::RobotState& last_robot_state_msg);
+  bool updateOnce(quad_msgs::RobotState& last_robot_state_msg, int& control_mode_);
 
  private:
   /// Struct of second-order low/high pass filter with derivative/intergral

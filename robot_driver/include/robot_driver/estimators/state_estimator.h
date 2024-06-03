@@ -35,7 +35,7 @@ class StateEstimator {
    * derived class
    * @param[out] last_robot_state_msg robot state
    */
-  virtual bool updateOnce(quad_msgs::RobotState& last_robot_state_msg) = 0;
+  virtual bool updateOnce(quad_msgs::RobotState& last_robot_state_msg, int& control_mode) = 0;
 
   /**
    * @brief Read IMU data

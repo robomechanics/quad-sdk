@@ -79,7 +79,7 @@ void EKFEstimator::init(ros::NodeHandle& nh) {
   ROS_INFO_STREAM("Initialized EKF Estimator");
 }
 
-bool EKFEstimator::updateOnce(quad_msgs::RobotState& last_robot_state_msg_) {
+bool EKFEstimator::updateOnce(quad_msgs::RobotState& last_robot_state_msg_, int& control_mode_) {
   ros::Time state_timestamp = ros::Time::now();
   last_joint_state_msg_.header.stamp = state_timestamp;
   last_imu_msg_.header.stamp = state_timestamp;
@@ -89,7 +89,6 @@ bool EKFEstimator::updateOnce(quad_msgs::RobotState& last_robot_state_msg_) {
 
   // Define Initial State, Preallocated Space for State Vectors
   X0 = Eigen::VectorXd::Zero(num_state);
-
   // set noise
   this->setNoise();
   if (initialized) {
@@ -98,13 +97,13 @@ bool EKFEstimator::updateOnce(quad_msgs::RobotState& last_robot_state_msg_) {
       quad_utils::fkRobotState(*quadKD_, last_robot_state_msg_);
     }
   }
-
   // Run Step Once to Calculate Change in State Once Local Planner Starts
   if (control_mode_ == 1) {
     if (initialized) {
       // Set Start Time on Initialization
       last_time = ros::Time::now();
       setInitialState(last_robot_state_msg_);
+      
       // Initialize Filter
       P = P0_ * Eigen::MatrixXd::Identity(num_cov, num_cov);
       X0 << last_robot_state_msg_.body.pose.position.x,
@@ -133,7 +132,6 @@ bool EKFEstimator::updateOnce(quad_msgs::RobotState& last_robot_state_msg_) {
     auto new_state_est = this->StepOnce();
     last_robot_state_msg_ = new_state_est;
     last_robot_state_msg_.joints = last_joint_state_msg_;
-
     // Update Foot Positions using Forward Kinematics
     quad_utils::fkRobotState(*quadKD_, last_robot_state_msg_);  // for(int i = 0; i < num_feet; ++i){
   //   foot_pos_rel_world.segment(3*i, 3) = last_X.segment(3*i + 6 , 3) - body_world_pose; // Body Pose - Foot Pose is 
@@ -281,12 +279,13 @@ quad_msgs::RobotState EKFEstimator::StepOnce() {
   // std::cout << "this is X predict" << X_pre.transpose() << std::endl;
 
   // for testing prediction step
-  // X = X_pre;
-  // P = P_pre;
-  // last_X = X;
+  X = X_pre;
+  P = P_pre;
+  ROS_INFO_STREAM("Makes it Here");
+  last_X = X;
 
   /// Update Step
-  this->update(jk, fk, vk, wk, qk, R_w_imu);  // Uncomment for Update Step
+  // this->update(jk, fk, vk, wk, qk, R_w_imu);  // Uncomment for Update Step
   // std::cout << "this is X update" << X.transpose() << std::endl;
 
   // last_X = X;
@@ -376,9 +375,11 @@ void EKFEstimator::predict(const double& dt, const Eigen::VectorXd& fk,
   Q.block<3, 3>(0, 0) = na_ * dt / 20.0 * Eigen::MatrixXd::Identity(3, 3);
   Q.block<3, 3>(3, 3) =
       na_ * dt * 9.81 / 20.0 * Eigen::MatrixXd::Identity(3, 3);
-
+  ROS_INFO_STREAM("The Goods");
   // Resolve for Q depending on contact states
   for (int i = 0; i < num_feet; ++i) {
+    // ROS_INFO_STREAM("HERE")
+    // ROS_INFO_STREAM((*last_grf_msg_).contact_states[i]);
     if ((*last_grf_msg_).contact_states[i]) {
       Q.block<3, 3>(3 * i + 6, 3 * i + 6) =
           (1.0) * nf_ * dt * Eigen::MatrixXd::Identity(3, 3);
@@ -387,7 +388,7 @@ void EKFEstimator::predict(const double& dt, const Eigen::VectorXd& fk,
           (1.0 + contact_w_) * nf_ * dt * Eigen::MatrixXd::Identity(3, 3);
     }
   }
-
+  ROS_INFO_STREAM("No Goods");
   // Generate Control Input U
   // May Need to add a Rotation Matrix to Compensate for Frames Here
   g = Eigen::Vector3d(0, 0, -9.81);

@@ -419,12 +419,12 @@ bool RobotDriver::updateState() {
     if (state_estimator_ != nullptr) {
       // Check the Message Here
       if (estimator_id_ == "comp_filter") {
-        ekf_estimator_->updateOnce(state_estimate_);
+        ekf_estimator_->updateOnce(state_estimate_, control_mode_);
       }
       if (estimator_id_ == "ekf_filter") {
-        comp_estimator_->updateOnce(state_estimate_);
+        comp_estimator_->updateOnce(state_estimate_, control_mode_);
       }
-      return state_estimator_->updateOnce(last_robot_state_msg_);
+      return state_estimator_->updateOnce(last_robot_state_msg_, control_mode_);
     } else {
       ROS_WARN_THROTTLE(1, "No state estimator is initialized");
       return false;
@@ -438,17 +438,25 @@ bool RobotDriver::updateState() {
         last_joint_state_msg_.velocity = last_robot_state_msg_.joints.velocity;
         initialized_ = true;
         ROS_INFO_STREAM("Initializes Filter");
-        ROS_INFO_STREAM(estimated_state_);
+        ROS_INFO_STREAM(last_local_plan_msg_);
+        // ROS_INFO_STREAM(estimated_state_);
       }
       if (estimator_id_ == "comp_filter") {
-        estimated_state_ = last_robot_state_msg_;
         // Update State Estimate once GRF's are being Published
-        if (grf_array_msg_.vectors[0].x != 0 && control_mode_ == READY) {
+        // if (grf_array_msg_.vectors[0].x != 0 && control_mode_ == READY) {
+        if (last_local_plan_msg_!= NULL && control_mode_ == READY) {
+          ROS_INFO_STREAM("Updateing");
           last_joint_state_msg_.position =
               last_robot_state_msg_.joints.position;
           last_joint_state_msg_.velocity =
               last_robot_state_msg_.joints.velocity;
-          ekf_estimator_->updateOnce(estimated_state_);
+          // std::cout << "Before" <<std::endl;
+          ekf_estimator_->updateOnce(estimated_state_, control_mode_);
+          // std::cout << "After" <<std::endl;
+        }
+        else{
+          // ROS_INFO_STREAM("FUCKED UP BIG TIME");
+          // estimated_state_ = last_robot_state_msg_;
         }
       }
 
@@ -460,7 +468,7 @@ bool RobotDriver::updateState() {
           last_joint_state_msg_.velocity =
               last_robot_state_msg_.joints.velocity;
           // estimated_state_.joints = last_robot_state_msg_.joints;
-          state_estimator_->updateOnce(estimated_state_);
+          state_estimator_->updateOnce(estimated_state_, control_mode_);
         }
       }
     }
