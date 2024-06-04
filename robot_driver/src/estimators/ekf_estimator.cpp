@@ -102,7 +102,9 @@ bool EKFEstimator::updateOnce(quad_msgs::RobotState& last_robot_state_msg_, int&
     if (initialized) {
       // Set Start Time on Initialization
       last_time = ros::Time::now();
+      if(is_hardware_){
       setInitialState(last_robot_state_msg_);
+      }
       
       // Initialize Filter
       P = P0_ * Eigen::MatrixXd::Identity(num_cov, num_cov);
@@ -281,7 +283,6 @@ quad_msgs::RobotState EKFEstimator::StepOnce() {
   // for testing prediction step
   X = X_pre;
   P = P_pre;
-  ROS_INFO_STREAM("Makes it Here");
   last_X = X;
 
   /// Update Step

@@ -445,7 +445,7 @@ bool RobotDriver::updateState() {
         // Update State Estimate once GRF's are being Published
         // if (grf_array_msg_.vectors[0].x != 0 && control_mode_ == READY) {
         if (last_local_plan_msg_!= NULL && control_mode_ == READY) {
-          ROS_INFO_STREAM("Updateing");
+          ROS_INFO_STREAM("Updating");
           last_joint_state_msg_.position =
               last_robot_state_msg_.joints.position;
           last_joint_state_msg_.velocity =
@@ -454,9 +454,10 @@ bool RobotDriver::updateState() {
           ekf_estimator_->updateOnce(estimated_state_, control_mode_);
           // std::cout << "After" <<std::endl;
         }
-        else{
-          // ROS_INFO_STREAM("FUCKED UP BIG TIME");
-          // estimated_state_ = last_robot_state_msg_;
+        else if(last_local_plan_msg_== NULL && control_mode_ == READY){
+          // Local Planner Not Running, but waiting for robot to fully stand in Sim
+          ROS_INFO_STREAM("FUCKED UP BIG TIME");
+          estimated_state_ = last_robot_state_msg_;
         }
       }
 
