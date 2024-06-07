@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<package format="2">
+  <name>spot_description</name>
+  <version>1.1.0</version>
+  <description>The spot_description package</description>
+
+  <maintainer email="michal@robots.ox.ac.uk">Michal Staniaszek</maintainer>
+
+  <license>BSD</license>
+
+  <buildtool_depend>catkin</buildtool_depend>
+
+  <exec_depend>robot_state_publisher</exec_depend>
+  <exec_depend>urdf</exec_depend>
+  <exec_depend>velodyne_description</exec_depend>
+  <exec_depend>xacro</exec_depend>
+
+  <export>
+  </export>
+</package>

@@ -1,0 +1,238 @@
+<?xml version="1.0" ?>
+<robot name="spot_arm" xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+<material name="silver">
+  <color rgba="0.700 0.700 0.700 1.000"/>
+</material>
+
+<link name="base_arm_link">
+  <inertial>
+    <origin rpy="0 0 0" xyz="1.2371844231029972e-17 0.0 0.0325"/>
+    <mass value="5.770791545379091"/>
+    <inertia ixx="0.007226" ixy="-0.0" ixz="0.0" iyy="0.007226" iyz="0.0" izz="0.010387"/>
+  </inertial>
+  <visual>
+    <origin rpy="0 0 0" xyz="0 0 0"/>
+    <geometry>
+      <mesh filename="package://spot_description/meshes/arm/base_link.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+    <material name="silver"/>
+  </visual>
+  <collision>
+    <origin rpy="0 0 0" xyz="0 0 0"/>
+    <geometry>
+      <mesh filename="package://spot_description/meshes/arm/base_link.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+  </collision>
+</link>
+
+<link name="link4">
+  <inertial>
+    <origin rpy="0 0 0" xyz="-0.00911464892336129 0.12606054498393937 5.551115123125783e-17"/>
+    <mass value="10.95245995004642"/>
+    <inertia ixx="0.066789" ixy="0.011971" ixz="-0.0" iyy="0.014993" iyz="0.0" izz="0.071949"/>
+  </inertial>
+  <visual>
+    <origin rpy="0 0 0" xyz="0.001 -0.4505 -0.0475"/>
+    <geometry>
+      <mesh filename="package://spot_description/meshes/arm/link4.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+    <material name="silver"/>
+  </visual>
+  <collision>
+    <origin rpy="0 0 0" xyz="0.001 -0.4505 -0.0475"/>
+    <geometry>
+      <mesh filename="package://spot_description/meshes/arm/link4.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+  </collision>
+</link>
+
+<link name="gripper">
+  <inertial>
+    <origin rpy="0 0 0" xyz="-8.366123908053191e-08 0.07051371901138614 0.017123167388316526"/>
+    <mass value="5.9780007036604434"/>
+    <inertia ixx="0.01723" ixy="0.0" ixz="0.0" iyy="0.00734" iyz="-0.003871" izz="0.0153"/>
+  </inertial>
+  <visual>
+    <origin rpy="0 0 0" xyz="0.0085 -0.77959 -0.0475"/>
+    <geometry>
+      <mesh filename="package://spot_description/meshes/arm/gripper.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+    <material name="silver"/>
+  </visual>
+  <collision>
+    <origin rpy="0 0 0" xyz="0.0085 -0.77959 -0.0475"/>
+    <geometry>
+      <mesh filename="package://spot_description/meshes/arm/gripper.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+  </collision>
+</link>
+
+<link name="finger">
+  <inertial>
+    <origin rpy="0 0 0" xyz="0.8635899028063472 0.09862056591557622 0.00850232975194119"/>
+    <mass value="1.71236178687828"/>
+    <inertia ixx="0.002129" ixy="0.0" ixz="-0.0" iyy="0.001681" iyz="0.000162" izz="0.003403"/>
+  </inertial>
+  <visual>
+    <origin rpy="0 0 0" xyz="0.87709 -0.823505 -0.0185"/>
+    <geometry>
+      <mesh filename="package://spot_description/meshes/arm/finger.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+    <material name="silver"/>
+  </visual>
+  <collision>
+    <origin rpy="0 0 0" xyz="0.87709 -0.823505 -0.0185"/>
+    <geometry>
+      <mesh filename="package://spot_description/meshes/arm/finger.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+  </collision>
+</link>
+
+<link name="link2">
+  <inertial>
+    <origin rpy="0 0 0" xyz="-0.0163095589512068 0.17540914221218962 0.0"/>
+    <mass value="12.658281999999998"/>
+    <inertia ixx="0.12979" ixy="0.002625" ixz="0.0" iyy="0.01004" iyz="0.0" izz="0.129493"/>
+  </inertial>
+  <visual>
+    <origin rpy="0 0 0" xyz="-0.015 -0.0 -0.115"/>
+    <geometry>
+      <mesh filename="package://spot_description/meshes/arm/link2.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+    <material name="silver"/>
+  </visual>
+  <collision>
+    <origin rpy="0 0 0" xyz="-0.015 -0.0 -0.115"/>
+    <geometry>
+      <mesh filename="package://spot_description/meshes/arm/link2.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+  </collision>
+</link>
+
+<link name="link1">
+  <inertial>
+    <origin rpy="0 0 0" xyz="0.05071972800114364 -1.0308563411658574e-17 0.04676911608650795"/>
+    <mass value="6.925827706354272"/>
+    <inertia ixx="0.01241" ixy="-0.0" ixz="-0.001047" iyy="0.010387" iyz="0.0" izz="0.012306"/>
+  </inertial>
+  <visual>
+    <origin rpy="0 0 0" xyz="-0.0 -0.0 -0.065"/>
+    <geometry>
+      <mesh filename="package://spot_description/meshes/arm/link1.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+    <material name="silver"/>
+  </visual>
+  <collision>
+    <origin rpy="0 0 0" xyz="-0.0 -0.0 -0.065"/>
+    <geometry>
+      <mesh filename="package://spot_description/meshes/arm/link1.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+  </collision>
+</link>
+
+<link name="wrist">
+  <inertial>
+    <origin rpy="0 0 0" xyz="0.03954999709763633 0.03472006124891969 4.209155544249166e-08"/>
+    <mass value="3.2278801394086396"/>
+    <inertia ixx="0.00339" ixy="-2.1e-05" ixz="0.0" iyy="0.002242" iyz="-0.0" izz="0.003439"/>
+  </inertial>
+  <visual>
+    <origin rpy="0 0 0" xyz="0.0485 -0.69859 -0.0475"/>
+    <geometry>
+      <mesh filename="package://spot_description/meshes/arm/wrist.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+    <material name="silver"/>
+  </visual>
+  <collision>
+    <origin rpy="0 0 0" xyz="0.0485 -0.69859 -0.0475"/>
+    <geometry>
+      <mesh filename="package://spot_description/meshes/arm/wrist.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+  </collision>
+</link>
+
+<link name="link3">
+  <inertial>
+    <origin rpy="0 0 0" xyz="-0.015621881612358529 0.06665620790957599 -0.058074231003688394"/>
+    <mass value="7.368455487741179"/>
+    <inertia ixx="0.018073" ixy="0.000915" ixz="-0.00101" iyy="0.011789" iyz="0.003728" izz="0.01667"/>
+  </inertial>
+  <visual>
+    <origin rpy="0 0 0" xyz="-0.017 -0.3125 -0.115"/>
+    <geometry>
+      <mesh filename="package://spot_description/meshes/arm/link3.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+    <material name="silver"/>
+  </visual>
+  <collision>
+    <origin rpy="0 0 0" xyz="-0.017 -0.3125 -0.115"/>
+    <geometry>
+      <mesh filename="package://spot_description/meshes/arm/link3.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+  </collision>
+</link>
+
+<joint name="base_arm_joint" type="fixed">
+        <origin xyz="0.29 0 0.08" rpy="0 0 0" />
+        <parent link="body" />
+        <child link="base_arm_link" />
+    </joint>
+
+<joint name="arm_joint1" type="revolute">
+  <origin rpy="0 0 0" xyz="0.0 0.0 0.065"/>
+  <parent link="base_arm_link"/>
+  <child link="link1"/>
+  <axis xyz="0.0 0.0 1.0"/>
+  <limit effort="100" lower="-3.141593" upper="2.617994" velocity="100"/>
+</joint>
+
+<joint name="arm_joint2" type="revolute">
+  <origin rpy="0 0 0" xyz="0.015 0.0 0.05"/>
+  <parent link="link1"/>
+  <child link="link2"/>
+  <axis xyz="-1.0 0.0 0.0"/>
+  <limit effort="100" lower="-3.665191" upper="0.0" velocity="100"/>
+</joint>
+
+<joint name="arm_joint3" type="revolute">
+  <origin rpy="0 0 0" xyz="0.002 0.3125 0.0"/>
+  <parent link="link2"/>
+  <child link="link3"/>
+  <axis xyz="1.0 0.0 0.0"/>
+  <limit effort="100" lower="0.0" upper="2.96706" velocity="100"/>
+</joint>
+
+<joint name="arm_joint4" type="revolute">
+  <origin rpy="0 0 0" xyz="-0.018 0.138 -0.0675"/>
+  <parent link="link3"/>
+  <child link="link4"/>
+  <axis xyz="0.0 1.0 0.0"/>
+  <limit effort="100" lower="-2.879793" upper="2.879793" velocity="100"/>
+</joint>
+
+<joint name="arm_joint5" type="revolute">
+  <origin rpy="0 0 0" xyz="-0.0475 0.24809 0.0"/>
+  <parent link="link4"/>
+  <child link="wrist"/>
+  <axis xyz="1.0 0.0 0.0"/>
+  <limit effort="100" lower="-1.570796" upper="1.570796" velocity="100"/>
+</joint>
+
+<joint name="arm_joint6" type="revolute">
+  <origin rpy="0 0 0" xyz="0.04 0.081 0.0"/>
+  <parent link="wrist"/>
+  <child link="gripper"/>
+  <axis xyz="-0.0 1.0 0.0"/>
+  <limit effort="100" lower="-2.96706" upper="2.96706" velocity="100"/>
+</joint>
+
+<joint name="arm_gripper" type="revolute">
+  <origin rpy="0 0 0" xyz="-0.86859 0.043915 -0.029"/>
+  <parent link="gripper"/>
+  <child link="finger"/>
+  <axis xyz="1.0 -0.0 0.0"/>
+  <limit effort="100" lower="-1.396263" upper="0.349066" velocity="100"/>
+</joint>
+
+</robot>
