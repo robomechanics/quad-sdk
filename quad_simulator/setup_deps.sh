@@ -16,12 +16,12 @@ sudo apt install -y gazebo9 -y
 
 
 
-sudo apt install -y ros-melodic-controller-manager -y
-sudo apt install -y ros-melodic-joint-state-controller -y
-sudo apt install -y ros-melodic-gazebo-ros-pkgs -y
-sudo apt install -y ros-melodic-ros-control -y
-sudo apt install -y ros-melodic-gazebo-ros-control -y
-sudo apt install -y ros-melodic-effort-controllers -y
-sudo apt install -y ros-melodic-robot-state-publisher -y
-sudo apt install -y ros-melodic-imu-tools -y
-sudo apt install -y ros-melodic-message-to-tf -y
+sudo apt install -y ros-melodic-controller-manager
+    ros-melodic-joint-state-controller \
+    ros-melodic-gazebo-ros-pkgs \
+    ros-melodic-ros-control \
+    ros-melodic-gazebo-ros-control \
+    ros-melodic-effort-controllers \
+    ros-melodic-robot-state-publisher \
+    ros-melodic-imu-tools \
+    ros-melodic-message-to-tf
