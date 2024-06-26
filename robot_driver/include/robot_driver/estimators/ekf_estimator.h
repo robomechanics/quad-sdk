@@ -289,6 +289,9 @@ class EKFEstimator : public StateEstimator {
   // foot forward kinematics vector (24*1)
   Eigen::VectorXd foot_state;
 
+  // foot contact state vector(4*1)
+  Eigen::VectorXd foot_contact_states;
+
   // error measurement displacement vector (18 * 1)
   Eigen::Matrix<double, num_measure, 1> error_y;
 

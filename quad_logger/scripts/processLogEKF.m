@@ -28,13 +28,22 @@ end
 
 %% Set parameters
 
-bSave = false;                       % Save the figures/videos
+bSave = true;                       % Save the figures/videos
 bAnimate = false;                   % Animate the trajectory (no translation)
 bTitles = true;                     % Turn on figure titles
 bPlotLocalPlanInfo = true;          % Turn on to plot local plan information
 tWindowStates = [];                 % Specify time window for state (use [] for no clipping)
 tWindowControl = [];                % Specify time window for control (use [] for no clipping)
 tWindowLocalPlan = [];              % Specify time window for local plan (use [] for no clipping)
+
+    %% Create a directory for saving plots
+if bSave
+    timestamp = datestr(now, 'yyyy-mm-dd_HH-MM-SS');
+    plotDir = fullfile('..', 'plots', [trialName '_' timestamp]);
+    if ~exist(plotDir, 'dir')
+        mkdir(plotDir);
+    end
+end
 
 %% Load the data
 
@@ -98,6 +107,10 @@ grid on
 xlabel(t, "Time (s)")
 ylabel(t, 'Body position (m/s)')
 
+if bSave
+    saveas(gcf, fullfile(plotDir, 'Position.png'));
+end
+
 figure(2)
 t = tiledlayout(3,1);
 nexttile
@@ -133,6 +146,10 @@ grid on
 
 xlabel(t, "Time (s)")
 ylabel(t, 'Body Velocity (m/s)')
+
+if bSave
+    saveas(gcf, fullfile(plotDir, 'Velocity.png'));
+end
 
 figure(3)
 t = tiledlayout(4,1);
@@ -179,6 +196,10 @@ grid on
 
 xlabel(t, "Time (s)")
 
+if bSave
+    saveas(gcf, fullfile(plotDir, 'Orientation.png'));
+end
+
 figure(4)
 t = tiledlayout(3,1);
 nexttile
@@ -214,6 +235,10 @@ grid on
 
 xlabel(t, "Time (s)")
 
+if bSave
+    saveas(gcf, fullfile(plotDir, 'RPY.png'));
+end
+
 figure(5)
 t = tiledlayout(3,1);
 nexttile
@@ -248,6 +273,10 @@ legend("Ground Truth", "State Estimate")
 grid on
 
 xlabel(t, "Time (s)")
+
+if bSave
+    saveas(gcf, fullfile(plotDir, 'AngVel.png'));
+end
 
 
 
