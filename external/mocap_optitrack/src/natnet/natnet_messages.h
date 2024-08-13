@@ -31,6 +31,7 @@
 
 #include <vector>
 #include <mocap_optitrack/data_model.h>
+#include <rclcpp/logger.hpp>
 
 namespace natnet
 {
@@ -56,18 +57,20 @@ namespace natnet
     {
         struct RigidBodyMessagePart
         {
-            void deserialize(MessageBuffer::const_iterator&, 
+            void deserialize(
+                rclcpp::Logger,
+                MessageBuffer::const_iterator&, 
                 mocap_optitrack::RigidBody&,
                 mocap_optitrack::Version const&);
         };
 
     public:
-        virtual void deserialize(MessageBuffer const&, mocap_optitrack::DataModel*);
+        virtual void deserialize(rclcpp::Logger, MessageBuffer const&, mocap_optitrack::DataModel*);
     };
 
     struct MessageDispatcher
     {
-        static void dispatch(MessageBuffer const&, mocap_optitrack::DataModel*);
+        static void dispatch(rclcpp::Logger, MessageBuffer const&, mocap_optitrack::DataModel*);
     };
 }
 

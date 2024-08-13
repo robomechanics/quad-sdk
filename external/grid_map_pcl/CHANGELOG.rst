@@ -2,6 +2,33 @@
 Changelog for package grid_map_pcl
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+unreleased (2021-06-24)
+------------------
+* Replaced pcl_ros dependency with PCL
+* Contributors: Matthew Young (Trimble Inc) 
+
+2.2.0 (2024-07-23)
+------------------
+* Merge pull request `#443 <https://github.com/ANYbotics/grid_map/issues/443>`_ from Ryanf55/update-maintainers
+  Add Ryan as maintainer, remove Steve
+* Add Ryan as maintainer, remove Steve
+* Merge pull request `#423 <https://github.com/ANYbotics/grid_map/issues/423>`_ from Ryanf55/export-pcl-deps-correctly
+  Split PCL deps for dev and runtime
+* Split PCL deps to dev and runtime
+* Contributors: Ryan, Ryan Friedman
+
+2.1.0 (2022-11-08)
+------------------
+
+2.0.0 (2022-09-13)
+------------------
+* ci: fix tests in grid map pcl
+* fix: mark Eigen library as SYSTEM
+* fix: build error on jammy
+* Add height of cluster with the most points method
+* Initial ROS2 port
+* Contributors: Maximilian Wulf, Steve Macenski
+
 1.6.2 (2019-10-14)
 ------------------
 

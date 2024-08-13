@@ -4,6 +4,6 @@
 # (0 = front left, 1 = back left, 2 = front right, 3 = back right).
 # Accurate timing information is stored in the header
 
-Header header
+std_msgs/Header header
 uint32 traj_index
 quad_msgs/FootState[] feet

@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
-<package format="2">
+<package format="3">
   <name>quad_utils</name>
-  <version>0.0.0</version>
+  <version>0.0.1</version>
   <description>The quad_utils package</description>
 
   <!-- One maintainer tag required, multiple allowed, one person per tag -->
@@ -48,8 +48,8 @@
   <!--   <test_depend>gtest</test_depend> -->
   <!-- Use doc_depend for packages you need only for building documentation: -->
   <!--   <doc_depend>doxygen</doc_depend> -->
-  <buildtool_depend>catkin</buildtool_depend>
-  <build_depend>roscpp</build_depend>
+  <buildtool_depend>ament_cmake</buildtool_depend>
+  <build_depend>rclcpp</build_depend>
   <build_depend>std_msgs</build_depend>
   <build_depend>nav_msgs</build_depend>
   <build_depend>geometry_msgs</build_depend>
@@ -58,7 +58,7 @@
   <build_depend>grid_map_core</build_depend>
   <build_depend>grid_map_ros</build_depend>
   <build_depend>grid_map_pcl</build_depend>
-  <build_export_depend>roscpp</build_export_depend>
+  <build_export_depend>rclcpp</build_export_depend>
   <build_export_depend>std_msgs</build_export_depend>
   <build_export_depend>nav_msgs</build_export_depend>
   <build_export_depend>geometry_msgs</build_export_depend>
@@ -67,7 +67,7 @@
   <build_export_depend>grid_map_core</build_export_depend>
   <build_export_depend>grid_map_ros</build_export_depend>
   <build_export_depend>grid_map_pcl</build_export_depend>
-  <exec_depend>roscpp</exec_depend>
+  <exec_depend>rclcpp</exec_depend>
   <exec_depend>std_msgs</exec_depend>
   <exec_depend>nav_msgs</exec_depend>
   <exec_depend>geometry_msgs</exec_depend>

@@ -1,0 +1,25 @@
+sudo: required
+dist: trusty
+language: generic
+compiler:
+  - gcc
+install:
+  - export CI_ROS_DISTRO=indigo
+  - sudo sh -c 'echo "deb http://packages.ros.org/ros/ubuntu trusty main" > /etc/apt/sources.list.d/ros-latest.list'
+  - wget http://packages.ros.org/ros.key -O - | sudo apt-key add -
+  - sudo apt-get update
+  - sudo apt-get install python-rosdep -y
+  - sudo `which rosdep` init
+  - rosdep update
+  - rosdep install --default-yes --from-paths ./ --rosdistro $CI_ROS_DISTRO
+script:
+  - source /opt/ros/$CI_ROS_DISTRO/setup.bash
+  - mkdir ../build && cd ../build
+  - cmake $TRAVIS_BUILD_DIR -DCMAKE_INSTALL_PREFIX=../install
+  - make -j1
+  - make -j1 tests
+  - make -j1 run_tests
+  - catkin_test_results .
+  - make -j1 install
+notifications:
+  email: false

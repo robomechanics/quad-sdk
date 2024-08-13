@@ -4,7 +4,7 @@
 # Accurate timing information for localization is stored in the header.
 # This should match the first state in the states vector.
 
-Header header
+std_msgs/Header header
 uint32[] plan_indices
 uint32[] primitive_ids
 nav_msgs/Odometry[] states

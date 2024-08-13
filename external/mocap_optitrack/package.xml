@@ -1,7 +1,8 @@
 <?xml version="1.0"?>
+<?xml-model href="http://download.ros.org/schema/package_format2.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
 <package format="2">
   <name>mocap_optitrack</name>
-  <version>0.1.0</version>
+  <version>1.0.0</version>
   <description>
     Streaming of OptiTrack mocap data to tf
     <p>
@@ -25,14 +26,20 @@
   <author email="abencz@clearpathrobotics.com">Alex Bencz/</author>
   <author email="tony@baltovski.ca">Tony Baltovski</author>
   <author email="jyamokoski@houstonmechatronics.com">JD Yamokoski</author>
+  <author email="vinnam.kim@samsung.com">Vinnam Kim</author>
   <license>BSD</license>
 
   <url type="website">http://ros.org/wiki/mocap_optitrack</url>
   <url type="repository">https://github.com/ros-drivers/mocap_optitrack</url>
 
-  <buildtool_depend>catkin</buildtool_depend>
-  <build_depend>roslaunch</build_depend>  <!-- for roslaunch_add_file_check -->
-  <depend>roscpp</depend>
-  <depend>tf</depend>
-  <depend>geometry_msgs</depend>
+  <buildtool_depend>ament_cmake</buildtool_depend>
+  
+  <depend>rclcpp</depend>
+  <depend>tf2_ros</depend>
+  <build_export_depend>geometry_msgs</build_export_depend>
+  <build_export_depend>nav_msgs</build_export_depend>
+
+  <export>
+    <build_type>ament_cmake</build_type>
+  </export>
 </package>

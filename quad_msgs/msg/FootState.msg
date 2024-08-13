@@ -3,7 +3,7 @@
 # The states of each foot are stored in a vector of FootState messages
 # Accurate timing information is stored in the header
 
-Header header
+std_msgs/Header header
 uint32 traj_index
 geometry_msgs/Vector3 position
 geometry_msgs/Vector3 velocity

@@ -1,18 +1,27 @@
 <?xml version="1.0"?>
-<package>
+<package format="2">
   <name>teleop_twist_keyboard</name>
-  <version>1.0.0</version>
-  <description>Generic keyboard teleop for twist robots.</description>
+  <version>2.4.0</version>
+  <description>
+    A robot-agnostic teleoperation node to convert keyboard commands to Twist
+    messages.
+  </description>
 
-  <maintainer email="namniart@gmail.com">Austin Hendrix</maintainer>
+  <maintainer email="clalancette@openrobotics.org">Chris Lalancette</maintainer>
 
-  <license>BSD</license>
+  <license>BSD License 2.0</license>
 
-  <url type="website">http://wiki.ros.org/teleop_twist_keyboard</url>
-
+  <author email="namniart@gmail.com">Austin Hendrix</author>
   <author>Graylin Trevor Jay</author>
 
-  <buildtool_depend>catkin</buildtool_depend>
-  <run_depend>geometry_msgs</run_depend>
-  <run_depend>rospy</run_depend>
+  <exec_depend>geometry_msgs</exec_depend>
+  <exec_depend>rclpy</exec_depend>
+
+  <test_depend>ament_copyright</test_depend>
+  <test_depend>ament_flake8</test_depend>
+  <test_depend>ament_pep257</test_depend>
+
+  <export>
+    <build_type>ament_python</build_type>
+  </export>
 </package>

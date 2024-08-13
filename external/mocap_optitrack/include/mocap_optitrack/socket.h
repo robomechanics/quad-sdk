@@ -38,6 +38,7 @@
 #include <string>
 #include <arpa/inet.h>
 #include <stdexcept>
+#include <rclcpp/node.hpp>
 
 /// \brief Exception class thrown by socket classes in this file.
 class SocketException : public std::runtime_error
@@ -60,7 +61,7 @@ class UdpMulticastSocket
     static const int MAXRECV = 3000;
 
     /// Creates a socket and joins the multicast group with the given address
-    UdpMulticastSocket( const int local_port, const std::string multicast_ip = "224.0.0.1" );
+    UdpMulticastSocket(rclcpp::Node::SharedPtr &node, const int local_port, const std::string multicast_ip = "224.0.0.1" );
     
     ///
     ~UdpMulticastSocket();
@@ -85,6 +86,7 @@ class UdpMulticastSocket
     sockaddr_in HostAddr;
     bool remote_ip_exist;
     char buf [ MAXRECV + 1 ];
+    rclcpp::Node::SharedPtr node;
 };
 
 #endif /*__MOCAP_OPTITRACK_SOCKET_H__*/

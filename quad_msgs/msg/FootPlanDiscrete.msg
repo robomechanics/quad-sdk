@@ -3,5 +3,5 @@
 # The plan is defined as a vector of FootState messages
 # Accurate timing information is stored in the header
 
-Header header
+std_msgs/Header header
 quad_msgs/FootState[] footholds

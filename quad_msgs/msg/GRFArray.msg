@@ -2,7 +2,7 @@
 #
 # Accurate timing information is stored in the header.
 
-Header header
+std_msgs/Header header
 geometry_msgs/Vector3[] vectors
 geometry_msgs/Point[] points
 bool[] contact_states

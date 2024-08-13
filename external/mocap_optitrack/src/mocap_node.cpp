@@ -34,9 +34,9 @@
 #include <mocap_optitrack/rigid_body_publisher.h>
 #include "natnet/natnet_messages.h"
 
-// ROS includes
-#include <ros/ros.h>
-
+// ROS2 includes
+#include <rclcpp/rclcpp.hpp>
+#include <rclcpp/logger.hpp>
 
 namespace mocap_optitrack
 {
@@ -44,72 +44,88 @@ namespace mocap_optitrack
   class OptiTrackRosBridge
   {
   public:
-    OptiTrackRosBridge(ros::NodeHandle& nh,
+    OptiTrackRosBridge(
+      rclcpp::Node::SharedPtr &node,
       ServerDescription const& serverDescr, 
       PublisherConfigurations const& pubConfigs) :
-        nh(nh),
+        node(node),
+        clock(node->get_clock()),
         serverDescription(serverDescr),
         publisherConfigurations(pubConfigs)
     {
-
+      m_param_callback = node->add_on_set_parameters_callback(
+          std::bind(&OptiTrackRosBridge::parametersCallback, this, std::placeholders::_1));
     }
 
     void initialize()
     {
-      // Create socket
-      multicastClientSocketPtr.reset(
-        new UdpMulticastSocket(serverDescription.dataPort, 
-          serverDescription.multicastIpAddress)); 
-
-      if (!serverDescription.version.empty())
+      if (serverDescription.enableOptitrack)
       {
-        dataModel.setVersions(&serverDescription.version[0], &serverDescription.version[0]);
-      }
+        // Create socket
+        multicastClientSocketPtr.reset(
+            new UdpMulticastSocket(node, serverDescription.dataPort, serverDescription.multicastIpAddress));
 
-      // Need verion information from the server to properly decode any of their packets.
-      // If we have not recieved that yet, send another request.  
-      while(ros::ok() && !dataModel.hasServerInfo())
+        if (!serverDescription.version.empty())
+        {
+          dataModel.setVersions(&serverDescription.version[0], &serverDescription.version[0]);
+        }
+
+        // Need verion information from the server to properly decode any of their packets.
+        // If we have not recieved that yet, send another request.
+        while (rclcpp::ok() && !dataModel.hasServerInfo())
+        {
+          natnet::ConnectionRequestMessage connectionRequestMsg;
+          natnet::MessageBuffer connectionRequestMsgBuffer;
+          connectionRequestMsg.serialize(connectionRequestMsgBuffer, NULL);
+          int ret = multicastClientSocketPtr->send(&connectionRequestMsgBuffer[0], connectionRequestMsgBuffer.size(),
+                                                   serverDescription.commandPort);
+          if (updateDataModelFromServer()) usleep(10);
+          else sleep(1);
+
+          spin_some(node);
+        }
+        // Once we have the server info, create publishers
+        publishDispatcherPtr.reset(
+            new RigidBodyPublishDispatcher(node, dataModel.getNatNetVersion(), publisherConfigurations));
+        RCLCPP_INFO(node->get_logger(), "Initialization complete");
+        initialized = true;
+      }
+      else
       {
-        natnet::ConnectionRequestMessage connectionRequestMsg;
-        natnet::MessageBuffer connectionRequestMsgBuffer;
-        connectionRequestMsg.serialize(connectionRequestMsgBuffer, NULL);
-        int ret = multicastClientSocketPtr->send(
-          &connectionRequestMsgBuffer[0], 
-          connectionRequestMsgBuffer.size(), 
-          serverDescription.commandPort);
-
-        if (updateDataModelFromServer()) usleep(10);
+        RCLCPP_INFO(node->get_logger(), "Initialization incomplete");
+        initialized = false;
       }
-
-      // Once we have the server info, create publishers
-      publishDispatcherPtr.reset(
-        new RigidBodyPublishDispatcher(nh, 
-          dataModel.getNatNetVersion(), 
-          publisherConfigurations));
-
-      ROS_INFO("Initialization complete");
     };
 
     void run()
     {
-      ros::Time t_now = ros::Time::now();
-      while (ros::ok())
+      while (rclcpp::ok())
       {
-        if (updateDataModelFromServer())
+        if (initialized && serverDescription.enableOptitrack)
         {
-          // Maybe we got some data? If we did it would be in the form of one or more
-          // rigid bodies in the data model
-          ros::Time time = ros::Time::now();
-          // std::cout << "mocap_node time diff= " << (time - t_now).toSec() << std::endl;
-          publishDispatcherPtr->publish(time, dataModel.dataFrame.rigidBodies);
-          t_now = time;
+          if (updateDataModelFromServer())
+          {
+            // Maybe we got some data? If we did it would be in the form of one or more
+            // rigid bodies in the data model
+            const rclcpp::Time time = clock->now();
+            publishDispatcherPtr->publish(time, dataModel.dataFrame.rigidBodies, node->get_logger());
 
-          // Clear out the model to prepare for the next frame of data
-          dataModel.clear();
-
-          // If we processed some data, take a short break
-          usleep( 10 );
+            // Clear out the model to prepare for the next frame of data
+            dataModel.clear();
+          }
+            // If we processed some data, take a short break
+            usleep(100);
         }
+        else
+        {
+            if (serverDescription.enableOptitrack)
+            {
+              initialize();
+            }
+            rclcpp::sleep_for(std::chrono::seconds(1));
+        }
+        // whether receive or nor, give a short break to relieft the CPU load due to while()
+        spin_some(node);
       }
     }
 
@@ -125,7 +141,7 @@ namespace mocap_optitrack
 
         // Copy char* buffer into MessageBuffer and dispatch to be deserialized
         natnet::MessageBuffer msgBuffer(pMsgBuffer, pMsgBuffer + numBytesReceived);
-        natnet::MessageDispatcher::dispatch(msgBuffer, &dataModel);
+        natnet::MessageDispatcher::dispatch(node->get_logger(), msgBuffer, &dataModel);
 
         return true;
       }
@@ -133,12 +149,60 @@ namespace mocap_optitrack
       return false;
     };
 
-    ros::NodeHandle& nh;
+    rcl_interfaces::msg::SetParametersResult
+    parametersCallback(std::vector<rclcpp::Parameter> parameters)
+    {
+      rcl_interfaces::msg::SetParametersResult result;
+      result.successful         = true;
+      result.reason             = "";
+
+      for (const auto& param : parameters)
+      {
+        std::stringstream ss;
+        ss << "{" << param.get_name() << ", " << param.value_to_string() << "}";
+        RCLCPP_INFO(node->get_logger(), "Got parameter: '%s'", ss.str().c_str());
+
+        std::string rigid_bodies_prefix = "rigid_bodies.";
+
+        if (!param.get_name().compare(rosparam::keys::CommandPort))
+        {
+          serverDescription.commandPort = param.as_int();
+        }
+        else if (!param.get_name().compare(rosparam::keys::DataPort))
+        {
+          serverDescription.dataPort = param.as_int();
+        }
+        else if (!param.get_name().compare(rosparam::keys::MulticastIpAddress))
+        {
+          serverDescription.multicastIpAddress = param.as_string();
+        }
+        else if (!param.get_name().compare(rosparam::keys::EnableOptitrack))
+        {
+          serverDescription.enableOptitrack = param.as_bool();
+        }
+        else
+        {
+          result.successful = false;
+          result.reason     = "Parameter is not dynamic reconfigurable";
+          RCLCPP_WARN(node->get_logger(),
+                      "Parameter %s not dynamically reconfigurable",
+                      param.get_name().c_str());
+        }
+      }
+      return result;
+    }
+
+    rclcpp::Node::SharedPtr node;
+    rclcpp::Clock::SharedPtr clock;
     ServerDescription serverDescription;
     PublisherConfigurations publisherConfigurations;
     DataModel dataModel;
     std::unique_ptr<UdpMulticastSocket> multicastClientSocketPtr;
     std::unique_ptr<RigidBodyPublishDispatcher> publishDispatcherPtr;
+    bool initialized = false;
+
+    rclcpp::Node::OnSetParametersCallbackHandle::SharedPtr m_param_callback;
+
   };
 
 } // namespace
@@ -147,17 +211,17 @@ namespace mocap_optitrack
 ////////////////////////////////////////////////////////////////////////
 int main( int argc, char* argv[] )
 {
-  // Initialize ROS node
-  ros::init(argc, argv, "mocap_node");
-  ros::NodeHandle nh("~");
-
+  // Initialize ROS2 node
+  rclcpp::init(argc, argv);
+  rclcpp::Node::SharedPtr rclcpp_node = std::make_shared<rclcpp::Node>("mocap_node", rclcpp::NodeOptions().allow_undeclared_parameters(true).automatically_declare_parameters_from_overrides(true));
+  
   // Grab node configuration from rosparam
   mocap_optitrack::ServerDescription serverDescription;
   mocap_optitrack::PublisherConfigurations publisherConfigurations;
-  mocap_optitrack::NodeConfiguration::fromRosParam(nh, serverDescription, publisherConfigurations);
+  mocap_optitrack::NodeConfiguration::fromRosParam(rclcpp_node, serverDescription, publisherConfigurations);
 
   // Create node object, initialize and run
-  mocap_optitrack::OptiTrackRosBridge node(nh, serverDescription, publisherConfigurations);
+  mocap_optitrack::OptiTrackRosBridge node(rclcpp_node, serverDescription, publisherConfigurations);
   node.initialize();
   node.run();
 

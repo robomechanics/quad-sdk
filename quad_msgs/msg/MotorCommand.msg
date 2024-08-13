@@ -2,7 +2,7 @@
 #
 # Accurate timing information is stored in the header
 
-Header header
+std_msgs/Header header
 
 # Commands
 float64 pos_setpoint # Position command

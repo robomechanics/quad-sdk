@@ -4,8 +4,9 @@ echo "#########################"
 echo "Install base dependencies"
 echo "#########################"
 echo
-sudo apt install -y doxygen libeigen3-dev python3-catkin-tools python3-pip
-pip install cpplint
+sudo apt install -y doxygen libeigen3-dev python3-pip
+sudo apt install -y python3-colcon-common-extensions
+pip3 install cpplint
 
 # Install all dependencies from package setup files
 echo
@@ -29,4 +30,4 @@ echo "#######################"
 echo "Install all rosdeps"
 echo "#######################"
 echo
-rosdep install --from-paths .. --ignore-src -r -y --rosdistro noetic
+rosdep install --from-paths .. --ignore-src -r -y --rosdistro jazzy

@@ -4,9 +4,9 @@
 # Accurate timing information for localization is stored in the header.
 # This should match the first state in the states vector.
 
-Header header
-time global_plan_timestamp
-time state_timestamp
+std_msgs/Header header
+builtin_interfaces/Time global_plan_timestamp
+builtin_interfaces/Time state_timestamp
 quad_msgs/RobotState[] states
 quad_msgs/GRFArray[] grfs
 uint32[] plan_indices

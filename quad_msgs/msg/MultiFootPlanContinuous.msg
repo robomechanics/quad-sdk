@@ -3,5 +3,5 @@
 # The plan is defined as a vector of MultiFootState messages
 # Accurate timing information to localize the plans is stored in the header
 
-Header header
+std_msgs/Header header
 quad_msgs/MultiFootState[] states

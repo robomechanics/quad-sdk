@@ -2,6 +2,6 @@
 #
 # Accurate timing information is stored in the header
 
-Header header
+std_msgs/Header header
 
 LegCommand[] leg_commands # FL, BL, FR, BR

@@ -93,6 +93,13 @@ void DataModel::setVersions(int* nver, int* sver)
   hasValidServerInfo = true;
 }
 
+void DataModel::setVersions(int64_t* nver, int64_t* sver)
+{
+  serverInfo.natNetVersion.setVersion(nver[0], nver[1], nver[2], nver[3]);
+  serverInfo.serverVersion.setVersion(sver[0], sver[1], sver[2], sver[3]);
+  hasValidServerInfo = true;
+}
+
 Version const& DataModel::getNatNetVersion() const
 {
   return serverInfo.natNetVersion;

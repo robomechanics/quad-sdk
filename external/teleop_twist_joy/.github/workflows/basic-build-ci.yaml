@@ -1,0 +1,37 @@
+name: Basic Build Workflow
+
+on:
+  push:
+    branches: [rolling]
+  pull_request:
+    types: [opened, reopened, synchronize]
+
+jobs:
+  build-rolling:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+    container:
+      image: osrf/ros2:testing
+    steps:
+    - name: Checkout repo
+      uses: actions/checkout@v4
+    - name: Create Workspace
+      run: |
+        mkdir src_tmp
+        mv `find -maxdepth 1 -not -name . -not -name src_tmp` src_tmp/
+        mv src_tmp/ src/
+    - name: Install Prerequisites
+      run: |
+        bash -c 'source /opt/ros/$ROS_DISTRO/setup.bash; \
+        apt-get update && apt-get upgrade -y && rosdep update; \
+        rosdep install --from-paths src --ignore-src -y'
+    - name: Build Workspace
+      run: |
+        bash -c 'source /opt/ros/$ROS_DISTRO/setup.bash; \
+        colcon build'
+    - name: Run Tests
+      run: |
+        bash -c 'source /opt/ros/$ROS_DISTRO/setup.bash; \
+        colcon test; \
+        colcon test-result --verbose'
