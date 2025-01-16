@@ -1,0 +1,530 @@
+[0.000000] (-) TimerEvent: {}
+[0.000240] (RBDL) JobQueued: {'identifier': 'RBDL', 'dependencies': OrderedDict()}
+[0.000269] (mocap_optitrack) JobQueued: {'identifier': 'mocap_optitrack', 'dependencies': OrderedDict()}
+[0.000286] (quad_logger) JobQueued: {'identifier': 'quad_logger', 'dependencies': OrderedDict()}
+[0.000298] (quad_msgs) JobQueued: {'identifier': 'quad_msgs', 'dependencies': OrderedDict()}
+[0.000660] (RBDL) JobStarted: {'identifier': 'RBDL'}
+[0.006671] (mocap_optitrack) JobStarted: {'identifier': 'mocap_optitrack'}
+[0.010086] (quad_logger) JobStarted: {'identifier': 'quad_logger'}
+[0.012679] (quad_msgs) JobStarted: {'identifier': 'quad_msgs'}
+[0.017018] (RBDL) JobProgress: {'identifier': 'RBDL', 'progress': 'cmake'}
+[0.017499] (RBDL) Command: {'cmd': ['/usr/bin/cmake', '/home/dologan/ros2_ws/src/quad-sdk/external/rbdl-orb', '-DCMAKE_INSTALL_PREFIX=/home/dologan/ros2_ws/src/quad-sdk/install/RBDL'], 'cwd': '/home/dologan/ros2_ws/src/quad-sdk/build/RBDL', 'env': OrderedDict({'LESSOPEN': '| /usr/bin/lesspipe %s', 'CONDA_PROMPT_MODIFIER': '(base)', 'USER': 'dologan', 'GZ_CONFIG_PATH': '/opt/ros/jazzy/opt/gz_sim_vendor/share/gz:/opt/ros/jazzy/opt/sdformat_vendor/share/gz:/opt/ros/jazzy/opt/gz_gui_vendor/share/gz:/opt/ros/jazzy/opt/gz_transport_vendor/share/gz:/opt/ros/jazzy/opt/gz_rendering_vendor/share/gz:/opt/ros/jazzy/opt/gz_plugin_vendor/share/gz:/opt/ros/jazzy/opt/gz_fuel_tools_vendor/share/gz:/opt/ros/jazzy/opt/gz_msgs_vendor/share/gz:/opt/ros/jazzy/opt/gz_common_vendor/share/gz', 'XDG_SESSION_TYPE': 'wayland', 'SHLVL': '1', 'LD_LIBRARY_PATH': '/opt/ros/jazzy/opt/gz_sim_vendor/lib:/opt/ros/jazzy/opt/gz_sensors_vendor/lib:/opt/ros/jazzy/opt/gz_physics_vendor/lib:/opt/ros/jazzy/opt/sdformat_vendor/lib:/opt/ros/jazzy/opt/rviz_ogre_vendor/lib:/opt/ros/jazzy/lib/x86_64-linux-gnu:/opt/ros/jazzy/opt/gz_gui_vendor/lib:/opt/ros/jazzy/opt/gz_transport_vendor/lib:/opt/ros/jazzy/opt/gz_rendering_vendor/lib:/opt/ros/jazzy/opt/gz_plugin_vendor/lib:/opt/ros/jazzy/opt/gz_fuel_tools_vendor/lib:/opt/ros/jazzy/opt/gz_msgs_vendor/lib:/opt/ros/jazzy/opt/gz_common_vendor/lib:/opt/ros/jazzy/opt/gz_math_vendor/lib:/opt/ros/jazzy/opt/gz_utils_vendor/lib:/opt/ros/jazzy/opt/gz_tools_vendor/lib:/opt/ros/jazzy/opt/gz_ogre_next_vendor/lib:/opt/ros/jazzy/opt/gz_dartsim_vendor/lib:/opt/ros/jazzy/opt/gz_cmake_vendor/lib:/opt/ros/jazzy/lib', 'HOME': '/home/dologan', 'CONDA_SHLVL': '1', 'OLDPWD': '/home/dologan/ros2_ws/src', 'DESKTOP_SESSION': 'ubuntu', 'ROS_PYTHON_VERSION': '3', 'GNOME_SHELL_SESSION_MODE': 'ubuntu', 'GTK_MODULES': 'gail:atk-bridge', 'SYSTEMD_EXEC_PID': '2352', 'GSM_SKIP_SSH_AGENT_WORKAROUND': 'true', 'DBUS_SESSION_BUS_ADDRESS': 'unix:path=/run/user/1000/bus', 'COLORTERM': 'truecolor', '_CE_M': '', 'DEBUGINFOD_URLS': 'https://debuginfod.ubuntu.com', 'IM_CONFIG_PHASE': '1', 'WAYLAND_DISPLAY': 'wayland-0', 'ROS_DISTRO': 'jazzy', 'LOGNAME': 'dologan', '_': '/usr/bin/colcon', 'ROS_VERSION': '2', 'MEMORY_PRESSURE_WATCH': '/sys/fs/cgroup/user.slice/user-1000.slice/user@1000.service/session.slice/org.gnome.Shell@wayland.service/memory.pressure', 'XDG_SESSION_CLASS': 'user', 'USERNAME': 'dologan', 'TERM': 'xterm-256color', 'GAZEBO_MODEL_PATH': ':/home/dologan/ros2_ws/src/quad-sdk/quad_simulator/spirit_description:/home/dologan/ros2_ws/src/quad-sdk/quad_simulator/a1_description:/home/dologan/ros2_ws/src/quad-sdk/quad_simulator/other/sensor_description:/home/dologan/ros2_ws/src/quad-sdk/quad_simulator/other/objects_description:/home/dologan/ros2_ws/src/quad-sdk/quad_simulator/gazebo_scripts/worlds:/home/dologan/ros2_ws/src/quad-sdk/quad_simulator/spirit_description:/home/dologan/ros2_ws/src/quad-sdk/quad_simulator/a1_description:/home/dologan/ros2_ws/src/quad-sdk/quad_simulator/other/sensor_description:/home/dologan/ros2_ws/src/quad-sdk/quad_simulator/other/objects_description:/home/dologan/ros2_ws/src/quad-sdk/quad_simulator/gazebo_scripts/worlds', 'GNOME_DESKTOP_SESSION_ID': 'this-is-deprecated', '_CE_CONDA': '', 'PATH': '/home/dologan/anaconda3/bin:/home/dologan/anaconda3/condabin:/opt/ros/jazzy/opt/gz_msgs_vendor/bin:/opt/ros/jazzy/opt/gz_tools_vendor/bin:/opt/ros/jazzy/opt/gz_ogre_next_vendor/bin:/opt/ros/jazzy/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/snap/bin', 'SESSION_MANAGER': 'local/dologan-IdeaPad-3-15IIL05:@/tmp/.ICE-unix/2308,unix/dologan-IdeaPad-3-15IIL05:/tmp/.ICE-unix/2308', 'XDG_MENU_PREFIX': 'gnome-', 'GNOME_TERMINAL_SCREEN': '/org/gnome/Terminal/screen/62c938e4_2d34_4220_943e_b1a28f3e97af', 'GNOME_SETUP_DISPLAY': ':1', 'XDG_RUNTIME_DIR': '/run/user/1000', 'DISPLAY': ':0', 'LANG': 'en_US.UTF-8', 'XDG_CURRENT_DESKTOP': 'ubuntu:GNOME', 'XMODIFIERS': '@im=ibus', 'XDG_SESSION_DESKTOP': 'ubuntu', 'XAUTHORITY': '/run/user/1000/.mutter-Xwaylandauth.184MZ2', 'LS_COLORS': 'rs=0:di=01;34:ln=01;36:mh=00:pi=40;33:so=01;35:do=01;35:bd=40;33;01:cd=40;33;01:or=40;31;01:mi=00:su=37;41:sg=30;43:ca=00:tw=30;42:ow=34;42:st=37;44:ex=01;32:*.tar=01;31:*.tgz=01;31:*.arc=01;31:*.arj=01;31:*.taz=01;31:*.lha=01;31:*.lz4=01;31:*.lzh=01;31:*.lzma=01;31:*.tlz=01;31:*.txz=01;31:*.tzo=01;31:*.t7z=01;31:*.zip=01;31:*.z=01;31:*.dz=01;31:*.gz=01;31:*.lrz=01;31:*.lz=01;31:*.lzo=01;31:*.xz=01;31:*.zst=01;31:*.tzst=01;31:*.bz2=01;31:*.bz=01;31:*.tbz=01;31:*.tbz2=01;31:*.tz=01;31:*.deb=01;31:*.rpm=01;31:*.jar=01;31:*.war=01;31:*.ear=01;31:*.sar=01;31:*.rar=01;31:*.alz=01;31:*.ace=01;31:*.zoo=01;31:*.cpio=01;31:*.7z=01;31:*.rz=01;31:*.cab=01;31:*.wim=01;31:*.swm=01;31:*.dwm=01;31:*.esd=01;31:*.avif=01;35:*.jpg=01;35:*.jpeg=01;35:*.mjpg=01;35:*.mjpeg=01;35:*.gif=01;35:*.bmp=01;35:*.pbm=01;35:*.pgm=01;35:*.ppm=01;35:*.tga=01;35:*.xbm=01;35:*.xpm=01;35:*.tif=01;35:*.tiff=01;35:*.png=01;35:*.svg=01;35:*.svgz=01;35:*.mng=01;35:*.pcx=01;35:*.mov=01;35:*.mpg=01;35:*.mpeg=01;35:*.m2v=01;35:*.mkv=01;35:*.webm=01;35:*.webp=01;35:*.ogm=01;35:*.mp4=01;35:*.m4v=01;35:*.mp4v=01;35:*.vob=01;35:*.qt=01;35:*.nuv=01;35:*.wmv=01;35:*.asf=01;35:*.rm=01;35:*.rmvb=01;35:*.flc=01;35:*.avi=01;35:*.fli=01;35:*.flv=01;35:*.gl=01;35:*.dl=01;35:*.xcf=01;35:*.xwd=01;35:*.yuv=01;35:*.cgm=01;35:*.emf=01;35:*.ogv=01;35:*.ogx=01;35:*.aac=00;36:*.au=00;36:*.flac=00;36:*.m4a=00;36:*.mid=00;36:*.midi=00;36:*.mka=00;36:*.mp3=00;36:*.mpc=00;36:*.ogg=00;36:*.ra=00;36:*.wav=00;36:*.oga=00;36:*.opus=00;36:*.spx=00;36:*.xspf=00;36:*~=00;90:*#=00;90:*.bak=00;90:*.crdownload=00;90:*.dpkg-dist=00;90:*.dpkg-new=00;90:*.dpkg-old=00;90:*.dpkg-tmp=00;90:*.old=00;90:*.orig=00;90:*.part=00;90:*.rej=00;90:*.rpmnew=00;90:*.rpmorig=00;90:*.rpmsave=00;90:*.swp=00;90:*.tmp=00;90:*.ucf-dist=00;90:*.ucf-new=00;90:*.ucf-old=00;90:', 'GNOME_TERMINAL_SERVICE': ':1.107', 'SSH_AUTH_SOCK': '/run/user/1000/keyring/ssh', 'GSETTINGS_SCHEMA_DIR': '/home/dologan/anaconda3/share/glib-2.0/schemas', 'AMENT_PREFIX_PATH': '/opt/ros/jazzy', 'CONDA_PYTHON_EXE': '/home/dologan/anaconda3/bin/python', 'SHELL': '/bin/bash', 'QT_ACCESSIBILITY': '1', 'GDMSESSION': 'ubuntu', 'LESSCLOSE': '/usr/bin/lesspipe %s %s', 'CONDA_DEFAULT_ENV': 'base', 'ROS_AUTOMATIC_DISCOVERY_RANGE': 'SUBNET', 'QT_IM_MODULE': 'ibus', 'PWD': '/home/dologan/ros2_ws/src/quad-sdk/build/RBDL', 'LC_ALL': 'en_US.UTF-8', 'XDG_CONFIG_DIRS': '/etc/xdg/xdg-ubuntu:/etc/xdg', 'CONDA_EXE': '/home/dologan/anaconda3/bin/conda', 'XDG_DATA_DIRS': '/usr/share/ubuntu:/usr/share/gnome:/usr/local/share/:/usr/share/:/var/lib/snapd/desktop', 'PYTHONPATH': '/opt/ros/jazzy/lib/python3.12/site-packages', 'CONDA_PREFIX': '/home/dologan/anaconda3', 'GSETTINGS_SCHEMA_DIR_CONDA_BACKUP': '', 'COLCON': '1', 'MEMORY_PRESSURE_WRITE': 'c29tZSAyMDAwMDAgMjAwMDAwMAA=', 'VTE_VERSION': '7600', 'CMAKE_PREFIX_PATH': '/opt/ros/jazzy/opt/gz_sim_vendor:/opt/ros/jazzy/opt/gz_sensors_vendor:/opt/ros/jazzy/opt/gz_physics_vendor:/opt/ros/jazzy/opt/sdformat_vendor:/opt/ros/jazzy/opt/gz_gui_vendor:/opt/ros/jazzy/opt/gz_transport_vendor:/opt/ros/jazzy/opt/gz_rendering_vendor:/opt/ros/jazzy/opt/gz_plugin_vendor:/opt/ros/jazzy/opt/gz_fuel_tools_vendor:/opt/ros/jazzy/opt/gz_msgs_vendor:/opt/ros/jazzy/opt/gz_common_vendor:/opt/ros/jazzy/opt/gz_math_vendor:/opt/ros/jazzy/opt/gz_utils_vendor:/opt/ros/jazzy/opt/gz_tools_vendor:/opt/ros/jazzy/opt/gz_ogre_next_vendor:/opt/ros/jazzy/opt/gz_dartsim_vendor:/opt/ros/jazzy/opt/gz_cmake_vendor'}), 'shell': False}
+[0.019451] (mocap_optitrack) JobProgress: {'identifier': 'mocap_optitrack', 'progress': 'cmake'}
+[0.019903] (mocap_optitrack) Command: {'cmd': ['/usr/bin/cmake', '/home/dologan/ros2_ws/src/quad-sdk/external/mocap_optitrack', '-DCMAKE_INSTALL_PREFIX=/home/dologan/ros2_ws/src/quad-sdk/install/mocap_optitrack'], 'cwd': '/home/dologan/ros2_ws/src/quad-sdk/build/mocap_optitrack', 'env': OrderedDict({'LESSOPEN': '| /usr/bin/lesspipe %s', 'CONDA_PROMPT_MODIFIER': '(base)', 'USER': 'dologan', 'GZ_CONFIG_PATH': '/opt/ros/jazzy/opt/gz_sim_vendor/share/gz:/opt/ros/jazzy/opt/sdformat_vendor/share/gz:/opt/ros/jazzy/opt/gz_gui_vendor/share/gz:/opt/ros/jazzy/opt/gz_transport_vendor/share/gz:/opt/ros/jazzy/opt/gz_rendering_vendor/share/gz:/opt/ros/jazzy/opt/gz_plugin_vendor/share/gz:/opt/ros/jazzy/opt/gz_fuel_tools_vendor/share/gz:/opt/ros/jazzy/opt/gz_msgs_vendor/share/gz:/opt/ros/jazzy/opt/gz_common_vendor/share/gz', 'XDG_SESSION_TYPE': 'wayland', 'SHLVL': '1', 'LD_LIBRARY_PATH': '/opt/ros/jazzy/opt/gz_sim_vendor/lib:/opt/ros/jazzy/opt/gz_sensors_vendor/lib:/opt/ros/jazzy/opt/gz_physics_vendor/lib:/opt/ros/jazzy/opt/sdformat_vendor/lib:/opt/ros/jazzy/opt/rviz_ogre_vendor/lib:/opt/ros/jazzy/lib/x86_64-linux-gnu:/opt/ros/jazzy/opt/gz_gui_vendor/lib:/opt/ros/jazzy/opt/gz_transport_vendor/lib:/opt/ros/jazzy/opt/gz_rendering_vendor/lib:/opt/ros/jazzy/opt/gz_plugin_vendor/lib:/opt/ros/jazzy/opt/gz_fuel_tools_vendor/lib:/opt/ros/jazzy/opt/gz_msgs_vendor/lib:/opt/ros/jazzy/opt/gz_common_vendor/lib:/opt/ros/jazzy/opt/gz_math_vendor/lib:/opt/ros/jazzy/opt/gz_utils_vendor/lib:/opt/ros/jazzy/opt/gz_tools_vendor/lib:/opt/ros/jazzy/opt/gz_ogre_next_vendor/lib:/opt/ros/jazzy/opt/gz_dartsim_vendor/lib:/opt/ros/jazzy/opt/gz_cmake_vendor/lib:/opt/ros/jazzy/lib', 'HOME': '/home/dologan', 'CONDA_SHLVL': '1', 'OLDPWD': '/home/dologan/ros2_ws/src', 'DESKTOP_SESSION': 'ubuntu', 'ROS_PYTHON_VERSION': '3', 'GNOME_SHELL_SESSION_MODE': 'ubuntu', 'GTK_MODULES': 'gail:atk-bridge', 'SYSTEMD_EXEC_PID': '2352', 'GSM_SKIP_SSH_AGENT_WORKAROUND': 'true', 'DBUS_SESSION_BUS_ADDRESS': 'unix:path=/run/user/1000/bus', 'COLORTERM': 'truecolor', '_CE_M': '', 'DEBUGINFOD_URLS': 'https://debuginfod.ubuntu.com', 'IM_CONFIG_PHASE': '1', 'WAYLAND_DISPLAY': 'wayland-0', 'ROS_DISTRO': 'jazzy', 'LOGNAME': 'dologan', '_': '/usr/bin/colcon', 'ROS_VERSION': '2', 'MEMORY_PRESSURE_WATCH': '/sys/fs/cgroup/user.slice/user-1000.slice/user@1000.service/session.slice/org.gnome.Shell@wayland.service/memory.pressure', 'XDG_SESSION_CLASS': 'user', 'USERNAME': 'dologan', 'TERM': 'xterm-256color', 'GAZEBO_MODEL_PATH': ':/home/dologan/ros2_ws/src/quad-sdk/quad_simulator/spirit_description:/home/dologan/ros2_ws/src/quad-sdk/quad_simulator/a1_description:/home/dologan/ros2_ws/src/quad-sdk/quad_simulator/other/sensor_description:/home/dologan/ros2_ws/src/quad-sdk/quad_simulator/other/objects_description:/home/dologan/ros2_ws/src/quad-sdk/quad_simulator/gazebo_scripts/worlds:/home/dologan/ros2_ws/src/quad-sdk/quad_simulator/spirit_description:/home/dologan/ros2_ws/src/quad-sdk/quad_simulator/a1_description:/home/dologan/ros2_ws/src/quad-sdk/quad_simulator/other/sensor_description:/home/dologan/ros2_ws/src/quad-sdk/quad_simulator/other/objects_description:/home/dologan/ros2_ws/src/quad-sdk/quad_simulator/gazebo_scripts/worlds', 'GNOME_DESKTOP_SESSION_ID': 'this-is-deprecated', '_CE_CONDA': '', 'PATH': '/home/dologan/anaconda3/bin:/home/dologan/anaconda3/condabin:/opt/ros/jazzy/opt/gz_msgs_vendor/bin:/opt/ros/jazzy/opt/gz_tools_vendor/bin:/opt/ros/jazzy/opt/gz_ogre_next_vendor/bin:/opt/ros/jazzy/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/snap/bin', 'SESSION_MANAGER': 'local/dologan-IdeaPad-3-15IIL05:@/tmp/.ICE-unix/2308,unix/dologan-IdeaPad-3-15IIL05:/tmp/.ICE-unix/2308', 'XDG_MENU_PREFIX': 'gnome-', 'GNOME_TERMINAL_SCREEN': '/org/gnome/Terminal/screen/62c938e4_2d34_4220_943e_b1a28f3e97af', 'GNOME_SETUP_DISPLAY': ':1', 'XDG_RUNTIME_DIR': '/run/user/1000', 'DISPLAY': ':0', 'LANG': 'en_US.UTF-8', 'XDG_CURRENT_DESKTOP': 'ubuntu:GNOME', 'XMODIFIERS': '@im=ibus', 'XDG_SESSION_DESKTOP': 'ubuntu', 'XAUTHORITY': '/run/user/1000/.mutter-Xwaylandauth.184MZ2', 'LS_COLORS': 'rs=0:di=01;34:ln=01;36:mh=00:pi=40;33:so=01;35:do=01;35:bd=40;33;01:cd=40;33;01:or=40;31;01:mi=00:su=37;41:sg=30;43:ca=00:tw=30;42:ow=34;42:st=37;44:ex=01;32:*.tar=01;31:*.tgz=01;31:*.arc=01;31:*.arj=01;31:*.taz=01;31:*.lha=01;31:*.lz4=01;31:*.lzh=01;31:*.lzma=01;31:*.tlz=01;31:*.txz=01;31:*.tzo=01;31:*.t7z=01;31:*.zip=01;31:*.z=01;31:*.dz=01;31:*.gz=01;31:*.lrz=01;31:*.lz=01;31:*.lzo=01;31:*.xz=01;31:*.zst=01;31:*.tzst=01;31:*.bz2=01;31:*.bz=01;31:*.tbz=01;31:*.tbz2=01;31:*.tz=01;31:*.deb=01;31:*.rpm=01;31:*.jar=01;31:*.war=01;31:*.ear=01;31:*.sar=01;31:*.rar=01;31:*.alz=01;31:*.ace=01;31:*.zoo=01;31:*.cpio=01;31:*.7z=01;31:*.rz=01;31:*.cab=01;31:*.wim=01;31:*.swm=01;31:*.dwm=01;31:*.esd=01;31:*.avif=01;35:*.jpg=01;35:*.jpeg=01;35:*.mjpg=01;35:*.mjpeg=01;35:*.gif=01;35:*.bmp=01;35:*.pbm=01;35:*.pgm=01;35:*.ppm=01;35:*.tga=01;35:*.xbm=01;35:*.xpm=01;35:*.tif=01;35:*.tiff=01;35:*.png=01;35:*.svg=01;35:*.svgz=01;35:*.mng=01;35:*.pcx=01;35:*.mov=01;35:*.mpg=01;35:*.mpeg=01;35:*.m2v=01;35:*.mkv=01;35:*.webm=01;35:*.webp=01;35:*.ogm=01;35:*.mp4=01;35:*.m4v=01;35:*.mp4v=01;35:*.vob=01;35:*.qt=01;35:*.nuv=01;35:*.wmv=01;35:*.asf=01;35:*.rm=01;35:*.rmvb=01;35:*.flc=01;35:*.avi=01;35:*.fli=01;35:*.flv=01;35:*.gl=01;35:*.dl=01;35:*.xcf=01;35:*.xwd=01;35:*.yuv=01;35:*.cgm=01;35:*.emf=01;35:*.ogv=01;35:*.ogx=01;35:*.aac=00;36:*.au=00;36:*.flac=00;36:*.m4a=00;36:*.mid=00;36:*.midi=00;36:*.mka=00;36:*.mp3=00;36:*.mpc=00;36:*.ogg=00;36:*.ra=00;36:*.wav=00;36:*.oga=00;36:*.opus=00;36:*.spx=00;36:*.xspf=00;36:*~=00;90:*#=00;90:*.bak=00;90:*.crdownload=00;90:*.dpkg-dist=00;90:*.dpkg-new=00;90:*.dpkg-old=00;90:*.dpkg-tmp=00;90:*.old=00;90:*.orig=00;90:*.part=00;90:*.rej=00;90:*.rpmnew=00;90:*.rpmorig=00;90:*.rpmsave=00;90:*.swp=00;90:*.tmp=00;90:*.ucf-dist=00;90:*.ucf-new=00;90:*.ucf-old=00;90:', 'GNOME_TERMINAL_SERVICE': ':1.107', 'SSH_AUTH_SOCK': '/run/user/1000/keyring/ssh', 'GSETTINGS_SCHEMA_DIR': '/home/dologan/anaconda3/share/glib-2.0/schemas', 'AMENT_PREFIX_PATH': '/opt/ros/jazzy', 'CONDA_PYTHON_EXE': '/home/dologan/anaconda3/bin/python', 'SHELL': '/bin/bash', 'QT_ACCESSIBILITY': '1', 'GDMSESSION': 'ubuntu', 'LESSCLOSE': '/usr/bin/lesspipe %s %s', 'CONDA_DEFAULT_ENV': 'base', 'ROS_AUTOMATIC_DISCOVERY_RANGE': 'SUBNET', 'QT_IM_MODULE': 'ibus', 'PWD': '/home/dologan/ros2_ws/src/quad-sdk/build/mocap_optitrack', 'LC_ALL': 'en_US.UTF-8', 'XDG_CONFIG_DIRS': '/etc/xdg/xdg-ubuntu:/etc/xdg', 'CONDA_EXE': '/home/dologan/anaconda3/bin/conda', 'XDG_DATA_DIRS': '/usr/share/ubuntu:/usr/share/gnome:/usr/local/share/:/usr/share/:/var/lib/snapd/desktop', 'PYTHONPATH': '/opt/ros/jazzy/lib/python3.12/site-packages', 'CONDA_PREFIX': '/home/dologan/anaconda3', 'GSETTINGS_SCHEMA_DIR_CONDA_BACKUP': '', 'COLCON': '1', 'MEMORY_PRESSURE_WRITE': 'c29tZSAyMDAwMDAgMjAwMDAwMAA=', 'VTE_VERSION': '7600', 'CMAKE_PREFIX_PATH': '/opt/ros/jazzy/opt/gz_sim_vendor:/opt/ros/jazzy/opt/gz_sensors_vendor:/opt/ros/jazzy/opt/gz_physics_vendor:/opt/ros/jazzy/opt/sdformat_vendor:/opt/ros/jazzy/opt/gz_gui_vendor:/opt/ros/jazzy/opt/gz_transport_vendor:/opt/ros/jazzy/opt/gz_rendering_vendor:/opt/ros/jazzy/opt/gz_plugin_vendor:/opt/ros/jazzy/opt/gz_fuel_tools_vendor:/opt/ros/jazzy/opt/gz_msgs_vendor:/opt/ros/jazzy/opt/gz_common_vendor:/opt/ros/jazzy/opt/gz_math_vendor:/opt/ros/jazzy/opt/gz_utils_vendor:/opt/ros/jazzy/opt/gz_tools_vendor:/opt/ros/jazzy/opt/gz_ogre_next_vendor:/opt/ros/jazzy/opt/gz_dartsim_vendor:/opt/ros/jazzy/opt/gz_cmake_vendor:/opt/ros/jazzy'}), 'shell': False}
+[0.020894] (quad_logger) JobProgress: {'identifier': 'quad_logger', 'progress': 'cmake'}
+[0.021355] (quad_logger) Command: {'cmd': ['/usr/bin/cmake', '/home/dologan/ros2_ws/src/quad-sdk/quad_logger', '-DCATKIN_INSTALL_INTO_PREFIX_ROOT=0', '-DCMAKE_INSTALL_PREFIX=/home/dologan/ros2_ws/src/quad-sdk/install/quad_logger'], 'cwd': '/home/dologan/ros2_ws/src/quad-sdk/build/quad_logger', 'env': OrderedDict({'LESSOPEN': '| /usr/bin/lesspipe %s', 'CONDA_PROMPT_MODIFIER': '(base)', 'USER': 'dologan', 'GZ_CONFIG_PATH': '/opt/ros/jazzy/opt/gz_sim_vendor/share/gz:/opt/ros/jazzy/opt/sdformat_vendor/share/gz:/opt/ros/jazzy/opt/gz_gui_vendor/share/gz:/opt/ros/jazzy/opt/gz_transport_vendor/share/gz:/opt/ros/jazzy/opt/gz_rendering_vendor/share/gz:/opt/ros/jazzy/opt/gz_plugin_vendor/share/gz:/opt/ros/jazzy/opt/gz_fuel_tools_vendor/share/gz:/opt/ros/jazzy/opt/gz_msgs_vendor/share/gz:/opt/ros/jazzy/opt/gz_common_vendor/share/gz', 'XDG_SESSION_TYPE': 'wayland', 'SHLVL': '1', 'LD_LIBRARY_PATH': '/opt/ros/jazzy/opt/gz_sim_vendor/lib:/opt/ros/jazzy/opt/gz_sensors_vendor/lib:/opt/ros/jazzy/opt/gz_physics_vendor/lib:/opt/ros/jazzy/opt/sdformat_vendor/lib:/opt/ros/jazzy/opt/rviz_ogre_vendor/lib:/opt/ros/jazzy/lib/x86_64-linux-gnu:/opt/ros/jazzy/opt/gz_gui_vendor/lib:/opt/ros/jazzy/opt/gz_transport_vendor/lib:/opt/ros/jazzy/opt/gz_rendering_vendor/lib:/opt/ros/jazzy/opt/gz_plugin_vendor/lib:/opt/ros/jazzy/opt/gz_fuel_tools_vendor/lib:/opt/ros/jazzy/opt/gz_msgs_vendor/lib:/opt/ros/jazzy/opt/gz_common_vendor/lib:/opt/ros/jazzy/opt/gz_math_vendor/lib:/opt/ros/jazzy/opt/gz_utils_vendor/lib:/opt/ros/jazzy/opt/gz_tools_vendor/lib:/opt/ros/jazzy/opt/gz_ogre_next_vendor/lib:/opt/ros/jazzy/opt/gz_dartsim_vendor/lib:/opt/ros/jazzy/opt/gz_cmake_vendor/lib:/opt/ros/jazzy/lib', 'HOME': '/home/dologan', 'CONDA_SHLVL': '1', 'OLDPWD': '/home/dologan/ros2_ws/src', 'DESKTOP_SESSION': 'ubuntu', 'ROS_PYTHON_VERSION': '3', 'GNOME_SHELL_SESSION_MODE': 'ubuntu', 'GTK_MODULES': 'gail:atk-bridge', 'SYSTEMD_EXEC_PID': '2352', 'GSM_SKIP_SSH_AGENT_WORKAROUND': 'true', 'DBUS_SESSION_BUS_ADDRESS': 'unix:path=/run/user/1000/bus', 'COLORTERM': 'truecolor', '_CE_M': '', 'DEBUGINFOD_URLS': 'https://debuginfod.ubuntu.com', 'IM_CONFIG_PHASE': '1', 'WAYLAND_DISPLAY': 'wayland-0', 'ROS_DISTRO': 'jazzy', 'LOGNAME': 'dologan', '_': '/usr/bin/colcon', 'ROS_VERSION': '2', 'MEMORY_PRESSURE_WATCH': '/sys/fs/cgroup/user.slice/user-1000.slice/user@1000.service/session.slice/org.gnome.Shell@wayland.service/memory.pressure', 'XDG_SESSION_CLASS': 'user', 'USERNAME': 'dologan', 'TERM': 'xterm-256color', 'GAZEBO_MODEL_PATH': ':/home/dologan/ros2_ws/src/quad-sdk/quad_simulator/spirit_description:/home/dologan/ros2_ws/src/quad-sdk/quad_simulator/a1_description:/home/dologan/ros2_ws/src/quad-sdk/quad_simulator/other/sensor_description:/home/dologan/ros2_ws/src/quad-sdk/quad_simulator/other/objects_description:/home/dologan/ros2_ws/src/quad-sdk/quad_simulator/gazebo_scripts/worlds:/home/dologan/ros2_ws/src/quad-sdk/quad_simulator/spirit_description:/home/dologan/ros2_ws/src/quad-sdk/quad_simulator/a1_description:/home/dologan/ros2_ws/src/quad-sdk/quad_simulator/other/sensor_description:/home/dologan/ros2_ws/src/quad-sdk/quad_simulator/other/objects_description:/home/dologan/ros2_ws/src/quad-sdk/quad_simulator/gazebo_scripts/worlds', 'GNOME_DESKTOP_SESSION_ID': 'this-is-deprecated', '_CE_CONDA': '', 'PATH': '/home/dologan/anaconda3/bin:/home/dologan/anaconda3/condabin:/opt/ros/jazzy/opt/gz_msgs_vendor/bin:/opt/ros/jazzy/opt/gz_tools_vendor/bin:/opt/ros/jazzy/opt/gz_ogre_next_vendor/bin:/opt/ros/jazzy/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/snap/bin', 'SESSION_MANAGER': 'local/dologan-IdeaPad-3-15IIL05:@/tmp/.ICE-unix/2308,unix/dologan-IdeaPad-3-15IIL05:/tmp/.ICE-unix/2308', 'XDG_MENU_PREFIX': 'gnome-', 'GNOME_TERMINAL_SCREEN': '/org/gnome/Terminal/screen/62c938e4_2d34_4220_943e_b1a28f3e97af', 'GNOME_SETUP_DISPLAY': ':1', 'XDG_RUNTIME_DIR': '/run/user/1000', 'DISPLAY': ':0', 'LANG': 'en_US.UTF-8', 'XDG_CURRENT_DESKTOP': 'ubuntu:GNOME', 'XMODIFIERS': '@im=ibus', 'XDG_SESSION_DESKTOP': 'ubuntu', 'XAUTHORITY': '/run/user/1000/.mutter-Xwaylandauth.184MZ2', 'LS_COLORS': 'rs=0:di=01;34:ln=01;36:mh=00:pi=40;33:so=01;35:do=01;35:bd=40;33;01:cd=40;33;01:or=40;31;01:mi=00:su=37;41:sg=30;43:ca=00:tw=30;42:ow=34;42:st=37;44:ex=01;32:*.tar=01;31:*.tgz=01;31:*.arc=01;31:*.arj=01;31:*.taz=01;31:*.lha=01;31:*.lz4=01;31:*.lzh=01;31:*.lzma=01;31:*.tlz=01;31:*.txz=01;31:*.tzo=01;31:*.t7z=01;31:*.zip=01;31:*.z=01;31:*.dz=01;31:*.gz=01;31:*.lrz=01;31:*.lz=01;31:*.lzo=01;31:*.xz=01;31:*.zst=01;31:*.tzst=01;31:*.bz2=01;31:*.bz=01;31:*.tbz=01;31:*.tbz2=01;31:*.tz=01;31:*.deb=01;31:*.rpm=01;31:*.jar=01;31:*.war=01;31:*.ear=01;31:*.sar=01;31:*.rar=01;31:*.alz=01;31:*.ace=01;31:*.zoo=01;31:*.cpio=01;31:*.7z=01;31:*.rz=01;31:*.cab=01;31:*.wim=01;31:*.swm=01;31:*.dwm=01;31:*.esd=01;31:*.avif=01;35:*.jpg=01;35:*.jpeg=01;35:*.mjpg=01;35:*.mjpeg=01;35:*.gif=01;35:*.bmp=01;35:*.pbm=01;35:*.pgm=01;35:*.ppm=01;35:*.tga=01;35:*.xbm=01;35:*.xpm=01;35:*.tif=01;35:*.tiff=01;35:*.png=01;35:*.svg=01;35:*.svgz=01;35:*.mng=01;35:*.pcx=01;35:*.mov=01;35:*.mpg=01;35:*.mpeg=01;35:*.m2v=01;35:*.mkv=01;35:*.webm=01;35:*.webp=01;35:*.ogm=01;35:*.mp4=01;35:*.m4v=01;35:*.mp4v=01;35:*.vob=01;35:*.qt=01;35:*.nuv=01;35:*.wmv=01;35:*.asf=01;35:*.rm=01;35:*.rmvb=01;35:*.flc=01;35:*.avi=01;35:*.fli=01;35:*.flv=01;35:*.gl=01;35:*.dl=01;35:*.xcf=01;35:*.xwd=01;35:*.yuv=01;35:*.cgm=01;35:*.emf=01;35:*.ogv=01;35:*.ogx=01;35:*.aac=00;36:*.au=00;36:*.flac=00;36:*.m4a=00;36:*.mid=00;36:*.midi=00;36:*.mka=00;36:*.mp3=00;36:*.mpc=00;36:*.ogg=00;36:*.ra=00;36:*.wav=00;36:*.oga=00;36:*.opus=00;36:*.spx=00;36:*.xspf=00;36:*~=00;90:*#=00;90:*.bak=00;90:*.crdownload=00;90:*.dpkg-dist=00;90:*.dpkg-new=00;90:*.dpkg-old=00;90:*.dpkg-tmp=00;90:*.old=00;90:*.orig=00;90:*.part=00;90:*.rej=00;90:*.rpmnew=00;90:*.rpmorig=00;90:*.rpmsave=00;90:*.swp=00;90:*.tmp=00;90:*.ucf-dist=00;90:*.ucf-new=00;90:*.ucf-old=00;90:', 'GNOME_TERMINAL_SERVICE': ':1.107', 'SSH_AUTH_SOCK': '/run/user/1000/keyring/ssh', 'GSETTINGS_SCHEMA_DIR': '/home/dologan/anaconda3/share/glib-2.0/schemas', 'AMENT_PREFIX_PATH': '/opt/ros/jazzy', 'CONDA_PYTHON_EXE': '/home/dologan/anaconda3/bin/python', 'SHELL': '/bin/bash', 'QT_ACCESSIBILITY': '1', 'GDMSESSION': 'ubuntu', 'LESSCLOSE': '/usr/bin/lesspipe %s %s', 'CONDA_DEFAULT_ENV': 'base', 'ROS_AUTOMATIC_DISCOVERY_RANGE': 'SUBNET', 'QT_IM_MODULE': 'ibus', 'PWD': '/home/dologan/ros2_ws/src/quad-sdk/build/quad_logger', 'LC_ALL': 'en_US.UTF-8', 'XDG_CONFIG_DIRS': '/etc/xdg/xdg-ubuntu:/etc/xdg', 'CONDA_EXE': '/home/dologan/anaconda3/bin/conda', 'XDG_DATA_DIRS': '/usr/share/ubuntu:/usr/share/gnome:/usr/local/share/:/usr/share/:/var/lib/snapd/desktop', 'PYTHONPATH': '/opt/ros/jazzy/lib/python3.12/site-packages', 'CONDA_PREFIX': '/home/dologan/anaconda3', 'GSETTINGS_SCHEMA_DIR_CONDA_BACKUP': '', 'COLCON': '1', 'MEMORY_PRESSURE_WRITE': 'c29tZSAyMDAwMDAgMjAwMDAwMAA=', 'VTE_VERSION': '7600', 'CMAKE_PREFIX_PATH': '/opt/ros/jazzy/opt/gz_sim_vendor:/opt/ros/jazzy/opt/gz_sensors_vendor:/opt/ros/jazzy/opt/gz_physics_vendor:/opt/ros/jazzy/opt/sdformat_vendor:/opt/ros/jazzy/opt/gz_gui_vendor:/opt/ros/jazzy/opt/gz_transport_vendor:/opt/ros/jazzy/opt/gz_rendering_vendor:/opt/ros/jazzy/opt/gz_plugin_vendor:/opt/ros/jazzy/opt/gz_fuel_tools_vendor:/opt/ros/jazzy/opt/gz_msgs_vendor:/opt/ros/jazzy/opt/gz_common_vendor:/opt/ros/jazzy/opt/gz_math_vendor:/opt/ros/jazzy/opt/gz_utils_vendor:/opt/ros/jazzy/opt/gz_tools_vendor:/opt/ros/jazzy/opt/gz_ogre_next_vendor:/opt/ros/jazzy/opt/gz_dartsim_vendor:/opt/ros/jazzy/opt/gz_cmake_vendor'}), 'shell': False}
+[0.025225] (quad_msgs) JobProgress: {'identifier': 'quad_msgs', 'progress': 'cmake'}
+[0.025752] (quad_msgs) Command: {'cmd': ['/usr/bin/cmake', '/home/dologan/ros2_ws/src/quad-sdk/quad_msgs', '-DCATKIN_INSTALL_INTO_PREFIX_ROOT=0', '-DCMAKE_INSTALL_PREFIX=/home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs'], 'cwd': '/home/dologan/ros2_ws/src/quad-sdk/build/quad_msgs', 'env': OrderedDict({'LESSOPEN': '| /usr/bin/lesspipe %s', 'CONDA_PROMPT_MODIFIER': '(base)', 'USER': 'dologan', 'GZ_CONFIG_PATH': '/opt/ros/jazzy/opt/gz_sim_vendor/share/gz:/opt/ros/jazzy/opt/sdformat_vendor/share/gz:/opt/ros/jazzy/opt/gz_gui_vendor/share/gz:/opt/ros/jazzy/opt/gz_transport_vendor/share/gz:/opt/ros/jazzy/opt/gz_rendering_vendor/share/gz:/opt/ros/jazzy/opt/gz_plugin_vendor/share/gz:/opt/ros/jazzy/opt/gz_fuel_tools_vendor/share/gz:/opt/ros/jazzy/opt/gz_msgs_vendor/share/gz:/opt/ros/jazzy/opt/gz_common_vendor/share/gz', 'XDG_SESSION_TYPE': 'wayland', 'SHLVL': '1', 'LD_LIBRARY_PATH': '/opt/ros/jazzy/opt/gz_sim_vendor/lib:/opt/ros/jazzy/opt/gz_sensors_vendor/lib:/opt/ros/jazzy/opt/gz_physics_vendor/lib:/opt/ros/jazzy/opt/sdformat_vendor/lib:/opt/ros/jazzy/opt/rviz_ogre_vendor/lib:/opt/ros/jazzy/lib/x86_64-linux-gnu:/opt/ros/jazzy/opt/gz_gui_vendor/lib:/opt/ros/jazzy/opt/gz_transport_vendor/lib:/opt/ros/jazzy/opt/gz_rendering_vendor/lib:/opt/ros/jazzy/opt/gz_plugin_vendor/lib:/opt/ros/jazzy/opt/gz_fuel_tools_vendor/lib:/opt/ros/jazzy/opt/gz_msgs_vendor/lib:/opt/ros/jazzy/opt/gz_common_vendor/lib:/opt/ros/jazzy/opt/gz_math_vendor/lib:/opt/ros/jazzy/opt/gz_utils_vendor/lib:/opt/ros/jazzy/opt/gz_tools_vendor/lib:/opt/ros/jazzy/opt/gz_ogre_next_vendor/lib:/opt/ros/jazzy/opt/gz_dartsim_vendor/lib:/opt/ros/jazzy/opt/gz_cmake_vendor/lib:/opt/ros/jazzy/lib', 'HOME': '/home/dologan', 'CONDA_SHLVL': '1', 'OLDPWD': '/home/dologan/ros2_ws/src', 'DESKTOP_SESSION': 'ubuntu', 'ROS_PYTHON_VERSION': '3', 'GNOME_SHELL_SESSION_MODE': 'ubuntu', 'GTK_MODULES': 'gail:atk-bridge', 'SYSTEMD_EXEC_PID': '2352', 'GSM_SKIP_SSH_AGENT_WORKAROUND': 'true', 'DBUS_SESSION_BUS_ADDRESS': 'unix:path=/run/user/1000/bus', 'COLORTERM': 'truecolor', '_CE_M': '', 'DEBUGINFOD_URLS': 'https://debuginfod.ubuntu.com', 'IM_CONFIG_PHASE': '1', 'WAYLAND_DISPLAY': 'wayland-0', 'ROS_DISTRO': 'jazzy', 'LOGNAME': 'dologan', '_': '/usr/bin/colcon', 'ROS_VERSION': '2', 'MEMORY_PRESSURE_WATCH': '/sys/fs/cgroup/user.slice/user-1000.slice/user@1000.service/session.slice/org.gnome.Shell@wayland.service/memory.pressure', 'XDG_SESSION_CLASS': 'user', 'USERNAME': 'dologan', 'TERM': 'xterm-256color', 'GAZEBO_MODEL_PATH': ':/home/dologan/ros2_ws/src/quad-sdk/quad_simulator/spirit_description:/home/dologan/ros2_ws/src/quad-sdk/quad_simulator/a1_description:/home/dologan/ros2_ws/src/quad-sdk/quad_simulator/other/sensor_description:/home/dologan/ros2_ws/src/quad-sdk/quad_simulator/other/objects_description:/home/dologan/ros2_ws/src/quad-sdk/quad_simulator/gazebo_scripts/worlds:/home/dologan/ros2_ws/src/quad-sdk/quad_simulator/spirit_description:/home/dologan/ros2_ws/src/quad-sdk/quad_simulator/a1_description:/home/dologan/ros2_ws/src/quad-sdk/quad_simulator/other/sensor_description:/home/dologan/ros2_ws/src/quad-sdk/quad_simulator/other/objects_description:/home/dologan/ros2_ws/src/quad-sdk/quad_simulator/gazebo_scripts/worlds', 'GNOME_DESKTOP_SESSION_ID': 'this-is-deprecated', '_CE_CONDA': '', 'PATH': '/home/dologan/anaconda3/bin:/home/dologan/anaconda3/condabin:/opt/ros/jazzy/opt/gz_msgs_vendor/bin:/opt/ros/jazzy/opt/gz_tools_vendor/bin:/opt/ros/jazzy/opt/gz_ogre_next_vendor/bin:/opt/ros/jazzy/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/snap/bin', 'SESSION_MANAGER': 'local/dologan-IdeaPad-3-15IIL05:@/tmp/.ICE-unix/2308,unix/dologan-IdeaPad-3-15IIL05:/tmp/.ICE-unix/2308', 'XDG_MENU_PREFIX': 'gnome-', 'GNOME_TERMINAL_SCREEN': '/org/gnome/Terminal/screen/62c938e4_2d34_4220_943e_b1a28f3e97af', 'GNOME_SETUP_DISPLAY': ':1', 'XDG_RUNTIME_DIR': '/run/user/1000', 'DISPLAY': ':0', 'LANG': 'en_US.UTF-8', 'XDG_CURRENT_DESKTOP': 'ubuntu:GNOME', 'XMODIFIERS': '@im=ibus', 'XDG_SESSION_DESKTOP': 'ubuntu', 'XAUTHORITY': '/run/user/1000/.mutter-Xwaylandauth.184MZ2', 'LS_COLORS': 'rs=0:di=01;34:ln=01;36:mh=00:pi=40;33:so=01;35:do=01;35:bd=40;33;01:cd=40;33;01:or=40;31;01:mi=00:su=37;41:sg=30;43:ca=00:tw=30;42:ow=34;42:st=37;44:ex=01;32:*.tar=01;31:*.tgz=01;31:*.arc=01;31:*.arj=01;31:*.taz=01;31:*.lha=01;31:*.lz4=01;31:*.lzh=01;31:*.lzma=01;31:*.tlz=01;31:*.txz=01;31:*.tzo=01;31:*.t7z=01;31:*.zip=01;31:*.z=01;31:*.dz=01;31:*.gz=01;31:*.lrz=01;31:*.lz=01;31:*.lzo=01;31:*.xz=01;31:*.zst=01;31:*.tzst=01;31:*.bz2=01;31:*.bz=01;31:*.tbz=01;31:*.tbz2=01;31:*.tz=01;31:*.deb=01;31:*.rpm=01;31:*.jar=01;31:*.war=01;31:*.ear=01;31:*.sar=01;31:*.rar=01;31:*.alz=01;31:*.ace=01;31:*.zoo=01;31:*.cpio=01;31:*.7z=01;31:*.rz=01;31:*.cab=01;31:*.wim=01;31:*.swm=01;31:*.dwm=01;31:*.esd=01;31:*.avif=01;35:*.jpg=01;35:*.jpeg=01;35:*.mjpg=01;35:*.mjpeg=01;35:*.gif=01;35:*.bmp=01;35:*.pbm=01;35:*.pgm=01;35:*.ppm=01;35:*.tga=01;35:*.xbm=01;35:*.xpm=01;35:*.tif=01;35:*.tiff=01;35:*.png=01;35:*.svg=01;35:*.svgz=01;35:*.mng=01;35:*.pcx=01;35:*.mov=01;35:*.mpg=01;35:*.mpeg=01;35:*.m2v=01;35:*.mkv=01;35:*.webm=01;35:*.webp=01;35:*.ogm=01;35:*.mp4=01;35:*.m4v=01;35:*.mp4v=01;35:*.vob=01;35:*.qt=01;35:*.nuv=01;35:*.wmv=01;35:*.asf=01;35:*.rm=01;35:*.rmvb=01;35:*.flc=01;35:*.avi=01;35:*.fli=01;35:*.flv=01;35:*.gl=01;35:*.dl=01;35:*.xcf=01;35:*.xwd=01;35:*.yuv=01;35:*.cgm=01;35:*.emf=01;35:*.ogv=01;35:*.ogx=01;35:*.aac=00;36:*.au=00;36:*.flac=00;36:*.m4a=00;36:*.mid=00;36:*.midi=00;36:*.mka=00;36:*.mp3=00;36:*.mpc=00;36:*.ogg=00;36:*.ra=00;36:*.wav=00;36:*.oga=00;36:*.opus=00;36:*.spx=00;36:*.xspf=00;36:*~=00;90:*#=00;90:*.bak=00;90:*.crdownload=00;90:*.dpkg-dist=00;90:*.dpkg-new=00;90:*.dpkg-old=00;90:*.dpkg-tmp=00;90:*.old=00;90:*.orig=00;90:*.part=00;90:*.rej=00;90:*.rpmnew=00;90:*.rpmorig=00;90:*.rpmsave=00;90:*.swp=00;90:*.tmp=00;90:*.ucf-dist=00;90:*.ucf-new=00;90:*.ucf-old=00;90:', 'GNOME_TERMINAL_SERVICE': ':1.107', 'SSH_AUTH_SOCK': '/run/user/1000/keyring/ssh', 'GSETTINGS_SCHEMA_DIR': '/home/dologan/anaconda3/share/glib-2.0/schemas', 'AMENT_PREFIX_PATH': '/opt/ros/jazzy', 'CONDA_PYTHON_EXE': '/home/dologan/anaconda3/bin/python', 'SHELL': '/bin/bash', 'QT_ACCESSIBILITY': '1', 'GDMSESSION': 'ubuntu', 'LESSCLOSE': '/usr/bin/lesspipe %s %s', 'CONDA_DEFAULT_ENV': 'base', 'ROS_AUTOMATIC_DISCOVERY_RANGE': 'SUBNET', 'QT_IM_MODULE': 'ibus', 'PWD': '/home/dologan/ros2_ws/src/quad-sdk/build/quad_msgs', 'LC_ALL': 'en_US.UTF-8', 'XDG_CONFIG_DIRS': '/etc/xdg/xdg-ubuntu:/etc/xdg', 'CONDA_EXE': '/home/dologan/anaconda3/bin/conda', 'XDG_DATA_DIRS': '/usr/share/ubuntu:/usr/share/gnome:/usr/local/share/:/usr/share/:/var/lib/snapd/desktop', 'PYTHONPATH': '/opt/ros/jazzy/lib/python3.12/site-packages', 'CONDA_PREFIX': '/home/dologan/anaconda3', 'GSETTINGS_SCHEMA_DIR_CONDA_BACKUP': '', 'COLCON': '1', 'MEMORY_PRESSURE_WRITE': 'c29tZSAyMDAwMDAgMjAwMDAwMAA=', 'VTE_VERSION': '7600', 'CMAKE_PREFIX_PATH': '/opt/ros/jazzy/opt/gz_sim_vendor:/opt/ros/jazzy/opt/gz_sensors_vendor:/opt/ros/jazzy/opt/gz_physics_vendor:/opt/ros/jazzy/opt/sdformat_vendor:/opt/ros/jazzy/opt/gz_gui_vendor:/opt/ros/jazzy/opt/gz_transport_vendor:/opt/ros/jazzy/opt/gz_rendering_vendor:/opt/ros/jazzy/opt/gz_plugin_vendor:/opt/ros/jazzy/opt/gz_fuel_tools_vendor:/opt/ros/jazzy/opt/gz_msgs_vendor:/opt/ros/jazzy/opt/gz_common_vendor:/opt/ros/jazzy/opt/gz_math_vendor:/opt/ros/jazzy/opt/gz_utils_vendor:/opt/ros/jazzy/opt/gz_tools_vendor:/opt/ros/jazzy/opt/gz_ogre_next_vendor:/opt/ros/jazzy/opt/gz_dartsim_vendor:/opt/ros/jazzy/opt/gz_cmake_vendor'}), 'shell': False}
+[0.031497] (quad_logger) StderrLine: {'line': b'\x1b[0mCMake Deprecation Warning at CMakeLists.txt:1 (cmake_minimum_required):\n'}
+[0.031694] (quad_logger) StderrLine: {'line': b'  Compatibility with CMake < 3.5 will be removed from a future version of\n'}
+[0.031777] (quad_logger) StderrLine: {'line': b'  CMake.\n'}
+[0.031843] (quad_logger) StderrLine: {'line': b'\n'}
+[0.031903] (quad_logger) StderrLine: {'line': b'  Update the VERSION argument <min> value or use a ...<max> suffix to tell\n'}
+[0.031972] (quad_logger) StderrLine: {'line': b'  CMake that the project does not need compatibility with older versions.\n'}
+[0.032034] (quad_logger) StderrLine: {'line': b'\n'}
+[0.032093] (quad_logger) StderrLine: {'line': b'\x1b[0m\n'}
+[0.076936] (RBDL) StdoutLine: {'line': b'-- The C compiler identification is GNU 13.3.0\n'}
+[0.077723] (mocap_optitrack) StdoutLine: {'line': b'-- The C compiler identification is GNU 13.3.0\n'}
+[0.088488] (quad_logger) StdoutLine: {'line': b'-- The C compiler identification is GNU 13.3.0\n'}
+[0.089098] (quad_msgs) StdoutLine: {'line': b'-- The C compiler identification is GNU 13.3.0\n'}
+[0.099878] (-) TimerEvent: {}
+[0.135704] (mocap_optitrack) StdoutLine: {'line': b'-- The CXX compiler identification is GNU 13.3.0\n'}
+[0.136273] (RBDL) StdoutLine: {'line': b'-- The CXX compiler identification is GNU 13.3.0\n'}
+[0.147241] (quad_msgs) StdoutLine: {'line': b'-- The CXX compiler identification is GNU 13.3.0\n'}
+[0.151120] (quad_logger) StdoutLine: {'line': b'-- The CXX compiler identification is GNU 13.3.0\n'}
+[0.154100] (mocap_optitrack) StdoutLine: {'line': b'-- Detecting C compiler ABI info\n'}
+[0.154287] (RBDL) StdoutLine: {'line': b'-- Detecting C compiler ABI info\n'}
+[0.163304] (quad_msgs) StdoutLine: {'line': b'-- Detecting C compiler ABI info\n'}
+[0.169035] (quad_logger) StdoutLine: {'line': b'-- Detecting C compiler ABI info\n'}
+[0.199986] (-) TimerEvent: {}
+[0.236591] (mocap_optitrack) StdoutLine: {'line': b'-- Detecting C compiler ABI info - done\n'}
+[0.237062] (RBDL) StdoutLine: {'line': b'-- Detecting C compiler ABI info - done\n'}
+[0.246102] (mocap_optitrack) StdoutLine: {'line': b'-- Check for working C compiler: /usr/bin/cc - skipped\n'}
+[0.246395] (mocap_optitrack) StdoutLine: {'line': b'-- Detecting C compile features\n'}
+[0.246866] (mocap_optitrack) StdoutLine: {'line': b'-- Detecting C compile features - done\n'}
+[0.247627] (quad_msgs) StdoutLine: {'line': b'-- Detecting C compiler ABI info - done\n'}
+[0.252475] (RBDL) StdoutLine: {'line': b'-- Check for working C compiler: /usr/bin/cc - skipped\n'}
+[0.252811] (RBDL) StdoutLine: {'line': b'-- Detecting C compile features\n'}
+[0.253457] (RBDL) StdoutLine: {'line': b'-- Detecting C compile features - done\n'}
+[0.256731] (mocap_optitrack) StdoutLine: {'line': b'-- Detecting CXX compiler ABI info\n'}
+[0.257448] (quad_logger) StdoutLine: {'line': b'-- Detecting C compiler ABI info - done\n'}
+[0.259709] (quad_msgs) StdoutLine: {'line': b'-- Check for working C compiler: /usr/bin/cc - skipped\n'}
+[0.259948] (quad_msgs) StdoutLine: {'line': b'-- Detecting C compile features\n'}
+[0.260276] (quad_msgs) StdoutLine: {'line': b'-- Detecting C compile features - done\n'}
+[0.262011] (RBDL) StdoutLine: {'line': b'-- Detecting CXX compiler ABI info\n'}
+[0.267454] (quad_logger) StdoutLine: {'line': b'-- Check for working C compiler: /usr/bin/cc - skipped\n'}
+[0.267714] (quad_logger) StdoutLine: {'line': b'-- Detecting C compile features\n'}
+[0.268103] (quad_logger) StdoutLine: {'line': b'-- Detecting C compile features - done\n'}
+[0.268454] (quad_msgs) StdoutLine: {'line': b'-- Detecting CXX compiler ABI info\n'}
+[0.276671] (quad_logger) StdoutLine: {'line': b'-- Detecting CXX compiler ABI info\n'}
+[0.300090] (-) TimerEvent: {}
+[0.350643] (mocap_optitrack) StdoutLine: {'line': b'-- Detecting CXX compiler ABI info - done\n'}
+[0.353389] (RBDL) StdoutLine: {'line': b'-- Detecting CXX compiler ABI info - done\n'}
+[0.360132] (mocap_optitrack) StdoutLine: {'line': b'-- Check for working CXX compiler: /usr/bin/c++ - skipped\n'}
+[0.360415] (mocap_optitrack) StdoutLine: {'line': b'-- Detecting CXX compile features\n'}
+[0.361001] (mocap_optitrack) StdoutLine: {'line': b'-- Detecting CXX compile features - done\n'}
+[0.363107] (RBDL) StdoutLine: {'line': b'-- Check for working CXX compiler: /usr/bin/c++ - skipped\n'}
+[0.363397] (RBDL) StdoutLine: {'line': b'-- Detecting CXX compile features\n'}
+[0.363936] (RBDL) StdoutLine: {'line': b'-- Detecting CXX compile features - done\n'}
+[0.364951] (mocap_optitrack) StdoutLine: {'line': b'-- Found ament_cmake: 2.5.3 (/opt/ros/jazzy/share/ament_cmake/cmake)\n'}
+[0.367114] (RBDL) StdoutLine: {'line': b"-- Setting build type to 'Release' as none was specified.\n"}
+[0.367347] (quad_msgs) StdoutLine: {'line': b'-- Detecting CXX compiler ABI info - done\n'}
+[0.371251] (quad_logger) StdoutLine: {'line': b'-- Detecting CXX compiler ABI info - done\n'}
+[0.380924] (quad_logger) StdoutLine: {'line': b'-- Check for working CXX compiler: /usr/bin/c++ - skipped\n'}
+[0.381261] (quad_logger) StdoutLine: {'line': b'-- Detecting CXX compile features\n'}
+[0.381822] (quad_logger) StdoutLine: {'line': b'-- Detecting CXX compile features - done\n'}
+[0.382677] (quad_msgs) StdoutLine: {'line': b'-- Check for working CXX compiler: /usr/bin/c++ - skipped\n'}
+[0.383076] (quad_msgs) StdoutLine: {'line': b'-- Detecting CXX compile features\n'}
+[0.383844] (quad_msgs) StdoutLine: {'line': b'-- Detecting CXX compile features - done\n'}
+[0.391279] (quad_msgs) StdoutLine: {'line': b'-- Found ament_cmake: 2.5.3 (/opt/ros/jazzy/share/ament_cmake/cmake)\n'}
+[0.393177] (RBDL) StdoutLine: {'line': b'-- Configuring done (0.4s)\n'}
+[0.394659] (quad_logger) StderrLine: {'line': b'\x1b[31mCMake Error at CMakeLists.txt:5 (find_package):\n'}
+[0.394861] (quad_logger) StderrLine: {'line': b'  By not providing "Findcatkin.cmake" in CMAKE_MODULE_PATH this project has\n'}
+[0.394987] (quad_logger) StderrLine: {'line': b'  asked CMake to find a package configuration file provided by "catkin", but\n'}
+[0.395079] (quad_logger) StderrLine: {'line': b'  CMake did not find one.\n'}
+[0.395163] (quad_logger) StderrLine: {'line': b'\n'}
+[0.395255] (quad_logger) StderrLine: {'line': b'  Could not find a package configuration file provided by "catkin" with any\n'}
+[0.395346] (quad_logger) StderrLine: {'line': b'  of the following names:\n'}
+[0.395435] (quad_logger) StderrLine: {'line': b'\n'}
+[0.395526] (quad_logger) StderrLine: {'line': b'    catkinConfig.cmake\n'}
+[0.395619] (quad_logger) StderrLine: {'line': b'    catkin-config.cmake\n'}
+[0.395685] (quad_logger) StderrLine: {'line': b'\n'}
+[0.395752] (quad_logger) StderrLine: {'line': b'  Add the installation prefix of "catkin" to CMAKE_PREFIX_PATH or set\n'}
+[0.395822] (quad_logger) StderrLine: {'line': b'  "catkin_DIR" to a directory containing one of the above files.  If "catkin"\n'}
+[0.395888] (quad_logger) StderrLine: {'line': b'  provides a separate development package or SDK, be sure it has been\n'}
+[0.395958] (quad_logger) StderrLine: {'line': b'  installed.\n'}
+[0.396028] (quad_logger) StderrLine: {'line': b'\n'}
+[0.396088] (quad_logger) StderrLine: {'line': b'\x1b[0m\n'}
+[0.396164] (quad_logger) StdoutLine: {'line': b'-- Configuring incomplete, errors occurred!\n'}
+[0.397550] (quad_logger) CommandEnded: {'returncode': 1}
+[0.398861] (RBDL) StdoutLine: {'line': b'-- Generating done (0.0s)\n'}
+[0.400188] (-) TimerEvent: {}
+[0.400752] (RBDL) StdoutLine: {'line': b'-- Build files have been written to: /home/dologan/ros2_ws/src/quad-sdk/build/RBDL\n'}
+[0.406740] (RBDL) CommandEnded: {'returncode': 0}
+[0.407359] (RBDL) JobProgress: {'identifier': 'RBDL', 'progress': 'build'}
+[0.407916] (RBDL) Command: {'cmd': ['/usr/bin/cmake', '--build', '/home/dologan/ros2_ws/src/quad-sdk/build/RBDL', '--', '-j8', '-l8'], 'cwd': '/home/dologan/ros2_ws/src/quad-sdk/build/RBDL', 'env': OrderedDict({'LESSOPEN': '| /usr/bin/lesspipe %s', 'CONDA_PROMPT_MODIFIER': '(base)', 'USER': 'dologan', 'GZ_CONFIG_PATH': '/opt/ros/jazzy/opt/gz_sim_vendor/share/gz:/opt/ros/jazzy/opt/sdformat_vendor/share/gz:/opt/ros/jazzy/opt/gz_gui_vendor/share/gz:/opt/ros/jazzy/opt/gz_transport_vendor/share/gz:/opt/ros/jazzy/opt/gz_rendering_vendor/share/gz:/opt/ros/jazzy/opt/gz_plugin_vendor/share/gz:/opt/ros/jazzy/opt/gz_fuel_tools_vendor/share/gz:/opt/ros/jazzy/opt/gz_msgs_vendor/share/gz:/opt/ros/jazzy/opt/gz_common_vendor/share/gz', 'XDG_SESSION_TYPE': 'wayland', 'SHLVL': '1', 'LD_LIBRARY_PATH': '/opt/ros/jazzy/opt/gz_sim_vendor/lib:/opt/ros/jazzy/opt/gz_sensors_vendor/lib:/opt/ros/jazzy/opt/gz_physics_vendor/lib:/opt/ros/jazzy/opt/sdformat_vendor/lib:/opt/ros/jazzy/opt/rviz_ogre_vendor/lib:/opt/ros/jazzy/lib/x86_64-linux-gnu:/opt/ros/jazzy/opt/gz_gui_vendor/lib:/opt/ros/jazzy/opt/gz_transport_vendor/lib:/opt/ros/jazzy/opt/gz_rendering_vendor/lib:/opt/ros/jazzy/opt/gz_plugin_vendor/lib:/opt/ros/jazzy/opt/gz_fuel_tools_vendor/lib:/opt/ros/jazzy/opt/gz_msgs_vendor/lib:/opt/ros/jazzy/opt/gz_common_vendor/lib:/opt/ros/jazzy/opt/gz_math_vendor/lib:/opt/ros/jazzy/opt/gz_utils_vendor/lib:/opt/ros/jazzy/opt/gz_tools_vendor/lib:/opt/ros/jazzy/opt/gz_ogre_next_vendor/lib:/opt/ros/jazzy/opt/gz_dartsim_vendor/lib:/opt/ros/jazzy/opt/gz_cmake_vendor/lib:/opt/ros/jazzy/lib', 'HOME': '/home/dologan', 'CONDA_SHLVL': '1', 'OLDPWD': '/home/dologan/ros2_ws/src', 'DESKTOP_SESSION': 'ubuntu', 'ROS_PYTHON_VERSION': '3', 'GNOME_SHELL_SESSION_MODE': 'ubuntu', 'GTK_MODULES': 'gail:atk-bridge', 'SYSTEMD_EXEC_PID': '2352', 'GSM_SKIP_SSH_AGENT_WORKAROUND': 'true', 'DBUS_SESSION_BUS_ADDRESS': 'unix:path=/run/user/1000/bus', 'COLORTERM': 'truecolor', '_CE_M': '', 'DEBUGINFOD_URLS': 'https://debuginfod.ubuntu.com', 'IM_CONFIG_PHASE': '1', 'WAYLAND_DISPLAY': 'wayland-0', 'ROS_DISTRO': 'jazzy', 'LOGNAME': 'dologan', '_': '/usr/bin/colcon', 'ROS_VERSION': '2', 'MEMORY_PRESSURE_WATCH': '/sys/fs/cgroup/user.slice/user-1000.slice/user@1000.service/session.slice/org.gnome.Shell@wayland.service/memory.pressure', 'XDG_SESSION_CLASS': 'user', 'USERNAME': 'dologan', 'TERM': 'xterm-256color', 'GAZEBO_MODEL_PATH': ':/home/dologan/ros2_ws/src/quad-sdk/quad_simulator/spirit_description:/home/dologan/ros2_ws/src/quad-sdk/quad_simulator/a1_description:/home/dologan/ros2_ws/src/quad-sdk/quad_simulator/other/sensor_description:/home/dologan/ros2_ws/src/quad-sdk/quad_simulator/other/objects_description:/home/dologan/ros2_ws/src/quad-sdk/quad_simulator/gazebo_scripts/worlds:/home/dologan/ros2_ws/src/quad-sdk/quad_simulator/spirit_description:/home/dologan/ros2_ws/src/quad-sdk/quad_simulator/a1_description:/home/dologan/ros2_ws/src/quad-sdk/quad_simulator/other/sensor_description:/home/dologan/ros2_ws/src/quad-sdk/quad_simulator/other/objects_description:/home/dologan/ros2_ws/src/quad-sdk/quad_simulator/gazebo_scripts/worlds', 'GNOME_DESKTOP_SESSION_ID': 'this-is-deprecated', '_CE_CONDA': '', 'PATH': '/home/dologan/anaconda3/bin:/home/dologan/anaconda3/condabin:/opt/ros/jazzy/opt/gz_msgs_vendor/bin:/opt/ros/jazzy/opt/gz_tools_vendor/bin:/opt/ros/jazzy/opt/gz_ogre_next_vendor/bin:/opt/ros/jazzy/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/snap/bin', 'SESSION_MANAGER': 'local/dologan-IdeaPad-3-15IIL05:@/tmp/.ICE-unix/2308,unix/dologan-IdeaPad-3-15IIL05:/tmp/.ICE-unix/2308', 'XDG_MENU_PREFIX': 'gnome-', 'GNOME_TERMINAL_SCREEN': '/org/gnome/Terminal/screen/62c938e4_2d34_4220_943e_b1a28f3e97af', 'GNOME_SETUP_DISPLAY': ':1', 'XDG_RUNTIME_DIR': '/run/user/1000', 'DISPLAY': ':0', 'LANG': 'en_US.UTF-8', 'XDG_CURRENT_DESKTOP': 'ubuntu:GNOME', 'XMODIFIERS': '@im=ibus', 'XDG_SESSION_DESKTOP': 'ubuntu', 'XAUTHORITY': '/run/user/1000/.mutter-Xwaylandauth.184MZ2', 'LS_COLORS': 'rs=0:di=01;34:ln=01;36:mh=00:pi=40;33:so=01;35:do=01;35:bd=40;33;01:cd=40;33;01:or=40;31;01:mi=00:su=37;41:sg=30;43:ca=00:tw=30;42:ow=34;42:st=37;44:ex=01;32:*.tar=01;31:*.tgz=01;31:*.arc=01;31:*.arj=01;31:*.taz=01;31:*.lha=01;31:*.lz4=01;31:*.lzh=01;31:*.lzma=01;31:*.tlz=01;31:*.txz=01;31:*.tzo=01;31:*.t7z=01;31:*.zip=01;31:*.z=01;31:*.dz=01;31:*.gz=01;31:*.lrz=01;31:*.lz=01;31:*.lzo=01;31:*.xz=01;31:*.zst=01;31:*.tzst=01;31:*.bz2=01;31:*.bz=01;31:*.tbz=01;31:*.tbz2=01;31:*.tz=01;31:*.deb=01;31:*.rpm=01;31:*.jar=01;31:*.war=01;31:*.ear=01;31:*.sar=01;31:*.rar=01;31:*.alz=01;31:*.ace=01;31:*.zoo=01;31:*.cpio=01;31:*.7z=01;31:*.rz=01;31:*.cab=01;31:*.wim=01;31:*.swm=01;31:*.dwm=01;31:*.esd=01;31:*.avif=01;35:*.jpg=01;35:*.jpeg=01;35:*.mjpg=01;35:*.mjpeg=01;35:*.gif=01;35:*.bmp=01;35:*.pbm=01;35:*.pgm=01;35:*.ppm=01;35:*.tga=01;35:*.xbm=01;35:*.xpm=01;35:*.tif=01;35:*.tiff=01;35:*.png=01;35:*.svg=01;35:*.svgz=01;35:*.mng=01;35:*.pcx=01;35:*.mov=01;35:*.mpg=01;35:*.mpeg=01;35:*.m2v=01;35:*.mkv=01;35:*.webm=01;35:*.webp=01;35:*.ogm=01;35:*.mp4=01;35:*.m4v=01;35:*.mp4v=01;35:*.vob=01;35:*.qt=01;35:*.nuv=01;35:*.wmv=01;35:*.asf=01;35:*.rm=01;35:*.rmvb=01;35:*.flc=01;35:*.avi=01;35:*.fli=01;35:*.flv=01;35:*.gl=01;35:*.dl=01;35:*.xcf=01;35:*.xwd=01;35:*.yuv=01;35:*.cgm=01;35:*.emf=01;35:*.ogv=01;35:*.ogx=01;35:*.aac=00;36:*.au=00;36:*.flac=00;36:*.m4a=00;36:*.mid=00;36:*.midi=00;36:*.mka=00;36:*.mp3=00;36:*.mpc=00;36:*.ogg=00;36:*.ra=00;36:*.wav=00;36:*.oga=00;36:*.opus=00;36:*.spx=00;36:*.xspf=00;36:*~=00;90:*#=00;90:*.bak=00;90:*.crdownload=00;90:*.dpkg-dist=00;90:*.dpkg-new=00;90:*.dpkg-old=00;90:*.dpkg-tmp=00;90:*.old=00;90:*.orig=00;90:*.part=00;90:*.rej=00;90:*.rpmnew=00;90:*.rpmorig=00;90:*.rpmsave=00;90:*.swp=00;90:*.tmp=00;90:*.ucf-dist=00;90:*.ucf-new=00;90:*.ucf-old=00;90:', 'GNOME_TERMINAL_SERVICE': ':1.107', 'SSH_AUTH_SOCK': '/run/user/1000/keyring/ssh', 'GSETTINGS_SCHEMA_DIR': '/home/dologan/anaconda3/share/glib-2.0/schemas', 'AMENT_PREFIX_PATH': '/opt/ros/jazzy', 'CONDA_PYTHON_EXE': '/home/dologan/anaconda3/bin/python', 'SHELL': '/bin/bash', 'QT_ACCESSIBILITY': '1', 'GDMSESSION': 'ubuntu', 'LESSCLOSE': '/usr/bin/lesspipe %s %s', 'CONDA_DEFAULT_ENV': 'base', 'ROS_AUTOMATIC_DISCOVERY_RANGE': 'SUBNET', 'QT_IM_MODULE': 'ibus', 'PWD': '/home/dologan/ros2_ws/src/quad-sdk/build/RBDL', 'LC_ALL': 'en_US.UTF-8', 'XDG_CONFIG_DIRS': '/etc/xdg/xdg-ubuntu:/etc/xdg', 'CONDA_EXE': '/home/dologan/anaconda3/bin/conda', 'XDG_DATA_DIRS': '/usr/share/ubuntu:/usr/share/gnome:/usr/local/share/:/usr/share/:/var/lib/snapd/desktop', 'PYTHONPATH': '/opt/ros/jazzy/lib/python3.12/site-packages', 'CONDA_PREFIX': '/home/dologan/anaconda3', 'GSETTINGS_SCHEMA_DIR_CONDA_BACKUP': '', 'COLCON': '1', 'MEMORY_PRESSURE_WRITE': 'c29tZSAyMDAwMDAgMjAwMDAwMAA=', 'VTE_VERSION': '7600', 'CMAKE_PREFIX_PATH': '/opt/ros/jazzy/opt/gz_sim_vendor:/opt/ros/jazzy/opt/gz_sensors_vendor:/opt/ros/jazzy/opt/gz_physics_vendor:/opt/ros/jazzy/opt/sdformat_vendor:/opt/ros/jazzy/opt/gz_gui_vendor:/opt/ros/jazzy/opt/gz_transport_vendor:/opt/ros/jazzy/opt/gz_rendering_vendor:/opt/ros/jazzy/opt/gz_plugin_vendor:/opt/ros/jazzy/opt/gz_fuel_tools_vendor:/opt/ros/jazzy/opt/gz_msgs_vendor:/opt/ros/jazzy/opt/gz_common_vendor:/opt/ros/jazzy/opt/gz_math_vendor:/opt/ros/jazzy/opt/gz_utils_vendor:/opt/ros/jazzy/opt/gz_tools_vendor:/opt/ros/jazzy/opt/gz_ogre_next_vendor:/opt/ros/jazzy/opt/gz_dartsim_vendor:/opt/ros/jazzy/opt/gz_cmake_vendor'}), 'shell': False}
+[0.418090] (quad_logger) JobEnded: {'identifier': 'quad_logger', 'rc': 1}
+[0.460443] (RBDL) StdoutLine: {'line': b'[  7%] \x1b[32mBuilding CXX object CMakeFiles/rbdl.dir/src/rbdl_mathutils.cc.o\x1b[0m\n'}
+[0.460825] (RBDL) StdoutLine: {'line': b'[ 23%] \x1b[32mBuilding CXX object CMakeFiles/rbdl.dir/src/rbdl_errors.cc.o\x1b[0m\n'}
+[0.460997] (RBDL) StdoutLine: {'line': b'[ 23%] \x1b[32mBuilding CXX object CMakeFiles/rbdl.dir/src/Constraints.cc.o\x1b[0m\n'}
+[0.461130] (RBDL) StdoutLine: {'line': b'[ 38%] \x1b[32mBuilding CXX object CMakeFiles/rbdl.dir/src/rbdl_version.cc.o\x1b[0m\n'}
+[0.461235] (RBDL) StdoutLine: {'line': b'[ 38%] \x1b[32mBuilding CXX object CMakeFiles/rbdl.dir/src/Constraint_Contact.cc.o\x1b[0m\n'}
+[0.464344] (RBDL) StdoutLine: {'line': b'[ 46%] \x1b[32mBuilding CXX object CMakeFiles/rbdl.dir/src/rbdl_utils.cc.o\x1b[0m\n'}
+[0.473598] (RBDL) StdoutLine: {'line': b'[ 53%] \x1b[32mBuilding CXX object CMakeFiles/rbdl.dir/src/Constraint_Loop.cc.o\x1b[0m\n'}
+[0.473933] (RBDL) StdoutLine: {'line': b'[ 61%] \x1b[32mBuilding CXX object CMakeFiles/rbdl.dir/src/Dynamics.cc.o\x1b[0m\n'}
+[0.502609] (-) TimerEvent: {}
+[0.529637] (mocap_optitrack) StdoutLine: {'line': b'-- Found Python3: /home/dologan/anaconda3/bin/python3 (found version "3.11.7") found components: Interpreter \n'}
+[0.585645] (quad_msgs) StdoutLine: {'line': b'-- Found Python3: /home/dologan/anaconda3/bin/python3 (found version "3.11.7") found components: Interpreter \n'}
+[0.602710] (-) TimerEvent: {}
+[0.701907] (mocap_optitrack) StdoutLine: {'line': b'-- Found rclcpp: 28.1.6 (/opt/ros/jazzy/share/rclcpp/cmake)\n'}
+[0.702803] (-) TimerEvent: {}
+[0.784576] (mocap_optitrack) StdoutLine: {'line': b'-- Found rosidl_generator_c: 4.6.5 (/opt/ros/jazzy/share/rosidl_generator_c/cmake)\n'}
+[0.795192] (quad_msgs) StdoutLine: {'line': b'-- Found std_msgs: 5.3.5 (/opt/ros/jazzy/share/std_msgs/cmake)\n'}
+[0.802929] (-) TimerEvent: {}
+[0.816213] (mocap_optitrack) StdoutLine: {'line': b'-- Found rosidl_generator_cpp: 4.6.5 (/opt/ros/jazzy/share/rosidl_generator_cpp/cmake)\n'}
+[0.855654] (mocap_optitrack) StdoutLine: {'line': b'-- Using all available rosidl_typesupport_c: rosidl_typesupport_fastrtps_c;rosidl_typesupport_introspection_c\n'}
+[0.894219] (mocap_optitrack) StdoutLine: {'line': b'-- Using all available rosidl_typesupport_cpp: rosidl_typesupport_fastrtps_cpp;rosidl_typesupport_introspection_cpp\n'}
+[0.903051] (-) TimerEvent: {}
+[1.004908] (-) TimerEvent: {}
+[1.007571] (quad_msgs) StdoutLine: {'line': b'-- Found rosidl_generator_c: 4.6.5 (/opt/ros/jazzy/share/rosidl_generator_c/cmake)\n'}
+[1.069643] (mocap_optitrack) StdoutLine: {'line': b'-- Found rmw_implementation_cmake: 7.3.1 (/opt/ros/jazzy/share/rmw_implementation_cmake/cmake)\n'}
+[1.083104] (mocap_optitrack) StdoutLine: {'line': b'-- Found rmw_fastrtps_cpp: 8.4.1 (/opt/ros/jazzy/share/rmw_fastrtps_cpp/cmake)\n'}
+[1.087080] (quad_msgs) StdoutLine: {'line': b'-- Found rosidl_generator_cpp: 4.6.5 (/opt/ros/jazzy/share/rosidl_generator_cpp/cmake)\n'}
+[1.105034] (-) TimerEvent: {}
+[1.185706] (quad_msgs) StdoutLine: {'line': b'-- Using all available rosidl_typesupport_c: rosidl_typesupport_fastrtps_c;rosidl_typesupport_introspection_c\n'}
+[1.205160] (-) TimerEvent: {}
+[1.244724] (RBDL) StdoutLine: {'line': b'[ 69%] \x1b[32mBuilding CXX object CMakeFiles/rbdl.dir/src/Logging.cc.o\x1b[0m\n'}
+[1.245444] (quad_msgs) StdoutLine: {'line': b'-- Using all available rosidl_typesupport_cpp: rosidl_typesupport_fastrtps_cpp;rosidl_typesupport_introspection_cpp\n'}
+[1.305297] (-) TimerEvent: {}
+[1.309597] (RBDL) StdoutLine: {'line': b'[ 76%] \x1b[32mBuilding CXX object CMakeFiles/rbdl.dir/src/Joint.cc.o\x1b[0m\n'}
+[1.341620] (quad_msgs) StdoutLine: {'line': b'-- Found sensor_msgs: 5.3.5 (/opt/ros/jazzy/share/sensor_msgs/cmake)\n'}
+[1.353754] (mocap_optitrack) StdoutLine: {'line': b'-- Found OpenSSL: /usr/lib/x86_64-linux-gnu/libcrypto.so (found version "3.0.13")  \n'}
+[1.405421] (-) TimerEvent: {}
+[1.437740] (mocap_optitrack) StdoutLine: {'line': b'-- Found FastRTPS: /opt/ros/jazzy/include (Required is at least version "2.13") \n'}
+[1.488387] (mocap_optitrack) StdoutLine: {'line': b"-- Using RMW implementation 'rmw_fastrtps_cpp' as default\n"}
+[1.505570] (-) TimerEvent: {}
+[1.507681] (quad_msgs) StdoutLine: {'line': b'-- Found nav_msgs: 5.3.5 (/opt/ros/jazzy/share/nav_msgs/cmake)\n'}
+[1.579269] (quad_msgs) StdoutLine: {'line': b'-- Found rosidl_default_generators: 1.6.0 (/opt/ros/jazzy/share/rosidl_default_generators/cmake)\n'}
+[1.605682] (-) TimerEvent: {}
+[1.625619] (quad_msgs) StdoutLine: {'line': b'-- Found rosidl_adapter: 4.6.5 (/opt/ros/jazzy/share/rosidl_adapter/cmake)\n'}
+[1.667683] (mocap_optitrack) StdoutLine: {'line': b'-- Found tf2_ros: 0.36.7 (/opt/ros/jazzy/share/tf2_ros/cmake)\n'}
+[1.707626] (-) TimerEvent: {}
+[1.807995] (-) TimerEvent: {}
+[1.908368] (-) TimerEvent: {}
+[1.990670] (RBDL) StdoutLine: {'line': b'[ 84%] \x1b[32mBuilding CXX object CMakeFiles/rbdl.dir/src/Model.cc.o\x1b[0m\n'}
+[2.011624] (-) TimerEvent: {}
+[2.051623] (mocap_optitrack) StdoutLine: {'line': b'-- Found nav_msgs: 5.3.5 (/opt/ros/jazzy/share/nav_msgs/cmake)\n'}
+[2.111770] (-) TimerEvent: {}
+[2.213118] (-) TimerEvent: {}
+[2.313494] (-) TimerEvent: {}
+[2.415634] (-) TimerEvent: {}
+[2.440680] (mocap_optitrack) StdoutLine: {'line': b'-- Configuring done (2.4s)\n'}
+[2.519617] (-) TimerEvent: {}
+[2.622661] (-) TimerEvent: {}
+[2.723082] (-) TimerEvent: {}
+[2.823473] (-) TimerEvent: {}
+[2.923863] (-) TimerEvent: {}
+[3.024274] (-) TimerEvent: {}
+[3.126426] (-) TimerEvent: {}
+[3.164713] (mocap_optitrack) StdoutLine: {'line': b'-- Generating done (0.5s)\n'}
+[3.224384] (mocap_optitrack) StdoutLine: {'line': b'-- Build files have been written to: /home/dologan/ros2_ws/src/quad-sdk/build/mocap_optitrack\n'}
+[3.226553] (-) TimerEvent: {}
+[3.259107] (mocap_optitrack) JobEnded: {'identifier': 'mocap_optitrack', 'rc': 'SIGINT'}
+[3.326667] (-) TimerEvent: {}
+[3.429645] (-) TimerEvent: {}
+[3.530050] (-) TimerEvent: {}
+[3.634634] (-) TimerEvent: {}
+[3.735012] (-) TimerEvent: {}
+[3.771792] (quad_msgs) StdoutLine: {'line': b'-- Found ament_cmake_ros: 0.12.0 (/opt/ros/jazzy/share/ament_cmake_ros/cmake)\n'}
+[3.835142] (-) TimerEvent: {}
+[3.935492] (-) TimerEvent: {}
+[4.036785] (-) TimerEvent: {}
+[4.139624] (-) TimerEvent: {}
+[4.239993] (-) TimerEvent: {}
+[4.340421] (-) TimerEvent: {}
+[4.444622] (-) TimerEvent: {}
+[4.544978] (-) TimerEvent: {}
+[4.645368] (-) TimerEvent: {}
+[4.745788] (-) TimerEvent: {}
+[4.846210] (-) TimerEvent: {}
+[4.946634] (-) TimerEvent: {}
+[5.047030] (-) TimerEvent: {}
+[5.151776] (-) TimerEvent: {}
+[5.260171] (-) TimerEvent: {}
+[5.360520] (-) TimerEvent: {}
+[5.463868] (-) TimerEvent: {}
+[5.564275] (-) TimerEvent: {}
+[5.671641] (-) TimerEvent: {}
+[5.772040] (-) TimerEvent: {}
+[5.872426] (-) TimerEvent: {}
+[5.972830] (-) TimerEvent: {}
+[6.073269] (-) TimerEvent: {}
+[6.173932] (-) TimerEvent: {}
+[6.274362] (-) TimerEvent: {}
+[6.374805] (-) TimerEvent: {}
+[6.476299] (-) TimerEvent: {}
+[6.549956] (quad_msgs) StdoutLine: {'line': b'-- Using all available rosidl_typesupport_c: rosidl_typesupport_fastrtps_c;rosidl_typesupport_introspection_c\n'}
+[6.576411] (-) TimerEvent: {}
+[6.676804] (-) TimerEvent: {}
+[6.777187] (-) TimerEvent: {}
+[6.877624] (-) TimerEvent: {}
+[6.981861] (-) TimerEvent: {}
+[7.082261] (-) TimerEvent: {}
+[7.182770] (-) TimerEvent: {}
+[7.283177] (-) TimerEvent: {}
+[7.386827] (-) TimerEvent: {}
+[7.487207] (-) TimerEvent: {}
+[7.587635] (-) TimerEvent: {}
+[7.688076] (-) TimerEvent: {}
+[7.722731] (quad_msgs) StdoutLine: {'line': b'-- Using all available rosidl_typesupport_cpp: rosidl_typesupport_fastrtps_cpp;rosidl_typesupport_introspection_cpp\n'}
+[7.734492] (quad_msgs) StdoutLine: {'line': b'-- Found python_cmake_module: 0.11.1 (/opt/ros/jazzy/share/python_cmake_module/cmake)\n'}
+[7.788211] (-) TimerEvent: {}
+[7.888644] (-) TimerEvent: {}
+[7.989072] (-) TimerEvent: {}
+[8.091638] (-) TimerEvent: {}
+[8.173487] (quad_msgs) StdoutLine: {'line': b'-- Found PythonExtra: /home/dologan/anaconda3/bin/python3  \n'}
+[8.191775] (-) TimerEvent: {}
+[8.292196] (-) TimerEvent: {}
+[8.392633] (-) TimerEvent: {}
+[8.493023] (-) TimerEvent: {}
+[8.527291] (RBDL) StdoutLine: {'line': b'[ 92%] \x1b[32mBuilding CXX object CMakeFiles/rbdl.dir/src/Kinematics.cc.o\x1b[0m\n'}
+[8.594631] (-) TimerEvent: {}
+[8.695059] (-) TimerEvent: {}
+[8.795488] (-) TimerEvent: {}
+[8.895908] (-) TimerEvent: {}
+[8.996352] (-) TimerEvent: {}
+[9.101380] (-) TimerEvent: {}
+[9.201803] (-) TimerEvent: {}
+[9.302255] (-) TimerEvent: {}
+[9.372520] (quad_msgs) StdoutLine: {'line': b'-- Found Python3: /home/dologan/anaconda3/bin/python3 (found version "3.11.7") found components: Interpreter Development NumPy Development.Module Development.Embed \n'}
+[9.402407] (-) TimerEvent: {}
+[9.502850] (-) TimerEvent: {}
+[9.581715] (quad_msgs) StdoutLine: {'line': b'-- Configuring done (9.5s)\n'}
+[9.602984] (-) TimerEvent: {}
+[9.703371] (-) TimerEvent: {}
+[9.708830] (quad_msgs) StdoutLine: {'line': b'-- Generating done (0.1s)\n'}
+[9.711877] (quad_msgs) StderrLine: {'line': b'\x1b[33mCMake Warning:\n'}
+[9.712196] (quad_msgs) StderrLine: {'line': b'  Manually-specified variables were not used by the project:\n'}
+[9.712354] (quad_msgs) StderrLine: {'line': b'\n'}
+[9.712562] (quad_msgs) StderrLine: {'line': b'    CATKIN_INSTALL_INTO_PREFIX_ROOT\n'}
+[9.712726] (quad_msgs) StderrLine: {'line': b'\n'}
+[9.712946] (quad_msgs) StderrLine: {'line': b'\x1b[0m\n'}
+[9.729929] (quad_msgs) StdoutLine: {'line': b'-- Build files have been written to: /home/dologan/ros2_ws/src/quad-sdk/build/quad_msgs\n'}
+[9.747660] (quad_msgs) JobEnded: {'identifier': 'quad_msgs', 'rc': 'SIGINT'}
+[9.803562] (-) TimerEvent: {}
+[9.903866] (-) TimerEvent: {}
+[10.004226] (-) TimerEvent: {}
+[10.104613] (-) TimerEvent: {}
+[10.204971] (-) TimerEvent: {}
+[10.305337] (-) TimerEvent: {}
+[10.405730] (-) TimerEvent: {}
+[10.506059] (-) TimerEvent: {}
+[10.606397] (-) TimerEvent: {}
+[10.706741] (-) TimerEvent: {}
+[10.807089] (-) TimerEvent: {}
+[10.907442] (-) TimerEvent: {}
+[11.007795] (-) TimerEvent: {}
+[11.108161] (-) TimerEvent: {}
+[11.208523] (-) TimerEvent: {}
+[11.308928] (-) TimerEvent: {}
+[11.409266] (-) TimerEvent: {}
+[11.509628] (-) TimerEvent: {}
+[11.609980] (-) TimerEvent: {}
+[11.710316] (-) TimerEvent: {}
+[11.810648] (-) TimerEvent: {}
+[11.910969] (-) TimerEvent: {}
+[12.011312] (-) TimerEvent: {}
+[12.111648] (-) TimerEvent: {}
+[12.211963] (-) TimerEvent: {}
+[12.312287] (-) TimerEvent: {}
+[12.412614] (-) TimerEvent: {}
+[12.512938] (-) TimerEvent: {}
+[12.613295] (-) TimerEvent: {}
+[12.713628] (-) TimerEvent: {}
+[12.813950] (-) TimerEvent: {}
+[12.914272] (-) TimerEvent: {}
+[13.014614] (-) TimerEvent: {}
+[13.114950] (-) TimerEvent: {}
+[13.215293] (-) TimerEvent: {}
+[13.315622] (-) TimerEvent: {}
+[13.415933] (-) TimerEvent: {}
+[13.516288] (-) TimerEvent: {}
+[13.616642] (-) TimerEvent: {}
+[13.717013] (-) TimerEvent: {}
+[13.817343] (-) TimerEvent: {}
+[13.917714] (-) TimerEvent: {}
+[14.018059] (-) TimerEvent: {}
+[14.118384] (-) TimerEvent: {}
+[14.218735] (-) TimerEvent: {}
+[14.319063] (-) TimerEvent: {}
+[14.419395] (-) TimerEvent: {}
+[14.519731] (-) TimerEvent: {}
+[14.620047] (-) TimerEvent: {}
+[14.720366] (-) TimerEvent: {}
+[14.820692] (-) TimerEvent: {}
+[14.921007] (-) TimerEvent: {}
+[15.021340] (-) TimerEvent: {}
+[15.121706] (-) TimerEvent: {}
+[15.222083] (-) TimerEvent: {}
+[15.322491] (-) TimerEvent: {}
+[15.422936] (-) TimerEvent: {}
+[15.523310] (-) TimerEvent: {}
+[15.623675] (-) TimerEvent: {}
+[15.724088] (-) TimerEvent: {}
+[15.824407] (-) TimerEvent: {}
+[15.924938] (-) TimerEvent: {}
+[16.025268] (-) TimerEvent: {}
+[16.125635] (-) TimerEvent: {}
+[16.225921] (-) TimerEvent: {}
+[16.326220] (-) TimerEvent: {}
+[16.426525] (-) TimerEvent: {}
+[16.526824] (-) TimerEvent: {}
+[16.627145] (-) TimerEvent: {}
+[16.727447] (-) TimerEvent: {}
+[16.828027] (-) TimerEvent: {}
+[16.928308] (-) TimerEvent: {}
+[17.028607] (-) TimerEvent: {}
+[17.128872] (-) TimerEvent: {}
+[17.229169] (-) TimerEvent: {}
+[17.329459] (-) TimerEvent: {}
+[17.429730] (-) TimerEvent: {}
+[17.530017] (-) TimerEvent: {}
+[17.630314] (-) TimerEvent: {}
+[17.730635] (-) TimerEvent: {}
+[17.830977] (-) TimerEvent: {}
+[17.931334] (-) TimerEvent: {}
+[18.031643] (-) TimerEvent: {}
+[18.131909] (-) TimerEvent: {}
+[18.232208] (-) TimerEvent: {}
+[18.332495] (-) TimerEvent: {}
+[18.432795] (-) TimerEvent: {}
+[18.533098] (-) TimerEvent: {}
+[18.633434] (-) TimerEvent: {}
+[18.733698] (-) TimerEvent: {}
+[18.833975] (-) TimerEvent: {}
+[18.934279] (-) TimerEvent: {}
+[19.034549] (-) TimerEvent: {}
+[19.134857] (-) TimerEvent: {}
+[19.235178] (-) TimerEvent: {}
+[19.335501] (-) TimerEvent: {}
+[19.435823] (-) TimerEvent: {}
+[19.536114] (-) TimerEvent: {}
+[19.636357] (-) TimerEvent: {}
+[19.736629] (-) TimerEvent: {}
+[19.836883] (-) TimerEvent: {}
+[19.937115] (-) TimerEvent: {}
+[20.037399] (-) TimerEvent: {}
+[20.137666] (-) TimerEvent: {}
+[20.237978] (-) TimerEvent: {}
+[20.338305] (-) TimerEvent: {}
+[20.438636] (-) TimerEvent: {}
+[20.538929] (-) TimerEvent: {}
+[20.639213] (-) TimerEvent: {}
+[20.739508] (-) TimerEvent: {}
+[20.839850] (-) TimerEvent: {}
+[20.940204] (-) TimerEvent: {}
+[21.040472] (-) TimerEvent: {}
+[21.140811] (-) TimerEvent: {}
+[21.241151] (-) TimerEvent: {}
+[21.341496] (-) TimerEvent: {}
+[21.441815] (-) TimerEvent: {}
+[21.542226] (-) TimerEvent: {}
+[21.643068] (-) TimerEvent: {}
+[21.743334] (-) TimerEvent: {}
+[21.843638] (-) TimerEvent: {}
+[21.943929] (-) TimerEvent: {}
+[22.044218] (-) TimerEvent: {}
+[22.144527] (-) TimerEvent: {}
+[22.244781] (-) TimerEvent: {}
+[22.345085] (-) TimerEvent: {}
+[22.445400] (-) TimerEvent: {}
+[22.545664] (-) TimerEvent: {}
+[22.645935] (-) TimerEvent: {}
+[22.746207] (-) TimerEvent: {}
+[22.846520] (-) TimerEvent: {}
+[22.946795] (-) TimerEvent: {}
+[23.047081] (-) TimerEvent: {}
+[23.147400] (-) TimerEvent: {}
+[23.247690] (-) TimerEvent: {}
+[23.347954] (-) TimerEvent: {}
+[23.448221] (-) TimerEvent: {}
+[23.548508] (-) TimerEvent: {}
+[23.648771] (-) TimerEvent: {}
+[23.749030] (-) TimerEvent: {}
+[23.849288] (-) TimerEvent: {}
+[23.949614] (-) TimerEvent: {}
+[24.049950] (-) TimerEvent: {}
+[24.150214] (-) TimerEvent: {}
+[24.250508] (-) TimerEvent: {}
+[24.350784] (-) TimerEvent: {}
+[24.451050] (-) TimerEvent: {}
+[24.551305] (-) TimerEvent: {}
+[24.651559] (-) TimerEvent: {}
+[24.751818] (-) TimerEvent: {}
+[24.852113] (-) TimerEvent: {}
+[24.952373] (-) TimerEvent: {}
+[25.052626] (-) TimerEvent: {}
+[25.152928] (-) TimerEvent: {}
+[25.253211] (-) TimerEvent: {}
+[25.353509] (-) TimerEvent: {}
+[25.453812] (-) TimerEvent: {}
+[25.554151] (-) TimerEvent: {}
+[25.654440] (-) TimerEvent: {}
+[25.754773] (-) TimerEvent: {}
+[25.855075] (-) TimerEvent: {}
+[25.955382] (-) TimerEvent: {}
+[26.055685] (-) TimerEvent: {}
+[26.155961] (-) TimerEvent: {}
+[26.256253] (-) TimerEvent: {}
+[26.356600] (-) TimerEvent: {}
+[26.456910] (-) TimerEvent: {}
+[26.557199] (-) TimerEvent: {}
+[26.657484] (-) TimerEvent: {}
+[26.757850] (-) TimerEvent: {}
+[26.858160] (-) TimerEvent: {}
+[26.958470] (-) TimerEvent: {}
+[27.058808] (-) TimerEvent: {}
+[27.159124] (-) TimerEvent: {}
+[27.259417] (-) TimerEvent: {}
+[27.359723] (-) TimerEvent: {}
+[27.460041] (-) TimerEvent: {}
+[27.560372] (-) TimerEvent: {}
+[27.660728] (-) TimerEvent: {}
+[27.761077] (-) TimerEvent: {}
+[27.861424] (-) TimerEvent: {}
+[27.961856] (-) TimerEvent: {}
+[28.062185] (-) TimerEvent: {}
+[28.162585] (-) TimerEvent: {}
+[28.262885] (-) TimerEvent: {}
+[28.363214] (-) TimerEvent: {}
+[28.463507] (-) TimerEvent: {}
+[28.563907] (-) TimerEvent: {}
+[28.664198] (-) TimerEvent: {}
+[28.764477] (-) TimerEvent: {}
+[28.864792] (-) TimerEvent: {}
+[28.965157] (-) TimerEvent: {}
+[29.065500] (-) TimerEvent: {}
+[29.165909] (-) TimerEvent: {}
+[29.266208] (-) TimerEvent: {}
+[29.366473] (-) TimerEvent: {}
+[29.466773] (-) TimerEvent: {}
+[29.567035] (-) TimerEvent: {}
+[29.667295] (-) TimerEvent: {}
+[29.767587] (-) TimerEvent: {}
+[29.867819] (-) TimerEvent: {}
+[29.968105] (-) TimerEvent: {}
+[30.068381] (-) TimerEvent: {}
+[30.168647] (-) TimerEvent: {}
+[30.268878] (-) TimerEvent: {}
+[30.369196] (-) TimerEvent: {}
+[30.469555] (-) TimerEvent: {}
+[30.569798] (-) TimerEvent: {}
+[30.670061] (-) TimerEvent: {}
+[30.770346] (-) TimerEvent: {}
+[30.870622] (-) TimerEvent: {}
+[30.970862] (-) TimerEvent: {}
+[31.071143] (-) TimerEvent: {}
+[31.171367] (-) TimerEvent: {}
+[31.271717] (-) TimerEvent: {}
+[31.372049] (-) TimerEvent: {}
+[31.472401] (-) TimerEvent: {}
+[31.572711] (-) TimerEvent: {}
+[31.672972] (-) TimerEvent: {}
+[31.773266] (-) TimerEvent: {}
+[31.873667] (-) TimerEvent: {}
+[31.973985] (-) TimerEvent: {}
+[32.074320] (-) TimerEvent: {}
+[32.174614] (-) TimerEvent: {}
+[32.274862] (-) TimerEvent: {}
+[32.375113] (-) TimerEvent: {}
+[32.475397] (-) TimerEvent: {}
+[32.575643] (-) TimerEvent: {}
+[32.675880] (-) TimerEvent: {}
+[32.776162] (-) TimerEvent: {}
+[32.876398] (-) TimerEvent: {}
+[32.976646] (-) TimerEvent: {}
+[33.076897] (-) TimerEvent: {}
+[33.177178] (-) TimerEvent: {}
+[33.277462] (-) TimerEvent: {}
+[33.377731] (-) TimerEvent: {}
+[33.478022] (-) TimerEvent: {}
+[33.578289] (-) TimerEvent: {}
+[33.678589] (-) TimerEvent: {}
+[33.778964] (-) TimerEvent: {}
+[33.879272] (-) TimerEvent: {}
+[33.979531] (-) TimerEvent: {}
+[34.079831] (-) TimerEvent: {}
+[34.180122] (-) TimerEvent: {}
+[34.280368] (-) TimerEvent: {}
+[34.380630] (-) TimerEvent: {}
+[34.480927] (-) TimerEvent: {}
+[34.581278] (-) TimerEvent: {}
+[34.681607] (-) TimerEvent: {}
+[34.781981] (-) TimerEvent: {}
+[34.882248] (-) TimerEvent: {}
+[34.982589] (-) TimerEvent: {}
+[35.082896] (-) TimerEvent: {}
+[35.183145] (-) TimerEvent: {}
+[35.283438] (-) TimerEvent: {}
+[35.383772] (-) TimerEvent: {}
+[35.484127] (-) TimerEvent: {}
+[35.584447] (-) TimerEvent: {}
+[35.684810] (-) TimerEvent: {}
+[35.785073] (-) TimerEvent: {}
+[35.885407] (-) TimerEvent: {}
+[35.985728] (-) TimerEvent: {}
+[36.086014] (-) TimerEvent: {}
+[36.186292] (-) TimerEvent: {}
+[36.286564] (-) TimerEvent: {}
+[36.386828] (-) TimerEvent: {}
+[36.487100] (-) TimerEvent: {}
+[36.587364] (-) TimerEvent: {}
+[36.687632] (-) TimerEvent: {}
+[36.787932] (-) TimerEvent: {}
+[36.888160] (-) TimerEvent: {}
+[36.988431] (-) TimerEvent: {}
+[37.029148] (RBDL) StdoutLine: {'line': b'[100%] \x1b[32m\x1b[1mLinking CXX shared library librbdl.so\x1b[0m\n'}
+[37.088585] (-) TimerEvent: {}
+[37.163662] (RBDL) StdoutLine: {'line': b'[100%] Built target rbdl\n'}
+[37.175446] (RBDL) JobEnded: {'identifier': 'RBDL', 'rc': 'SIGINT'}
+[37.186033] (-) EventReactorShutdown: {}

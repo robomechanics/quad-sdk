@@ -1,0 +1,51 @@
+[0.015s] Invoking command in '/home/dologan/ros2_ws/src/quad-sdk/build/quad_logger': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/jazzy CONDA_PROMPT_MODIFIER=(base) DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake /home/dologan/ros2_ws/src/quad-sdk/quad_logger -DCMAKE_INSTALL_PREFIX=/home/dologan/ros2_ws/src/quad-sdk/install/quad_logger
+[0.029s] -- Found ament_cmake: 2.5.3 (/opt/ros/jazzy/share/ament_cmake/cmake)
+[0.283s] -- Found rclpy: 7.1.3 (/opt/ros/jazzy/share/rclpy/cmake)
+[0.283s] -- Found tf2_ros: 0.36.7 (/opt/ros/jazzy/share/tf2_ros/cmake)
+[0.330s] -- Found rosidl_generator_c: 4.6.5 (/opt/ros/jazzy/share/rosidl_generator_c/cmake)
+[0.347s] -- Found rosidl_generator_cpp: 4.6.5 (/opt/ros/jazzy/share/rosidl_generator_cpp/cmake)
+[0.362s] -- Using all available rosidl_typesupport_c: rosidl_typesupport_fastrtps_c;rosidl_typesupport_introspection_c
+[0.376s] -- Using all available rosidl_typesupport_cpp: rosidl_typesupport_fastrtps_cpp;rosidl_typesupport_introspection_cpp
+[0.472s] -- Found rmw_implementation_cmake: 7.3.1 (/opt/ros/jazzy/share/rmw_implementation_cmake/cmake)
+[0.474s] -- Found rmw_fastrtps_cpp: 8.4.1 (/opt/ros/jazzy/share/rmw_fastrtps_cpp/cmake)
+[0.538s] -- Using RMW implementation 'rmw_fastrtps_cpp' as default
+[0.778s] -- Configuring done (0.8s)
+[0.782s] -- Generating done (0.0s)
+[0.786s] -- Build files have been written to: /home/dologan/ros2_ws/src/quad-sdk/build/quad_logger
+[0.793s] Invoked command in '/home/dologan/ros2_ws/src/quad-sdk/build/quad_logger' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/jazzy CONDA_PROMPT_MODIFIER=(base) DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake /home/dologan/ros2_ws/src/quad-sdk/quad_logger -DCMAKE_INSTALL_PREFIX=/home/dologan/ros2_ws/src/quad-sdk/install/quad_logger
+[0.794s] Invoking command in '/home/dologan/ros2_ws/src/quad-sdk/build/quad_logger': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/jazzy CONDA_PROMPT_MODIFIER=(base) DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake --build /home/dologan/ros2_ws/src/quad-sdk/build/quad_logger -- -j8 -l8
+[0.831s] Invoked command in '/home/dologan/ros2_ws/src/quad-sdk/build/quad_logger' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/jazzy CONDA_PROMPT_MODIFIER=(base) DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake --build /home/dologan/ros2_ws/src/quad-sdk/build/quad_logger -- -j8 -l8
+[0.832s] Invoking command in '/home/dologan/ros2_ws/src/quad-sdk/build/quad_logger': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/jazzy CONDA_PROMPT_MODIFIER=(base) DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake --install /home/dologan/ros2_ws/src/quad-sdk/build/quad_logger
+[0.839s] -- Install configuration: ""
+[0.839s] -- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_logger/lib/quad_logger
+[0.839s] -- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_logger/lib/quad_logger/.gitignore
+[0.839s] -- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_logger/lib/quad_logger/processLog.m
+[0.839s] -- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_logger/lib/quad_logger/plotLocalPlan.m
+[0.839s] -- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_logger/lib/quad_logger/getToeForces.m
+[0.840s] -- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_logger/lib/quad_logger/plotState.m
+[0.840s] -- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_logger/lib/quad_logger/plotToeForces.m
+[0.840s] -- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_logger/lib/quad_logger/cmuColor.m
+[0.840s] -- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_logger/lib/quad_logger/animateData.m
+[0.840s] -- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_logger/lib/quad_logger/parseQuadBag.m
+[0.840s] -- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_logger/lib/quad_logger/bag_reader.py
+[0.840s] -- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_logger/lib/quad_logger/saveLog.m
+[0.841s] -- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_logger/lib/quad_logger/plotControl.m
+[0.841s] -- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_logger/lib/quad_logger/read_bag.py
+[0.841s] -- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_logger/lib/quad_logger/align_Ylabels.m
+[0.841s] -- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_logger/lib/quad_logger/mouse_interface.py
+[0.841s] -- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_logger/share/ament_index/resource_index/package_run_dependencies/quad_logger
+[0.841s] -- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_logger/share/ament_index/resource_index/parent_prefix_path/quad_logger
+[0.841s] -- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_logger/share/quad_logger/environment/ament_prefix_path.sh
+[0.842s] -- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_logger/share/quad_logger/environment/ament_prefix_path.dsv
+[0.842s] -- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_logger/share/quad_logger/environment/path.sh
+[0.842s] -- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_logger/share/quad_logger/environment/path.dsv
+[0.842s] -- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_logger/share/quad_logger/local_setup.bash
+[0.842s] -- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_logger/share/quad_logger/local_setup.sh
+[0.842s] -- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_logger/share/quad_logger/local_setup.zsh
+[0.842s] -- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_logger/share/quad_logger/local_setup.dsv
+[0.842s] -- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_logger/share/quad_logger/package.dsv
+[0.842s] -- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_logger/share/ament_index/resource_index/packages/quad_logger
+[0.842s] -- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_logger/share/quad_logger/cmake/quad_loggerConfig.cmake
+[0.843s] -- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_logger/share/quad_logger/cmake/quad_loggerConfig-version.cmake
+[0.843s] -- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_logger/share/quad_logger/package.xml
+[0.845s] Invoked command in '/home/dologan/ros2_ws/src/quad-sdk/build/quad_logger' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/jazzy CONDA_PROMPT_MODIFIER=(base) DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake --install /home/dologan/ros2_ws/src/quad-sdk/build/quad_logger

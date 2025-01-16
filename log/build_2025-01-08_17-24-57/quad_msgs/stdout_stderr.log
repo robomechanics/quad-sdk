@@ -1,0 +1,228 @@
+-- Found ament_cmake: 2.5.3 (/opt/ros/jazzy/share/ament_cmake/cmake)
+-- Found Python3: /home/dologan/anaconda3/bin/python3 (found version "3.11.7") found components: Interpreter 
+-- Found std_msgs: 5.3.5 (/opt/ros/jazzy/share/std_msgs/cmake)
+-- Found rosidl_generator_c: 4.6.5 (/opt/ros/jazzy/share/rosidl_generator_c/cmake)
+-- Found rosidl_generator_cpp: 4.6.5 (/opt/ros/jazzy/share/rosidl_generator_cpp/cmake)
+-- Using all available rosidl_typesupport_c: rosidl_typesupport_fastrtps_c;rosidl_typesupport_introspection_c
+-- Using all available rosidl_typesupport_cpp: rosidl_typesupport_fastrtps_cpp;rosidl_typesupport_introspection_cpp
+-- Found sensor_msgs: 5.3.5 (/opt/ros/jazzy/share/sensor_msgs/cmake)
+-- Found nav_msgs: 5.3.5 (/opt/ros/jazzy/share/nav_msgs/cmake)
+-- Found rosidl_default_generators: 1.6.0 (/opt/ros/jazzy/share/rosidl_default_generators/cmake)
+-- Found rosidl_adapter: 4.6.5 (/opt/ros/jazzy/share/rosidl_adapter/cmake)
+-- Found ament_cmake_ros: 0.12.0 (/opt/ros/jazzy/share/ament_cmake_ros/cmake)
+-- Using all available rosidl_typesupport_c: rosidl_typesupport_fastrtps_c;rosidl_typesupport_introspection_c
+-- Using all available rosidl_typesupport_cpp: rosidl_typesupport_fastrtps_cpp;rosidl_typesupport_introspection_cpp
+-- Found python_cmake_module: 0.11.1 (/opt/ros/jazzy/share/python_cmake_module/cmake)
+-- Found Python3: /home/dologan/anaconda3/bin/python3 (found version "3.11.7") found components: Interpreter Development NumPy Development.Module Development.Embed 
+-- Configuring done (2.7s)
+-- Generating done (0.1s)
+-- Build files have been written to: /home/dologan/ros2_ws/src/quad-sdk/build/quad_msgs
+[  1%] [34m[1mGenerating type hashes for ROS interfaces[0m
+[  1%] Built target ament_cmake_python_copy_quad_msgs
+running egg_info
+creating quad_msgs.egg-info
+writing quad_msgs.egg-info/PKG-INFO
+writing dependency_links to quad_msgs.egg-info/dependency_links.txt
+writing top-level names to quad_msgs.egg-info/top_level.txt
+writing manifest file 'quad_msgs.egg-info/SOURCES.txt'
+reading manifest file 'quad_msgs.egg-info/SOURCES.txt'
+writing manifest file 'quad_msgs.egg-info/SOURCES.txt'
+[  1%] Built target ament_cmake_python_build_quad_msgs_egg
+[  1%] Built target quad_msgs__rosidl_generator_type_description
+[  1%] [34m[1mGenerating C code for ROS interfaces[0m
+[  1%] [34m[1mGenerating C++ code for ROS interfaces[0m
+[  1%] Built target quad_msgs__cpp
+[  2%] [32mBuilding C object CMakeFiles/quad_msgs__rosidl_generator_c.dir/rosidl_generator_c/quad_msgs/msg/detail/body_force_estimate__description.c.o[0m
+[  2%] [32mBuilding C object CMakeFiles/quad_msgs__rosidl_generator_c.dir/rosidl_generator_c/quad_msgs/msg/detail/robot_state__type_support.c.o[0m
+[  2%] [32mBuilding C object CMakeFiles/quad_msgs__rosidl_generator_c.dir/rosidl_generator_c/quad_msgs/msg/detail/body_force_estimate__functions.c.o[0m
+[  4%] [32mBuilding C object CMakeFiles/quad_msgs__rosidl_generator_c.dir/rosidl_generator_c/quad_msgs/msg/detail/robot_state__functions.c.o[0m
+[  2%] [32mBuilding C object CMakeFiles/quad_msgs__rosidl_generator_c.dir/rosidl_generator_c/quad_msgs/msg/detail/robot_state__description.c.o[0m
+[  5%] [32mBuilding C object CMakeFiles/quad_msgs__rosidl_generator_c.dir/rosidl_generator_c/quad_msgs/msg/detail/body_state__description.c.o[0m
+[  5%] [32mBuilding C object CMakeFiles/quad_msgs__rosidl_generator_c.dir/rosidl_generator_c/quad_msgs/msg/detail/body_force_estimate__type_support.c.o[0m
+[  5%] [32mBuilding C object CMakeFiles/quad_msgs__rosidl_generator_c.dir/rosidl_generator_c/quad_msgs/msg/detail/body_state__functions.c.o[0m
+[  6%] [32mBuilding C object CMakeFiles/quad_msgs__rosidl_generator_c.dir/rosidl_generator_c/quad_msgs/msg/detail/body_state__type_support.c.o[0m
+[  7%] [32mBuilding C object CMakeFiles/quad_msgs__rosidl_generator_c.dir/rosidl_generator_c/quad_msgs/msg/detail/grf_array__description.c.o[0m
+[  7%] [32mBuilding C object CMakeFiles/quad_msgs__rosidl_generator_c.dir/rosidl_generator_c/quad_msgs/msg/detail/grf_array__functions.c.o[0m
+[  8%] [32mBuilding C object CMakeFiles/quad_msgs__rosidl_generator_c.dir/rosidl_generator_c/quad_msgs/msg/detail/robot_plan__functions.c.o[0m
+[  9%] [32mBuilding C object CMakeFiles/quad_msgs__rosidl_generator_c.dir/rosidl_generator_c/quad_msgs/msg/detail/grf_array__type_support.c.o[0m
+[  9%] [32mBuilding C object CMakeFiles/quad_msgs__rosidl_generator_c.dir/rosidl_generator_c/quad_msgs/msg/detail/robot_plan__description.c.o[0m
+[  9%] [32mBuilding C object CMakeFiles/quad_msgs__rosidl_generator_c.dir/rosidl_generator_c/quad_msgs/msg/detail/robot_plan__type_support.c.o[0m
+[ 10%] [32mBuilding C object CMakeFiles/quad_msgs__rosidl_generator_c.dir/rosidl_generator_c/quad_msgs/msg/detail/robot_plan_diagnostics__description.c.o[0m
+[ 10%] [32mBuilding C object CMakeFiles/quad_msgs__rosidl_generator_c.dir/rosidl_generator_c/quad_msgs/msg/detail/robot_plan_diagnostics__functions.c.o[0m
+[ 11%] [32mBuilding C object CMakeFiles/quad_msgs__rosidl_generator_c.dir/rosidl_generator_c/quad_msgs/msg/detail/robot_plan_diagnostics__type_support.c.o[0m
+[ 11%] [32mBuilding C object CMakeFiles/quad_msgs__rosidl_generator_c.dir/rosidl_generator_c/quad_msgs/msg/detail/foot_state__description.c.o[0m
+[ 12%] [32mBuilding C object CMakeFiles/quad_msgs__rosidl_generator_c.dir/rosidl_generator_c/quad_msgs/msg/detail/foot_state__functions.c.o[0m
+[ 13%] [32mBuilding C object CMakeFiles/quad_msgs__rosidl_generator_c.dir/rosidl_generator_c/quad_msgs/msg/detail/foot_state__type_support.c.o[0m
+[ 13%] [32mBuilding C object CMakeFiles/quad_msgs__rosidl_generator_c.dir/rosidl_generator_c/quad_msgs/msg/detail/multi_foot_state__description.c.o[0m
+[ 13%] [32mBuilding C object CMakeFiles/quad_msgs__rosidl_generator_c.dir/rosidl_generator_c/quad_msgs/msg/detail/multi_foot_state__type_support.c.o[0m
+[ 14%] [32mBuilding C object CMakeFiles/quad_msgs__rosidl_generator_c.dir/rosidl_generator_c/quad_msgs/msg/detail/multi_foot_plan_continuous__description.c.o[0m
+[ 15%] [32mBuilding C object CMakeFiles/quad_msgs__rosidl_generator_c.dir/rosidl_generator_c/quad_msgs/msg/detail/multi_foot_state__functions.c.o[0m
+[ 15%] [32mBuilding C object CMakeFiles/quad_msgs__rosidl_generator_c.dir/rosidl_generator_c/quad_msgs/msg/detail/multi_foot_plan_continuous__functions.c.o[0m
+[ 16%] [32mBuilding C object CMakeFiles/quad_msgs__rosidl_generator_c.dir/rosidl_generator_c/quad_msgs/msg/detail/multi_foot_plan_continuous__type_support.c.o[0m
+[ 17%] [32mBuilding C object CMakeFiles/quad_msgs__rosidl_generator_c.dir/rosidl_generator_c/quad_msgs/msg/detail/foot_plan_discrete__functions.c.o[0m
+[ 17%] [32mBuilding C object CMakeFiles/quad_msgs__rosidl_generator_c.dir/rosidl_generator_c/quad_msgs/msg/detail/foot_plan_discrete__description.c.o[0m
+[ 17%] [32mBuilding C object CMakeFiles/quad_msgs__rosidl_generator_c.dir/rosidl_generator_c/quad_msgs/msg/detail/foot_plan_discrete__type_support.c.o[0m
+[ 18%] [32mBuilding C object CMakeFiles/quad_msgs__rosidl_generator_c.dir/rosidl_generator_c/quad_msgs/msg/detail/multi_foot_plan_discrete__description.c.o[0m
+[ 19%] [32mBuilding C object CMakeFiles/quad_msgs__rosidl_generator_c.dir/rosidl_generator_c/quad_msgs/msg/detail/multi_foot_plan_discrete__functions.c.o[0m
+[ 20%] [32mBuilding C object CMakeFiles/quad_msgs__rosidl_generator_c.dir/rosidl_generator_c/quad_msgs/msg/detail/leg_contact_mode__description.c.o[0m
+[ 20%] [32mBuilding C object CMakeFiles/quad_msgs__rosidl_generator_c.dir/rosidl_generator_c/quad_msgs/msg/detail/multi_foot_plan_discrete__type_support.c.o[0m
+[ 20%] [32mBuilding C object CMakeFiles/quad_msgs__rosidl_generator_c.dir/rosidl_generator_c/quad_msgs/msg/detail/leg_contact_mode__functions.c.o[0m
+[ 21%] [32mBuilding C object CMakeFiles/quad_msgs__rosidl_generator_c.dir/rosidl_generator_c/quad_msgs/msg/detail/leg_contact_mode__type_support.c.o[0m
+[ 21%] [32mBuilding C object CMakeFiles/quad_msgs__rosidl_generator_c.dir/rosidl_generator_c/quad_msgs/msg/detail/contact_mode__description.c.o[0m
+[ 21%] [32mBuilding C object CMakeFiles/quad_msgs__rosidl_generator_c.dir/rosidl_generator_c/quad_msgs/msg/detail/contact_mode__type_support.c.o[0m
+[ 22%] [32mBuilding C object CMakeFiles/quad_msgs__rosidl_generator_c.dir/rosidl_generator_c/quad_msgs/msg/detail/contact_mode__functions.c.o[0m
+[ 23%] [32mBuilding C object CMakeFiles/quad_msgs__rosidl_generator_c.dir/rosidl_generator_c/quad_msgs/msg/detail/motor_command__description.c.o[0m
+[ 23%] [32mBuilding C object CMakeFiles/quad_msgs__rosidl_generator_c.dir/rosidl_generator_c/quad_msgs/msg/detail/motor_command__functions.c.o[0m
+[ 24%] [32mBuilding C object CMakeFiles/quad_msgs__rosidl_generator_c.dir/rosidl_generator_c/quad_msgs/msg/detail/motor_command__type_support.c.o[0m
+[ 25%] [32mBuilding C object CMakeFiles/quad_msgs__rosidl_generator_c.dir/rosidl_generator_c/quad_msgs/msg/detail/leg_command__description.c.o[0m
+[ 26%] [32mBuilding C object CMakeFiles/quad_msgs__rosidl_generator_c.dir/rosidl_generator_c/quad_msgs/msg/detail/leg_command__type_support.c.o[0m
+[ 26%] [32mBuilding C object CMakeFiles/quad_msgs__rosidl_generator_c.dir/rosidl_generator_c/quad_msgs/msg/detail/leg_command__functions.c.o[0m
+[ 26%] [32mBuilding C object CMakeFiles/quad_msgs__rosidl_generator_c.dir/rosidl_generator_c/quad_msgs/msg/detail/leg_command_array__description.c.o[0m
+[ 27%] [32mBuilding C object CMakeFiles/quad_msgs__rosidl_generator_c.dir/rosidl_generator_c/quad_msgs/msg/detail/leg_command_array__functions.c.o[0m
+[ 27%] [32mBuilding C object CMakeFiles/quad_msgs__rosidl_generator_c.dir/rosidl_generator_c/quad_msgs/msg/detail/leg_command_array__type_support.c.o[0m
+[ 28%] [32m[1mLinking C shared library libquad_msgs__rosidl_generator_c.so[0m
+[ 28%] Built target quad_msgs__rosidl_generator_c
+[ 28%] [34m[1mGenerating C introspection for ROS interfaces[0m
+[ 28%] [34m[1mGenerating C type support dispatch for ROS interfaces[0m
+[ 28%] [34m[1mGenerating C++ type support for eProsima Fast-RTPS[0m
+[ 29%] [34m[1mGenerating C++ type support dispatch for ROS interfaces[0m
+[ 30%] [34m[1mGenerating C++ introspection for ROS interfaces[0m
+[ 31%] [34m[1mGenerating C type support for eProsima Fast-RTPS[0m
+[ 31%] [32mBuilding CXX object CMakeFiles/quad_msgs__rosidl_typesupport_cpp.dir/rosidl_typesupport_cpp/quad_msgs/msg/body_force_estimate__type_support.cpp.o[0m
+[ 32%] [32mBuilding CXX object CMakeFiles/quad_msgs__rosidl_typesupport_cpp.dir/rosidl_typesupport_cpp/quad_msgs/msg/robot_state__type_support.cpp.o[0m
+[ 33%] [32mBuilding CXX object CMakeFiles/quad_msgs__rosidl_typesupport_cpp.dir/rosidl_typesupport_cpp/quad_msgs/msg/body_state__type_support.cpp.o[0m
+[ 34%] [32mBuilding CXX object CMakeFiles/quad_msgs__rosidl_typesupport_c.dir/rosidl_typesupport_c/quad_msgs/msg/body_force_estimate__type_support.cpp.o[0m
+[ 34%] [32mBuilding CXX object CMakeFiles/quad_msgs__rosidl_typesupport_c.dir/rosidl_typesupport_c/quad_msgs/msg/robot_state__type_support.cpp.o[0m
+[ 35%] [32mBuilding CXX object CMakeFiles/quad_msgs__rosidl_typesupport_c.dir/rosidl_typesupport_c/quad_msgs/msg/body_state__type_support.cpp.o[0m
+[ 35%] [32mBuilding CXX object CMakeFiles/quad_msgs__rosidl_typesupport_c.dir/rosidl_typesupport_c/quad_msgs/msg/grf_array__type_support.cpp.o[0m
+[ 36%] [32mBuilding CXX object CMakeFiles/quad_msgs__rosidl_typesupport_c.dir/rosidl_typesupport_c/quad_msgs/msg/robot_plan__type_support.cpp.o[0m
+[ 36%] [32mBuilding CXX object CMakeFiles/quad_msgs__rosidl_typesupport_c.dir/rosidl_typesupport_c/quad_msgs/msg/robot_plan_diagnostics__type_support.cpp.o[0m
+[ 37%] [32mBuilding CXX object CMakeFiles/quad_msgs__rosidl_typesupport_c.dir/rosidl_typesupport_c/quad_msgs/msg/foot_state__type_support.cpp.o[0m
+[ 37%] [32mBuilding CXX object CMakeFiles/quad_msgs__rosidl_typesupport_cpp.dir/rosidl_typesupport_cpp/quad_msgs/msg/grf_array__type_support.cpp.o[0m
+[ 38%] [32mBuilding CXX object CMakeFiles/quad_msgs__rosidl_typesupport_cpp.dir/rosidl_typesupport_cpp/quad_msgs/msg/robot_plan__type_support.cpp.o[0m
+[ 38%] [32mBuilding CXX object CMakeFiles/quad_msgs__rosidl_typesupport_c.dir/rosidl_typesupport_c/quad_msgs/msg/multi_foot_state__type_support.cpp.o[0m
+[ 39%] [32mBuilding CXX object CMakeFiles/quad_msgs__rosidl_typesupport_c.dir/rosidl_typesupport_c/quad_msgs/msg/multi_foot_plan_continuous__type_support.cpp.o[0m
+[ 40%] [32mBuilding CXX object CMakeFiles/quad_msgs__rosidl_typesupport_introspection_cpp.dir/rosidl_typesupport_introspection_cpp/quad_msgs/msg/detail/body_force_estimate__type_support.cpp.o[0m
+[ 40%] [32mBuilding CXX object CMakeFiles/quad_msgs__rosidl_typesupport_introspection_cpp.dir/rosidl_typesupport_introspection_cpp/quad_msgs/msg/detail/robot_state__type_support.cpp.o[0m
+[ 41%] [32mBuilding CXX object CMakeFiles/quad_msgs__rosidl_typesupport_c.dir/rosidl_typesupport_c/quad_msgs/msg/foot_plan_discrete__type_support.cpp.o[0m
+[ 42%] [32mBuilding CXX object CMakeFiles/quad_msgs__rosidl_typesupport_fastrtps_cpp.dir/rosidl_typesupport_fastrtps_cpp/quad_msgs/msg/detail/dds_fastrtps/body_force_estimate__type_support.cpp.o[0m
+[ 43%] [32mBuilding C object CMakeFiles/quad_msgs__rosidl_typesupport_introspection_c.dir/rosidl_typesupport_introspection_c/quad_msgs/msg/detail/body_force_estimate__type_support.c.o[0m
+[ 43%] [32mBuilding CXX object CMakeFiles/quad_msgs__rosidl_typesupport_c.dir/rosidl_typesupport_c/quad_msgs/msg/multi_foot_plan_discrete__type_support.cpp.o[0m
+[ 43%] [32mBuilding C object CMakeFiles/quad_msgs__rosidl_typesupport_introspection_c.dir/rosidl_typesupport_introspection_c/quad_msgs/msg/detail/robot_state__type_support.c.o[0m
+[ 44%] [32mBuilding CXX object CMakeFiles/quad_msgs__rosidl_typesupport_c.dir/rosidl_typesupport_c/quad_msgs/msg/leg_contact_mode__type_support.cpp.o[0m
+[ 44%] [32mBuilding CXX object CMakeFiles/quad_msgs__rosidl_typesupport_c.dir/rosidl_typesupport_c/quad_msgs/msg/contact_mode__type_support.cpp.o[0m
+[ 45%] [32mBuilding C object CMakeFiles/quad_msgs__rosidl_typesupport_introspection_c.dir/rosidl_typesupport_introspection_c/quad_msgs/msg/detail/body_state__type_support.c.o[0m
+[ 46%] [32mBuilding CXX object CMakeFiles/quad_msgs__rosidl_typesupport_c.dir/rosidl_typesupport_c/quad_msgs/msg/motor_command__type_support.cpp.o[0m
+[ 46%] [32mBuilding C object CMakeFiles/quad_msgs__rosidl_typesupport_introspection_c.dir/rosidl_typesupport_introspection_c/quad_msgs/msg/detail/grf_array__type_support.c.o[0m
+[ 46%] [32mBuilding CXX object CMakeFiles/quad_msgs__rosidl_typesupport_c.dir/rosidl_typesupport_c/quad_msgs/msg/leg_command__type_support.cpp.o[0m
+[ 47%] [32mBuilding CXX object CMakeFiles/quad_msgs__rosidl_typesupport_introspection_cpp.dir/rosidl_typesupport_introspection_cpp/quad_msgs/msg/detail/body_state__type_support.cpp.o[0m
+[ 47%] [32mBuilding CXX object CMakeFiles/quad_msgs__rosidl_typesupport_cpp.dir/rosidl_typesupport_cpp/quad_msgs/msg/robot_plan_diagnostics__type_support.cpp.o[0m
+[ 48%] [32mBuilding C object CMakeFiles/quad_msgs__rosidl_typesupport_introspection_c.dir/rosidl_typesupport_introspection_c/quad_msgs/msg/detail/robot_plan__type_support.c.o[0m
+[ 48%] [32mBuilding CXX object CMakeFiles/quad_msgs__rosidl_typesupport_fastrtps_c.dir/rosidl_typesupport_fastrtps_c/quad_msgs/msg/detail/body_force_estimate__type_support_c.cpp.o[0m
+[ 49%] [32mBuilding CXX object CMakeFiles/quad_msgs__rosidl_typesupport_c.dir/rosidl_typesupport_c/quad_msgs/msg/leg_command_array__type_support.cpp.o[0m
+[ 50%] [32mBuilding CXX object CMakeFiles/quad_msgs__rosidl_typesupport_cpp.dir/rosidl_typesupport_cpp/quad_msgs/msg/foot_state__type_support.cpp.o[0m
+[ 50%] [32m[1mLinking CXX shared library libquad_msgs__rosidl_typesupport_c.so[0m
+[ 50%] [32mBuilding C object CMakeFiles/quad_msgs__rosidl_typesupport_introspection_c.dir/rosidl_typesupport_introspection_c/quad_msgs/msg/detail/robot_plan_diagnostics__type_support.c.o[0m
+[ 51%] [32mBuilding C object CMakeFiles/quad_msgs__rosidl_typesupport_introspection_c.dir/rosidl_typesupport_introspection_c/quad_msgs/msg/detail/foot_state__type_support.c.o[0m
+[ 52%] [32mBuilding CXX object CMakeFiles/quad_msgs__rosidl_typesupport_fastrtps_c.dir/rosidl_typesupport_fastrtps_c/quad_msgs/msg/detail/robot_state__type_support_c.cpp.o[0m
+[ 52%] Built target quad_msgs__rosidl_typesupport_c
+[ 53%] [32mBuilding CXX object CMakeFiles/quad_msgs__rosidl_typesupport_fastrtps_cpp.dir/rosidl_typesupport_fastrtps_cpp/quad_msgs/msg/detail/dds_fastrtps/robot_state__type_support.cpp.o[0m
+[ 54%] [32mBuilding C object CMakeFiles/quad_msgs__rosidl_typesupport_introspection_c.dir/rosidl_typesupport_introspection_c/quad_msgs/msg/detail/multi_foot_state__type_support.c.o[0m
+[ 54%] [32mBuilding C object CMakeFiles/quad_msgs__rosidl_typesupport_introspection_c.dir/rosidl_typesupport_introspection_c/quad_msgs/msg/detail/multi_foot_plan_continuous__type_support.c.o[0m
+[ 55%] [32mBuilding C object CMakeFiles/quad_msgs__rosidl_typesupport_introspection_c.dir/rosidl_typesupport_introspection_c/quad_msgs/msg/detail/foot_plan_discrete__type_support.c.o[0m
+[ 55%] [32mBuilding C object CMakeFiles/quad_msgs__rosidl_typesupport_introspection_c.dir/rosidl_typesupport_introspection_c/quad_msgs/msg/detail/multi_foot_plan_discrete__type_support.c.o[0m
+[ 55%] [32mBuilding CXX object CMakeFiles/quad_msgs__rosidl_typesupport_cpp.dir/rosidl_typesupport_cpp/quad_msgs/msg/multi_foot_state__type_support.cpp.o[0m
+[ 56%] [32mBuilding C object CMakeFiles/quad_msgs__rosidl_typesupport_introspection_c.dir/rosidl_typesupport_introspection_c/quad_msgs/msg/detail/leg_contact_mode__type_support.c.o[0m
+[ 56%] [32mBuilding CXX object CMakeFiles/quad_msgs__rosidl_typesupport_introspection_cpp.dir/rosidl_typesupport_introspection_cpp/quad_msgs/msg/detail/grf_array__type_support.cpp.o[0m
+[ 56%] [32mBuilding C object CMakeFiles/quad_msgs__rosidl_typesupport_introspection_c.dir/rosidl_typesupport_introspection_c/quad_msgs/msg/detail/contact_mode__type_support.c.o[0m
+[ 57%] [32mBuilding CXX object CMakeFiles/quad_msgs__rosidl_typesupport_introspection_cpp.dir/rosidl_typesupport_introspection_cpp/quad_msgs/msg/detail/robot_plan__type_support.cpp.o[0m
+[ 57%] [32mBuilding CXX object CMakeFiles/quad_msgs__rosidl_typesupport_fastrtps_c.dir/rosidl_typesupport_fastrtps_c/quad_msgs/msg/detail/body_state__type_support_c.cpp.o[0m
+[ 58%] [32mBuilding CXX object CMakeFiles/quad_msgs__rosidl_typesupport_fastrtps_c.dir/rosidl_typesupport_fastrtps_c/quad_msgs/msg/detail/grf_array__type_support_c.cpp.o[0m
+[ 59%] [32mBuilding C object CMakeFiles/quad_msgs__rosidl_typesupport_introspection_c.dir/rosidl_typesupport_introspection_c/quad_msgs/msg/detail/motor_command__type_support.c.o[0m
+[ 59%] [32mBuilding C object CMakeFiles/quad_msgs__rosidl_typesupport_introspection_c.dir/rosidl_typesupport_introspection_c/quad_msgs/msg/detail/leg_command__type_support.c.o[0m
+[ 60%] [32mBuilding C object CMakeFiles/quad_msgs__rosidl_typesupport_introspection_c.dir/rosidl_typesupport_introspection_c/quad_msgs/msg/detail/leg_command_array__type_support.c.o[0m
+[ 61%] [32mBuilding CXX object CMakeFiles/quad_msgs__rosidl_typesupport_cpp.dir/rosidl_typesupport_cpp/quad_msgs/msg/multi_foot_plan_continuous__type_support.cpp.o[0m
+[ 61%] [32m[1mLinking C shared library libquad_msgs__rosidl_typesupport_introspection_c.so[0m
+[ 61%] Built target quad_msgs__rosidl_typesupport_introspection_c
+[ 61%] [32mBuilding CXX object CMakeFiles/quad_msgs__rosidl_typesupport_cpp.dir/rosidl_typesupport_cpp/quad_msgs/msg/foot_plan_discrete__type_support.cpp.o[0m
+[ 61%] [32mBuilding CXX object CMakeFiles/quad_msgs__rosidl_typesupport_fastrtps_c.dir/rosidl_typesupport_fastrtps_c/quad_msgs/msg/detail/robot_plan__type_support_c.cpp.o[0m
+[ 61%] [32mBuilding CXX object CMakeFiles/quad_msgs__rosidl_typesupport_fastrtps_cpp.dir/rosidl_typesupport_fastrtps_cpp/quad_msgs/msg/detail/dds_fastrtps/body_state__type_support.cpp.o[0m
+[ 62%] [32mBuilding CXX object CMakeFiles/quad_msgs__rosidl_typesupport_fastrtps_c.dir/rosidl_typesupport_fastrtps_c/quad_msgs/msg/detail/robot_plan_diagnostics__type_support_c.cpp.o[0m
+[ 62%] [32mBuilding CXX object CMakeFiles/quad_msgs__rosidl_typesupport_fastrtps_c.dir/rosidl_typesupport_fastrtps_c/quad_msgs/msg/detail/foot_state__type_support_c.cpp.o[0m
+[ 62%] [32mBuilding CXX object CMakeFiles/quad_msgs__rosidl_typesupport_introspection_cpp.dir/rosidl_typesupport_introspection_cpp/quad_msgs/msg/detail/robot_plan_diagnostics__type_support.cpp.o[0m
+[ 63%] [32mBuilding CXX object CMakeFiles/quad_msgs__rosidl_typesupport_cpp.dir/rosidl_typesupport_cpp/quad_msgs/msg/multi_foot_plan_discrete__type_support.cpp.o[0m
+[ 64%] [32mBuilding CXX object CMakeFiles/quad_msgs__rosidl_typesupport_fastrtps_cpp.dir/rosidl_typesupport_fastrtps_cpp/quad_msgs/msg/detail/dds_fastrtps/grf_array__type_support.cpp.o[0m
+[ 64%] [32mBuilding CXX object CMakeFiles/quad_msgs__rosidl_typesupport_fastrtps_cpp.dir/rosidl_typesupport_fastrtps_cpp/quad_msgs/msg/detail/dds_fastrtps/robot_plan__type_support.cpp.o[0m
+[ 65%] [32mBuilding CXX object CMakeFiles/quad_msgs__rosidl_typesupport_fastrtps_cpp.dir/rosidl_typesupport_fastrtps_cpp/quad_msgs/msg/detail/dds_fastrtps/robot_plan_diagnostics__type_support.cpp.o[0m
+[ 66%] [32mBuilding CXX object CMakeFiles/quad_msgs__rosidl_typesupport_introspection_cpp.dir/rosidl_typesupport_introspection_cpp/quad_msgs/msg/detail/foot_state__type_support.cpp.o[0m
+[ 67%] [32mBuilding CXX object CMakeFiles/quad_msgs__rosidl_typesupport_fastrtps_c.dir/rosidl_typesupport_fastrtps_c/quad_msgs/msg/detail/multi_foot_state__type_support_c.cpp.o[0m
+[ 68%] [32mBuilding CXX object CMakeFiles/quad_msgs__rosidl_typesupport_fastrtps_c.dir/rosidl_typesupport_fastrtps_c/quad_msgs/msg/detail/multi_foot_plan_continuous__type_support_c.cpp.o[0m
+[ 68%] [32mBuilding CXX object CMakeFiles/quad_msgs__rosidl_typesupport_cpp.dir/rosidl_typesupport_cpp/quad_msgs/msg/leg_contact_mode__type_support.cpp.o[0m
+[ 68%] [32mBuilding CXX object CMakeFiles/quad_msgs__rosidl_typesupport_fastrtps_cpp.dir/rosidl_typesupport_fastrtps_cpp/quad_msgs/msg/detail/dds_fastrtps/foot_state__type_support.cpp.o[0m
+[ 68%] [32mBuilding CXX object CMakeFiles/quad_msgs__rosidl_typesupport_fastrtps_c.dir/rosidl_typesupport_fastrtps_c/quad_msgs/msg/detail/foot_plan_discrete__type_support_c.cpp.o[0m
+[ 68%] [32mBuilding CXX object CMakeFiles/quad_msgs__rosidl_typesupport_introspection_cpp.dir/rosidl_typesupport_introspection_cpp/quad_msgs/msg/detail/multi_foot_state__type_support.cpp.o[0m
+[ 69%] [32mBuilding CXX object CMakeFiles/quad_msgs__rosidl_typesupport_cpp.dir/rosidl_typesupport_cpp/quad_msgs/msg/contact_mode__type_support.cpp.o[0m
+[ 70%] [32mBuilding CXX object CMakeFiles/quad_msgs__rosidl_typesupport_fastrtps_cpp.dir/rosidl_typesupport_fastrtps_cpp/quad_msgs/msg/detail/dds_fastrtps/multi_foot_state__type_support.cpp.o[0m
+[ 71%] [32mBuilding CXX object CMakeFiles/quad_msgs__rosidl_typesupport_fastrtps_c.dir/rosidl_typesupport_fastrtps_c/quad_msgs/msg/detail/multi_foot_plan_discrete__type_support_c.cpp.o[0m
+[ 72%] [32mBuilding CXX object CMakeFiles/quad_msgs__rosidl_typesupport_introspection_cpp.dir/rosidl_typesupport_introspection_cpp/quad_msgs/msg/detail/multi_foot_plan_continuous__type_support.cpp.o[0m
+[ 72%] [32mBuilding CXX object CMakeFiles/quad_msgs__rosidl_typesupport_cpp.dir/rosidl_typesupport_cpp/quad_msgs/msg/motor_command__type_support.cpp.o[0m
+[ 72%] [32mBuilding CXX object CMakeFiles/quad_msgs__rosidl_typesupport_introspection_cpp.dir/rosidl_typesupport_introspection_cpp/quad_msgs/msg/detail/foot_plan_discrete__type_support.cpp.o[0m
+[ 73%] [32mBuilding CXX object CMakeFiles/quad_msgs__rosidl_typesupport_introspection_cpp.dir/rosidl_typesupport_introspection_cpp/quad_msgs/msg/detail/multi_foot_plan_discrete__type_support.cpp.o[0m
+[ 73%] [32mBuilding CXX object CMakeFiles/quad_msgs__rosidl_typesupport_fastrtps_c.dir/rosidl_typesupport_fastrtps_c/quad_msgs/msg/detail/leg_contact_mode__type_support_c.cpp.o[0m
+[ 74%] [32mBuilding CXX object CMakeFiles/quad_msgs__rosidl_typesupport_introspection_cpp.dir/rosidl_typesupport_introspection_cpp/quad_msgs/msg/detail/leg_contact_mode__type_support.cpp.o[0m
+[ 74%] [32mBuilding CXX object CMakeFiles/quad_msgs__rosidl_typesupport_introspection_cpp.dir/rosidl_typesupport_introspection_cpp/quad_msgs/msg/detail/contact_mode__type_support.cpp.o[0m
+[ 74%] [32mBuilding CXX object CMakeFiles/quad_msgs__rosidl_typesupport_fastrtps_cpp.dir/rosidl_typesupport_fastrtps_cpp/quad_msgs/msg/detail/dds_fastrtps/multi_foot_plan_continuous__type_support.cpp.o[0m
+[ 75%] [32mBuilding CXX object CMakeFiles/quad_msgs__rosidl_typesupport_cpp.dir/rosidl_typesupport_cpp/quad_msgs/msg/leg_command__type_support.cpp.o[0m
+[ 76%] [32mBuilding CXX object CMakeFiles/quad_msgs__rosidl_typesupport_fastrtps_cpp.dir/rosidl_typesupport_fastrtps_cpp/quad_msgs/msg/detail/dds_fastrtps/foot_plan_discrete__type_support.cpp.o[0m
+[ 77%] [32mBuilding CXX object CMakeFiles/quad_msgs__rosidl_typesupport_fastrtps_c.dir/rosidl_typesupport_fastrtps_c/quad_msgs/msg/detail/contact_mode__type_support_c.cpp.o[0m
+[ 78%] [32mBuilding CXX object CMakeFiles/quad_msgs__rosidl_typesupport_introspection_cpp.dir/rosidl_typesupport_introspection_cpp/quad_msgs/msg/detail/motor_command__type_support.cpp.o[0m
+[ 78%] [32mBuilding CXX object CMakeFiles/quad_msgs__rosidl_typesupport_introspection_cpp.dir/rosidl_typesupport_introspection_cpp/quad_msgs/msg/detail/leg_command__type_support.cpp.o[0m
+[ 78%] [32mBuilding CXX object CMakeFiles/quad_msgs__rosidl_typesupport_fastrtps_c.dir/rosidl_typesupport_fastrtps_c/quad_msgs/msg/detail/motor_command__type_support_c.cpp.o[0m
+[ 79%] [32mBuilding CXX object CMakeFiles/quad_msgs__rosidl_typesupport_cpp.dir/rosidl_typesupport_cpp/quad_msgs/msg/leg_command_array__type_support.cpp.o[0m
+[ 80%] [32mBuilding CXX object CMakeFiles/quad_msgs__rosidl_typesupport_introspection_cpp.dir/rosidl_typesupport_introspection_cpp/quad_msgs/msg/detail/leg_command_array__type_support.cpp.o[0m
+[ 80%] [32mBuilding CXX object CMakeFiles/quad_msgs__rosidl_typesupport_fastrtps_cpp.dir/rosidl_typesupport_fastrtps_cpp/quad_msgs/msg/detail/dds_fastrtps/multi_foot_plan_discrete__type_support.cpp.o[0m
+[ 81%] [32mBuilding CXX object CMakeFiles/quad_msgs__rosidl_typesupport_fastrtps_c.dir/rosidl_typesupport_fastrtps_c/quad_msgs/msg/detail/leg_command__type_support_c.cpp.o[0m
+[ 81%] [32mBuilding CXX object CMakeFiles/quad_msgs__rosidl_typesupport_fastrtps_c.dir/rosidl_typesupport_fastrtps_c/quad_msgs/msg/detail/leg_command_array__type_support_c.cpp.o[0m
+[ 82%] [32mBuilding CXX object CMakeFiles/quad_msgs__rosidl_typesupport_fastrtps_cpp.dir/rosidl_typesupport_fastrtps_cpp/quad_msgs/msg/detail/dds_fastrtps/leg_contact_mode__type_support.cpp.o[0m
+[ 83%] [32mBuilding CXX object CMakeFiles/quad_msgs__rosidl_typesupport_fastrtps_cpp.dir/rosidl_typesupport_fastrtps_cpp/quad_msgs/msg/detail/dds_fastrtps/contact_mode__type_support.cpp.o[0m
+[ 83%] [32m[1mLinking CXX shared library libquad_msgs__rosidl_typesupport_cpp.so[0m
+[ 83%] Built target quad_msgs__rosidl_typesupport_cpp
+[ 83%] [32mBuilding CXX object CMakeFiles/quad_msgs__rosidl_typesupport_fastrtps_cpp.dir/rosidl_typesupport_fastrtps_cpp/quad_msgs/msg/detail/dds_fastrtps/motor_command__type_support.cpp.o[0m
+[ 83%] [32m[1mLinking CXX shared library libquad_msgs__rosidl_typesupport_introspection_cpp.so[0m
+[ 84%] [32mBuilding CXX object CMakeFiles/quad_msgs__rosidl_typesupport_fastrtps_cpp.dir/rosidl_typesupport_fastrtps_cpp/quad_msgs/msg/detail/dds_fastrtps/leg_command__type_support.cpp.o[0m
+[ 84%] Built target quad_msgs__rosidl_typesupport_introspection_cpp
+[ 84%] [32mBuilding CXX object CMakeFiles/quad_msgs__rosidl_typesupport_fastrtps_cpp.dir/rosidl_typesupport_fastrtps_cpp/quad_msgs/msg/detail/dds_fastrtps/leg_command_array__type_support.cpp.o[0m
+[ 85%] [32m[1mLinking CXX shared library libquad_msgs__rosidl_typesupport_fastrtps_c.so[0m
+[ 85%] Built target quad_msgs__rosidl_typesupport_fastrtps_c
+[ 86%] [32m[1mLinking CXX shared library libquad_msgs__rosidl_typesupport_fastrtps_cpp.so[0m
+[ 86%] Built target quad_msgs__rosidl_typesupport_fastrtps_cpp
+[ 86%] Built target quad_msgs
+[ 87%] [34m[1mGenerating Python code for ROS interfaces[0m
+[ 87%] Built target quad_msgs__py
+[ 87%] [32mBuilding C object CMakeFiles/quad_msgs__rosidl_generator_py.dir/rosidl_generator_py/quad_msgs/msg/_body_force_estimate_s.c.o[0m
+[ 87%] [32mBuilding C object CMakeFiles/quad_msgs__rosidl_generator_py.dir/rosidl_generator_py/quad_msgs/msg/_robot_plan_s.c.o[0m
+[ 89%] [32mBuilding C object CMakeFiles/quad_msgs__rosidl_generator_py.dir/rosidl_generator_py/quad_msgs/msg/_foot_state_s.c.o[0m
+[ 88%] [32mBuilding C object CMakeFiles/quad_msgs__rosidl_generator_py.dir/rosidl_generator_py/quad_msgs/msg/_robot_plan_diagnostics_s.c.o[0m
+[ 90%] [32mBuilding C object CMakeFiles/quad_msgs__rosidl_generator_py.dir/rosidl_generator_py/quad_msgs/msg/_robot_state_s.c.o[0m
+[ 91%] [32mBuilding C object CMakeFiles/quad_msgs__rosidl_generator_py.dir/rosidl_generator_py/quad_msgs/msg/_grf_array_s.c.o[0m
+[ 91%] [32mBuilding C object CMakeFiles/quad_msgs__rosidl_generator_py.dir/rosidl_generator_py/quad_msgs/msg/_body_state_s.c.o[0m
+[ 91%] [32mBuilding C object CMakeFiles/quad_msgs__rosidl_generator_py.dir/rosidl_generator_py/quad_msgs/msg/_multi_foot_state_s.c.o[0m
+[ 92%] [32mBuilding C object CMakeFiles/quad_msgs__rosidl_generator_py.dir/rosidl_generator_py/quad_msgs/msg/_multi_foot_plan_continuous_s.c.o[0m
+[ 93%] [32mBuilding C object CMakeFiles/quad_msgs__rosidl_generator_py.dir/rosidl_generator_py/quad_msgs/msg/_multi_foot_plan_discrete_s.c.o[0m
+[ 93%] [32mBuilding C object CMakeFiles/quad_msgs__rosidl_generator_py.dir/rosidl_generator_py/quad_msgs/msg/_foot_plan_discrete_s.c.o[0m
+[ 93%] [32mBuilding C object CMakeFiles/quad_msgs__rosidl_generator_py.dir/rosidl_generator_py/quad_msgs/msg/_leg_contact_mode_s.c.o[0m
+[ 94%] [32mBuilding C object CMakeFiles/quad_msgs__rosidl_generator_py.dir/rosidl_generator_py/quad_msgs/msg/_contact_mode_s.c.o[0m
+[ 94%] [32mBuilding C object CMakeFiles/quad_msgs__rosidl_generator_py.dir/rosidl_generator_py/quad_msgs/msg/_motor_command_s.c.o[0m
+[ 95%] [32mBuilding C object CMakeFiles/quad_msgs__rosidl_generator_py.dir/rosidl_generator_py/quad_msgs/msg/_leg_command_s.c.o[0m
+[ 95%] [32mBuilding C object CMakeFiles/quad_msgs__rosidl_generator_py.dir/rosidl_generator_py/quad_msgs/msg/_leg_command_array_s.c.o[0m
+[ 96%] [32m[1mLinking C shared library libquad_msgs__rosidl_generator_py.so[0m
+[ 96%] Built target quad_msgs__rosidl_generator_py
+[ 98%] [32mBuilding C object CMakeFiles/quad_msgs_s__rosidl_typesupport_introspection_c.dir/rosidl_generator_py/quad_msgs/_quad_msgs_s.ep.rosidl_typesupport_introspection_c.c.o[0m
+[ 98%] [32mBuilding C object CMakeFiles/quad_msgs_s__rosidl_typesupport_c.dir/rosidl_generator_py/quad_msgs/_quad_msgs_s.ep.rosidl_typesupport_c.c.o[0m
+[ 99%] [32mBuilding C object CMakeFiles/quad_msgs_s__rosidl_typesupport_fastrtps_c.dir/rosidl_generator_py/quad_msgs/_quad_msgs_s.ep.rosidl_typesupport_fastrtps_c.c.o[0m
+[100%] [32m[1mLinking C shared module rosidl_generator_py/quad_msgs/quad_msgs_s__rosidl_typesupport_introspection_c.so[0m
+[100%] [32m[1mLinking C shared module rosidl_generator_py/quad_msgs/quad_msgs_s__rosidl_typesupport_fastrtps_c.so[0m
+[100%] [32m[1mLinking C shared module rosidl_generator_py/quad_msgs/quad_msgs_s__rosidl_typesupport_c.so[0m
+[100%] Built target quad_msgs_s__rosidl_typesupport_c
+[100%] Built target quad_msgs_s__rosidl_typesupport_fastrtps_c
+[100%] Built target quad_msgs_s__rosidl_typesupport_introspection_c

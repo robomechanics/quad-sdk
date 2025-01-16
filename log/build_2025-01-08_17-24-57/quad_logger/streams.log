@@ -1,0 +1,43 @@
+[0.015s] Invoking command in '/home/dologan/ros2_ws/src/quad-sdk/build/quad_logger': CONDA_PROMPT_MODIFIER=(base) DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake /home/dologan/ros2_ws/src/quad-sdk/quad_logger -DCMAKE_INSTALL_PREFIX=/home/dologan/ros2_ws/src/quad-sdk/install/quad_logger
+[0.035s] -- Found ament_cmake: 2.5.3 (/opt/ros/jazzy/share/ament_cmake/cmake)
+[0.261s] -- Found Python3: /home/dologan/anaconda3/bin/python3 (found version "3.11.7") found components: Interpreter 
+[0.529s] -- Found rclpy: 7.1.3 (/opt/ros/jazzy/share/rclpy/cmake)
+[0.530s] -- Found tf2_ros: 0.36.7 (/opt/ros/jazzy/share/tf2_ros/cmake)
+[0.642s] -- Found rosidl_generator_c: 4.6.5 (/opt/ros/jazzy/share/rosidl_generator_c/cmake)
+[0.680s] -- Found rosidl_generator_cpp: 4.6.5 (/opt/ros/jazzy/share/rosidl_generator_cpp/cmake)
+[0.724s] -- Using all available rosidl_typesupport_c: rosidl_typesupport_fastrtps_c;rosidl_typesupport_introspection_c
+[0.774s] -- Using all available rosidl_typesupport_cpp: rosidl_typesupport_fastrtps_cpp;rosidl_typesupport_introspection_cpp
+[1.134s] -- Found rmw_implementation_cmake: 7.3.1 (/opt/ros/jazzy/share/rmw_implementation_cmake/cmake)
+[1.142s] -- Found rmw_fastrtps_cpp: 8.4.1 (/opt/ros/jazzy/share/rmw_fastrtps_cpp/cmake)
+[1.317s] -- Found OpenSSL: /usr/lib/x86_64-linux-gnu/libcrypto.so (found version "3.0.13")  
+[1.364s] -- Found FastRTPS: /opt/ros/jazzy/include (Required is at least version "2.13") 
+[1.410s] -- Using RMW implementation 'rmw_fastrtps_cpp' as default
+[1.957s] Error parsing '/home/dologan/ros2_ws/src/quad-sdk/quad_logger/package.xml':
+[1.957s] Traceback (most recent call last):
+[1.957s]   File "/opt/ros/jazzy/share/ament_cmake_core/cmake/core/package_xml_2_cmake.py", line 150, in <module>
+[1.958s]     main()
+[1.958s]   File "/opt/ros/jazzy/share/ament_cmake_core/cmake/core/package_xml_2_cmake.py", line 53, in main
+[1.958s]     raise e
+[1.958s]   File "/opt/ros/jazzy/share/ament_cmake_core/cmake/core/package_xml_2_cmake.py", line 49, in main
+[1.958s]     package = parse_package_string(
+[1.959s]               ^^^^^^^^^^^^^^^^^^^^^
+[1.959s]   File "/home/dologan/anaconda3/lib/python3.11/site-packages/catkin_pkg/package.py", line 786, in parse_package_string
+[1.959s]     raise InvalidPackage('Error(s):%s' % (''.join(['\n- %s' % e for e in errors])), filename)
+[1.959s] catkin_pkg.package.InvalidPackage: Error(s) in package '/home/dologan/ros2_ws/src/quad-sdk/quad_logger/package.xml':
+[1.959s] Error(s):
+[1.959s] - The generic dependency on 'tf2_ros' is redundant with: exec_depend
+[1.959s] - The generic dependency on 'rclpy' is redundant with: exec_depend
+[1.980s] [31mCMake Error at /opt/ros/jazzy/share/ament_cmake_core/cmake/core/ament_package_xml.cmake:95 (message):
+[1.980s]   execute_process(/home/dologan/anaconda3/bin/python3
+[1.980s]   /opt/ros/jazzy/share/ament_cmake_core/cmake/core/package_xml_2_cmake.py
+[1.980s]   /home/dologan/ros2_ws/src/quad-sdk/quad_logger/package.xml
+[1.980s]   /home/dologan/ros2_ws/src/quad-sdk/build/quad_logger/ament_cmake_core/package.cmake)
+[1.980s]   returned error code 1
+[1.980s] Call Stack (most recent call first):
+[1.980s]   /opt/ros/jazzy/share/ament_cmake_core/cmake/core/ament_package_xml.cmake:49 (_ament_package_xml)
+[1.981s]   /opt/ros/jazzy/share/ament_cmake_core/cmake/core/ament_package.cmake:63 (ament_package_xml)
+[1.981s]   CMakeLists.txt:15 (ament_package)
+[1.981s] 
+[1.981s] [0m
+[1.986s] -- Configuring incomplete, errors occurred!
+[1.991s] Invoked command in '/home/dologan/ros2_ws/src/quad-sdk/build/quad_logger' returned '1': CONDA_PROMPT_MODIFIER=(base) DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake /home/dologan/ros2_ws/src/quad-sdk/quad_logger -DCMAKE_INSTALL_PREFIX=/home/dologan/ros2_ws/src/quad-sdk/install/quad_logger

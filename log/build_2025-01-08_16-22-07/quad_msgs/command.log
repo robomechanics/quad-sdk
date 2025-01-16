@@ -1,0 +1,1 @@
+Invoking command in '/home/dologan/ros2_ws/src/quad-sdk/build/quad_msgs': CONDA_PROMPT_MODIFIER=(base) DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake /home/dologan/ros2_ws/src/quad-sdk/quad_msgs -DCATKIN_INSTALL_INTO_PREFIX_ROOT=0 -DCMAKE_INSTALL_PREFIX=/home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs

@@ -1,0 +1,45 @@
+-- Found ament_cmake: 2.5.3 (/opt/ros/jazzy/share/ament_cmake/cmake)
+-- Found rclpy: 7.1.3 (/opt/ros/jazzy/share/rclpy/cmake)
+-- Found tf2_ros: 0.36.7 (/opt/ros/jazzy/share/tf2_ros/cmake)
+-- Found rosidl_generator_c: 4.6.5 (/opt/ros/jazzy/share/rosidl_generator_c/cmake)
+-- Found rosidl_generator_cpp: 4.6.5 (/opt/ros/jazzy/share/rosidl_generator_cpp/cmake)
+-- Using all available rosidl_typesupport_c: rosidl_typesupport_fastrtps_c;rosidl_typesupport_introspection_c
+-- Using all available rosidl_typesupport_cpp: rosidl_typesupport_fastrtps_cpp;rosidl_typesupport_introspection_cpp
+-- Found rmw_implementation_cmake: 7.3.1 (/opt/ros/jazzy/share/rmw_implementation_cmake/cmake)
+-- Found rmw_fastrtps_cpp: 8.4.1 (/opt/ros/jazzy/share/rmw_fastrtps_cpp/cmake)
+-- Using RMW implementation 'rmw_fastrtps_cpp' as default
+-- Configuring done (0.8s)
+-- Generating done (0.0s)
+-- Build files have been written to: /home/dologan/ros2_ws/src/quad-sdk/build/quad_logger
+-- Install configuration: ""
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_logger/lib/quad_logger
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_logger/lib/quad_logger/.gitignore
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_logger/lib/quad_logger/processLog.m
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_logger/lib/quad_logger/plotLocalPlan.m
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_logger/lib/quad_logger/getToeForces.m
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_logger/lib/quad_logger/plotState.m
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_logger/lib/quad_logger/plotToeForces.m
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_logger/lib/quad_logger/cmuColor.m
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_logger/lib/quad_logger/animateData.m
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_logger/lib/quad_logger/parseQuadBag.m
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_logger/lib/quad_logger/bag_reader.py
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_logger/lib/quad_logger/saveLog.m
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_logger/lib/quad_logger/plotControl.m
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_logger/lib/quad_logger/read_bag.py
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_logger/lib/quad_logger/align_Ylabels.m
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_logger/lib/quad_logger/mouse_interface.py
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_logger/share/ament_index/resource_index/package_run_dependencies/quad_logger
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_logger/share/ament_index/resource_index/parent_prefix_path/quad_logger
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_logger/share/quad_logger/environment/ament_prefix_path.sh
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_logger/share/quad_logger/environment/ament_prefix_path.dsv
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_logger/share/quad_logger/environment/path.sh
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_logger/share/quad_logger/environment/path.dsv
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_logger/share/quad_logger/local_setup.bash
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_logger/share/quad_logger/local_setup.sh
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_logger/share/quad_logger/local_setup.zsh
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_logger/share/quad_logger/local_setup.dsv
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_logger/share/quad_logger/package.dsv
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_logger/share/ament_index/resource_index/packages/quad_logger
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_logger/share/quad_logger/cmake/quad_loggerConfig.cmake
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_logger/share/quad_logger/cmake/quad_loggerConfig-version.cmake
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_logger/share/quad_logger/package.xml

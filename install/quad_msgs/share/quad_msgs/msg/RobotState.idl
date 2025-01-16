@@ -1,0 +1,29 @@
+// generated from rosidl_adapter/resource/msg.idl.em
+// with input from quad_msgs/msg/RobotState.msg
+// generated code does not contain a copyright notice
+
+#include "quad_msgs/msg/BodyState.idl"
+#include "quad_msgs/msg/MultiFootState.idl"
+#include "sensor_msgs/msg/JointState.idl"
+#include "std_msgs/msg/Header.idl"
+
+module quad_msgs {
+  module msg {
+    @verbatim (language="comment", text=
+      "This is a message to hold a robot state" "\n"
+      "" "\n"
+      "The state is defined as an Odometry message with the body odometry, and a JointState message with joint positions and velocities" "\n"
+      "Accurate timing information is stored in the header")
+    struct RobotState {
+      std_msgs::msg::Header header;
+
+      uint32 traj_index;
+
+      quad_msgs::msg::BodyState body;
+
+      sensor_msgs::msg::JointState joints;
+
+      quad_msgs::msg::MultiFootState feet;
+    };
+  };
+};

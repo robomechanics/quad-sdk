@@ -1,0 +1,40 @@
+[0.012s] Invoking command in '/home/dologan/ros2_ws/src/quad-sdk/build/quad_logger': CONDA_PROMPT_MODIFIER=(base) DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake /home/dologan/ros2_ws/src/quad-sdk/quad_logger -DCATKIN_INSTALL_INTO_PREFIX_ROOT=0 -DCMAKE_INSTALL_PREFIX=/home/dologan/ros2_ws/src/quad-sdk/install/quad_logger
+[0.022s] [0mCMake Deprecation Warning at CMakeLists.txt:1 (cmake_minimum_required):
+[0.022s]   Compatibility with CMake < 3.5 will be removed from a future version of
+[0.022s]   CMake.
+[0.022s] 
+[0.022s]   Update the VERSION argument <min> value or use a ...<max> suffix to tell
+[0.022s]   CMake that the project does not need compatibility with older versions.
+[0.022s] 
+[0.022s] [0m
+[0.079s] -- The C compiler identification is GNU 13.3.0
+[0.141s] -- The CXX compiler identification is GNU 13.3.0
+[0.159s] -- Detecting C compiler ABI info
+[0.247s] -- Detecting C compiler ABI info - done
+[0.258s] -- Check for working C compiler: /usr/bin/cc - skipped
+[0.258s] -- Detecting C compile features
+[0.258s] -- Detecting C compile features - done
+[0.267s] -- Detecting CXX compiler ABI info
+[0.361s] -- Detecting CXX compiler ABI info - done
+[0.371s] -- Check for working CXX compiler: /usr/bin/c++ - skipped
+[0.371s] -- Detecting CXX compile features
+[0.372s] -- Detecting CXX compile features - done
+[0.385s] [31mCMake Error at CMakeLists.txt:5 (find_package):
+[0.385s]   By not providing "Findcatkin.cmake" in CMAKE_MODULE_PATH this project has
+[0.385s]   asked CMake to find a package configuration file provided by "catkin", but
+[0.385s]   CMake did not find one.
+[0.385s] 
+[0.385s]   Could not find a package configuration file provided by "catkin" with any
+[0.385s]   of the following names:
+[0.385s] 
+[0.385s]     catkinConfig.cmake
+[0.386s]     catkin-config.cmake
+[0.386s] 
+[0.386s]   Add the installation prefix of "catkin" to CMAKE_PREFIX_PATH or set
+[0.386s]   "catkin_DIR" to a directory containing one of the above files.  If "catkin"
+[0.386s]   provides a separate development package or SDK, be sure it has been
+[0.386s]   installed.
+[0.386s] 
+[0.386s] [0m
+[0.386s] -- Configuring incomplete, errors occurred!
+[0.388s] Invoked command in '/home/dologan/ros2_ws/src/quad-sdk/build/quad_logger' returned '1': CONDA_PROMPT_MODIFIER=(base) DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake /home/dologan/ros2_ws/src/quad-sdk/quad_logger -DCATKIN_INSTALL_INTO_PREFIX_ROOT=0 -DCMAKE_INSTALL_PREFIX=/home/dologan/ros2_ws/src/quad-sdk/install/quad_logger

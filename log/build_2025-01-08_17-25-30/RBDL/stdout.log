@@ -1,0 +1,25 @@
+[100%] Built target rbdl
+-- Install configuration: "Release"
+-- Up-to-date: /home/dologan/ros2_ws/src/quad-sdk/install/RBDL/lib/librbdl.so.3.0.0
+-- Up-to-date: /home/dologan/ros2_ws/src/quad-sdk/install/RBDL/lib/librbdl.so
+-- Up-to-date: /home/dologan/ros2_ws/src/quad-sdk/install/RBDL/include/rbdl/rbdl_config.h
+-- Up-to-date: /home/dologan/ros2_ws/src/quad-sdk/install/RBDL/include/rbdl/Body.h
+-- Up-to-date: /home/dologan/ros2_ws/src/quad-sdk/install/RBDL/include/rbdl/Constraint.h
+-- Up-to-date: /home/dologan/ros2_ws/src/quad-sdk/install/RBDL/include/rbdl/Constraint_Contact.h
+-- Up-to-date: /home/dologan/ros2_ws/src/quad-sdk/install/RBDL/include/rbdl/Constraint_Loop.h
+-- Up-to-date: /home/dologan/ros2_ws/src/quad-sdk/install/RBDL/include/rbdl/Constraints.h
+-- Up-to-date: /home/dologan/ros2_ws/src/quad-sdk/install/RBDL/include/rbdl/Dynamics.h
+-- Up-to-date: /home/dologan/ros2_ws/src/quad-sdk/install/RBDL/include/rbdl/Joint.h
+-- Up-to-date: /home/dologan/ros2_ws/src/quad-sdk/install/RBDL/include/rbdl/Kinematics.h
+-- Up-to-date: /home/dologan/ros2_ws/src/quad-sdk/install/RBDL/include/rbdl/Logging.h
+-- Up-to-date: /home/dologan/ros2_ws/src/quad-sdk/install/RBDL/include/rbdl/Model.h
+-- Up-to-date: /home/dologan/ros2_ws/src/quad-sdk/install/RBDL/include/rbdl/Quaternion.h
+-- Up-to-date: /home/dologan/ros2_ws/src/quad-sdk/install/RBDL/include/rbdl/SpatialAlgebraOperators.h
+-- Up-to-date: /home/dologan/ros2_ws/src/quad-sdk/install/RBDL/include/rbdl/compileassert.h
+-- Up-to-date: /home/dologan/ros2_ws/src/quad-sdk/install/RBDL/include/rbdl/rbdl.h
+-- Up-to-date: /home/dologan/ros2_ws/src/quad-sdk/install/RBDL/include/rbdl/rbdl_eigenmath.h
+-- Up-to-date: /home/dologan/ros2_ws/src/quad-sdk/install/RBDL/include/rbdl/rbdl_errors.h
+-- Up-to-date: /home/dologan/ros2_ws/src/quad-sdk/install/RBDL/include/rbdl/rbdl_math.h
+-- Up-to-date: /home/dologan/ros2_ws/src/quad-sdk/install/RBDL/include/rbdl/rbdl_mathutils.h
+-- Up-to-date: /home/dologan/ros2_ws/src/quad-sdk/install/RBDL/include/rbdl/rbdl_utils.h
+-- Up-to-date: /home/dologan/ros2_ws/src/quad-sdk/install/RBDL/lib/pkgconfig/rbdl.pc

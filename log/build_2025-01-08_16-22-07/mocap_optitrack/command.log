@@ -1,0 +1,1 @@
+Invoking command in '/home/dologan/ros2_ws/src/quad-sdk/build/mocap_optitrack': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/jazzy CONDA_PROMPT_MODIFIER=(base) DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake /home/dologan/ros2_ws/src/quad-sdk/external/mocap_optitrack -DCMAKE_INSTALL_PREFIX=/home/dologan/ros2_ws/src/quad-sdk/install/mocap_optitrack

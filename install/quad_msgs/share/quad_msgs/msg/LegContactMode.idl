@@ -1,0 +1,24 @@
+// generated from rosidl_adapter/resource/msg.idl.em
+// with input from quad_msgs/msg/LegContactMode.msg
+// generated code does not contain a copyright notice
+
+#include "geometry_msgs/msg/Vector3.idl"
+#include "std_msgs/msg/Header.idl"
+
+module quad_msgs {
+  module msg {
+    @verbatim (language="comment", text=
+      "This is a message to hold contact mode of one leg")
+    struct LegContactMode {
+      std_msgs::msg::Header header;
+
+      float contact_prob;
+
+      boolean contact_state;
+
+      @verbatim (language="comment", text=
+        "fx,fy,fz")
+      geometry_msgs::msg::Vector3 contact_forces;
+    };
+  };
+};

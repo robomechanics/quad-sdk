@@ -1,0 +1,30 @@
+-- The C compiler identification is GNU 13.3.0
+-- The CXX compiler identification is GNU 13.3.0
+-- Detecting C compiler ABI info
+-- Detecting C compiler ABI info - done
+-- Check for working C compiler: /usr/bin/cc - skipped
+-- Detecting C compile features
+-- Detecting C compile features - done
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Check for working CXX compiler: /usr/bin/c++ - skipped
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+-- Setting build type to 'Release' as none was specified.
+-- Configuring done (0.4s)
+-- Generating done (0.0s)
+-- Build files have been written to: /home/dologan/ros2_ws/src/quad-sdk/build/RBDL
+[  7%] [32mBuilding CXX object CMakeFiles/rbdl.dir/src/rbdl_mathutils.cc.o[0m
+[ 23%] [32mBuilding CXX object CMakeFiles/rbdl.dir/src/rbdl_errors.cc.o[0m
+[ 23%] [32mBuilding CXX object CMakeFiles/rbdl.dir/src/Constraints.cc.o[0m
+[ 38%] [32mBuilding CXX object CMakeFiles/rbdl.dir/src/rbdl_version.cc.o[0m
+[ 38%] [32mBuilding CXX object CMakeFiles/rbdl.dir/src/Constraint_Contact.cc.o[0m
+[ 46%] [32mBuilding CXX object CMakeFiles/rbdl.dir/src/rbdl_utils.cc.o[0m
+[ 53%] [32mBuilding CXX object CMakeFiles/rbdl.dir/src/Constraint_Loop.cc.o[0m
+[ 61%] [32mBuilding CXX object CMakeFiles/rbdl.dir/src/Dynamics.cc.o[0m
+[ 69%] [32mBuilding CXX object CMakeFiles/rbdl.dir/src/Logging.cc.o[0m
+[ 76%] [32mBuilding CXX object CMakeFiles/rbdl.dir/src/Joint.cc.o[0m
+[ 84%] [32mBuilding CXX object CMakeFiles/rbdl.dir/src/Model.cc.o[0m
+[ 92%] [32mBuilding CXX object CMakeFiles/rbdl.dir/src/Kinematics.cc.o[0m
+[100%] [32m[1mLinking CXX shared library librbdl.so[0m
+[100%] Built target rbdl

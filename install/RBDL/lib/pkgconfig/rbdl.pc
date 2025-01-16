@@ -1,0 +1,13 @@
+prefix=/home/dologan/ros2_ws/src/quad-sdk/install/RBDL
+libdir=/home/dologan/ros2_ws/src/quad-sdk/install/RBDL/lib
+includedir=/home/dologan/ros2_ws/src/quad-sdk/install/RBDL/include
+
+Name: RBDL
+Description: Rigid Body Dynamics Library
+URL: https://rbdl.github.io/
+Version: 3.0.0
+Requires: eigen3
+Conflicts:
+Libs: -L${libdir} -lrbdl -Wl,-rpath ${libdir}
+Libs.private:
+Cflags: -I${includedir}

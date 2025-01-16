@@ -1,0 +1,20 @@
+// generated from rosidl_adapter/resource/msg.idl.em
+// with input from quad_msgs/msg/ContactMode.msg
+// generated code does not contain a copyright notice
+
+#include "quad_msgs/msg/LegContactMode.idl"
+#include "std_msgs/msg/Header.idl"
+
+module quad_msgs {
+  module msg {
+    @verbatim (language="comment", text=
+      "This is a message to hold contact states of the robot")
+    struct ContactMode {
+      std_msgs::msg::Header header;
+
+      @verbatim (language="comment", text=
+        "FL Bl FR BR")
+      sequence<quad_msgs::msg::LegContactMode> leg_contacts;
+    };
+  };
+};

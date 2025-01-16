@@ -1,0 +1,39 @@
+// generated from rosidl_adapter/resource/msg.idl.em
+// with input from quad_msgs/msg/RobotPlan.msg
+// generated code does not contain a copyright notice
+
+#include "builtin_interfaces/msg/Time.idl"
+#include "quad_msgs/msg/GRFArray.idl"
+#include "quad_msgs/msg/RobotPlanDiagnostics.idl"
+#include "quad_msgs/msg/RobotState.idl"
+#include "std_msgs/msg/Header.idl"
+
+module quad_msgs {
+  module msg {
+    @verbatim (language="comment", text=
+      "This is a message to hold a robot plan" "\n"
+      "" "\n"
+      "The plan is defined as an array of odometry messages." "\n"
+      "Accurate timing information for localization is stored in the header." "\n"
+      "This should match the first state in the states vector.")
+    struct RobotPlan {
+      std_msgs::msg::Header header;
+
+      builtin_interfaces::msg::Time global_plan_timestamp;
+
+      builtin_interfaces::msg::Time state_timestamp;
+
+      sequence<quad_msgs::msg::RobotState> states;
+
+      sequence<quad_msgs::msg::GRFArray> grfs;
+
+      sequence<uint32> plan_indices;
+
+      sequence<uint32> primitive_ids;
+
+      double compute_time;
+
+      quad_msgs::msg::RobotPlanDiagnostics diagnostics;
+    };
+  };
+};

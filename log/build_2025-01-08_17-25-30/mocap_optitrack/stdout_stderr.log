@@ -1,0 +1,23 @@
+[100%] Built target mocap_optitrack_mocap_node
+-- Install configuration: ""
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/mocap_optitrack/share/mocap_optitrack//launch
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/mocap_optitrack/share/mocap_optitrack//launch/mocap.launch.py
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/mocap_optitrack/share/mocap_optitrack//config
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/mocap_optitrack/share/mocap_optitrack//config/mocap.yaml
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/mocap_optitrack/share/ament_index/resource_index/package_run_dependencies/mocap_optitrack
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/mocap_optitrack/share/ament_index/resource_index/parent_prefix_path/mocap_optitrack
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/mocap_optitrack/share/mocap_optitrack/environment/ament_prefix_path.sh
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/mocap_optitrack/share/mocap_optitrack/environment/ament_prefix_path.dsv
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/mocap_optitrack/share/mocap_optitrack/environment/path.sh
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/mocap_optitrack/share/mocap_optitrack/environment/path.dsv
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/mocap_optitrack/share/mocap_optitrack/local_setup.bash
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/mocap_optitrack/share/mocap_optitrack/local_setup.sh
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/mocap_optitrack/share/mocap_optitrack/local_setup.zsh
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/mocap_optitrack/share/mocap_optitrack/local_setup.dsv
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/mocap_optitrack/share/mocap_optitrack/package.dsv
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/mocap_optitrack/share/ament_index/resource_index/packages/mocap_optitrack
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/mocap_optitrack/share/mocap_optitrack/cmake/mocap_optitrackConfig.cmake
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/mocap_optitrack/share/mocap_optitrack/cmake/mocap_optitrackConfig-version.cmake
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/mocap_optitrack/share/mocap_optitrack/package.xml
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/mocap_optitrack/lib/mocap_optitrack/mocap_node
+-- Set non-toolchain portion of runtime path of "/home/dologan/ros2_ws/src/quad-sdk/install/mocap_optitrack/lib/mocap_optitrack/mocap_node" to ""

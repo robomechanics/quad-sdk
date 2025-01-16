@@ -1,0 +1,573 @@
+[0.000000] (-) TimerEvent: {}
+[0.000327] (RBDL) JobQueued: {'identifier': 'RBDL', 'dependencies': OrderedDict()}
+[0.000555] (mocap_optitrack) JobQueued: {'identifier': 'mocap_optitrack', 'dependencies': OrderedDict()}
+[0.000574] (quad_logger) JobQueued: {'identifier': 'quad_logger', 'dependencies': OrderedDict()}
+[0.000588] (quad_msgs) JobQueued: {'identifier': 'quad_msgs', 'dependencies': OrderedDict()}
+[0.000601] (RBDL) JobStarted: {'identifier': 'RBDL'}
+[0.006734] (mocap_optitrack) JobStarted: {'identifier': 'mocap_optitrack'}
+[0.009385] (quad_logger) JobStarted: {'identifier': 'quad_logger'}
+[0.012230] (quad_msgs) JobStarted: {'identifier': 'quad_msgs'}
+[0.016559] (RBDL) JobProgress: {'identifier': 'RBDL', 'progress': 'cmake'}
+[0.017000] (RBDL) JobProgress: {'identifier': 'RBDL', 'progress': 'build'}
+[0.017558] (RBDL) Command: {'cmd': ['/usr/bin/cmake', '--build', '/home/dologan/ros2_ws/src/quad-sdk/build/RBDL', '--', '-j8', '-l8'], 'cwd': '/home/dologan/ros2_ws/src/quad-sdk/build/RBDL', 'env': OrderedDict({'LESSOPEN': '| /usr/bin/lesspipe %s', 'CONDA_PROMPT_MODIFIER': '(base)', 'USER': 'dologan', 'GZ_CONFIG_PATH': '/opt/ros/jazzy/opt/gz_sim_vendor/share/gz:/opt/ros/jazzy/opt/sdformat_vendor/share/gz:/opt/ros/jazzy/opt/gz_gui_vendor/share/gz:/opt/ros/jazzy/opt/gz_transport_vendor/share/gz:/opt/ros/jazzy/opt/gz_rendering_vendor/share/gz:/opt/ros/jazzy/opt/gz_plugin_vendor/share/gz:/opt/ros/jazzy/opt/gz_fuel_tools_vendor/share/gz:/opt/ros/jazzy/opt/gz_msgs_vendor/share/gz:/opt/ros/jazzy/opt/gz_common_vendor/share/gz', 'XDG_SESSION_TYPE': 'wayland', 'SHLVL': '1', 'LD_LIBRARY_PATH': '/opt/ros/jazzy/opt/gz_sim_vendor/lib:/opt/ros/jazzy/opt/gz_sensors_vendor/lib:/opt/ros/jazzy/opt/gz_physics_vendor/lib:/opt/ros/jazzy/opt/sdformat_vendor/lib:/opt/ros/jazzy/opt/rviz_ogre_vendor/lib:/opt/ros/jazzy/lib/x86_64-linux-gnu:/opt/ros/jazzy/opt/gz_gui_vendor/lib:/opt/ros/jazzy/opt/gz_transport_vendor/lib:/opt/ros/jazzy/opt/gz_rendering_vendor/lib:/opt/ros/jazzy/opt/gz_plugin_vendor/lib:/opt/ros/jazzy/opt/gz_fuel_tools_vendor/lib:/opt/ros/jazzy/opt/gz_msgs_vendor/lib:/opt/ros/jazzy/opt/gz_common_vendor/lib:/opt/ros/jazzy/opt/gz_math_vendor/lib:/opt/ros/jazzy/opt/gz_utils_vendor/lib:/opt/ros/jazzy/opt/gz_tools_vendor/lib:/opt/ros/jazzy/opt/gz_ogre_next_vendor/lib:/opt/ros/jazzy/opt/gz_dartsim_vendor/lib:/opt/ros/jazzy/opt/gz_cmake_vendor/lib:/opt/ros/jazzy/lib', 'HOME': '/home/dologan', 'CONDA_SHLVL': '1', 'OLDPWD': '/home/dologan/ros2_ws/src', 'DESKTOP_SESSION': 'ubuntu', 'ROS_PYTHON_VERSION': '3', 'GNOME_SHELL_SESSION_MODE': 'ubuntu', 'GTK_MODULES': 'gail:atk-bridge', 'SYSTEMD_EXEC_PID': '2352', 'GSM_SKIP_SSH_AGENT_WORKAROUND': 'true', 'DBUS_SESSION_BUS_ADDRESS': 'unix:path=/run/user/1000/bus', 'COLORTERM': 'truecolor', '_CE_M': '', 'DEBUGINFOD_URLS': 'https://debuginfod.ubuntu.com', 'IM_CONFIG_PHASE': '1', 'WAYLAND_DISPLAY': 'wayland-0', 'ROS_DISTRO': 'jazzy', 'LOGNAME': 'dologan', '_': '/usr/bin/colcon', 'ROS_VERSION': '2', 'MEMORY_PRESSURE_WATCH': '/sys/fs/cgroup/user.slice/user-1000.slice/user@1000.service/session.slice/org.gnome.Shell@wayland.service/memory.pressure', 'XDG_SESSION_CLASS': 'user', 'USERNAME': 'dologan', 'TERM': 'xterm-256color', 'GAZEBO_MODEL_PATH': ':/home/dologan/ros2_ws/src/quad-sdk/quad_simulator/spirit_description:/home/dologan/ros2_ws/src/quad-sdk/quad_simulator/a1_description:/home/dologan/ros2_ws/src/quad-sdk/quad_simulator/other/sensor_description:/home/dologan/ros2_ws/src/quad-sdk/quad_simulator/other/objects_description:/home/dologan/ros2_ws/src/quad-sdk/quad_simulator/gazebo_scripts/worlds:/home/dologan/ros2_ws/src/quad-sdk/quad_simulator/spirit_description:/home/dologan/ros2_ws/src/quad-sdk/quad_simulator/a1_description:/home/dologan/ros2_ws/src/quad-sdk/quad_simulator/other/sensor_description:/home/dologan/ros2_ws/src/quad-sdk/quad_simulator/other/objects_description:/home/dologan/ros2_ws/src/quad-sdk/quad_simulator/gazebo_scripts/worlds', 'GNOME_DESKTOP_SESSION_ID': 'this-is-deprecated', '_CE_CONDA': '', 'PATH': '/home/dologan/anaconda3/bin:/home/dologan/anaconda3/condabin:/opt/ros/jazzy/opt/gz_msgs_vendor/bin:/opt/ros/jazzy/opt/gz_tools_vendor/bin:/opt/ros/jazzy/opt/gz_ogre_next_vendor/bin:/opt/ros/jazzy/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/snap/bin', 'SESSION_MANAGER': 'local/dologan-IdeaPad-3-15IIL05:@/tmp/.ICE-unix/2308,unix/dologan-IdeaPad-3-15IIL05:/tmp/.ICE-unix/2308', 'XDG_MENU_PREFIX': 'gnome-', 'GNOME_TERMINAL_SCREEN': '/org/gnome/Terminal/screen/62c938e4_2d34_4220_943e_b1a28f3e97af', 'GNOME_SETUP_DISPLAY': ':1', 'XDG_RUNTIME_DIR': '/run/user/1000', 'DISPLAY': ':0', 'LANG': 'en_US.UTF-8', 'XDG_CURRENT_DESKTOP': 'ubuntu:GNOME', 'XMODIFIERS': '@im=ibus', 'XDG_SESSION_DESKTOP': 'ubuntu', 'XAUTHORITY': '/run/user/1000/.mutter-Xwaylandauth.184MZ2', 'LS_COLORS': 'rs=0:di=01;34:ln=01;36:mh=00:pi=40;33:so=01;35:do=01;35:bd=40;33;01:cd=40;33;01:or=40;31;01:mi=00:su=37;41:sg=30;43:ca=00:tw=30;42:ow=34;42:st=37;44:ex=01;32:*.tar=01;31:*.tgz=01;31:*.arc=01;31:*.arj=01;31:*.taz=01;31:*.lha=01;31:*.lz4=01;31:*.lzh=01;31:*.lzma=01;31:*.tlz=01;31:*.txz=01;31:*.tzo=01;31:*.t7z=01;31:*.zip=01;31:*.z=01;31:*.dz=01;31:*.gz=01;31:*.lrz=01;31:*.lz=01;31:*.lzo=01;31:*.xz=01;31:*.zst=01;31:*.tzst=01;31:*.bz2=01;31:*.bz=01;31:*.tbz=01;31:*.tbz2=01;31:*.tz=01;31:*.deb=01;31:*.rpm=01;31:*.jar=01;31:*.war=01;31:*.ear=01;31:*.sar=01;31:*.rar=01;31:*.alz=01;31:*.ace=01;31:*.zoo=01;31:*.cpio=01;31:*.7z=01;31:*.rz=01;31:*.cab=01;31:*.wim=01;31:*.swm=01;31:*.dwm=01;31:*.esd=01;31:*.avif=01;35:*.jpg=01;35:*.jpeg=01;35:*.mjpg=01;35:*.mjpeg=01;35:*.gif=01;35:*.bmp=01;35:*.pbm=01;35:*.pgm=01;35:*.ppm=01;35:*.tga=01;35:*.xbm=01;35:*.xpm=01;35:*.tif=01;35:*.tiff=01;35:*.png=01;35:*.svg=01;35:*.svgz=01;35:*.mng=01;35:*.pcx=01;35:*.mov=01;35:*.mpg=01;35:*.mpeg=01;35:*.m2v=01;35:*.mkv=01;35:*.webm=01;35:*.webp=01;35:*.ogm=01;35:*.mp4=01;35:*.m4v=01;35:*.mp4v=01;35:*.vob=01;35:*.qt=01;35:*.nuv=01;35:*.wmv=01;35:*.asf=01;35:*.rm=01;35:*.rmvb=01;35:*.flc=01;35:*.avi=01;35:*.fli=01;35:*.flv=01;35:*.gl=01;35:*.dl=01;35:*.xcf=01;35:*.xwd=01;35:*.yuv=01;35:*.cgm=01;35:*.emf=01;35:*.ogv=01;35:*.ogx=01;35:*.aac=00;36:*.au=00;36:*.flac=00;36:*.m4a=00;36:*.mid=00;36:*.midi=00;36:*.mka=00;36:*.mp3=00;36:*.mpc=00;36:*.ogg=00;36:*.ra=00;36:*.wav=00;36:*.oga=00;36:*.opus=00;36:*.spx=00;36:*.xspf=00;36:*~=00;90:*#=00;90:*.bak=00;90:*.crdownload=00;90:*.dpkg-dist=00;90:*.dpkg-new=00;90:*.dpkg-old=00;90:*.dpkg-tmp=00;90:*.old=00;90:*.orig=00;90:*.part=00;90:*.rej=00;90:*.rpmnew=00;90:*.rpmorig=00;90:*.rpmsave=00;90:*.swp=00;90:*.tmp=00;90:*.ucf-dist=00;90:*.ucf-new=00;90:*.ucf-old=00;90:', 'GNOME_TERMINAL_SERVICE': ':1.107', 'SSH_AUTH_SOCK': '/run/user/1000/keyring/ssh', 'GSETTINGS_SCHEMA_DIR': '/home/dologan/anaconda3/share/glib-2.0/schemas', 'AMENT_PREFIX_PATH': '/opt/ros/jazzy', 'CONDA_PYTHON_EXE': '/home/dologan/anaconda3/bin/python', 'SHELL': '/bin/bash', 'QT_ACCESSIBILITY': '1', 'GDMSESSION': 'ubuntu', 'LESSCLOSE': '/usr/bin/lesspipe %s %s', 'CONDA_DEFAULT_ENV': 'base', 'ROS_AUTOMATIC_DISCOVERY_RANGE': 'SUBNET', 'QT_IM_MODULE': 'ibus', 'PWD': '/home/dologan/ros2_ws/src/quad-sdk/build/RBDL', 'LC_ALL': 'en_US.UTF-8', 'XDG_CONFIG_DIRS': '/etc/xdg/xdg-ubuntu:/etc/xdg', 'CONDA_EXE': '/home/dologan/anaconda3/bin/conda', 'XDG_DATA_DIRS': '/usr/share/ubuntu:/usr/share/gnome:/usr/local/share/:/usr/share/:/var/lib/snapd/desktop', 'PYTHONPATH': '/opt/ros/jazzy/lib/python3.12/site-packages', 'CONDA_PREFIX': '/home/dologan/anaconda3', 'GSETTINGS_SCHEMA_DIR_CONDA_BACKUP': '', 'COLCON': '1', 'MEMORY_PRESSURE_WRITE': 'c29tZSAyMDAwMDAgMjAwMDAwMAA=', 'VTE_VERSION': '7600', 'CMAKE_PREFIX_PATH': '/opt/ros/jazzy/opt/gz_sim_vendor:/opt/ros/jazzy/opt/gz_sensors_vendor:/opt/ros/jazzy/opt/gz_physics_vendor:/opt/ros/jazzy/opt/sdformat_vendor:/opt/ros/jazzy/opt/gz_gui_vendor:/opt/ros/jazzy/opt/gz_transport_vendor:/opt/ros/jazzy/opt/gz_rendering_vendor:/opt/ros/jazzy/opt/gz_plugin_vendor:/opt/ros/jazzy/opt/gz_fuel_tools_vendor:/opt/ros/jazzy/opt/gz_msgs_vendor:/opt/ros/jazzy/opt/gz_common_vendor:/opt/ros/jazzy/opt/gz_math_vendor:/opt/ros/jazzy/opt/gz_utils_vendor:/opt/ros/jazzy/opt/gz_tools_vendor:/opt/ros/jazzy/opt/gz_ogre_next_vendor:/opt/ros/jazzy/opt/gz_dartsim_vendor:/opt/ros/jazzy/opt/gz_cmake_vendor'}), 'shell': False}
+[0.019732] (mocap_optitrack) JobProgress: {'identifier': 'mocap_optitrack', 'progress': 'cmake'}
+[0.020244] (mocap_optitrack) JobProgress: {'identifier': 'mocap_optitrack', 'progress': 'build'}
+[0.020584] (mocap_optitrack) Command: {'cmd': ['/usr/bin/cmake', '--build', '/home/dologan/ros2_ws/src/quad-sdk/build/mocap_optitrack', '--', '-j8', '-l8'], 'cwd': '/home/dologan/ros2_ws/src/quad-sdk/build/mocap_optitrack', 'env': OrderedDict({'LESSOPEN': '| /usr/bin/lesspipe %s', 'CONDA_PROMPT_MODIFIER': '(base)', 'USER': 'dologan', 'GZ_CONFIG_PATH': '/opt/ros/jazzy/opt/gz_sim_vendor/share/gz:/opt/ros/jazzy/opt/sdformat_vendor/share/gz:/opt/ros/jazzy/opt/gz_gui_vendor/share/gz:/opt/ros/jazzy/opt/gz_transport_vendor/share/gz:/opt/ros/jazzy/opt/gz_rendering_vendor/share/gz:/opt/ros/jazzy/opt/gz_plugin_vendor/share/gz:/opt/ros/jazzy/opt/gz_fuel_tools_vendor/share/gz:/opt/ros/jazzy/opt/gz_msgs_vendor/share/gz:/opt/ros/jazzy/opt/gz_common_vendor/share/gz', 'XDG_SESSION_TYPE': 'wayland', 'SHLVL': '1', 'LD_LIBRARY_PATH': '/opt/ros/jazzy/opt/gz_sim_vendor/lib:/opt/ros/jazzy/opt/gz_sensors_vendor/lib:/opt/ros/jazzy/opt/gz_physics_vendor/lib:/opt/ros/jazzy/opt/sdformat_vendor/lib:/opt/ros/jazzy/opt/rviz_ogre_vendor/lib:/opt/ros/jazzy/lib/x86_64-linux-gnu:/opt/ros/jazzy/opt/gz_gui_vendor/lib:/opt/ros/jazzy/opt/gz_transport_vendor/lib:/opt/ros/jazzy/opt/gz_rendering_vendor/lib:/opt/ros/jazzy/opt/gz_plugin_vendor/lib:/opt/ros/jazzy/opt/gz_fuel_tools_vendor/lib:/opt/ros/jazzy/opt/gz_msgs_vendor/lib:/opt/ros/jazzy/opt/gz_common_vendor/lib:/opt/ros/jazzy/opt/gz_math_vendor/lib:/opt/ros/jazzy/opt/gz_utils_vendor/lib:/opt/ros/jazzy/opt/gz_tools_vendor/lib:/opt/ros/jazzy/opt/gz_ogre_next_vendor/lib:/opt/ros/jazzy/opt/gz_dartsim_vendor/lib:/opt/ros/jazzy/opt/gz_cmake_vendor/lib:/opt/ros/jazzy/lib', 'HOME': '/home/dologan', 'CONDA_SHLVL': '1', 'OLDPWD': '/home/dologan/ros2_ws/src', 'DESKTOP_SESSION': 'ubuntu', 'ROS_PYTHON_VERSION': '3', 'GNOME_SHELL_SESSION_MODE': 'ubuntu', 'GTK_MODULES': 'gail:atk-bridge', 'SYSTEMD_EXEC_PID': '2352', 'GSM_SKIP_SSH_AGENT_WORKAROUND': 'true', 'DBUS_SESSION_BUS_ADDRESS': 'unix:path=/run/user/1000/bus', 'COLORTERM': 'truecolor', '_CE_M': '', 'DEBUGINFOD_URLS': 'https://debuginfod.ubuntu.com', 'IM_CONFIG_PHASE': '1', 'WAYLAND_DISPLAY': 'wayland-0', 'ROS_DISTRO': 'jazzy', 'LOGNAME': 'dologan', '_': '/usr/bin/colcon', 'ROS_VERSION': '2', 'MEMORY_PRESSURE_WATCH': '/sys/fs/cgroup/user.slice/user-1000.slice/user@1000.service/session.slice/org.gnome.Shell@wayland.service/memory.pressure', 'XDG_SESSION_CLASS': 'user', 'USERNAME': 'dologan', 'TERM': 'xterm-256color', 'GAZEBO_MODEL_PATH': ':/home/dologan/ros2_ws/src/quad-sdk/quad_simulator/spirit_description:/home/dologan/ros2_ws/src/quad-sdk/quad_simulator/a1_description:/home/dologan/ros2_ws/src/quad-sdk/quad_simulator/other/sensor_description:/home/dologan/ros2_ws/src/quad-sdk/quad_simulator/other/objects_description:/home/dologan/ros2_ws/src/quad-sdk/quad_simulator/gazebo_scripts/worlds:/home/dologan/ros2_ws/src/quad-sdk/quad_simulator/spirit_description:/home/dologan/ros2_ws/src/quad-sdk/quad_simulator/a1_description:/home/dologan/ros2_ws/src/quad-sdk/quad_simulator/other/sensor_description:/home/dologan/ros2_ws/src/quad-sdk/quad_simulator/other/objects_description:/home/dologan/ros2_ws/src/quad-sdk/quad_simulator/gazebo_scripts/worlds', 'GNOME_DESKTOP_SESSION_ID': 'this-is-deprecated', '_CE_CONDA': '', 'PATH': '/home/dologan/anaconda3/bin:/home/dologan/anaconda3/condabin:/opt/ros/jazzy/opt/gz_msgs_vendor/bin:/opt/ros/jazzy/opt/gz_tools_vendor/bin:/opt/ros/jazzy/opt/gz_ogre_next_vendor/bin:/opt/ros/jazzy/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/snap/bin', 'SESSION_MANAGER': 'local/dologan-IdeaPad-3-15IIL05:@/tmp/.ICE-unix/2308,unix/dologan-IdeaPad-3-15IIL05:/tmp/.ICE-unix/2308', 'XDG_MENU_PREFIX': 'gnome-', 'GNOME_TERMINAL_SCREEN': '/org/gnome/Terminal/screen/62c938e4_2d34_4220_943e_b1a28f3e97af', 'GNOME_SETUP_DISPLAY': ':1', 'XDG_RUNTIME_DIR': '/run/user/1000', 'DISPLAY': ':0', 'LANG': 'en_US.UTF-8', 'XDG_CURRENT_DESKTOP': 'ubuntu:GNOME', 'XMODIFIERS': '@im=ibus', 'XDG_SESSION_DESKTOP': 'ubuntu', 'XAUTHORITY': '/run/user/1000/.mutter-Xwaylandauth.184MZ2', 'LS_COLORS': 'rs=0:di=01;34:ln=01;36:mh=00:pi=40;33:so=01;35:do=01;35:bd=40;33;01:cd=40;33;01:or=40;31;01:mi=00:su=37;41:sg=30;43:ca=00:tw=30;42:ow=34;42:st=37;44:ex=01;32:*.tar=01;31:*.tgz=01;31:*.arc=01;31:*.arj=01;31:*.taz=01;31:*.lha=01;31:*.lz4=01;31:*.lzh=01;31:*.lzma=01;31:*.tlz=01;31:*.txz=01;31:*.tzo=01;31:*.t7z=01;31:*.zip=01;31:*.z=01;31:*.dz=01;31:*.gz=01;31:*.lrz=01;31:*.lz=01;31:*.lzo=01;31:*.xz=01;31:*.zst=01;31:*.tzst=01;31:*.bz2=01;31:*.bz=01;31:*.tbz=01;31:*.tbz2=01;31:*.tz=01;31:*.deb=01;31:*.rpm=01;31:*.jar=01;31:*.war=01;31:*.ear=01;31:*.sar=01;31:*.rar=01;31:*.alz=01;31:*.ace=01;31:*.zoo=01;31:*.cpio=01;31:*.7z=01;31:*.rz=01;31:*.cab=01;31:*.wim=01;31:*.swm=01;31:*.dwm=01;31:*.esd=01;31:*.avif=01;35:*.jpg=01;35:*.jpeg=01;35:*.mjpg=01;35:*.mjpeg=01;35:*.gif=01;35:*.bmp=01;35:*.pbm=01;35:*.pgm=01;35:*.ppm=01;35:*.tga=01;35:*.xbm=01;35:*.xpm=01;35:*.tif=01;35:*.tiff=01;35:*.png=01;35:*.svg=01;35:*.svgz=01;35:*.mng=01;35:*.pcx=01;35:*.mov=01;35:*.mpg=01;35:*.mpeg=01;35:*.m2v=01;35:*.mkv=01;35:*.webm=01;35:*.webp=01;35:*.ogm=01;35:*.mp4=01;35:*.m4v=01;35:*.mp4v=01;35:*.vob=01;35:*.qt=01;35:*.nuv=01;35:*.wmv=01;35:*.asf=01;35:*.rm=01;35:*.rmvb=01;35:*.flc=01;35:*.avi=01;35:*.fli=01;35:*.flv=01;35:*.gl=01;35:*.dl=01;35:*.xcf=01;35:*.xwd=01;35:*.yuv=01;35:*.cgm=01;35:*.emf=01;35:*.ogv=01;35:*.ogx=01;35:*.aac=00;36:*.au=00;36:*.flac=00;36:*.m4a=00;36:*.mid=00;36:*.midi=00;36:*.mka=00;36:*.mp3=00;36:*.mpc=00;36:*.ogg=00;36:*.ra=00;36:*.wav=00;36:*.oga=00;36:*.opus=00;36:*.spx=00;36:*.xspf=00;36:*~=00;90:*#=00;90:*.bak=00;90:*.crdownload=00;90:*.dpkg-dist=00;90:*.dpkg-new=00;90:*.dpkg-old=00;90:*.dpkg-tmp=00;90:*.old=00;90:*.orig=00;90:*.part=00;90:*.rej=00;90:*.rpmnew=00;90:*.rpmorig=00;90:*.rpmsave=00;90:*.swp=00;90:*.tmp=00;90:*.ucf-dist=00;90:*.ucf-new=00;90:*.ucf-old=00;90:', 'GNOME_TERMINAL_SERVICE': ':1.107', 'SSH_AUTH_SOCK': '/run/user/1000/keyring/ssh', 'GSETTINGS_SCHEMA_DIR': '/home/dologan/anaconda3/share/glib-2.0/schemas', 'AMENT_PREFIX_PATH': '/opt/ros/jazzy', 'CONDA_PYTHON_EXE': '/home/dologan/anaconda3/bin/python', 'SHELL': '/bin/bash', 'QT_ACCESSIBILITY': '1', 'GDMSESSION': 'ubuntu', 'LESSCLOSE': '/usr/bin/lesspipe %s %s', 'CONDA_DEFAULT_ENV': 'base', 'ROS_AUTOMATIC_DISCOVERY_RANGE': 'SUBNET', 'QT_IM_MODULE': 'ibus', 'PWD': '/home/dologan/ros2_ws/src/quad-sdk/build/mocap_optitrack', 'LC_ALL': 'en_US.UTF-8', 'XDG_CONFIG_DIRS': '/etc/xdg/xdg-ubuntu:/etc/xdg', 'CONDA_EXE': '/home/dologan/anaconda3/bin/conda', 'XDG_DATA_DIRS': '/usr/share/ubuntu:/usr/share/gnome:/usr/local/share/:/usr/share/:/var/lib/snapd/desktop', 'PYTHONPATH': '/opt/ros/jazzy/lib/python3.12/site-packages', 'CONDA_PREFIX': '/home/dologan/anaconda3', 'GSETTINGS_SCHEMA_DIR_CONDA_BACKUP': '', 'COLCON': '1', 'MEMORY_PRESSURE_WRITE': 'c29tZSAyMDAwMDAgMjAwMDAwMAA=', 'VTE_VERSION': '7600', 'CMAKE_PREFIX_PATH': '/opt/ros/jazzy/opt/gz_sim_vendor:/opt/ros/jazzy/opt/gz_sensors_vendor:/opt/ros/jazzy/opt/gz_physics_vendor:/opt/ros/jazzy/opt/sdformat_vendor:/opt/ros/jazzy/opt/gz_gui_vendor:/opt/ros/jazzy/opt/gz_transport_vendor:/opt/ros/jazzy/opt/gz_rendering_vendor:/opt/ros/jazzy/opt/gz_plugin_vendor:/opt/ros/jazzy/opt/gz_fuel_tools_vendor:/opt/ros/jazzy/opt/gz_msgs_vendor:/opt/ros/jazzy/opt/gz_common_vendor:/opt/ros/jazzy/opt/gz_math_vendor:/opt/ros/jazzy/opt/gz_utils_vendor:/opt/ros/jazzy/opt/gz_tools_vendor:/opt/ros/jazzy/opt/gz_ogre_next_vendor:/opt/ros/jazzy/opt/gz_dartsim_vendor:/opt/ros/jazzy/opt/gz_cmake_vendor:/opt/ros/jazzy'}), 'shell': False}
+[0.022421] (quad_logger) JobProgress: {'identifier': 'quad_logger', 'progress': 'cmake'}
+[0.022996] (quad_logger) Command: {'cmd': ['/usr/bin/cmake', '/home/dologan/ros2_ws/src/quad-sdk/quad_logger', '-DCMAKE_INSTALL_PREFIX=/home/dologan/ros2_ws/src/quad-sdk/install/quad_logger'], 'cwd': '/home/dologan/ros2_ws/src/quad-sdk/build/quad_logger', 'env': OrderedDict({'LESSOPEN': '| /usr/bin/lesspipe %s', 'CONDA_PROMPT_MODIFIER': '(base)', 'USER': 'dologan', 'GZ_CONFIG_PATH': '/opt/ros/jazzy/opt/gz_sim_vendor/share/gz:/opt/ros/jazzy/opt/sdformat_vendor/share/gz:/opt/ros/jazzy/opt/gz_gui_vendor/share/gz:/opt/ros/jazzy/opt/gz_transport_vendor/share/gz:/opt/ros/jazzy/opt/gz_rendering_vendor/share/gz:/opt/ros/jazzy/opt/gz_plugin_vendor/share/gz:/opt/ros/jazzy/opt/gz_fuel_tools_vendor/share/gz:/opt/ros/jazzy/opt/gz_msgs_vendor/share/gz:/opt/ros/jazzy/opt/gz_common_vendor/share/gz', 'XDG_SESSION_TYPE': 'wayland', 'SHLVL': '1', 'LD_LIBRARY_PATH': '/opt/ros/jazzy/opt/gz_sim_vendor/lib:/opt/ros/jazzy/opt/gz_sensors_vendor/lib:/opt/ros/jazzy/opt/gz_physics_vendor/lib:/opt/ros/jazzy/opt/sdformat_vendor/lib:/opt/ros/jazzy/opt/rviz_ogre_vendor/lib:/opt/ros/jazzy/lib/x86_64-linux-gnu:/opt/ros/jazzy/opt/gz_gui_vendor/lib:/opt/ros/jazzy/opt/gz_transport_vendor/lib:/opt/ros/jazzy/opt/gz_rendering_vendor/lib:/opt/ros/jazzy/opt/gz_plugin_vendor/lib:/opt/ros/jazzy/opt/gz_fuel_tools_vendor/lib:/opt/ros/jazzy/opt/gz_msgs_vendor/lib:/opt/ros/jazzy/opt/gz_common_vendor/lib:/opt/ros/jazzy/opt/gz_math_vendor/lib:/opt/ros/jazzy/opt/gz_utils_vendor/lib:/opt/ros/jazzy/opt/gz_tools_vendor/lib:/opt/ros/jazzy/opt/gz_ogre_next_vendor/lib:/opt/ros/jazzy/opt/gz_dartsim_vendor/lib:/opt/ros/jazzy/opt/gz_cmake_vendor/lib:/opt/ros/jazzy/lib', 'HOME': '/home/dologan', 'CONDA_SHLVL': '1', 'OLDPWD': '/home/dologan/ros2_ws/src', 'DESKTOP_SESSION': 'ubuntu', 'ROS_PYTHON_VERSION': '3', 'GNOME_SHELL_SESSION_MODE': 'ubuntu', 'GTK_MODULES': 'gail:atk-bridge', 'SYSTEMD_EXEC_PID': '2352', 'GSM_SKIP_SSH_AGENT_WORKAROUND': 'true', 'DBUS_SESSION_BUS_ADDRESS': 'unix:path=/run/user/1000/bus', 'COLORTERM': 'truecolor', '_CE_M': '', 'DEBUGINFOD_URLS': 'https://debuginfod.ubuntu.com', 'IM_CONFIG_PHASE': '1', 'WAYLAND_DISPLAY': 'wayland-0', 'ROS_DISTRO': 'jazzy', 'LOGNAME': 'dologan', '_': '/usr/bin/colcon', 'ROS_VERSION': '2', 'MEMORY_PRESSURE_WATCH': '/sys/fs/cgroup/user.slice/user-1000.slice/user@1000.service/session.slice/org.gnome.Shell@wayland.service/memory.pressure', 'XDG_SESSION_CLASS': 'user', 'USERNAME': 'dologan', 'TERM': 'xterm-256color', 'GAZEBO_MODEL_PATH': ':/home/dologan/ros2_ws/src/quad-sdk/quad_simulator/spirit_description:/home/dologan/ros2_ws/src/quad-sdk/quad_simulator/a1_description:/home/dologan/ros2_ws/src/quad-sdk/quad_simulator/other/sensor_description:/home/dologan/ros2_ws/src/quad-sdk/quad_simulator/other/objects_description:/home/dologan/ros2_ws/src/quad-sdk/quad_simulator/gazebo_scripts/worlds:/home/dologan/ros2_ws/src/quad-sdk/quad_simulator/spirit_description:/home/dologan/ros2_ws/src/quad-sdk/quad_simulator/a1_description:/home/dologan/ros2_ws/src/quad-sdk/quad_simulator/other/sensor_description:/home/dologan/ros2_ws/src/quad-sdk/quad_simulator/other/objects_description:/home/dologan/ros2_ws/src/quad-sdk/quad_simulator/gazebo_scripts/worlds', 'GNOME_DESKTOP_SESSION_ID': 'this-is-deprecated', '_CE_CONDA': '', 'PATH': '/home/dologan/anaconda3/bin:/home/dologan/anaconda3/condabin:/opt/ros/jazzy/opt/gz_msgs_vendor/bin:/opt/ros/jazzy/opt/gz_tools_vendor/bin:/opt/ros/jazzy/opt/gz_ogre_next_vendor/bin:/opt/ros/jazzy/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/snap/bin', 'SESSION_MANAGER': 'local/dologan-IdeaPad-3-15IIL05:@/tmp/.ICE-unix/2308,unix/dologan-IdeaPad-3-15IIL05:/tmp/.ICE-unix/2308', 'XDG_MENU_PREFIX': 'gnome-', 'GNOME_TERMINAL_SCREEN': '/org/gnome/Terminal/screen/62c938e4_2d34_4220_943e_b1a28f3e97af', 'GNOME_SETUP_DISPLAY': ':1', 'XDG_RUNTIME_DIR': '/run/user/1000', 'DISPLAY': ':0', 'LANG': 'en_US.UTF-8', 'XDG_CURRENT_DESKTOP': 'ubuntu:GNOME', 'XMODIFIERS': '@im=ibus', 'XDG_SESSION_DESKTOP': 'ubuntu', 'XAUTHORITY': '/run/user/1000/.mutter-Xwaylandauth.184MZ2', 'LS_COLORS': 'rs=0:di=01;34:ln=01;36:mh=00:pi=40;33:so=01;35:do=01;35:bd=40;33;01:cd=40;33;01:or=40;31;01:mi=00:su=37;41:sg=30;43:ca=00:tw=30;42:ow=34;42:st=37;44:ex=01;32:*.tar=01;31:*.tgz=01;31:*.arc=01;31:*.arj=01;31:*.taz=01;31:*.lha=01;31:*.lz4=01;31:*.lzh=01;31:*.lzma=01;31:*.tlz=01;31:*.txz=01;31:*.tzo=01;31:*.t7z=01;31:*.zip=01;31:*.z=01;31:*.dz=01;31:*.gz=01;31:*.lrz=01;31:*.lz=01;31:*.lzo=01;31:*.xz=01;31:*.zst=01;31:*.tzst=01;31:*.bz2=01;31:*.bz=01;31:*.tbz=01;31:*.tbz2=01;31:*.tz=01;31:*.deb=01;31:*.rpm=01;31:*.jar=01;31:*.war=01;31:*.ear=01;31:*.sar=01;31:*.rar=01;31:*.alz=01;31:*.ace=01;31:*.zoo=01;31:*.cpio=01;31:*.7z=01;31:*.rz=01;31:*.cab=01;31:*.wim=01;31:*.swm=01;31:*.dwm=01;31:*.esd=01;31:*.avif=01;35:*.jpg=01;35:*.jpeg=01;35:*.mjpg=01;35:*.mjpeg=01;35:*.gif=01;35:*.bmp=01;35:*.pbm=01;35:*.pgm=01;35:*.ppm=01;35:*.tga=01;35:*.xbm=01;35:*.xpm=01;35:*.tif=01;35:*.tiff=01;35:*.png=01;35:*.svg=01;35:*.svgz=01;35:*.mng=01;35:*.pcx=01;35:*.mov=01;35:*.mpg=01;35:*.mpeg=01;35:*.m2v=01;35:*.mkv=01;35:*.webm=01;35:*.webp=01;35:*.ogm=01;35:*.mp4=01;35:*.m4v=01;35:*.mp4v=01;35:*.vob=01;35:*.qt=01;35:*.nuv=01;35:*.wmv=01;35:*.asf=01;35:*.rm=01;35:*.rmvb=01;35:*.flc=01;35:*.avi=01;35:*.fli=01;35:*.flv=01;35:*.gl=01;35:*.dl=01;35:*.xcf=01;35:*.xwd=01;35:*.yuv=01;35:*.cgm=01;35:*.emf=01;35:*.ogv=01;35:*.ogx=01;35:*.aac=00;36:*.au=00;36:*.flac=00;36:*.m4a=00;36:*.mid=00;36:*.midi=00;36:*.mka=00;36:*.mp3=00;36:*.mpc=00;36:*.ogg=00;36:*.ra=00;36:*.wav=00;36:*.oga=00;36:*.opus=00;36:*.spx=00;36:*.xspf=00;36:*~=00;90:*#=00;90:*.bak=00;90:*.crdownload=00;90:*.dpkg-dist=00;90:*.dpkg-new=00;90:*.dpkg-old=00;90:*.dpkg-tmp=00;90:*.old=00;90:*.orig=00;90:*.part=00;90:*.rej=00;90:*.rpmnew=00;90:*.rpmorig=00;90:*.rpmsave=00;90:*.swp=00;90:*.tmp=00;90:*.ucf-dist=00;90:*.ucf-new=00;90:*.ucf-old=00;90:', 'GNOME_TERMINAL_SERVICE': ':1.107', 'SSH_AUTH_SOCK': '/run/user/1000/keyring/ssh', 'GSETTINGS_SCHEMA_DIR': '/home/dologan/anaconda3/share/glib-2.0/schemas', 'AMENT_PREFIX_PATH': '/opt/ros/jazzy', 'CONDA_PYTHON_EXE': '/home/dologan/anaconda3/bin/python', 'SHELL': '/bin/bash', 'QT_ACCESSIBILITY': '1', 'GDMSESSION': 'ubuntu', 'LESSCLOSE': '/usr/bin/lesspipe %s %s', 'CONDA_DEFAULT_ENV': 'base', 'ROS_AUTOMATIC_DISCOVERY_RANGE': 'SUBNET', 'QT_IM_MODULE': 'ibus', 'PWD': '/home/dologan/ros2_ws/src/quad-sdk/build/quad_logger', 'LC_ALL': 'en_US.UTF-8', 'XDG_CONFIG_DIRS': '/etc/xdg/xdg-ubuntu:/etc/xdg', 'CONDA_EXE': '/home/dologan/anaconda3/bin/conda', 'XDG_DATA_DIRS': '/usr/share/ubuntu:/usr/share/gnome:/usr/local/share/:/usr/share/:/var/lib/snapd/desktop', 'PYTHONPATH': '/opt/ros/jazzy/lib/python3.12/site-packages', 'CONDA_PREFIX': '/home/dologan/anaconda3', 'GSETTINGS_SCHEMA_DIR_CONDA_BACKUP': '', 'COLCON': '1', 'MEMORY_PRESSURE_WRITE': 'c29tZSAyMDAwMDAgMjAwMDAwMAA=', 'VTE_VERSION': '7600', 'CMAKE_PREFIX_PATH': '/opt/ros/jazzy/opt/gz_sim_vendor:/opt/ros/jazzy/opt/gz_sensors_vendor:/opt/ros/jazzy/opt/gz_physics_vendor:/opt/ros/jazzy/opt/sdformat_vendor:/opt/ros/jazzy/opt/gz_gui_vendor:/opt/ros/jazzy/opt/gz_transport_vendor:/opt/ros/jazzy/opt/gz_rendering_vendor:/opt/ros/jazzy/opt/gz_plugin_vendor:/opt/ros/jazzy/opt/gz_fuel_tools_vendor:/opt/ros/jazzy/opt/gz_msgs_vendor:/opt/ros/jazzy/opt/gz_common_vendor:/opt/ros/jazzy/opt/gz_math_vendor:/opt/ros/jazzy/opt/gz_utils_vendor:/opt/ros/jazzy/opt/gz_tools_vendor:/opt/ros/jazzy/opt/gz_ogre_next_vendor:/opt/ros/jazzy/opt/gz_dartsim_vendor:/opt/ros/jazzy/opt/gz_cmake_vendor'}), 'shell': False}
+[0.027300] (quad_msgs) JobProgress: {'identifier': 'quad_msgs', 'progress': 'cmake'}
+[0.028143] (quad_msgs) JobProgress: {'identifier': 'quad_msgs', 'progress': 'build'}
+[0.028451] (quad_msgs) Command: {'cmd': ['/usr/bin/cmake', '--build', '/home/dologan/ros2_ws/src/quad-sdk/build/quad_msgs', '--', '-j8', '-l8'], 'cwd': '/home/dologan/ros2_ws/src/quad-sdk/build/quad_msgs', 'env': OrderedDict({'LESSOPEN': '| /usr/bin/lesspipe %s', 'CONDA_PROMPT_MODIFIER': '(base)', 'USER': 'dologan', 'GZ_CONFIG_PATH': '/opt/ros/jazzy/opt/gz_sim_vendor/share/gz:/opt/ros/jazzy/opt/sdformat_vendor/share/gz:/opt/ros/jazzy/opt/gz_gui_vendor/share/gz:/opt/ros/jazzy/opt/gz_transport_vendor/share/gz:/opt/ros/jazzy/opt/gz_rendering_vendor/share/gz:/opt/ros/jazzy/opt/gz_plugin_vendor/share/gz:/opt/ros/jazzy/opt/gz_fuel_tools_vendor/share/gz:/opt/ros/jazzy/opt/gz_msgs_vendor/share/gz:/opt/ros/jazzy/opt/gz_common_vendor/share/gz', 'XDG_SESSION_TYPE': 'wayland', 'SHLVL': '1', 'LD_LIBRARY_PATH': '/opt/ros/jazzy/opt/gz_sim_vendor/lib:/opt/ros/jazzy/opt/gz_sensors_vendor/lib:/opt/ros/jazzy/opt/gz_physics_vendor/lib:/opt/ros/jazzy/opt/sdformat_vendor/lib:/opt/ros/jazzy/opt/rviz_ogre_vendor/lib:/opt/ros/jazzy/lib/x86_64-linux-gnu:/opt/ros/jazzy/opt/gz_gui_vendor/lib:/opt/ros/jazzy/opt/gz_transport_vendor/lib:/opt/ros/jazzy/opt/gz_rendering_vendor/lib:/opt/ros/jazzy/opt/gz_plugin_vendor/lib:/opt/ros/jazzy/opt/gz_fuel_tools_vendor/lib:/opt/ros/jazzy/opt/gz_msgs_vendor/lib:/opt/ros/jazzy/opt/gz_common_vendor/lib:/opt/ros/jazzy/opt/gz_math_vendor/lib:/opt/ros/jazzy/opt/gz_utils_vendor/lib:/opt/ros/jazzy/opt/gz_tools_vendor/lib:/opt/ros/jazzy/opt/gz_ogre_next_vendor/lib:/opt/ros/jazzy/opt/gz_dartsim_vendor/lib:/opt/ros/jazzy/opt/gz_cmake_vendor/lib:/opt/ros/jazzy/lib', 'HOME': '/home/dologan', 'CONDA_SHLVL': '1', 'OLDPWD': '/home/dologan/ros2_ws/src', 'DESKTOP_SESSION': 'ubuntu', 'ROS_PYTHON_VERSION': '3', 'GNOME_SHELL_SESSION_MODE': 'ubuntu', 'GTK_MODULES': 'gail:atk-bridge', 'SYSTEMD_EXEC_PID': '2352', 'GSM_SKIP_SSH_AGENT_WORKAROUND': 'true', 'DBUS_SESSION_BUS_ADDRESS': 'unix:path=/run/user/1000/bus', 'COLORTERM': 'truecolor', '_CE_M': '', 'DEBUGINFOD_URLS': 'https://debuginfod.ubuntu.com', 'IM_CONFIG_PHASE': '1', 'WAYLAND_DISPLAY': 'wayland-0', 'ROS_DISTRO': 'jazzy', 'LOGNAME': 'dologan', '_': '/usr/bin/colcon', 'ROS_VERSION': '2', 'MEMORY_PRESSURE_WATCH': '/sys/fs/cgroup/user.slice/user-1000.slice/user@1000.service/session.slice/org.gnome.Shell@wayland.service/memory.pressure', 'XDG_SESSION_CLASS': 'user', 'USERNAME': 'dologan', 'TERM': 'xterm-256color', 'GAZEBO_MODEL_PATH': ':/home/dologan/ros2_ws/src/quad-sdk/quad_simulator/spirit_description:/home/dologan/ros2_ws/src/quad-sdk/quad_simulator/a1_description:/home/dologan/ros2_ws/src/quad-sdk/quad_simulator/other/sensor_description:/home/dologan/ros2_ws/src/quad-sdk/quad_simulator/other/objects_description:/home/dologan/ros2_ws/src/quad-sdk/quad_simulator/gazebo_scripts/worlds:/home/dologan/ros2_ws/src/quad-sdk/quad_simulator/spirit_description:/home/dologan/ros2_ws/src/quad-sdk/quad_simulator/a1_description:/home/dologan/ros2_ws/src/quad-sdk/quad_simulator/other/sensor_description:/home/dologan/ros2_ws/src/quad-sdk/quad_simulator/other/objects_description:/home/dologan/ros2_ws/src/quad-sdk/quad_simulator/gazebo_scripts/worlds', 'GNOME_DESKTOP_SESSION_ID': 'this-is-deprecated', '_CE_CONDA': '', 'PATH': '/home/dologan/anaconda3/bin:/home/dologan/anaconda3/condabin:/opt/ros/jazzy/opt/gz_msgs_vendor/bin:/opt/ros/jazzy/opt/gz_tools_vendor/bin:/opt/ros/jazzy/opt/gz_ogre_next_vendor/bin:/opt/ros/jazzy/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/snap/bin', 'SESSION_MANAGER': 'local/dologan-IdeaPad-3-15IIL05:@/tmp/.ICE-unix/2308,unix/dologan-IdeaPad-3-15IIL05:/tmp/.ICE-unix/2308', 'XDG_MENU_PREFIX': 'gnome-', 'GNOME_TERMINAL_SCREEN': '/org/gnome/Terminal/screen/62c938e4_2d34_4220_943e_b1a28f3e97af', 'GNOME_SETUP_DISPLAY': ':1', 'XDG_RUNTIME_DIR': '/run/user/1000', 'DISPLAY': ':0', 'LANG': 'en_US.UTF-8', 'XDG_CURRENT_DESKTOP': 'ubuntu:GNOME', 'XMODIFIERS': '@im=ibus', 'XDG_SESSION_DESKTOP': 'ubuntu', 'XAUTHORITY': '/run/user/1000/.mutter-Xwaylandauth.184MZ2', 'LS_COLORS': 'rs=0:di=01;34:ln=01;36:mh=00:pi=40;33:so=01;35:do=01;35:bd=40;33;01:cd=40;33;01:or=40;31;01:mi=00:su=37;41:sg=30;43:ca=00:tw=30;42:ow=34;42:st=37;44:ex=01;32:*.tar=01;31:*.tgz=01;31:*.arc=01;31:*.arj=01;31:*.taz=01;31:*.lha=01;31:*.lz4=01;31:*.lzh=01;31:*.lzma=01;31:*.tlz=01;31:*.txz=01;31:*.tzo=01;31:*.t7z=01;31:*.zip=01;31:*.z=01;31:*.dz=01;31:*.gz=01;31:*.lrz=01;31:*.lz=01;31:*.lzo=01;31:*.xz=01;31:*.zst=01;31:*.tzst=01;31:*.bz2=01;31:*.bz=01;31:*.tbz=01;31:*.tbz2=01;31:*.tz=01;31:*.deb=01;31:*.rpm=01;31:*.jar=01;31:*.war=01;31:*.ear=01;31:*.sar=01;31:*.rar=01;31:*.alz=01;31:*.ace=01;31:*.zoo=01;31:*.cpio=01;31:*.7z=01;31:*.rz=01;31:*.cab=01;31:*.wim=01;31:*.swm=01;31:*.dwm=01;31:*.esd=01;31:*.avif=01;35:*.jpg=01;35:*.jpeg=01;35:*.mjpg=01;35:*.mjpeg=01;35:*.gif=01;35:*.bmp=01;35:*.pbm=01;35:*.pgm=01;35:*.ppm=01;35:*.tga=01;35:*.xbm=01;35:*.xpm=01;35:*.tif=01;35:*.tiff=01;35:*.png=01;35:*.svg=01;35:*.svgz=01;35:*.mng=01;35:*.pcx=01;35:*.mov=01;35:*.mpg=01;35:*.mpeg=01;35:*.m2v=01;35:*.mkv=01;35:*.webm=01;35:*.webp=01;35:*.ogm=01;35:*.mp4=01;35:*.m4v=01;35:*.mp4v=01;35:*.vob=01;35:*.qt=01;35:*.nuv=01;35:*.wmv=01;35:*.asf=01;35:*.rm=01;35:*.rmvb=01;35:*.flc=01;35:*.avi=01;35:*.fli=01;35:*.flv=01;35:*.gl=01;35:*.dl=01;35:*.xcf=01;35:*.xwd=01;35:*.yuv=01;35:*.cgm=01;35:*.emf=01;35:*.ogv=01;35:*.ogx=01;35:*.aac=00;36:*.au=00;36:*.flac=00;36:*.m4a=00;36:*.mid=00;36:*.midi=00;36:*.mka=00;36:*.mp3=00;36:*.mpc=00;36:*.ogg=00;36:*.ra=00;36:*.wav=00;36:*.oga=00;36:*.opus=00;36:*.spx=00;36:*.xspf=00;36:*~=00;90:*#=00;90:*.bak=00;90:*.crdownload=00;90:*.dpkg-dist=00;90:*.dpkg-new=00;90:*.dpkg-old=00;90:*.dpkg-tmp=00;90:*.old=00;90:*.orig=00;90:*.part=00;90:*.rej=00;90:*.rpmnew=00;90:*.rpmorig=00;90:*.rpmsave=00;90:*.swp=00;90:*.tmp=00;90:*.ucf-dist=00;90:*.ucf-new=00;90:*.ucf-old=00;90:', 'GNOME_TERMINAL_SERVICE': ':1.107', 'SSH_AUTH_SOCK': '/run/user/1000/keyring/ssh', 'GSETTINGS_SCHEMA_DIR': '/home/dologan/anaconda3/share/glib-2.0/schemas', 'AMENT_PREFIX_PATH': '/opt/ros/jazzy', 'CONDA_PYTHON_EXE': '/home/dologan/anaconda3/bin/python', 'SHELL': '/bin/bash', 'QT_ACCESSIBILITY': '1', 'GDMSESSION': 'ubuntu', 'LESSCLOSE': '/usr/bin/lesspipe %s %s', 'CONDA_DEFAULT_ENV': 'base', 'ROS_AUTOMATIC_DISCOVERY_RANGE': 'SUBNET', 'QT_IM_MODULE': 'ibus', 'PWD': '/home/dologan/ros2_ws/src/quad-sdk/build/quad_msgs', 'LC_ALL': 'en_US.UTF-8', 'XDG_CONFIG_DIRS': '/etc/xdg/xdg-ubuntu:/etc/xdg', 'CONDA_EXE': '/home/dologan/anaconda3/bin/conda', 'XDG_DATA_DIRS': '/usr/share/ubuntu:/usr/share/gnome:/usr/local/share/:/usr/share/:/var/lib/snapd/desktop', 'PYTHONPATH': '/opt/ros/jazzy/lib/python3.12/site-packages', 'CONDA_PREFIX': '/home/dologan/anaconda3', 'GSETTINGS_SCHEMA_DIR_CONDA_BACKUP': '', 'COLCON': '1', 'MEMORY_PRESSURE_WRITE': 'c29tZSAyMDAwMDAgMjAwMDAwMAA=', 'VTE_VERSION': '7600', 'CMAKE_PREFIX_PATH': '/opt/ros/jazzy/opt/gz_sim_vendor:/opt/ros/jazzy/opt/gz_sensors_vendor:/opt/ros/jazzy/opt/gz_physics_vendor:/opt/ros/jazzy/opt/sdformat_vendor:/opt/ros/jazzy/opt/gz_gui_vendor:/opt/ros/jazzy/opt/gz_transport_vendor:/opt/ros/jazzy/opt/gz_rendering_vendor:/opt/ros/jazzy/opt/gz_plugin_vendor:/opt/ros/jazzy/opt/gz_fuel_tools_vendor:/opt/ros/jazzy/opt/gz_msgs_vendor:/opt/ros/jazzy/opt/gz_common_vendor:/opt/ros/jazzy/opt/gz_math_vendor:/opt/ros/jazzy/opt/gz_utils_vendor:/opt/ros/jazzy/opt/gz_tools_vendor:/opt/ros/jazzy/opt/gz_ogre_next_vendor:/opt/ros/jazzy/opt/gz_dartsim_vendor:/opt/ros/jazzy/opt/gz_cmake_vendor'}), 'shell': False}
+[0.044386] (quad_logger) StdoutLine: {'line': b'-- Found ament_cmake: 2.5.3 (/opt/ros/jazzy/share/ament_cmake/cmake)\n'}
+[0.068074] (quad_msgs) StdoutLine: {'line': b'-- Found ament_cmake: 2.5.3 (/opt/ros/jazzy/share/ament_cmake/cmake)\n'}
+[0.086795] (RBDL) StdoutLine: {'line': b'[100%] Built target rbdl\n'}
+[0.098216] (quad_msgs) StdoutLine: {'line': b'-- Found Python3: /home/dologan/anaconda3/bin/python3 (found version "3.11.7") found components: Interpreter \n'}
+[0.099840] (-) TimerEvent: {}
+[0.102873] (mocap_optitrack) StdoutLine: {'line': b'[ 11%] \x1b[32mBuilding CXX object src/CMakeFiles/mocap_optitrack_mocap_node.dir/version.cpp.o\x1b[0m\n'}
+[0.103240] (mocap_optitrack) StdoutLine: {'line': b'[ 33%] \x1b[32mBuilding CXX object src/CMakeFiles/mocap_optitrack_mocap_node.dir/natnet/natnet_packet_definition.cpp.o\x1b[0m\n'}
+[0.103419] (mocap_optitrack) StdoutLine: {'line': b'[ 22%] \x1b[32mBuilding CXX object src/CMakeFiles/mocap_optitrack_mocap_node.dir/mocap_node.cpp.o\x1b[0m\n'}
+[0.109701] (mocap_optitrack) StdoutLine: {'line': b'[ 44%] \x1b[32mBuilding CXX object src/CMakeFiles/mocap_optitrack_mocap_node.dir/natnet/natnet_messages.cpp.o\x1b[0m\n'}
+[0.109867] (mocap_optitrack) StdoutLine: {'line': b'[ 55%] \x1b[32mBuilding CXX object src/CMakeFiles/mocap_optitrack_mocap_node.dir/socket.cpp.o\x1b[0m\n'}
+[0.111588] (mocap_optitrack) StdoutLine: {'line': b'[ 66%] \x1b[32mBuilding CXX object src/CMakeFiles/mocap_optitrack_mocap_node.dir/rigid_body_publisher.cpp.o\x1b[0m\n'}
+[0.116430] (RBDL) CommandEnded: {'returncode': 0}
+[0.117317] (RBDL) JobProgress: {'identifier': 'RBDL', 'progress': 'install'}
+[0.120043] (mocap_optitrack) StdoutLine: {'line': b'[ 77%] \x1b[32mBuilding CXX object src/CMakeFiles/mocap_optitrack_mocap_node.dir/mocap_config.cpp.o\x1b[0m\n'}
+[0.120353] (mocap_optitrack) StdoutLine: {'line': b'[ 88%] \x1b[32mBuilding CXX object src/CMakeFiles/mocap_optitrack_mocap_node.dir/data_model.cpp.o\x1b[0m\n'}
+[0.131606] (RBDL) Command: {'cmd': ['/usr/bin/cmake', '--install', '/home/dologan/ros2_ws/src/quad-sdk/build/RBDL'], 'cwd': '/home/dologan/ros2_ws/src/quad-sdk/build/RBDL', 'env': OrderedDict({'LESSOPEN': '| /usr/bin/lesspipe %s', 'CONDA_PROMPT_MODIFIER': '(base)', 'USER': 'dologan', 'GZ_CONFIG_PATH': '/opt/ros/jazzy/opt/gz_sim_vendor/share/gz:/opt/ros/jazzy/opt/sdformat_vendor/share/gz:/opt/ros/jazzy/opt/gz_gui_vendor/share/gz:/opt/ros/jazzy/opt/gz_transport_vendor/share/gz:/opt/ros/jazzy/opt/gz_rendering_vendor/share/gz:/opt/ros/jazzy/opt/gz_plugin_vendor/share/gz:/opt/ros/jazzy/opt/gz_fuel_tools_vendor/share/gz:/opt/ros/jazzy/opt/gz_msgs_vendor/share/gz:/opt/ros/jazzy/opt/gz_common_vendor/share/gz', 'XDG_SESSION_TYPE': 'wayland', 'SHLVL': '1', 'LD_LIBRARY_PATH': '/opt/ros/jazzy/opt/gz_sim_vendor/lib:/opt/ros/jazzy/opt/gz_sensors_vendor/lib:/opt/ros/jazzy/opt/gz_physics_vendor/lib:/opt/ros/jazzy/opt/sdformat_vendor/lib:/opt/ros/jazzy/opt/rviz_ogre_vendor/lib:/opt/ros/jazzy/lib/x86_64-linux-gnu:/opt/ros/jazzy/opt/gz_gui_vendor/lib:/opt/ros/jazzy/opt/gz_transport_vendor/lib:/opt/ros/jazzy/opt/gz_rendering_vendor/lib:/opt/ros/jazzy/opt/gz_plugin_vendor/lib:/opt/ros/jazzy/opt/gz_fuel_tools_vendor/lib:/opt/ros/jazzy/opt/gz_msgs_vendor/lib:/opt/ros/jazzy/opt/gz_common_vendor/lib:/opt/ros/jazzy/opt/gz_math_vendor/lib:/opt/ros/jazzy/opt/gz_utils_vendor/lib:/opt/ros/jazzy/opt/gz_tools_vendor/lib:/opt/ros/jazzy/opt/gz_ogre_next_vendor/lib:/opt/ros/jazzy/opt/gz_dartsim_vendor/lib:/opt/ros/jazzy/opt/gz_cmake_vendor/lib:/opt/ros/jazzy/lib', 'HOME': '/home/dologan', 'CONDA_SHLVL': '1', 'OLDPWD': '/home/dologan/ros2_ws/src', 'DESKTOP_SESSION': 'ubuntu', 'ROS_PYTHON_VERSION': '3', 'GNOME_SHELL_SESSION_MODE': 'ubuntu', 'GTK_MODULES': 'gail:atk-bridge', 'SYSTEMD_EXEC_PID': '2352', 'GSM_SKIP_SSH_AGENT_WORKAROUND': 'true', 'DBUS_SESSION_BUS_ADDRESS': 'unix:path=/run/user/1000/bus', 'COLORTERM': 'truecolor', '_CE_M': '', 'DEBUGINFOD_URLS': 'https://debuginfod.ubuntu.com', 'IM_CONFIG_PHASE': '1', 'WAYLAND_DISPLAY': 'wayland-0', 'ROS_DISTRO': 'jazzy', 'LOGNAME': 'dologan', '_': '/usr/bin/colcon', 'ROS_VERSION': '2', 'MEMORY_PRESSURE_WATCH': '/sys/fs/cgroup/user.slice/user-1000.slice/user@1000.service/session.slice/org.gnome.Shell@wayland.service/memory.pressure', 'XDG_SESSION_CLASS': 'user', 'USERNAME': 'dologan', 'TERM': 'xterm-256color', 'GAZEBO_MODEL_PATH': ':/home/dologan/ros2_ws/src/quad-sdk/quad_simulator/spirit_description:/home/dologan/ros2_ws/src/quad-sdk/quad_simulator/a1_description:/home/dologan/ros2_ws/src/quad-sdk/quad_simulator/other/sensor_description:/home/dologan/ros2_ws/src/quad-sdk/quad_simulator/other/objects_description:/home/dologan/ros2_ws/src/quad-sdk/quad_simulator/gazebo_scripts/worlds:/home/dologan/ros2_ws/src/quad-sdk/quad_simulator/spirit_description:/home/dologan/ros2_ws/src/quad-sdk/quad_simulator/a1_description:/home/dologan/ros2_ws/src/quad-sdk/quad_simulator/other/sensor_description:/home/dologan/ros2_ws/src/quad-sdk/quad_simulator/other/objects_description:/home/dologan/ros2_ws/src/quad-sdk/quad_simulator/gazebo_scripts/worlds', 'GNOME_DESKTOP_SESSION_ID': 'this-is-deprecated', '_CE_CONDA': '', 'PATH': '/home/dologan/anaconda3/bin:/home/dologan/anaconda3/condabin:/opt/ros/jazzy/opt/gz_msgs_vendor/bin:/opt/ros/jazzy/opt/gz_tools_vendor/bin:/opt/ros/jazzy/opt/gz_ogre_next_vendor/bin:/opt/ros/jazzy/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/snap/bin', 'SESSION_MANAGER': 'local/dologan-IdeaPad-3-15IIL05:@/tmp/.ICE-unix/2308,unix/dologan-IdeaPad-3-15IIL05:/tmp/.ICE-unix/2308', 'XDG_MENU_PREFIX': 'gnome-', 'GNOME_TERMINAL_SCREEN': '/org/gnome/Terminal/screen/62c938e4_2d34_4220_943e_b1a28f3e97af', 'GNOME_SETUP_DISPLAY': ':1', 'XDG_RUNTIME_DIR': '/run/user/1000', 'DISPLAY': ':0', 'LANG': 'en_US.UTF-8', 'XDG_CURRENT_DESKTOP': 'ubuntu:GNOME', 'XMODIFIERS': '@im=ibus', 'XDG_SESSION_DESKTOP': 'ubuntu', 'XAUTHORITY': '/run/user/1000/.mutter-Xwaylandauth.184MZ2', 'LS_COLORS': 'rs=0:di=01;34:ln=01;36:mh=00:pi=40;33:so=01;35:do=01;35:bd=40;33;01:cd=40;33;01:or=40;31;01:mi=00:su=37;41:sg=30;43:ca=00:tw=30;42:ow=34;42:st=37;44:ex=01;32:*.tar=01;31:*.tgz=01;31:*.arc=01;31:*.arj=01;31:*.taz=01;31:*.lha=01;31:*.lz4=01;31:*.lzh=01;31:*.lzma=01;31:*.tlz=01;31:*.txz=01;31:*.tzo=01;31:*.t7z=01;31:*.zip=01;31:*.z=01;31:*.dz=01;31:*.gz=01;31:*.lrz=01;31:*.lz=01;31:*.lzo=01;31:*.xz=01;31:*.zst=01;31:*.tzst=01;31:*.bz2=01;31:*.bz=01;31:*.tbz=01;31:*.tbz2=01;31:*.tz=01;31:*.deb=01;31:*.rpm=01;31:*.jar=01;31:*.war=01;31:*.ear=01;31:*.sar=01;31:*.rar=01;31:*.alz=01;31:*.ace=01;31:*.zoo=01;31:*.cpio=01;31:*.7z=01;31:*.rz=01;31:*.cab=01;31:*.wim=01;31:*.swm=01;31:*.dwm=01;31:*.esd=01;31:*.avif=01;35:*.jpg=01;35:*.jpeg=01;35:*.mjpg=01;35:*.mjpeg=01;35:*.gif=01;35:*.bmp=01;35:*.pbm=01;35:*.pgm=01;35:*.ppm=01;35:*.tga=01;35:*.xbm=01;35:*.xpm=01;35:*.tif=01;35:*.tiff=01;35:*.png=01;35:*.svg=01;35:*.svgz=01;35:*.mng=01;35:*.pcx=01;35:*.mov=01;35:*.mpg=01;35:*.mpeg=01;35:*.m2v=01;35:*.mkv=01;35:*.webm=01;35:*.webp=01;35:*.ogm=01;35:*.mp4=01;35:*.m4v=01;35:*.mp4v=01;35:*.vob=01;35:*.qt=01;35:*.nuv=01;35:*.wmv=01;35:*.asf=01;35:*.rm=01;35:*.rmvb=01;35:*.flc=01;35:*.avi=01;35:*.fli=01;35:*.flv=01;35:*.gl=01;35:*.dl=01;35:*.xcf=01;35:*.xwd=01;35:*.yuv=01;35:*.cgm=01;35:*.emf=01;35:*.ogv=01;35:*.ogx=01;35:*.aac=00;36:*.au=00;36:*.flac=00;36:*.m4a=00;36:*.mid=00;36:*.midi=00;36:*.mka=00;36:*.mp3=00;36:*.mpc=00;36:*.ogg=00;36:*.ra=00;36:*.wav=00;36:*.oga=00;36:*.opus=00;36:*.spx=00;36:*.xspf=00;36:*~=00;90:*#=00;90:*.bak=00;90:*.crdownload=00;90:*.dpkg-dist=00;90:*.dpkg-new=00;90:*.dpkg-old=00;90:*.dpkg-tmp=00;90:*.old=00;90:*.orig=00;90:*.part=00;90:*.rej=00;90:*.rpmnew=00;90:*.rpmorig=00;90:*.rpmsave=00;90:*.swp=00;90:*.tmp=00;90:*.ucf-dist=00;90:*.ucf-new=00;90:*.ucf-old=00;90:', 'GNOME_TERMINAL_SERVICE': ':1.107', 'SSH_AUTH_SOCK': '/run/user/1000/keyring/ssh', 'GSETTINGS_SCHEMA_DIR': '/home/dologan/anaconda3/share/glib-2.0/schemas', 'AMENT_PREFIX_PATH': '/opt/ros/jazzy', 'CONDA_PYTHON_EXE': '/home/dologan/anaconda3/bin/python', 'SHELL': '/bin/bash', 'QT_ACCESSIBILITY': '1', 'GDMSESSION': 'ubuntu', 'LESSCLOSE': '/usr/bin/lesspipe %s %s', 'CONDA_DEFAULT_ENV': 'base', 'ROS_AUTOMATIC_DISCOVERY_RANGE': 'SUBNET', 'QT_IM_MODULE': 'ibus', 'PWD': '/home/dologan/ros2_ws/src/quad-sdk/build/RBDL', 'LC_ALL': 'en_US.UTF-8', 'XDG_CONFIG_DIRS': '/etc/xdg/xdg-ubuntu:/etc/xdg', 'CONDA_EXE': '/home/dologan/anaconda3/bin/conda', 'XDG_DATA_DIRS': '/usr/share/ubuntu:/usr/share/gnome:/usr/local/share/:/usr/share/:/var/lib/snapd/desktop', 'PYTHONPATH': '/opt/ros/jazzy/lib/python3.12/site-packages', 'CONDA_PREFIX': '/home/dologan/anaconda3', 'GSETTINGS_SCHEMA_DIR_CONDA_BACKUP': '', 'COLCON': '1', 'MEMORY_PRESSURE_WRITE': 'c29tZSAyMDAwMDAgMjAwMDAwMAA=', 'VTE_VERSION': '7600', 'CMAKE_PREFIX_PATH': '/opt/ros/jazzy/opt/gz_sim_vendor:/opt/ros/jazzy/opt/gz_sensors_vendor:/opt/ros/jazzy/opt/gz_physics_vendor:/opt/ros/jazzy/opt/sdformat_vendor:/opt/ros/jazzy/opt/gz_gui_vendor:/opt/ros/jazzy/opt/gz_transport_vendor:/opt/ros/jazzy/opt/gz_rendering_vendor:/opt/ros/jazzy/opt/gz_plugin_vendor:/opt/ros/jazzy/opt/gz_fuel_tools_vendor:/opt/ros/jazzy/opt/gz_msgs_vendor:/opt/ros/jazzy/opt/gz_common_vendor:/opt/ros/jazzy/opt/gz_math_vendor:/opt/ros/jazzy/opt/gz_utils_vendor:/opt/ros/jazzy/opt/gz_tools_vendor:/opt/ros/jazzy/opt/gz_ogre_next_vendor:/opt/ros/jazzy/opt/gz_dartsim_vendor:/opt/ros/jazzy/opt/gz_cmake_vendor'}), 'shell': False}
+[0.154154] (RBDL) StdoutLine: {'line': b'-- Install configuration: "Release"\n'}
+[0.156459] (RBDL) StdoutLine: {'line': b'-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/RBDL/lib/librbdl.so.3.0.0\n'}
+[0.159311] (RBDL) StdoutLine: {'line': b'-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/RBDL/lib/librbdl.so\n'}
+[0.159559] (RBDL) StdoutLine: {'line': b'-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/RBDL/include/rbdl/rbdl_config.h\n'}
+[0.159693] (RBDL) StdoutLine: {'line': b'-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/RBDL/include/rbdl/Body.h\n'}
+[0.159811] (RBDL) StdoutLine: {'line': b'-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/RBDL/include/rbdl/Constraint.h\n'}
+[0.159944] (RBDL) StdoutLine: {'line': b'-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/RBDL/include/rbdl/Constraint_Contact.h\n'}
+[0.160143] (RBDL) StdoutLine: {'line': b'-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/RBDL/include/rbdl/Constraint_Loop.h\n'}
+[0.160525] (RBDL) StdoutLine: {'line': b'-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/RBDL/include/rbdl/Constraints.h\n'}
+[0.167553] (RBDL) StdoutLine: {'line': b'-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/RBDL/include/rbdl/Dynamics.h\n'}
+[0.167791] (RBDL) StdoutLine: {'line': b'-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/RBDL/include/rbdl/Joint.h\n'}
+[0.167919] (RBDL) StdoutLine: {'line': b'-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/RBDL/include/rbdl/Kinematics.h\n'}
+[0.168030] (RBDL) StdoutLine: {'line': b'-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/RBDL/include/rbdl/Logging.h\n'}
+[0.168174] (RBDL) StdoutLine: {'line': b'-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/RBDL/include/rbdl/Model.h\n'}
+[0.168311] (RBDL) StdoutLine: {'line': b'-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/RBDL/include/rbdl/Quaternion.h\n'}
+[0.168431] (RBDL) StdoutLine: {'line': b'-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/RBDL/include/rbdl/SpatialAlgebraOperators.h\n'}
+[0.168552] (RBDL) StdoutLine: {'line': b'-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/RBDL/include/rbdl/compileassert.h\n'}
+[0.168660] (RBDL) StdoutLine: {'line': b'-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/RBDL/include/rbdl/rbdl.h\n'}
+[0.168765] (RBDL) StdoutLine: {'line': b'-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/RBDL/include/rbdl/rbdl_eigenmath.h\n'}
+[0.168872] (RBDL) StdoutLine: {'line': b'-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/RBDL/include/rbdl/rbdl_errors.h\n'}
+[0.168985] (RBDL) StdoutLine: {'line': b'-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/RBDL/include/rbdl/rbdl_math.h\n'}
+[0.169108] (RBDL) StdoutLine: {'line': b'-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/RBDL/include/rbdl/rbdl_mathutils.h\n'}
+[0.177505] (RBDL) StdoutLine: {'line': b'-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/RBDL/include/rbdl/rbdl_utils.h\n'}
+[0.177633] (RBDL) StdoutLine: {'line': b'-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/RBDL/lib/pkgconfig/rbdl.pc\n'}
+[0.177738] (RBDL) CommandEnded: {'returncode': 0}
+[0.200694] (RBDL) JobEnded: {'identifier': 'RBDL', 'rc': 0}
+[0.201273] (-) TimerEvent: {}
+[0.216708] (quad_msgs) StdoutLine: {'line': b'-- Found std_msgs: 5.3.5 (/opt/ros/jazzy/share/std_msgs/cmake)\n'}
+[0.265270] (quad_msgs) StdoutLine: {'line': b'-- Found rosidl_generator_c: 4.6.5 (/opt/ros/jazzy/share/rosidl_generator_c/cmake)\n'}
+[0.269973] (quad_logger) StdoutLine: {'line': b'-- Found Python3: /home/dologan/anaconda3/bin/python3 (found version "3.11.7") found components: Interpreter \n'}
+[0.283849] (quad_msgs) StdoutLine: {'line': b'-- Found rosidl_generator_cpp: 4.6.5 (/opt/ros/jazzy/share/rosidl_generator_cpp/cmake)\n'}
+[0.301405] (-) TimerEvent: {}
+[0.309556] (quad_msgs) StdoutLine: {'line': b'-- Using all available rosidl_typesupport_c: rosidl_typesupport_fastrtps_c;rosidl_typesupport_introspection_c\n'}
+[0.335699] (quad_msgs) StdoutLine: {'line': b'-- Using all available rosidl_typesupport_cpp: rosidl_typesupport_fastrtps_cpp;rosidl_typesupport_introspection_cpp\n'}
+[0.390569] (quad_msgs) StdoutLine: {'line': b'-- Found sensor_msgs: 5.3.5 (/opt/ros/jazzy/share/sensor_msgs/cmake)\n'}
+[0.401536] (-) TimerEvent: {}
+[0.495430] (quad_msgs) StdoutLine: {'line': b'-- Found nav_msgs: 5.3.5 (/opt/ros/jazzy/share/nav_msgs/cmake)\n'}
+[0.501664] (-) TimerEvent: {}
+[0.534256] (quad_logger) StdoutLine: {'line': b'-- Found rclpy: 7.1.3 (/opt/ros/jazzy/share/rclpy/cmake)\n'}
+[0.539312] (quad_logger) StdoutLine: {'line': b'-- Found tf2_ros: 0.36.7 (/opt/ros/jazzy/share/tf2_ros/cmake)\n'}
+[0.544982] (quad_msgs) StdoutLine: {'line': b'-- Found rosidl_default_generators: 1.6.0 (/opt/ros/jazzy/share/rosidl_default_generators/cmake)\n'}
+[0.559737] (quad_msgs) StdoutLine: {'line': b'-- Found rosidl_adapter: 4.6.5 (/opt/ros/jazzy/share/rosidl_adapter/cmake)\n'}
+[0.601794] (-) TimerEvent: {}
+[0.651183] (quad_logger) StdoutLine: {'line': b'-- Found rosidl_generator_c: 4.6.5 (/opt/ros/jazzy/share/rosidl_generator_c/cmake)\n'}
+[0.661278] (mocap_optitrack) StderrLine: {'line': b'In file included from \x1b[01m\x1b[K/home/dologan/ros2_ws/src/quad-sdk/external/mocap_optitrack/src/natnet/natnet_messages.cpp:29\x1b[m\x1b[K:\n'}
+[0.661585] (mocap_optitrack) StderrLine: {'line': b'\x1b[01m\x1b[K/home/dologan/ros2_ws/src/quad-sdk/external/mocap_optitrack/src/natnet/natnet_messages.h:43:22:\x1b[m\x1b[K \x1b[01;35m\x1b[Kwarning: \x1b[m\x1b[K\xe2\x80\x98\x1b[01m\x1b[Kvirtual void natnet::MessageInterface::\x1b[01;32m\x1b[Kdeserialize\x1b[m\x1b[K(const natnet::MessageBuffer&, mocap_optitrack::DataModel*)\x1b[m\x1b[K\xe2\x80\x99 was hidden [\x1b[01;35m\x1b[K\x1b]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Woverloaded-virtual=\x07-Woverloaded-virtual=\x1b]8;;\x07\x1b[m\x1b[K]\n'}
+[0.661772] (mocap_optitrack) StderrLine: {'line': b'   43 |         virtual void \x1b[01;35m\x1b[Kdeserialize\x1b[m\x1b[K(MessageBuffer const&, mocap_optitrack::DataModel*) {};\n'}
+[0.661909] (mocap_optitrack) StderrLine: {'line': b'      |                      \x1b[01;35m\x1b[K^~~~~~~~~~~\x1b[m\x1b[K\n'}
+[0.662027] (mocap_optitrack) StderrLine: {'line': b'\x1b[01m\x1b[K/home/dologan/ros2_ws/src/quad-sdk/external/mocap_optitrack/src/natnet/natnet_messages.h:68:22:\x1b[m\x1b[K \x1b[01;36m\x1b[Knote: \x1b[m\x1b[K  by \xe2\x80\x98\x1b[01m\x1b[Kvirtual void natnet::DataFrameMessage::\x1b[01;32m\x1b[Kdeserialize\x1b[m\x1b[K(rclcpp::Logger, const natnet::MessageBuffer&, mocap_optitrack::DataModel*)\x1b[m\x1b[K\xe2\x80\x99\n'}
+[0.662182] (mocap_optitrack) StderrLine: {'line': b'   68 |         virtual void \x1b[01;36m\x1b[Kdeserialize\x1b[m\x1b[K(rclcpp::Logger, MessageBuffer const&, mocap_optitrack::DataModel*);\n'}
+[0.662314] (mocap_optitrack) StderrLine: {'line': b'      |                      \x1b[01;36m\x1b[K^~~~~~~~~~~\x1b[m\x1b[K\n'}
+[0.689196] (quad_logger) StdoutLine: {'line': b'-- Found rosidl_generator_cpp: 4.6.5 (/opt/ros/jazzy/share/rosidl_generator_cpp/cmake)\n'}
+[0.701908] (-) TimerEvent: {}
+[0.733030] (quad_logger) StdoutLine: {'line': b'-- Using all available rosidl_typesupport_c: rosidl_typesupport_fastrtps_c;rosidl_typesupport_introspection_c\n'}
+[0.783460] (quad_logger) StdoutLine: {'line': b'-- Using all available rosidl_typesupport_cpp: rosidl_typesupport_fastrtps_cpp;rosidl_typesupport_introspection_cpp\n'}
+[0.802058] (-) TimerEvent: {}
+[0.906038] (-) TimerEvent: {}
+[1.007065] (-) TimerEvent: {}
+[1.109590] (-) TimerEvent: {}
+[1.116531] (mocap_optitrack) StderrLine: {'line': b'\x1b[01m\x1b[K/home/dologan/ros2_ws/src/quad-sdk/external/mocap_optitrack/src/natnet/natnet_messages.cpp:\x1b[m\x1b[K In function \xe2\x80\x98\x1b[01m\x1b[Kvoid natnet::utilities::\x1b[01;32m\x1b[Kstringify_timecode\x1b[m\x1b[K(unsigned int, unsigned int, char*, int)\x1b[m\x1b[K\xe2\x80\x99:\n'}
+[1.116799] (mocap_optitrack) StderrLine: {'line': b'\x1b[01m\x1b[K/home/dologan/ros2_ws/src/quad-sdk/external/mocap_optitrack/src/natnet/natnet_messages.cpp:84:10:\x1b[m\x1b[K \x1b[01;35m\x1b[Kwarning: \x1b[m\x1b[Kunused variable \xe2\x80\x98\x1b[01m\x1b[KbValid\x1b[m\x1b[K\xe2\x80\x99 [\x1b[01;35m\x1b[K\x1b]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wunused-variable\x07-Wunused-variable\x1b]8;;\x07\x1b[m\x1b[K]\n'}
+[1.116961] (mocap_optitrack) StderrLine: {'line': b'   84 |     bool \x1b[01;35m\x1b[KbValid\x1b[m\x1b[K;\n'}
+[1.117087] (mocap_optitrack) StderrLine: {'line': b'      |          \x1b[01;35m\x1b[K^~~~~~\x1b[m\x1b[K\n'}
+[1.130518] (mocap_optitrack) StderrLine: {'line': b'\x1b[01m\x1b[K/home/dologan/ros2_ws/src/quad-sdk/external/mocap_optitrack/src/natnet/natnet_messages.cpp:\x1b[m\x1b[K In member function \xe2\x80\x98\x1b[01m\x1b[Kvirtual void natnet::DataFrameMessage::\x1b[01;32m\x1b[Kdeserialize\x1b[m\x1b[K(rclcpp::Logger, const natnet::MessageBuffer&, mocap_optitrack::DataModel*)\x1b[m\x1b[K\xe2\x80\x99:\n'}
+[1.130788] (mocap_optitrack) StderrLine: {'line': b'\x1b[01m\x1b[K/home/dologan/ros2_ws/src/quad-sdk/external/mocap_optitrack/src/natnet/natnet_messages.cpp:330:16:\x1b[m\x1b[K \x1b[01;35m\x1b[Kwarning: \x1b[m\x1b[Kunused variable \xe2\x80\x98\x1b[01m\x1b[KbHasModel\x1b[m\x1b[K\xe2\x80\x99 [\x1b[01;35m\x1b[K\x1b]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wunused-variable\x07-Wunused-variable\x1b]8;;\x07\x1b[m\x1b[K]\n'}
+[1.130942] (mocap_optitrack) StderrLine: {'line': b'  330 |           bool \x1b[01;35m\x1b[KbHasModel\x1b[m\x1b[K = (params & 0x08) != 0;\n'}
+[1.131079] (mocap_optitrack) StderrLine: {'line': b'      |                \x1b[01;35m\x1b[K^~~~~~~~~\x1b[m\x1b[K\n'}
+[1.131229] (mocap_optitrack) StderrLine: {'line': b'\x1b[01m\x1b[K/home/dologan/ros2_ws/src/quad-sdk/external/mocap_optitrack/src/natnet/natnet_messages.cpp:332:16:\x1b[m\x1b[K \x1b[01;35m\x1b[Kwarning: \x1b[m\x1b[Kunused variable \xe2\x80\x98\x1b[01m\x1b[KbUnlabeled\x1b[m\x1b[K\xe2\x80\x99 [\x1b[01;35m\x1b[K\x1b]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wunused-variable\x07-Wunused-variable\x1b]8;;\x07\x1b[m\x1b[K]\n'}
+[1.131388] (mocap_optitrack) StderrLine: {'line': b'  332 |           bool \x1b[01;35m\x1b[KbUnlabeled\x1b[m\x1b[K = (params & 0x10) != 0;\n'}
+[1.131526] (mocap_optitrack) StderrLine: {'line': b'      |                \x1b[01;35m\x1b[K^~~~~~~~~~\x1b[m\x1b[K\n'}
+[1.131653] (mocap_optitrack) StderrLine: {'line': b'\x1b[01m\x1b[K/home/dologan/ros2_ws/src/quad-sdk/external/mocap_optitrack/src/natnet/natnet_messages.cpp:334:16:\x1b[m\x1b[K \x1b[01;35m\x1b[Kwarning: \x1b[m\x1b[Kunused variable \xe2\x80\x98\x1b[01m\x1b[KbActiveMarker\x1b[m\x1b[K\xe2\x80\x99 [\x1b[01;35m\x1b[K\x1b]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wunused-variable\x07-Wunused-variable\x1b]8;;\x07\x1b[m\x1b[K]\n'}
+[1.131820] (mocap_optitrack) StderrLine: {'line': b'  334 |           bool \x1b[01;35m\x1b[KbActiveMarker\x1b[m\x1b[K = (params & 0x20) != 0;\n'}
+[1.131958] (mocap_optitrack) StderrLine: {'line': b'      |                \x1b[01;35m\x1b[K^~~~~~~~~~~~~\x1b[m\x1b[K\n'}
+[1.134983] (mocap_optitrack) StderrLine: {'line': b'\x1b[01m\x1b[K/home/dologan/ros2_ws/src/quad-sdk/external/mocap_optitrack/src/natnet/natnet_messages.cpp:322:14:\x1b[m\x1b[K \x1b[01;35m\x1b[Kwarning: \x1b[m\x1b[Kunused variable \xe2\x80\x98\x1b[01m\x1b[KbOccluded\x1b[m\x1b[K\xe2\x80\x99 [\x1b[01;35m\x1b[K\x1b]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wunused-variable\x07-Wunused-variable\x1b]8;;\x07\x1b[m\x1b[K]\n'}
+[1.135271] (mocap_optitrack) StderrLine: {'line': b'  322 |         bool \x1b[01;35m\x1b[KbOccluded\x1b[m\x1b[K = (params & 0x01) != 0;\n'}
+[1.135434] (mocap_optitrack) StderrLine: {'line': b'      |              \x1b[01;35m\x1b[K^~~~~~~~~\x1b[m\x1b[K\n'}
+[1.135563] (mocap_optitrack) StderrLine: {'line': b'\x1b[01m\x1b[K/home/dologan/ros2_ws/src/quad-sdk/external/mocap_optitrack/src/natnet/natnet_messages.cpp:324:14:\x1b[m\x1b[K \x1b[01;35m\x1b[Kwarning: \x1b[m\x1b[Kunused variable \xe2\x80\x98\x1b[01m\x1b[KbPCSolved\x1b[m\x1b[K\xe2\x80\x99 [\x1b[01;35m\x1b[K\x1b]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wunused-variable\x07-Wunused-variable\x1b]8;;\x07\x1b[m\x1b[K]\n'}
+[1.135717] (mocap_optitrack) StderrLine: {'line': b'  324 |         bool \x1b[01;35m\x1b[KbPCSolved\x1b[m\x1b[K = (params & 0x02) != 0;\n'}
+[1.135844] (mocap_optitrack) StderrLine: {'line': b'      |              \x1b[01;35m\x1b[K^~~~~~~~~\x1b[m\x1b[K\n'}
+[1.135980] (mocap_optitrack) StderrLine: {'line': b'\x1b[01m\x1b[K/home/dologan/ros2_ws/src/quad-sdk/external/mocap_optitrack/src/natnet/natnet_messages.cpp:326:14:\x1b[m\x1b[K \x1b[01;35m\x1b[Kwarning: \x1b[m\x1b[Kunused variable \xe2\x80\x98\x1b[01m\x1b[KbModelSolved\x1b[m\x1b[K\xe2\x80\x99 [\x1b[01;35m\x1b[K\x1b]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wunused-variable\x07-Wunused-variable\x1b]8;;\x07\x1b[m\x1b[K]\n'}
+[1.136124] (mocap_optitrack) StderrLine: {'line': b'  326 |         bool \x1b[01;35m\x1b[KbModelSolved\x1b[m\x1b[K = (params & 0x04) != 0;\n'}
+[1.136269] (mocap_optitrack) StderrLine: {'line': b'      |              \x1b[01;35m\x1b[K^~~~~~~~~~~~\x1b[m\x1b[K\n'}
+[1.143285] (quad_logger) StdoutLine: {'line': b'-- Found rmw_implementation_cmake: 7.3.1 (/opt/ros/jazzy/share/rmw_implementation_cmake/cmake)\n'}
+[1.143645] (mocap_optitrack) StderrLine: {'line': b'\x1b[01m\x1b[K/home/dologan/ros2_ws/src/quad-sdk/external/mocap_optitrack/src/natnet/natnet_messages.cpp:484:8:\x1b[m\x1b[K \x1b[01;35m\x1b[Kwarning: \x1b[m\x1b[Kunused variable \xe2\x80\x98\x1b[01m\x1b[KbIsRecording\x1b[m\x1b[K\xe2\x80\x99 [\x1b[01;35m\x1b[K\x1b]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wunused-variable\x07-Wunused-variable\x1b]8;;\x07\x1b[m\x1b[K]\n'}
+[1.143905] (mocap_optitrack) StderrLine: {'line': b'  484 |   bool \x1b[01;35m\x1b[KbIsRecording\x1b[m\x1b[K = (params & 0x01) != 0;\n'}
+[1.144146] (mocap_optitrack) StderrLine: {'line': b'      |        \x1b[01;35m\x1b[K^~~~~~~~~~~~\x1b[m\x1b[K\n'}
+[1.144398] (mocap_optitrack) StderrLine: {'line': b'\x1b[01m\x1b[K/home/dologan/ros2_ws/src/quad-sdk/external/mocap_optitrack/src/natnet/natnet_messages.cpp:486:8:\x1b[m\x1b[K \x1b[01;35m\x1b[Kwarning: \x1b[m\x1b[Kunused variable \xe2\x80\x98\x1b[01m\x1b[KbTrackedModelsChanged\x1b[m\x1b[K\xe2\x80\x99 [\x1b[01;35m\x1b[K\x1b]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wunused-variable\x07-Wunused-variable\x1b]8;;\x07\x1b[m\x1b[K]\n'}
+[1.144634] (mocap_optitrack) StderrLine: {'line': b'  486 |   bool \x1b[01;35m\x1b[KbTrackedModelsChanged\x1b[m\x1b[K = (params & 0x02) != 0;\n'}
+[1.144827] (mocap_optitrack) StderrLine: {'line': b'      |        \x1b[01;35m\x1b[K^~~~~~~~~~~~~~~~~~~~~\x1b[m\x1b[K\n'}
+[1.151757] (quad_logger) StdoutLine: {'line': b'-- Found rmw_fastrtps_cpp: 8.4.1 (/opt/ros/jazzy/share/rmw_fastrtps_cpp/cmake)\n'}
+[1.211198] (-) TimerEvent: {}
+[1.311662] (-) TimerEvent: {}
+[1.326200] (quad_logger) StdoutLine: {'line': b'-- Found OpenSSL: /usr/lib/x86_64-linux-gnu/libcrypto.so (found version "3.0.13")  \n'}
+[1.333533] (quad_msgs) StdoutLine: {'line': b'-- Found ament_cmake_ros: 0.12.0 (/opt/ros/jazzy/share/ament_cmake_ros/cmake)\n'}
+[1.373123] (quad_logger) StdoutLine: {'line': b'-- Found FastRTPS: /opt/ros/jazzy/include (Required is at least version "2.13") \n'}
+[1.413203] (-) TimerEvent: {}
+[1.419640] (quad_logger) StdoutLine: {'line': b"-- Using RMW implementation 'rmw_fastrtps_cpp' as default\n"}
+[1.513358] (-) TimerEvent: {}
+[1.617719] (-) TimerEvent: {}
+[1.718150] (-) TimerEvent: {}
+[1.818577] (-) TimerEvent: {}
+[1.881828] (quad_msgs) StdoutLine: {'line': b'-- Using all available rosidl_typesupport_c: rosidl_typesupport_fastrtps_c;rosidl_typesupport_introspection_c\n'}
+[1.918699] (-) TimerEvent: {}
+[1.966135] (quad_logger) StderrLine: {'line': b"Error parsing '/home/dologan/ros2_ws/src/quad-sdk/quad_logger/package.xml':\n"}
+[1.966450] (quad_logger) StderrLine: {'line': b'Traceback (most recent call last):\n'}
+[1.966614] (quad_logger) StderrLine: {'line': b'  File "/opt/ros/jazzy/share/ament_cmake_core/cmake/core/package_xml_2_cmake.py", line 150, in <module>\n'}
+[1.967288] (quad_logger) StderrLine: {'line': b'    main()\n'}
+[1.967535] (quad_logger) StderrLine: {'line': b'  File "/opt/ros/jazzy/share/ament_cmake_core/cmake/core/package_xml_2_cmake.py", line 53, in main\n'}
+[1.967676] (quad_logger) StderrLine: {'line': b'    raise e\n'}
+[1.967804] (quad_logger) StderrLine: {'line': b'  File "/opt/ros/jazzy/share/ament_cmake_core/cmake/core/package_xml_2_cmake.py", line 49, in main\n'}
+[1.967958] (quad_logger) StderrLine: {'line': b'    package = parse_package_string(\n'}
+[1.968111] (quad_logger) StderrLine: {'line': b'              ^^^^^^^^^^^^^^^^^^^^^\n'}
+[1.968273] (quad_logger) StderrLine: {'line': b'  File "/home/dologan/anaconda3/lib/python3.11/site-packages/catkin_pkg/package.py", line 786, in parse_package_string\n'}
+[1.968411] (quad_logger) StderrLine: {'line': b"    raise InvalidPackage('Error(s):%s' % (''.join(['\\n- %s' % e for e in errors])), filename)\n"}
+[1.968544] (quad_logger) StderrLine: {'line': b"catkin_pkg.package.InvalidPackage: Error(s) in package '/home/dologan/ros2_ws/src/quad-sdk/quad_logger/package.xml':\n"}
+[1.968679] (quad_logger) StderrLine: {'line': b'Error(s):\n'}
+[1.968810] (quad_logger) StderrLine: {'line': b"- The generic dependency on 'tf2_ros' is redundant with: exec_depend\n"}
+[1.968938] (quad_logger) StderrLine: {'line': b"- The generic dependency on 'rclpy' is redundant with: exec_depend\n"}
+[1.989003] (quad_logger) StderrLine: {'line': b'\x1b[31mCMake Error at /opt/ros/jazzy/share/ament_cmake_core/cmake/core/ament_package_xml.cmake:95 (message):\n'}
+[1.989291] (quad_logger) StderrLine: {'line': b'  execute_process(/home/dologan/anaconda3/bin/python3\n'}
+[1.989446] (quad_logger) StderrLine: {'line': b'  /opt/ros/jazzy/share/ament_cmake_core/cmake/core/package_xml_2_cmake.py\n'}
+[1.989571] (quad_logger) StderrLine: {'line': b'  /home/dologan/ros2_ws/src/quad-sdk/quad_logger/package.xml\n'}
+[1.989675] (quad_logger) StderrLine: {'line': b'  /home/dologan/ros2_ws/src/quad-sdk/build/quad_logger/ament_cmake_core/package.cmake)\n'}
+[1.989781] (quad_logger) StderrLine: {'line': b'  returned error code 1\n'}
+[1.989897] (quad_logger) StderrLine: {'line': b'Call Stack (most recent call first):\n'}
+[1.990019] (quad_logger) StderrLine: {'line': b'  /opt/ros/jazzy/share/ament_cmake_core/cmake/core/ament_package_xml.cmake:49 (_ament_package_xml)\n'}
+[1.990169] (quad_logger) StderrLine: {'line': b'  /opt/ros/jazzy/share/ament_cmake_core/cmake/core/ament_package.cmake:63 (ament_package_xml)\n'}
+[1.990297] (quad_logger) StderrLine: {'line': b'  CMakeLists.txt:15 (ament_package)\n'}
+[1.990418] (quad_logger) StderrLine: {'line': b'\n'}
+[1.990535] (quad_logger) StderrLine: {'line': b'\x1b[0m\n'}
+[1.994962] (quad_logger) StdoutLine: {'line': b'-- Configuring incomplete, errors occurred!\n'}
+[2.000548] (quad_logger) CommandEnded: {'returncode': 1}
+[2.001425] (quad_logger) JobEnded: {'identifier': 'quad_logger', 'rc': 1}
+[2.018816] (-) TimerEvent: {}
+[2.101225] (quad_msgs) StdoutLine: {'line': b'-- Using all available rosidl_typesupport_cpp: rosidl_typesupport_fastrtps_cpp;rosidl_typesupport_introspection_cpp\n'}
+[2.103464] (quad_msgs) StdoutLine: {'line': b'-- Found python_cmake_module: 0.11.1 (/opt/ros/jazzy/share/python_cmake_module/cmake)\n'}
+[2.118950] (-) TimerEvent: {}
+[2.219351] (-) TimerEvent: {}
+[2.319727] (-) TimerEvent: {}
+[2.420114] (-) TimerEvent: {}
+[2.520476] (-) TimerEvent: {}
+[2.605038] (quad_msgs) StdoutLine: {'line': b'-- Found Python3: /home/dologan/anaconda3/bin/python3 (found version "3.11.7") found components: Interpreter Development NumPy Development.Module Development.Embed \n'}
+[2.620600] (-) TimerEvent: {}
+[2.720950] (-) TimerEvent: {}
+[2.721264] (quad_msgs) StdoutLine: {'line': b'-- Configuring done (2.7s)\n'}
+[2.821081] (-) TimerEvent: {}
+[2.858222] (quad_msgs) StdoutLine: {'line': b'-- Generating done (0.1s)\n'}
+[2.887174] (quad_msgs) StdoutLine: {'line': b'-- Build files have been written to: /home/dologan/ros2_ws/src/quad-sdk/build/quad_msgs\n'}
+[2.921170] (-) TimerEvent: {}
+[2.946950] (quad_msgs) StdoutLine: {'line': b'[  1%] \x1b[34m\x1b[1mGenerating type hashes for ROS interfaces\x1b[0m\n'}
+[2.960602] (quad_msgs) StdoutLine: {'line': b'[  1%] Built target ament_cmake_python_copy_quad_msgs\n'}
+[3.021305] (-) TimerEvent: {}
+[3.122331] (-) TimerEvent: {}
+[3.222672] (-) TimerEvent: {}
+[3.323024] (-) TimerEvent: {}
+[3.423380] (-) TimerEvent: {}
+[3.488133] (quad_msgs) StdoutLine: {'line': b'running egg_info\n'}
+[3.489158] (quad_msgs) StdoutLine: {'line': b'creating quad_msgs.egg-info\n'}
+[3.506249] (mocap_optitrack) StderrLine: {'line': b'In file included from \x1b[01m\x1b[K/home/dologan/ros2_ws/src/quad-sdk/external/mocap_optitrack/src/mocap_node.cpp:35\x1b[m\x1b[K:\n'}
+[3.506475] (mocap_optitrack) StderrLine: {'line': b'\x1b[01m\x1b[K/home/dologan/ros2_ws/src/quad-sdk/external/mocap_optitrack/src/natnet/natnet_messages.h:43:22:\x1b[m\x1b[K \x1b[01;35m\x1b[Kwarning: \x1b[m\x1b[K\xe2\x80\x98\x1b[01m\x1b[Kvirtual void natnet::MessageInterface::\x1b[01;32m\x1b[Kdeserialize\x1b[m\x1b[K(const natnet::MessageBuffer&, mocap_optitrack::DataModel*)\x1b[m\x1b[K\xe2\x80\x99 was hidden [\x1b[01;35m\x1b[K\x1b]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Woverloaded-virtual=\x07-Woverloaded-virtual=\x1b]8;;\x07\x1b[m\x1b[K]\n'}
+[3.506620] (mocap_optitrack) StderrLine: {'line': b'   43 |         virtual void \x1b[01;35m\x1b[Kdeserialize\x1b[m\x1b[K(MessageBuffer const&, mocap_optitrack::DataModel*) {};\n'}
+[3.506751] (mocap_optitrack) StderrLine: {'line': b'      |                      \x1b[01;35m\x1b[K^~~~~~~~~~~\x1b[m\x1b[K\n'}
+[3.506866] (mocap_optitrack) StderrLine: {'line': b'\x1b[01m\x1b[K/home/dologan/ros2_ws/src/quad-sdk/external/mocap_optitrack/src/natnet/natnet_messages.h:68:22:\x1b[m\x1b[K \x1b[01;36m\x1b[Knote: \x1b[m\x1b[K  by \xe2\x80\x98\x1b[01m\x1b[Kvirtual void natnet::DataFrameMessage::\x1b[01;32m\x1b[Kdeserialize\x1b[m\x1b[K(rclcpp::Logger, const natnet::MessageBuffer&, mocap_optitrack::DataModel*)\x1b[m\x1b[K\xe2\x80\x99\n'}
+[3.506995] (mocap_optitrack) StderrLine: {'line': b'   68 |         virtual void \x1b[01;36m\x1b[Kdeserialize\x1b[m\x1b[K(rclcpp::Logger, MessageBuffer const&, mocap_optitrack::DataModel*);\n'}
+[3.507125] (mocap_optitrack) StderrLine: {'line': b'      |                      \x1b[01;36m\x1b[K^~~~~~~~~~~\x1b[m\x1b[K\n'}
+[3.508014] (quad_msgs) StdoutLine: {'line': b'writing quad_msgs.egg-info/PKG-INFO\n'}
+[3.508437] (quad_msgs) StdoutLine: {'line': b'writing dependency_links to quad_msgs.egg-info/dependency_links.txt\n'}
+[3.508716] (quad_msgs) StdoutLine: {'line': b'writing top-level names to quad_msgs.egg-info/top_level.txt\n'}
+[3.508905] (quad_msgs) StdoutLine: {'line': b"writing manifest file 'quad_msgs.egg-info/SOURCES.txt'\n"}
+[3.523491] (-) TimerEvent: {}
+[3.530689] (mocap_optitrack) StderrLine: {'line': b'\x1b[01m\x1b[K/home/dologan/ros2_ws/src/quad-sdk/external/mocap_optitrack/src/mocap_node.cpp:\x1b[m\x1b[K In member function \xe2\x80\x98\x1b[01m\x1b[Kvoid mocap_optitrack::OptiTrackRosBridge::\x1b[01;32m\x1b[Kinitialize\x1b[m\x1b[K()\x1b[m\x1b[K\xe2\x80\x99:\n'}
+[3.530940] (mocap_optitrack) StderrLine: {'line': b'\x1b[01m\x1b[K/home/dologan/ros2_ws/src/quad-sdk/external/mocap_optitrack/src/mocap_node.cpp:80:15:\x1b[m\x1b[K \x1b[01;35m\x1b[Kwarning: \x1b[m\x1b[Kunused variable \xe2\x80\x98\x1b[01m\x1b[Kret\x1b[m\x1b[K\xe2\x80\x99 [\x1b[01;35m\x1b[K\x1b]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wunused-variable\x07-Wunused-variable\x1b]8;;\x07\x1b[m\x1b[K]\n'}
+[3.531083] (mocap_optitrack) StderrLine: {'line': b'   80 |           int \x1b[01;35m\x1b[Kret\x1b[m\x1b[K = multicastClientSocketPtr->send(&connectionRequestMsgBuffer[0], connectionRequestMsgBuffer.size(),\n'}
+[3.531359] (mocap_optitrack) StderrLine: {'line': b'      |               \x1b[01;35m\x1b[K^~~\x1b[m\x1b[K\n'}
+[3.567410] (quad_msgs) StdoutLine: {'line': b"reading manifest file 'quad_msgs.egg-info/SOURCES.txt'\n"}
+[3.568032] (quad_msgs) StdoutLine: {'line': b"writing manifest file 'quad_msgs.egg-info/SOURCES.txt'\n"}
+[3.601803] (quad_msgs) StdoutLine: {'line': b'[  1%] Built target ament_cmake_python_build_quad_msgs_egg\n'}
+[3.623638] (-) TimerEvent: {}
+[3.726276] (-) TimerEvent: {}
+[3.753798] (quad_msgs) StdoutLine: {'line': b'[  1%] Built target quad_msgs__rosidl_generator_type_description\n'}
+[3.767152] (quad_msgs) StdoutLine: {'line': b'[  1%] \x1b[34m\x1b[1mGenerating C code for ROS interfaces\x1b[0m\n'}
+[3.777066] (quad_msgs) StdoutLine: {'line': b'[  1%] \x1b[34m\x1b[1mGenerating C++ code for ROS interfaces\x1b[0m\n'}
+[3.826389] (-) TimerEvent: {}
+[3.926717] (-) TimerEvent: {}
+[4.027027] (-) TimerEvent: {}
+[4.127350] (-) TimerEvent: {}
+[4.227709] (-) TimerEvent: {}
+[4.328090] (-) TimerEvent: {}
+[4.428441] (-) TimerEvent: {}
+[4.528748] (-) TimerEvent: {}
+[4.629051] (-) TimerEvent: {}
+[4.729360] (-) TimerEvent: {}
+[4.832178] (-) TimerEvent: {}
+[4.932532] (-) TimerEvent: {}
+[4.951515] (quad_msgs) StdoutLine: {'line': b'[  1%] Built target quad_msgs__cpp\n'}
+[5.032676] (-) TimerEvent: {}
+[5.134195] (-) TimerEvent: {}
+[5.234580] (-) TimerEvent: {}
+[5.281043] (quad_msgs) StdoutLine: {'line': b'[  2%] \x1b[32mBuilding C object CMakeFiles/quad_msgs__rosidl_generator_c.dir/rosidl_generator_c/quad_msgs/msg/detail/body_force_estimate__description.c.o\x1b[0m\n'}
+[5.281341] (quad_msgs) StdoutLine: {'line': b'[  2%] \x1b[32mBuilding C object CMakeFiles/quad_msgs__rosidl_generator_c.dir/rosidl_generator_c/quad_msgs/msg/detail/robot_state__type_support.c.o\x1b[0m\n'}
+[5.282394] (quad_msgs) StdoutLine: {'line': b'[  2%] \x1b[32mBuilding C object CMakeFiles/quad_msgs__rosidl_generator_c.dir/rosidl_generator_c/quad_msgs/msg/detail/body_force_estimate__functions.c.o\x1b[0m\n'}
+[5.282692] (quad_msgs) StdoutLine: {'line': b'[  4%] \x1b[32mBuilding C object CMakeFiles/quad_msgs__rosidl_generator_c.dir/rosidl_generator_c/quad_msgs/msg/detail/robot_state__functions.c.o\x1b[0m\n'}
+[5.282837] (quad_msgs) StdoutLine: {'line': b'[  2%] \x1b[32mBuilding C object CMakeFiles/quad_msgs__rosidl_generator_c.dir/rosidl_generator_c/quad_msgs/msg/detail/robot_state__description.c.o\x1b[0m\n'}
+[5.282955] (quad_msgs) StdoutLine: {'line': b'[  5%] \x1b[32mBuilding C object CMakeFiles/quad_msgs__rosidl_generator_c.dir/rosidl_generator_c/quad_msgs/msg/detail/body_state__description.c.o\x1b[0m\n'}
+[5.283079] (quad_msgs) StdoutLine: {'line': b'[  5%] \x1b[32mBuilding C object CMakeFiles/quad_msgs__rosidl_generator_c.dir/rosidl_generator_c/quad_msgs/msg/detail/body_force_estimate__type_support.c.o\x1b[0m\n'}
+[5.292903] (quad_msgs) StdoutLine: {'line': b'[  5%] \x1b[32mBuilding C object CMakeFiles/quad_msgs__rosidl_generator_c.dir/rosidl_generator_c/quad_msgs/msg/detail/body_state__functions.c.o\x1b[0m\n'}
+[5.336234] (quad_msgs) StdoutLine: {'line': b'[  6%] \x1b[32mBuilding C object CMakeFiles/quad_msgs__rosidl_generator_c.dir/rosidl_generator_c/quad_msgs/msg/detail/body_state__type_support.c.o\x1b[0m\n'}
+[5.336534] (-) TimerEvent: {}
+[5.348881] (quad_msgs) StdoutLine: {'line': b'[  7%] \x1b[32mBuilding C object CMakeFiles/quad_msgs__rosidl_generator_c.dir/rosidl_generator_c/quad_msgs/msg/detail/grf_array__description.c.o\x1b[0m\n'}
+[5.353881] (quad_msgs) StdoutLine: {'line': b'[  7%] \x1b[32mBuilding C object CMakeFiles/quad_msgs__rosidl_generator_c.dir/rosidl_generator_c/quad_msgs/msg/detail/grf_array__functions.c.o\x1b[0m\n'}
+[5.369500] (quad_msgs) StdoutLine: {'line': b'[  8%] \x1b[32mBuilding C object CMakeFiles/quad_msgs__rosidl_generator_c.dir/rosidl_generator_c/quad_msgs/msg/detail/robot_plan__functions.c.o\x1b[0m\n'}
+[5.373964] (quad_msgs) StdoutLine: {'line': b'[  9%] \x1b[32mBuilding C object CMakeFiles/quad_msgs__rosidl_generator_c.dir/rosidl_generator_c/quad_msgs/msg/detail/grf_array__type_support.c.o\x1b[0m\n'}
+[5.375318] (quad_msgs) StdoutLine: {'line': b'[  9%] \x1b[32mBuilding C object CMakeFiles/quad_msgs__rosidl_generator_c.dir/rosidl_generator_c/quad_msgs/msg/detail/robot_plan__description.c.o\x1b[0m\n'}
+[5.375753] (quad_msgs) StdoutLine: {'line': b'[  9%] \x1b[32mBuilding C object CMakeFiles/quad_msgs__rosidl_generator_c.dir/rosidl_generator_c/quad_msgs/msg/detail/robot_plan__type_support.c.o\x1b[0m\n'}
+[5.385026] (quad_msgs) StdoutLine: {'line': b'[ 10%] \x1b[32mBuilding C object CMakeFiles/quad_msgs__rosidl_generator_c.dir/rosidl_generator_c/quad_msgs/msg/detail/robot_plan_diagnostics__description.c.o\x1b[0m\n'}
+[5.403202] (quad_msgs) StdoutLine: {'line': b'[ 10%] \x1b[32mBuilding C object CMakeFiles/quad_msgs__rosidl_generator_c.dir/rosidl_generator_c/quad_msgs/msg/detail/robot_plan_diagnostics__functions.c.o\x1b[0m\n'}
+[5.414190] (quad_msgs) StdoutLine: {'line': b'[ 11%] \x1b[32mBuilding C object CMakeFiles/quad_msgs__rosidl_generator_c.dir/rosidl_generator_c/quad_msgs/msg/detail/robot_plan_diagnostics__type_support.c.o\x1b[0m\n'}
+[5.427324] (quad_msgs) StdoutLine: {'line': b'[ 11%] \x1b[32mBuilding C object CMakeFiles/quad_msgs__rosidl_generator_c.dir/rosidl_generator_c/quad_msgs/msg/detail/foot_state__description.c.o\x1b[0m\n'}
+[5.435215] (quad_msgs) StdoutLine: {'line': b'[ 12%] \x1b[32mBuilding C object CMakeFiles/quad_msgs__rosidl_generator_c.dir/rosidl_generator_c/quad_msgs/msg/detail/foot_state__functions.c.o\x1b[0m\n'}
+[5.436737] (-) TimerEvent: {}
+[5.440896] (quad_msgs) StdoutLine: {'line': b'[ 13%] \x1b[32mBuilding C object CMakeFiles/quad_msgs__rosidl_generator_c.dir/rosidl_generator_c/quad_msgs/msg/detail/foot_state__type_support.c.o\x1b[0m\n'}
+[5.450651] (quad_msgs) StdoutLine: {'line': b'[ 13%] \x1b[32mBuilding C object CMakeFiles/quad_msgs__rosidl_generator_c.dir/rosidl_generator_c/quad_msgs/msg/detail/multi_foot_state__description.c.o\x1b[0m\n'}
+[5.468318] (quad_msgs) StdoutLine: {'line': b'[ 13%] \x1b[32mBuilding C object CMakeFiles/quad_msgs__rosidl_generator_c.dir/rosidl_generator_c/quad_msgs/msg/detail/multi_foot_state__type_support.c.o\x1b[0m\n'}
+[5.471296] (quad_msgs) StdoutLine: {'line': b'[ 14%] \x1b[32mBuilding C object CMakeFiles/quad_msgs__rosidl_generator_c.dir/rosidl_generator_c/quad_msgs/msg/detail/multi_foot_plan_continuous__description.c.o\x1b[0m\n'}
+[5.472701] (quad_msgs) StdoutLine: {'line': b'[ 15%] \x1b[32mBuilding C object CMakeFiles/quad_msgs__rosidl_generator_c.dir/rosidl_generator_c/quad_msgs/msg/detail/multi_foot_state__functions.c.o\x1b[0m\n'}
+[5.492959] (quad_msgs) StdoutLine: {'line': b'[ 15%] \x1b[32mBuilding C object CMakeFiles/quad_msgs__rosidl_generator_c.dir/rosidl_generator_c/quad_msgs/msg/detail/multi_foot_plan_continuous__functions.c.o\x1b[0m\n'}
+[5.508967] (quad_msgs) StdoutLine: {'line': b'[ 16%] \x1b[32mBuilding C object CMakeFiles/quad_msgs__rosidl_generator_c.dir/rosidl_generator_c/quad_msgs/msg/detail/multi_foot_plan_continuous__type_support.c.o\x1b[0m\n'}
+[5.518065] (quad_msgs) StdoutLine: {'line': b'[ 17%] \x1b[32mBuilding C object CMakeFiles/quad_msgs__rosidl_generator_c.dir/rosidl_generator_c/quad_msgs/msg/detail/foot_plan_discrete__functions.c.o\x1b[0m\n'}
+[5.525234] (quad_msgs) StdoutLine: {'line': b'[ 17%] \x1b[32mBuilding C object CMakeFiles/quad_msgs__rosidl_generator_c.dir/rosidl_generator_c/quad_msgs/msg/detail/foot_plan_discrete__description.c.o\x1b[0m\n'}
+[5.536861] (-) TimerEvent: {}
+[5.546323] (quad_msgs) StdoutLine: {'line': b'[ 17%] \x1b[32mBuilding C object CMakeFiles/quad_msgs__rosidl_generator_c.dir/rosidl_generator_c/quad_msgs/msg/detail/foot_plan_discrete__type_support.c.o\x1b[0m\n'}
+[5.548121] (quad_msgs) StdoutLine: {'line': b'[ 18%] \x1b[32mBuilding C object CMakeFiles/quad_msgs__rosidl_generator_c.dir/rosidl_generator_c/quad_msgs/msg/detail/multi_foot_plan_discrete__description.c.o\x1b[0m\n'}
+[5.551649] (quad_msgs) StdoutLine: {'line': b'[ 19%] \x1b[32mBuilding C object CMakeFiles/quad_msgs__rosidl_generator_c.dir/rosidl_generator_c/quad_msgs/msg/detail/multi_foot_plan_discrete__functions.c.o\x1b[0m\n'}
+[5.569470] (quad_msgs) StdoutLine: {'line': b'[ 20%] \x1b[32mBuilding C object CMakeFiles/quad_msgs__rosidl_generator_c.dir/rosidl_generator_c/quad_msgs/msg/detail/leg_contact_mode__description.c.o\x1b[0m\n'}
+[5.569728] (quad_msgs) StdoutLine: {'line': b'[ 20%] \x1b[32mBuilding C object CMakeFiles/quad_msgs__rosidl_generator_c.dir/rosidl_generator_c/quad_msgs/msg/detail/multi_foot_plan_discrete__type_support.c.o\x1b[0m\n'}
+[5.596176] (quad_msgs) StdoutLine: {'line': b'[ 20%] \x1b[32mBuilding C object CMakeFiles/quad_msgs__rosidl_generator_c.dir/rosidl_generator_c/quad_msgs/msg/detail/leg_contact_mode__functions.c.o\x1b[0m\n'}
+[5.610165] (quad_msgs) StdoutLine: {'line': b'[ 21%] \x1b[32mBuilding C object CMakeFiles/quad_msgs__rosidl_generator_c.dir/rosidl_generator_c/quad_msgs/msg/detail/leg_contact_mode__type_support.c.o\x1b[0m\n'}
+[5.613337] (quad_msgs) StdoutLine: {'line': b'[ 21%] \x1b[32mBuilding C object CMakeFiles/quad_msgs__rosidl_generator_c.dir/rosidl_generator_c/quad_msgs/msg/detail/contact_mode__description.c.o\x1b[0m\n'}
+[5.620579] (quad_msgs) StdoutLine: {'line': b'[ 21%] \x1b[32mBuilding C object CMakeFiles/quad_msgs__rosidl_generator_c.dir/rosidl_generator_c/quad_msgs/msg/detail/contact_mode__type_support.c.o\x1b[0m\n'}
+[5.623308] (quad_msgs) StdoutLine: {'line': b'[ 22%] \x1b[32mBuilding C object CMakeFiles/quad_msgs__rosidl_generator_c.dir/rosidl_generator_c/quad_msgs/msg/detail/contact_mode__functions.c.o\x1b[0m\n'}
+[5.625273] (quad_msgs) StdoutLine: {'line': b'[ 23%] \x1b[32mBuilding C object CMakeFiles/quad_msgs__rosidl_generator_c.dir/rosidl_generator_c/quad_msgs/msg/detail/motor_command__description.c.o\x1b[0m\n'}
+[5.633272] (quad_msgs) StdoutLine: {'line': b'[ 23%] \x1b[32mBuilding C object CMakeFiles/quad_msgs__rosidl_generator_c.dir/rosidl_generator_c/quad_msgs/msg/detail/motor_command__functions.c.o\x1b[0m\n'}
+[5.634877] (quad_msgs) StdoutLine: {'line': b'[ 24%] \x1b[32mBuilding C object CMakeFiles/quad_msgs__rosidl_generator_c.dir/rosidl_generator_c/quad_msgs/msg/detail/motor_command__type_support.c.o\x1b[0m\n'}
+[5.636967] (-) TimerEvent: {}
+[5.671218] (quad_msgs) StdoutLine: {'line': b'[ 25%] \x1b[32mBuilding C object CMakeFiles/quad_msgs__rosidl_generator_c.dir/rosidl_generator_c/quad_msgs/msg/detail/leg_command__description.c.o\x1b[0m\n'}
+[5.677603] (quad_msgs) StdoutLine: {'line': b'[ 26%] \x1b[32mBuilding C object CMakeFiles/quad_msgs__rosidl_generator_c.dir/rosidl_generator_c/quad_msgs/msg/detail/leg_command__type_support.c.o\x1b[0m\n'}
+[5.679939] (quad_msgs) StdoutLine: {'line': b'[ 26%] \x1b[32mBuilding C object CMakeFiles/quad_msgs__rosidl_generator_c.dir/rosidl_generator_c/quad_msgs/msg/detail/leg_command__functions.c.o\x1b[0m\n'}
+[5.685841] (quad_msgs) StdoutLine: {'line': b'[ 26%] \x1b[32mBuilding C object CMakeFiles/quad_msgs__rosidl_generator_c.dir/rosidl_generator_c/quad_msgs/msg/detail/leg_command_array__description.c.o\x1b[0m\n'}
+[5.694392] (quad_msgs) StdoutLine: {'line': b'[ 27%] \x1b[32mBuilding C object CMakeFiles/quad_msgs__rosidl_generator_c.dir/rosidl_generator_c/quad_msgs/msg/detail/leg_command_array__functions.c.o\x1b[0m\n'}
+[5.713459] (quad_msgs) StdoutLine: {'line': b'[ 27%] \x1b[32mBuilding C object CMakeFiles/quad_msgs__rosidl_generator_c.dir/rosidl_generator_c/quad_msgs/msg/detail/leg_command_array__type_support.c.o\x1b[0m\n'}
+[5.737205] (-) TimerEvent: {}
+[5.755261] (quad_msgs) StdoutLine: {'line': b'[ 28%] \x1b[32m\x1b[1mLinking C shared library libquad_msgs__rosidl_generator_c.so\x1b[0m\n'}
+[5.796763] (quad_msgs) StdoutLine: {'line': b'[ 28%] Built target quad_msgs__rosidl_generator_c\n'}
+[5.808517] (quad_msgs) StdoutLine: {'line': b'[ 28%] \x1b[34m\x1b[1mGenerating C introspection for ROS interfaces\x1b[0m\n'}
+[5.810174] (quad_msgs) StdoutLine: {'line': b'[ 28%] \x1b[34m\x1b[1mGenerating C type support dispatch for ROS interfaces\x1b[0m\n'}
+[5.810599] (quad_msgs) StdoutLine: {'line': b'[ 28%] \x1b[34m\x1b[1mGenerating C++ type support for eProsima Fast-RTPS\x1b[0m\n'}
+[5.811552] (quad_msgs) StdoutLine: {'line': b'[ 29%] \x1b[34m\x1b[1mGenerating C++ type support dispatch for ROS interfaces\x1b[0m\n'}
+[5.811817] (quad_msgs) StdoutLine: {'line': b'[ 30%] \x1b[34m\x1b[1mGenerating C++ introspection for ROS interfaces\x1b[0m\n'}
+[5.813178] (quad_msgs) StdoutLine: {'line': b'[ 31%] \x1b[34m\x1b[1mGenerating C type support for eProsima Fast-RTPS\x1b[0m\n'}
+[5.837249] (-) TimerEvent: {}
+[5.938190] (-) TimerEvent: {}
+[6.041167] (-) TimerEvent: {}
+[6.141541] (-) TimerEvent: {}
+[6.245728] (-) TimerEvent: {}
+[6.346057] (-) TimerEvent: {}
+[6.450154] (-) TimerEvent: {}
+[6.552904] (-) TimerEvent: {}
+[6.653523] (-) TimerEvent: {}
+[6.753887] (-) TimerEvent: {}
+[6.855305] (-) TimerEvent: {}
+[6.960188] (-) TimerEvent: {}
+[7.060575] (-) TimerEvent: {}
+[7.103135] (quad_msgs) StdoutLine: {'line': b'[ 31%] \x1b[32mBuilding CXX object CMakeFiles/quad_msgs__rosidl_typesupport_cpp.dir/rosidl_typesupport_cpp/quad_msgs/msg/body_force_estimate__type_support.cpp.o\x1b[0m\n'}
+[7.112667] (quad_msgs) StdoutLine: {'line': b'[ 32%] \x1b[32mBuilding CXX object CMakeFiles/quad_msgs__rosidl_typesupport_cpp.dir/rosidl_typesupport_cpp/quad_msgs/msg/robot_state__type_support.cpp.o\x1b[0m\n'}
+[7.126262] (quad_msgs) StdoutLine: {'line': b'[ 33%] \x1b[32mBuilding CXX object CMakeFiles/quad_msgs__rosidl_typesupport_cpp.dir/rosidl_typesupport_cpp/quad_msgs/msg/body_state__type_support.cpp.o\x1b[0m\n'}
+[7.163166] (-) TimerEvent: {}
+[7.253145] (quad_msgs) StdoutLine: {'line': b'[ 34%] \x1b[32mBuilding CXX object CMakeFiles/quad_msgs__rosidl_typesupport_c.dir/rosidl_typesupport_c/quad_msgs/msg/body_force_estimate__type_support.cpp.o\x1b[0m\n'}
+[7.263281] (-) TimerEvent: {}
+[7.337254] (quad_msgs) StdoutLine: {'line': b'[ 34%] \x1b[32mBuilding CXX object CMakeFiles/quad_msgs__rosidl_typesupport_c.dir/rosidl_typesupport_c/quad_msgs/msg/robot_state__type_support.cpp.o\x1b[0m\n'}
+[7.363398] (-) TimerEvent: {}
+[7.447494] (quad_msgs) StdoutLine: {'line': b'[ 35%] \x1b[32mBuilding CXX object CMakeFiles/quad_msgs__rosidl_typesupport_c.dir/rosidl_typesupport_c/quad_msgs/msg/body_state__type_support.cpp.o\x1b[0m\n'}
+[7.463530] (-) TimerEvent: {}
+[7.523155] (quad_msgs) StdoutLine: {'line': b'[ 35%] \x1b[32mBuilding CXX object CMakeFiles/quad_msgs__rosidl_typesupport_c.dir/rosidl_typesupport_c/quad_msgs/msg/grf_array__type_support.cpp.o\x1b[0m\n'}
+[7.563656] (-) TimerEvent: {}
+[7.606593] (quad_msgs) StdoutLine: {'line': b'[ 36%] \x1b[32mBuilding CXX object CMakeFiles/quad_msgs__rosidl_typesupport_c.dir/rosidl_typesupport_c/quad_msgs/msg/robot_plan__type_support.cpp.o\x1b[0m\n'}
+[7.663813] (-) TimerEvent: {}
+[7.686486] (quad_msgs) StdoutLine: {'line': b'[ 36%] \x1b[32mBuilding CXX object CMakeFiles/quad_msgs__rosidl_typesupport_c.dir/rosidl_typesupport_c/quad_msgs/msg/robot_plan_diagnostics__type_support.cpp.o\x1b[0m\n'}
+[7.723198] (quad_msgs) StdoutLine: {'line': b'[ 37%] \x1b[32mBuilding CXX object CMakeFiles/quad_msgs__rosidl_typesupport_c.dir/rosidl_typesupport_c/quad_msgs/msg/foot_state__type_support.cpp.o\x1b[0m\n'}
+[7.737777] (quad_msgs) StdoutLine: {'line': b'[ 37%] \x1b[32mBuilding CXX object CMakeFiles/quad_msgs__rosidl_typesupport_cpp.dir/rosidl_typesupport_cpp/quad_msgs/msg/grf_array__type_support.cpp.o\x1b[0m\n'}
+[7.763938] (-) TimerEvent: {}
+[7.786539] (quad_msgs) StdoutLine: {'line': b'[ 38%] \x1b[32mBuilding CXX object CMakeFiles/quad_msgs__rosidl_typesupport_cpp.dir/rosidl_typesupport_cpp/quad_msgs/msg/robot_plan__type_support.cpp.o\x1b[0m\n'}
+[7.798789] (quad_msgs) StdoutLine: {'line': b'[ 38%] \x1b[32mBuilding CXX object CMakeFiles/quad_msgs__rosidl_typesupport_c.dir/rosidl_typesupport_c/quad_msgs/msg/multi_foot_state__type_support.cpp.o\x1b[0m\n'}
+[7.812131] (quad_msgs) StdoutLine: {'line': b'[ 39%] \x1b[32mBuilding CXX object CMakeFiles/quad_msgs__rosidl_typesupport_c.dir/rosidl_typesupport_c/quad_msgs/msg/multi_foot_plan_continuous__type_support.cpp.o\x1b[0m\n'}
+[7.826108] (quad_msgs) StdoutLine: {'line': b'[ 40%] \x1b[32mBuilding CXX object CMakeFiles/quad_msgs__rosidl_typesupport_introspection_cpp.dir/rosidl_typesupport_introspection_cpp/quad_msgs/msg/detail/body_force_estimate__type_support.cpp.o\x1b[0m\n'}
+[7.867668] (-) TimerEvent: {}
+[7.879205] (quad_msgs) StdoutLine: {'line': b'[ 40%] \x1b[32mBuilding CXX object CMakeFiles/quad_msgs__rosidl_typesupport_introspection_cpp.dir/rosidl_typesupport_introspection_cpp/quad_msgs/msg/detail/robot_state__type_support.cpp.o\x1b[0m\n'}
+[7.937959] (quad_msgs) StdoutLine: {'line': b'[ 41%] \x1b[32mBuilding CXX object CMakeFiles/quad_msgs__rosidl_typesupport_c.dir/rosidl_typesupport_c/quad_msgs/msg/foot_plan_discrete__type_support.cpp.o\x1b[0m\n'}
+[7.962478] (quad_msgs) StdoutLine: {'line': b'[ 42%] \x1b[32mBuilding CXX object CMakeFiles/quad_msgs__rosidl_typesupport_fastrtps_cpp.dir/rosidl_typesupport_fastrtps_cpp/quad_msgs/msg/detail/dds_fastrtps/body_force_estimate__type_support.cpp.o\x1b[0m\n'}
+[7.967790] (-) TimerEvent: {}
+[8.008051] (quad_msgs) StdoutLine: {'line': b'[ 43%] \x1b[32mBuilding C object CMakeFiles/quad_msgs__rosidl_typesupport_introspection_c.dir/rosidl_typesupport_introspection_c/quad_msgs/msg/detail/body_force_estimate__type_support.c.o\x1b[0m\n'}
+[8.030799] (quad_msgs) StdoutLine: {'line': b'[ 43%] \x1b[32mBuilding CXX object CMakeFiles/quad_msgs__rosidl_typesupport_c.dir/rosidl_typesupport_c/quad_msgs/msg/multi_foot_plan_discrete__type_support.cpp.o\x1b[0m\n'}
+[8.067977] (-) TimerEvent: {}
+[8.095386] (quad_msgs) StdoutLine: {'line': b'[ 43%] \x1b[32mBuilding C object CMakeFiles/quad_msgs__rosidl_typesupport_introspection_c.dir/rosidl_typesupport_introspection_c/quad_msgs/msg/detail/robot_state__type_support.c.o\x1b[0m\n'}
+[8.135241] (quad_msgs) StdoutLine: {'line': b'[ 44%] \x1b[32mBuilding CXX object CMakeFiles/quad_msgs__rosidl_typesupport_c.dir/rosidl_typesupport_c/quad_msgs/msg/leg_contact_mode__type_support.cpp.o\x1b[0m\n'}
+[8.168089] (-) TimerEvent: {}
+[8.208070] (quad_msgs) StdoutLine: {'line': b'[ 44%] \x1b[32mBuilding CXX object CMakeFiles/quad_msgs__rosidl_typesupport_c.dir/rosidl_typesupport_c/quad_msgs/msg/contact_mode__type_support.cpp.o\x1b[0m\n'}
+[8.219178] (quad_msgs) StdoutLine: {'line': b'[ 45%] \x1b[32mBuilding C object CMakeFiles/quad_msgs__rosidl_typesupport_introspection_c.dir/rosidl_typesupport_introspection_c/quad_msgs/msg/detail/body_state__type_support.c.o\x1b[0m\n'}
+[8.268193] (-) TimerEvent: {}
+[8.286988] (quad_msgs) StdoutLine: {'line': b'[ 46%] \x1b[32mBuilding CXX object CMakeFiles/quad_msgs__rosidl_typesupport_c.dir/rosidl_typesupport_c/quad_msgs/msg/motor_command__type_support.cpp.o\x1b[0m\n'}
+[8.307693] (quad_msgs) StdoutLine: {'line': b'[ 46%] \x1b[32mBuilding C object CMakeFiles/quad_msgs__rosidl_typesupport_introspection_c.dir/rosidl_typesupport_introspection_c/quad_msgs/msg/detail/grf_array__type_support.c.o\x1b[0m\n'}
+[8.357633] (quad_msgs) StdoutLine: {'line': b'[ 46%] \x1b[32mBuilding CXX object CMakeFiles/quad_msgs__rosidl_typesupport_c.dir/rosidl_typesupport_c/quad_msgs/msg/leg_command__type_support.cpp.o\x1b[0m\n'}
+[8.368330] (-) TimerEvent: {}
+[8.375623] (quad_msgs) StdoutLine: {'line': b'[ 47%] \x1b[32mBuilding CXX object CMakeFiles/quad_msgs__rosidl_typesupport_introspection_cpp.dir/rosidl_typesupport_introspection_cpp/quad_msgs/msg/detail/body_state__type_support.cpp.o\x1b[0m\n'}
+[8.377785] (quad_msgs) StdoutLine: {'line': b'[ 47%] \x1b[32mBuilding CXX object CMakeFiles/quad_msgs__rosidl_typesupport_cpp.dir/rosidl_typesupport_cpp/quad_msgs/msg/robot_plan_diagnostics__type_support.cpp.o\x1b[0m\n'}
+[8.421736] (quad_msgs) StdoutLine: {'line': b'[ 48%] \x1b[32mBuilding C object CMakeFiles/quad_msgs__rosidl_typesupport_introspection_c.dir/rosidl_typesupport_introspection_c/quad_msgs/msg/detail/robot_plan__type_support.c.o\x1b[0m\n'}
+[8.436171] (quad_msgs) StdoutLine: {'line': b'[ 48%] \x1b[32mBuilding CXX object CMakeFiles/quad_msgs__rosidl_typesupport_fastrtps_c.dir/rosidl_typesupport_fastrtps_c/quad_msgs/msg/detail/body_force_estimate__type_support_c.cpp.o\x1b[0m\n'}
+[8.439984] (quad_msgs) StdoutLine: {'line': b'[ 49%] \x1b[32mBuilding CXX object CMakeFiles/quad_msgs__rosidl_typesupport_c.dir/rosidl_typesupport_c/quad_msgs/msg/leg_command_array__type_support.cpp.o\x1b[0m\n'}
+[8.468436] (-) TimerEvent: {}
+[8.520344] (quad_msgs) StdoutLine: {'line': b'[ 50%] \x1b[32mBuilding CXX object CMakeFiles/quad_msgs__rosidl_typesupport_cpp.dir/rosidl_typesupport_cpp/quad_msgs/msg/foot_state__type_support.cpp.o\x1b[0m\n'}
+[8.530171] (quad_msgs) StdoutLine: {'line': b'[ 50%] \x1b[32m\x1b[1mLinking CXX shared library libquad_msgs__rosidl_typesupport_c.so\x1b[0m\n'}
+[8.535808] (quad_msgs) StdoutLine: {'line': b'[ 50%] \x1b[32mBuilding C object CMakeFiles/quad_msgs__rosidl_typesupport_introspection_c.dir/rosidl_typesupport_introspection_c/quad_msgs/msg/detail/robot_plan_diagnostics__type_support.c.o\x1b[0m\n'}
+[8.568562] (-) TimerEvent: {}
+[8.612675] (quad_msgs) StdoutLine: {'line': b'[ 51%] \x1b[32mBuilding C object CMakeFiles/quad_msgs__rosidl_typesupport_introspection_c.dir/rosidl_typesupport_introspection_c/quad_msgs/msg/detail/foot_state__type_support.c.o\x1b[0m\n'}
+[8.614976] (quad_msgs) StdoutLine: {'line': b'[ 52%] \x1b[32mBuilding CXX object CMakeFiles/quad_msgs__rosidl_typesupport_fastrtps_c.dir/rosidl_typesupport_fastrtps_c/quad_msgs/msg/detail/robot_state__type_support_c.cpp.o\x1b[0m\n'}
+[8.651414] (quad_msgs) StdoutLine: {'line': b'[ 52%] Built target quad_msgs__rosidl_typesupport_c\n'}
+[8.668690] (-) TimerEvent: {}
+[8.684183] (quad_msgs) StdoutLine: {'line': b'[ 53%] \x1b[32mBuilding CXX object CMakeFiles/quad_msgs__rosidl_typesupport_fastrtps_cpp.dir/rosidl_typesupport_fastrtps_cpp/quad_msgs/msg/detail/dds_fastrtps/robot_state__type_support.cpp.o\x1b[0m\n'}
+[8.721224] (quad_msgs) StdoutLine: {'line': b'[ 54%] \x1b[32mBuilding C object CMakeFiles/quad_msgs__rosidl_typesupport_introspection_c.dir/rosidl_typesupport_introspection_c/quad_msgs/msg/detail/multi_foot_state__type_support.c.o\x1b[0m\n'}
+[8.768820] (-) TimerEvent: {}
+[8.803210] (quad_msgs) StdoutLine: {'line': b'[ 54%] \x1b[32mBuilding C object CMakeFiles/quad_msgs__rosidl_typesupport_introspection_c.dir/rosidl_typesupport_introspection_c/quad_msgs/msg/detail/multi_foot_plan_continuous__type_support.c.o\x1b[0m\n'}
+[8.868959] (-) TimerEvent: {}
+[8.887275] (quad_msgs) StdoutLine: {'line': b'[ 55%] \x1b[32mBuilding C object CMakeFiles/quad_msgs__rosidl_typesupport_introspection_c.dir/rosidl_typesupport_introspection_c/quad_msgs/msg/detail/foot_plan_discrete__type_support.c.o\x1b[0m\n'}
+[8.970303] (-) TimerEvent: {}
+[8.989594] (quad_msgs) StdoutLine: {'line': b'[ 55%] \x1b[32mBuilding C object CMakeFiles/quad_msgs__rosidl_typesupport_introspection_c.dir/rosidl_typesupport_introspection_c/quad_msgs/msg/detail/multi_foot_plan_discrete__type_support.c.o\x1b[0m\n'}
+[9.008605] (quad_msgs) StdoutLine: {'line': b'[ 55%] \x1b[32mBuilding CXX object CMakeFiles/quad_msgs__rosidl_typesupport_cpp.dir/rosidl_typesupport_cpp/quad_msgs/msg/multi_foot_state__type_support.cpp.o\x1b[0m\n'}
+[9.071333] (-) TimerEvent: {}
+[9.175170] (-) TimerEvent: {}
+[9.185431] (quad_msgs) StdoutLine: {'line': b'[ 56%] \x1b[32mBuilding C object CMakeFiles/quad_msgs__rosidl_typesupport_introspection_c.dir/rosidl_typesupport_introspection_c/quad_msgs/msg/detail/leg_contact_mode__type_support.c.o\x1b[0m\n'}
+[9.218061] (quad_msgs) StdoutLine: {'line': b'[ 56%] \x1b[32mBuilding CXX object CMakeFiles/quad_msgs__rosidl_typesupport_introspection_cpp.dir/rosidl_typesupport_introspection_cpp/quad_msgs/msg/detail/grf_array__type_support.cpp.o\x1b[0m\n'}
+[9.262838] (quad_msgs) StdoutLine: {'line': b'[ 56%] \x1b[32mBuilding C object CMakeFiles/quad_msgs__rosidl_typesupport_introspection_c.dir/rosidl_typesupport_introspection_c/quad_msgs/msg/detail/contact_mode__type_support.c.o\x1b[0m\n'}
+[9.275291] (-) TimerEvent: {}
+[9.296178] (quad_msgs) StdoutLine: {'line': b'[ 57%] \x1b[32mBuilding CXX object CMakeFiles/quad_msgs__rosidl_typesupport_introspection_cpp.dir/rosidl_typesupport_introspection_cpp/quad_msgs/msg/detail/robot_plan__type_support.cpp.o\x1b[0m\n'}
+[9.309613] (quad_msgs) StdoutLine: {'line': b'[ 57%] \x1b[32mBuilding CXX object CMakeFiles/quad_msgs__rosidl_typesupport_fastrtps_c.dir/rosidl_typesupport_fastrtps_c/quad_msgs/msg/detail/body_state__type_support_c.cpp.o\x1b[0m\n'}
+[9.376593] (-) TimerEvent: {}
+[9.385014] (quad_msgs) StdoutLine: {'line': b'[ 58%] \x1b[32mBuilding CXX object CMakeFiles/quad_msgs__rosidl_typesupport_fastrtps_c.dir/rosidl_typesupport_fastrtps_c/quad_msgs/msg/detail/grf_array__type_support_c.cpp.o\x1b[0m\n'}
+[9.389078] (quad_msgs) StdoutLine: {'line': b'[ 59%] \x1b[32mBuilding C object CMakeFiles/quad_msgs__rosidl_typesupport_introspection_c.dir/rosidl_typesupport_introspection_c/quad_msgs/msg/detail/motor_command__type_support.c.o\x1b[0m\n'}
+[9.479232] (-) TimerEvent: {}
+[9.493653] (quad_msgs) StdoutLine: {'line': b'[ 59%] \x1b[32mBuilding C object CMakeFiles/quad_msgs__rosidl_typesupport_introspection_c.dir/rosidl_typesupport_introspection_c/quad_msgs/msg/detail/leg_command__type_support.c.o\x1b[0m\n'}
+[9.579357] (-) TimerEvent: {}
+[9.590155] (quad_msgs) StdoutLine: {'line': b'[ 60%] \x1b[32mBuilding C object CMakeFiles/quad_msgs__rosidl_typesupport_introspection_c.dir/rosidl_typesupport_introspection_c/quad_msgs/msg/detail/leg_command_array__type_support.c.o\x1b[0m\n'}
+[9.655230] (quad_msgs) StdoutLine: {'line': b'[ 61%] \x1b[32mBuilding CXX object CMakeFiles/quad_msgs__rosidl_typesupport_cpp.dir/rosidl_typesupport_cpp/quad_msgs/msg/multi_foot_plan_continuous__type_support.cpp.o\x1b[0m\n'}
+[9.679490] (-) TimerEvent: {}
+[9.687985] (quad_msgs) StdoutLine: {'line': b'[ 61%] \x1b[32m\x1b[1mLinking C shared library libquad_msgs__rosidl_typesupport_introspection_c.so\x1b[0m\n'}
+[9.780719] (-) TimerEvent: {}
+[9.813209] (quad_msgs) StdoutLine: {'line': b'[ 61%] Built target quad_msgs__rosidl_typesupport_introspection_c\n'}
+[9.837358] (quad_msgs) StdoutLine: {'line': b'[ 61%] \x1b[32mBuilding CXX object CMakeFiles/quad_msgs__rosidl_typesupport_cpp.dir/rosidl_typesupport_cpp/quad_msgs/msg/foot_plan_discrete__type_support.cpp.o\x1b[0m\n'}
+[9.880769] (-) TimerEvent: {}
+[9.932000] (quad_msgs) StdoutLine: {'line': b'[ 61%] \x1b[32mBuilding CXX object CMakeFiles/quad_msgs__rosidl_typesupport_fastrtps_c.dir/rosidl_typesupport_fastrtps_c/quad_msgs/msg/detail/robot_plan__type_support_c.cpp.o\x1b[0m\n'}
+[9.974005] (quad_msgs) StdoutLine: {'line': b'[ 61%] \x1b[32mBuilding CXX object CMakeFiles/quad_msgs__rosidl_typesupport_fastrtps_cpp.dir/rosidl_typesupport_fastrtps_cpp/quad_msgs/msg/detail/dds_fastrtps/body_state__type_support.cpp.o\x1b[0m\n'}
+[9.981566] (-) TimerEvent: {}
+[10.082015] (-) TimerEvent: {}
+[10.185667] (-) TimerEvent: {}
+[10.287056] (-) TimerEvent: {}
+[10.303022] (quad_msgs) StdoutLine: {'line': b'[ 62%] \x1b[32mBuilding CXX object CMakeFiles/quad_msgs__rosidl_typesupport_fastrtps_c.dir/rosidl_typesupport_fastrtps_c/quad_msgs/msg/detail/robot_plan_diagnostics__type_support_c.cpp.o\x1b[0m\n'}
+[10.387183] (-) TimerEvent: {}
+[10.403171] (quad_msgs) StdoutLine: {'line': b'[ 62%] \x1b[32mBuilding CXX object CMakeFiles/quad_msgs__rosidl_typesupport_fastrtps_c.dir/rosidl_typesupport_fastrtps_c/quad_msgs/msg/detail/foot_state__type_support_c.cpp.o\x1b[0m\n'}
+[10.452849] (quad_msgs) StdoutLine: {'line': b'[ 62%] \x1b[32mBuilding CXX object CMakeFiles/quad_msgs__rosidl_typesupport_introspection_cpp.dir/rosidl_typesupport_introspection_cpp/quad_msgs/msg/detail/robot_plan_diagnostics__type_support.cpp.o\x1b[0m\n'}
+[10.461782] (quad_msgs) StdoutLine: {'line': b'[ 63%] \x1b[32mBuilding CXX object CMakeFiles/quad_msgs__rosidl_typesupport_cpp.dir/rosidl_typesupport_cpp/quad_msgs/msg/multi_foot_plan_discrete__type_support.cpp.o\x1b[0m\n'}
+[10.490205] (-) TimerEvent: {}
+[10.561795] (quad_msgs) StdoutLine: {'line': b'[ 64%] \x1b[32mBuilding CXX object CMakeFiles/quad_msgs__rosidl_typesupport_fastrtps_cpp.dir/rosidl_typesupport_fastrtps_cpp/quad_msgs/msg/detail/dds_fastrtps/grf_array__type_support.cpp.o\x1b[0m\n'}
+[10.590339] (-) TimerEvent: {}
+[10.690715] (-) TimerEvent: {}
+[10.794211] (-) TimerEvent: {}
+[10.883519] (quad_msgs) StdoutLine: {'line': b'[ 64%] \x1b[32mBuilding CXX object CMakeFiles/quad_msgs__rosidl_typesupport_fastrtps_cpp.dir/rosidl_typesupport_fastrtps_cpp/quad_msgs/msg/detail/dds_fastrtps/robot_plan__type_support.cpp.o\x1b[0m\n'}
+[10.894343] (-) TimerEvent: {}
+[10.994762] (-) TimerEvent: {}
+[10.997558] (quad_msgs) StdoutLine: {'line': b'[ 65%] \x1b[32mBuilding CXX object CMakeFiles/quad_msgs__rosidl_typesupport_fastrtps_cpp.dir/rosidl_typesupport_fastrtps_cpp/quad_msgs/msg/detail/dds_fastrtps/robot_plan_diagnostics__type_support.cpp.o\x1b[0m\n'}
+[11.094898] (-) TimerEvent: {}
+[11.190904] (quad_msgs) StdoutLine: {'line': b'[ 66%] \x1b[32mBuilding CXX object CMakeFiles/quad_msgs__rosidl_typesupport_introspection_cpp.dir/rosidl_typesupport_introspection_cpp/quad_msgs/msg/detail/foot_state__type_support.cpp.o\x1b[0m\n'}
+[11.195183] (-) TimerEvent: {}
+[11.207070] (quad_msgs) StdoutLine: {'line': b'[ 67%] \x1b[32mBuilding CXX object CMakeFiles/quad_msgs__rosidl_typesupport_fastrtps_c.dir/rosidl_typesupport_fastrtps_c/quad_msgs/msg/detail/multi_foot_state__type_support_c.cpp.o\x1b[0m\n'}
+[11.295305] (-) TimerEvent: {}
+[11.390156] (quad_msgs) StdoutLine: {'line': b'[ 68%] \x1b[32mBuilding CXX object CMakeFiles/quad_msgs__rosidl_typesupport_fastrtps_c.dir/rosidl_typesupport_fastrtps_c/quad_msgs/msg/detail/multi_foot_plan_continuous__type_support_c.cpp.o\x1b[0m\n'}
+[11.395919] (-) TimerEvent: {}
+[11.405923] (mocap_optitrack) StdoutLine: {'line': b'[100%] \x1b[32m\x1b[1mLinking CXX executable mocap_node\x1b[0m\n'}
+[11.418290] (quad_msgs) StdoutLine: {'line': b'[ 68%] \x1b[32mBuilding CXX object CMakeFiles/quad_msgs__rosidl_typesupport_cpp.dir/rosidl_typesupport_cpp/quad_msgs/msg/leg_contact_mode__type_support.cpp.o\x1b[0m\n'}
+[11.467695] (quad_msgs) StdoutLine: {'line': b'[ 68%] \x1b[32mBuilding CXX object CMakeFiles/quad_msgs__rosidl_typesupport_fastrtps_cpp.dir/rosidl_typesupport_fastrtps_cpp/quad_msgs/msg/detail/dds_fastrtps/foot_state__type_support.cpp.o\x1b[0m\n'}
+[11.496046] (-) TimerEvent: {}
+[11.596457] (-) TimerEvent: {}
+[11.604168] (quad_msgs) StdoutLine: {'line': b'[ 68%] \x1b[32mBuilding CXX object CMakeFiles/quad_msgs__rosidl_typesupport_fastrtps_c.dir/rosidl_typesupport_fastrtps_c/quad_msgs/msg/detail/foot_plan_discrete__type_support_c.cpp.o\x1b[0m\n'}
+[11.700230] (-) TimerEvent: {}
+[11.800853] (-) TimerEvent: {}
+[11.831556] (quad_msgs) StdoutLine: {'line': b'[ 68%] \x1b[32mBuilding CXX object CMakeFiles/quad_msgs__rosidl_typesupport_introspection_cpp.dir/rosidl_typesupport_introspection_cpp/quad_msgs/msg/detail/multi_foot_state__type_support.cpp.o\x1b[0m\n'}
+[11.901028] (-) TimerEvent: {}
+[12.005596] (-) TimerEvent: {}
+[12.106070] (-) TimerEvent: {}
+[12.206487] (-) TimerEvent: {}
+[12.224723] (quad_msgs) StdoutLine: {'line': b'[ 69%] \x1b[32mBuilding CXX object CMakeFiles/quad_msgs__rosidl_typesupport_cpp.dir/rosidl_typesupport_cpp/quad_msgs/msg/contact_mode__type_support.cpp.o\x1b[0m\n'}
+[12.306644] (-) TimerEvent: {}
+[12.411633] (-) TimerEvent: {}
+[12.430579] (quad_msgs) StdoutLine: {'line': b'[ 70%] \x1b[32mBuilding CXX object CMakeFiles/quad_msgs__rosidl_typesupport_fastrtps_cpp.dir/rosidl_typesupport_fastrtps_cpp/quad_msgs/msg/detail/dds_fastrtps/multi_foot_state__type_support.cpp.o\x1b[0m\n'}
+[12.492184] (quad_msgs) StdoutLine: {'line': b'[ 71%] \x1b[32mBuilding CXX object CMakeFiles/quad_msgs__rosidl_typesupport_fastrtps_c.dir/rosidl_typesupport_fastrtps_c/quad_msgs/msg/detail/multi_foot_plan_discrete__type_support_c.cpp.o\x1b[0m\n'}
+[12.514200] (-) TimerEvent: {}
+[12.614787] (-) TimerEvent: {}
+[12.668467] (quad_msgs) StdoutLine: {'line': b'[ 72%] \x1b[32mBuilding CXX object CMakeFiles/quad_msgs__rosidl_typesupport_introspection_cpp.dir/rosidl_typesupport_introspection_cpp/quad_msgs/msg/detail/multi_foot_plan_continuous__type_support.cpp.o\x1b[0m\n'}
+[12.714945] (-) TimerEvent: {}
+[12.772909] (quad_msgs) StdoutLine: {'line': b'[ 72%] \x1b[32mBuilding CXX object CMakeFiles/quad_msgs__rosidl_typesupport_cpp.dir/rosidl_typesupport_cpp/quad_msgs/msg/motor_command__type_support.cpp.o\x1b[0m\n'}
+[12.812221] (quad_msgs) StdoutLine: {'line': b'[ 72%] \x1b[32mBuilding CXX object CMakeFiles/quad_msgs__rosidl_typesupport_introspection_cpp.dir/rosidl_typesupport_introspection_cpp/quad_msgs/msg/detail/foot_plan_discrete__type_support.cpp.o\x1b[0m\n'}
+[12.818212] (-) TimerEvent: {}
+[12.918746] (-) TimerEvent: {}
+[13.019186] (-) TimerEvent: {}
+[13.044254] (quad_msgs) StdoutLine: {'line': b'[ 73%] \x1b[32mBuilding CXX object CMakeFiles/quad_msgs__rosidl_typesupport_introspection_cpp.dir/rosidl_typesupport_introspection_cpp/quad_msgs/msg/detail/multi_foot_plan_discrete__type_support.cpp.o\x1b[0m\n'}
+[13.099265] (quad_msgs) StdoutLine: {'line': b'[ 73%] \x1b[32mBuilding CXX object CMakeFiles/quad_msgs__rosidl_typesupport_fastrtps_c.dir/rosidl_typesupport_fastrtps_c/quad_msgs/msg/detail/leg_contact_mode__type_support_c.cpp.o\x1b[0m\n'}
+[13.123187] (-) TimerEvent: {}
+[13.230187] (-) TimerEvent: {}
+[13.283872] (quad_msgs) StdoutLine: {'line': b'[ 74%] \x1b[32mBuilding CXX object CMakeFiles/quad_msgs__rosidl_typesupport_introspection_cpp.dir/rosidl_typesupport_introspection_cpp/quad_msgs/msg/detail/leg_contact_mode__type_support.cpp.o\x1b[0m\n'}
+[13.330299] (-) TimerEvent: {}
+[13.434218] (-) TimerEvent: {}
+[13.534716] (-) TimerEvent: {}
+[13.551200] (quad_msgs) StdoutLine: {'line': b'[ 74%] \x1b[32mBuilding CXX object CMakeFiles/quad_msgs__rosidl_typesupport_introspection_cpp.dir/rosidl_typesupport_introspection_cpp/quad_msgs/msg/detail/contact_mode__type_support.cpp.o\x1b[0m\n'}
+[13.634879] (-) TimerEvent: {}
+[13.642757] (quad_msgs) StdoutLine: {'line': b'[ 74%] \x1b[32mBuilding CXX object CMakeFiles/quad_msgs__rosidl_typesupport_fastrtps_cpp.dir/rosidl_typesupport_fastrtps_cpp/quad_msgs/msg/detail/dds_fastrtps/multi_foot_plan_continuous__type_support.cpp.o\x1b[0m\n'}
+[13.650541] (quad_msgs) StdoutLine: {'line': b'[ 75%] \x1b[32mBuilding CXX object CMakeFiles/quad_msgs__rosidl_typesupport_cpp.dir/rosidl_typesupport_cpp/quad_msgs/msg/leg_command__type_support.cpp.o\x1b[0m\n'}
+[13.736218] (quad_msgs) StdoutLine: {'line': b'[ 76%] \x1b[32mBuilding CXX object CMakeFiles/quad_msgs__rosidl_typesupport_fastrtps_cpp.dir/rosidl_typesupport_fastrtps_cpp/quad_msgs/msg/detail/dds_fastrtps/foot_plan_discrete__type_support.cpp.o\x1b[0m\n'}
+[13.736561] (-) TimerEvent: {}
+[13.741303] (quad_msgs) StdoutLine: {'line': b'[ 77%] \x1b[32mBuilding CXX object CMakeFiles/quad_msgs__rosidl_typesupport_fastrtps_c.dir/rosidl_typesupport_fastrtps_c/quad_msgs/msg/detail/contact_mode__type_support_c.cpp.o\x1b[0m\n'}
+[13.839299] (-) TimerEvent: {}
+[13.939730] (-) TimerEvent: {}
+[14.040203] (-) TimerEvent: {}
+[14.042221] (quad_msgs) StdoutLine: {'line': b'[ 78%] \x1b[32mBuilding CXX object CMakeFiles/quad_msgs__rosidl_typesupport_introspection_cpp.dir/rosidl_typesupport_introspection_cpp/quad_msgs/msg/detail/motor_command__type_support.cpp.o\x1b[0m\n'}
+[14.082469] (quad_msgs) StdoutLine: {'line': b'[ 78%] \x1b[32mBuilding CXX object CMakeFiles/quad_msgs__rosidl_typesupport_introspection_cpp.dir/rosidl_typesupport_introspection_cpp/quad_msgs/msg/detail/leg_command__type_support.cpp.o\x1b[0m\n'}
+[14.145183] (-) TimerEvent: {}
+[14.245581] (-) TimerEvent: {}
+[14.342428] (quad_msgs) StdoutLine: {'line': b'[ 78%] \x1b[32mBuilding CXX object CMakeFiles/quad_msgs__rosidl_typesupport_fastrtps_c.dir/rosidl_typesupport_fastrtps_c/quad_msgs/msg/detail/motor_command__type_support_c.cpp.o\x1b[0m\n'}
+[14.345721] (-) TimerEvent: {}
+[14.413235] (quad_msgs) StdoutLine: {'line': b'[ 79%] \x1b[32mBuilding CXX object CMakeFiles/quad_msgs__rosidl_typesupport_cpp.dir/rosidl_typesupport_cpp/quad_msgs/msg/leg_command_array__type_support.cpp.o\x1b[0m\n'}
+[14.445878] (-) TimerEvent: {}
+[14.547430] (-) TimerEvent: {}
+[14.577524] (quad_msgs) StdoutLine: {'line': b'[ 80%] \x1b[32mBuilding CXX object CMakeFiles/quad_msgs__rosidl_typesupport_introspection_cpp.dir/rosidl_typesupport_introspection_cpp/quad_msgs/msg/detail/leg_command_array__type_support.cpp.o\x1b[0m\n'}
+[14.647584] (-) TimerEvent: {}
+[14.745871] (quad_msgs) StdoutLine: {'line': b'[ 80%] \x1b[32mBuilding CXX object CMakeFiles/quad_msgs__rosidl_typesupport_fastrtps_cpp.dir/rosidl_typesupport_fastrtps_cpp/quad_msgs/msg/detail/dds_fastrtps/multi_foot_plan_discrete__type_support.cpp.o\x1b[0m\n'}
+[14.747753] (-) TimerEvent: {}
+[14.852548] (-) TimerEvent: {}
+[14.887286] (quad_msgs) StdoutLine: {'line': b'[ 81%] \x1b[32mBuilding CXX object CMakeFiles/quad_msgs__rosidl_typesupport_fastrtps_c.dir/rosidl_typesupport_fastrtps_c/quad_msgs/msg/detail/leg_command__type_support_c.cpp.o\x1b[0m\n'}
+[14.911280] (quad_msgs) StdoutLine: {'line': b'[ 81%] \x1b[32mBuilding CXX object CMakeFiles/quad_msgs__rosidl_typesupport_fastrtps_c.dir/rosidl_typesupport_fastrtps_c/quad_msgs/msg/detail/leg_command_array__type_support_c.cpp.o\x1b[0m\n'}
+[14.932612] (quad_msgs) StdoutLine: {'line': b'[ 82%] \x1b[32mBuilding CXX object CMakeFiles/quad_msgs__rosidl_typesupport_fastrtps_cpp.dir/rosidl_typesupport_fastrtps_cpp/quad_msgs/msg/detail/dds_fastrtps/leg_contact_mode__type_support.cpp.o\x1b[0m\n'}
+[14.952689] (-) TimerEvent: {}
+[14.958065] (quad_msgs) StdoutLine: {'line': b'[ 83%] \x1b[32mBuilding CXX object CMakeFiles/quad_msgs__rosidl_typesupport_fastrtps_cpp.dir/rosidl_typesupport_fastrtps_cpp/quad_msgs/msg/detail/dds_fastrtps/contact_mode__type_support.cpp.o\x1b[0m\n'}
+[15.055217] (-) TimerEvent: {}
+[15.156186] (-) TimerEvent: {}
+[15.251969] (quad_msgs) StdoutLine: {'line': b'[ 83%] \x1b[32m\x1b[1mLinking CXX shared library libquad_msgs__rosidl_typesupport_cpp.so\x1b[0m\n'}
+[15.256355] (-) TimerEvent: {}
+[15.359546] (-) TimerEvent: {}
+[15.431893] (quad_msgs) StdoutLine: {'line': b'[ 83%] Built target quad_msgs__rosidl_typesupport_cpp\n'}
+[15.463227] (-) TimerEvent: {}
+[15.475396] (quad_msgs) StdoutLine: {'line': b'[ 83%] \x1b[32mBuilding CXX object CMakeFiles/quad_msgs__rosidl_typesupport_fastrtps_cpp.dir/rosidl_typesupport_fastrtps_cpp/quad_msgs/msg/detail/dds_fastrtps/motor_command__type_support.cpp.o\x1b[0m\n'}
+[15.512625] (quad_msgs) StdoutLine: {'line': b'[ 83%] \x1b[32m\x1b[1mLinking CXX shared library libquad_msgs__rosidl_typesupport_introspection_cpp.so\x1b[0m\n'}
+[15.563358] (-) TimerEvent: {}
+[15.668146] (quad_msgs) StdoutLine: {'line': b'[ 84%] \x1b[32mBuilding CXX object CMakeFiles/quad_msgs__rosidl_typesupport_fastrtps_cpp.dir/rosidl_typesupport_fastrtps_cpp/quad_msgs/msg/detail/dds_fastrtps/leg_command__type_support.cpp.o\x1b[0m\n'}
+[15.668493] (-) TimerEvent: {}
+[15.768867] (-) TimerEvent: {}
+[15.798419] (quad_msgs) StdoutLine: {'line': b'[ 84%] Built target quad_msgs__rosidl_typesupport_introspection_cpp\n'}
+[15.832811] (quad_msgs) StdoutLine: {'line': b'[ 84%] \x1b[32mBuilding CXX object CMakeFiles/quad_msgs__rosidl_typesupport_fastrtps_cpp.dir/rosidl_typesupport_fastrtps_cpp/quad_msgs/msg/detail/dds_fastrtps/leg_command_array__type_support.cpp.o\x1b[0m\n'}
+[15.868992] (-) TimerEvent: {}
+[15.969396] (-) TimerEvent: {}
+[16.000464] (quad_msgs) StdoutLine: {'line': b'[ 85%] \x1b[32m\x1b[1mLinking CXX shared library libquad_msgs__rosidl_typesupport_fastrtps_c.so\x1b[0m\n'}
+[16.069534] (-) TimerEvent: {}
+[16.077501] (quad_msgs) StdoutLine: {'line': b'[ 85%] Built target quad_msgs__rosidl_typesupport_fastrtps_c\n'}
+[16.169664] (-) TimerEvent: {}
+[16.270034] (-) TimerEvent: {}
+[16.370377] (-) TimerEvent: {}
+[16.470790] (-) TimerEvent: {}
+[16.540717] (quad_msgs) StdoutLine: {'line': b'[ 86%] \x1b[32m\x1b[1mLinking CXX shared library libquad_msgs__rosidl_typesupport_fastrtps_cpp.so\x1b[0m\n'}
+[16.570949] (-) TimerEvent: {}
+[16.640521] (quad_msgs) StdoutLine: {'line': b'[ 86%] Built target quad_msgs__rosidl_typesupport_fastrtps_cpp\n'}
+[16.660955] (quad_msgs) StdoutLine: {'line': b'[ 86%] Built target quad_msgs\n'}
+[16.671125] (-) TimerEvent: {}
+[16.684271] (quad_msgs) StdoutLine: {'line': b'[ 87%] \x1b[34m\x1b[1mGenerating Python code for ROS interfaces\x1b[0m\n'}
+[16.771219] (-) TimerEvent: {}
+[16.871513] (-) TimerEvent: {}
+[16.971797] (-) TimerEvent: {}
+[17.072181] (-) TimerEvent: {}
+[17.172622] (-) TimerEvent: {}
+[17.273102] (-) TimerEvent: {}
+[17.373401] (-) TimerEvent: {}
+[17.473706] (-) TimerEvent: {}
+[17.574055] (-) TimerEvent: {}
+[17.674418] (-) TimerEvent: {}
+[17.774862] (-) TimerEvent: {}
+[17.875190] (-) TimerEvent: {}
+[17.975562] (-) TimerEvent: {}
+[18.075948] (-) TimerEvent: {}
+[18.176320] (-) TimerEvent: {}
+[18.276670] (-) TimerEvent: {}
+[18.376994] (-) TimerEvent: {}
+[18.477368] (-) TimerEvent: {}
+[18.580200] (-) TimerEvent: {}
+[18.633464] (quad_msgs) StdoutLine: {'line': b'[ 87%] Built target quad_msgs__py\n'}
+[18.659471] (quad_msgs) StdoutLine: {'line': b'[ 87%] \x1b[32mBuilding C object CMakeFiles/quad_msgs__rosidl_generator_py.dir/rosidl_generator_py/quad_msgs/msg/_body_force_estimate_s.c.o\x1b[0m\n'}
+[18.659785] (quad_msgs) StdoutLine: {'line': b'[ 87%] \x1b[32mBuilding C object CMakeFiles/quad_msgs__rosidl_generator_py.dir/rosidl_generator_py/quad_msgs/msg/_robot_plan_s.c.o\x1b[0m\n'}
+[18.659932] (quad_msgs) StdoutLine: {'line': b'[ 89%] \x1b[32mBuilding C object CMakeFiles/quad_msgs__rosidl_generator_py.dir/rosidl_generator_py/quad_msgs/msg/_foot_state_s.c.o\x1b[0m\n'}
+[18.660085] (quad_msgs) StdoutLine: {'line': b'[ 88%] \x1b[32mBuilding C object CMakeFiles/quad_msgs__rosidl_generator_py.dir/rosidl_generator_py/quad_msgs/msg/_robot_plan_diagnostics_s.c.o\x1b[0m\n'}
+[18.661575] (quad_msgs) StdoutLine: {'line': b'[ 90%] \x1b[32mBuilding C object CMakeFiles/quad_msgs__rosidl_generator_py.dir/rosidl_generator_py/quad_msgs/msg/_robot_state_s.c.o\x1b[0m\n'}
+[18.662263] (quad_msgs) StdoutLine: {'line': b'[ 91%] \x1b[32mBuilding C object CMakeFiles/quad_msgs__rosidl_generator_py.dir/rosidl_generator_py/quad_msgs/msg/_grf_array_s.c.o\x1b[0m\n'}
+[18.662525] (quad_msgs) StdoutLine: {'line': b'[ 91%] \x1b[32mBuilding C object CMakeFiles/quad_msgs__rosidl_generator_py.dir/rosidl_generator_py/quad_msgs/msg/_body_state_s.c.o\x1b[0m\n'}
+[18.665736] (quad_msgs) StdoutLine: {'line': b'[ 91%] \x1b[32mBuilding C object CMakeFiles/quad_msgs__rosidl_generator_py.dir/rosidl_generator_py/quad_msgs/msg/_multi_foot_state_s.c.o\x1b[0m\n'}
+[18.682209] (-) TimerEvent: {}
+[18.784382] (-) TimerEvent: {}
+[18.884746] (-) TimerEvent: {}
+[18.898686] (quad_msgs) StdoutLine: {'line': b'[ 92%] \x1b[32mBuilding C object CMakeFiles/quad_msgs__rosidl_generator_py.dir/rosidl_generator_py/quad_msgs/msg/_multi_foot_plan_continuous_s.c.o\x1b[0m\n'}
+[18.901608] (quad_msgs) StdoutLine: {'line': b'[ 93%] \x1b[32mBuilding C object CMakeFiles/quad_msgs__rosidl_generator_py.dir/rosidl_generator_py/quad_msgs/msg/_multi_foot_plan_discrete_s.c.o\x1b[0m\n'}
+[18.905003] (quad_msgs) StdoutLine: {'line': b'[ 93%] \x1b[32mBuilding C object CMakeFiles/quad_msgs__rosidl_generator_py.dir/rosidl_generator_py/quad_msgs/msg/_foot_plan_discrete_s.c.o\x1b[0m\n'}
+[18.907238] (quad_msgs) StdoutLine: {'line': b'[ 93%] \x1b[32mBuilding C object CMakeFiles/quad_msgs__rosidl_generator_py.dir/rosidl_generator_py/quad_msgs/msg/_leg_contact_mode_s.c.o\x1b[0m\n'}
+[18.913185] (quad_msgs) StdoutLine: {'line': b'[ 94%] \x1b[32mBuilding C object CMakeFiles/quad_msgs__rosidl_generator_py.dir/rosidl_generator_py/quad_msgs/msg/_contact_mode_s.c.o\x1b[0m\n'}
+[18.918055] (quad_msgs) StdoutLine: {'line': b'[ 94%] \x1b[32mBuilding C object CMakeFiles/quad_msgs__rosidl_generator_py.dir/rosidl_generator_py/quad_msgs/msg/_motor_command_s.c.o\x1b[0m\n'}
+[18.947072] (quad_msgs) StdoutLine: {'line': b'[ 95%] \x1b[32mBuilding C object CMakeFiles/quad_msgs__rosidl_generator_py.dir/rosidl_generator_py/quad_msgs/msg/_leg_command_s.c.o\x1b[0m\n'}
+[18.957065] (quad_msgs) StdoutLine: {'line': b'[ 95%] \x1b[32mBuilding C object CMakeFiles/quad_msgs__rosidl_generator_py.dir/rosidl_generator_py/quad_msgs/msg/_leg_command_array_s.c.o\x1b[0m\n'}
+[18.980255] (mocap_optitrack) StdoutLine: {'line': b'[100%] Built target mocap_optitrack_mocap_node\n'}
+[18.984856] (-) TimerEvent: {}
+[19.015582] (mocap_optitrack) JobEnded: {'identifier': 'mocap_optitrack', 'rc': 'SIGINT'}
+[19.084988] (-) TimerEvent: {}
+[19.147393] (quad_msgs) StdoutLine: {'line': b'[ 96%] \x1b[32m\x1b[1mLinking C shared library libquad_msgs__rosidl_generator_py.so\x1b[0m\n'}
+[19.185149] (-) TimerEvent: {}
+[19.210520] (quad_msgs) StdoutLine: {'line': b'[ 96%] Built target quad_msgs__rosidl_generator_py\n'}
+[19.233689] (quad_msgs) StdoutLine: {'line': b'[ 98%] \x1b[32mBuilding C object CMakeFiles/quad_msgs_s__rosidl_typesupport_introspection_c.dir/rosidl_generator_py/quad_msgs/_quad_msgs_s.ep.rosidl_typesupport_introspection_c.c.o\x1b[0m\n'}
+[19.234031] (quad_msgs) StdoutLine: {'line': b'[ 98%] \x1b[32mBuilding C object CMakeFiles/quad_msgs_s__rosidl_typesupport_c.dir/rosidl_generator_py/quad_msgs/_quad_msgs_s.ep.rosidl_typesupport_c.c.o\x1b[0m\n'}
+[19.234256] (quad_msgs) StdoutLine: {'line': b'[ 99%] \x1b[32mBuilding C object CMakeFiles/quad_msgs_s__rosidl_typesupport_fastrtps_c.dir/rosidl_generator_py/quad_msgs/_quad_msgs_s.ep.rosidl_typesupport_fastrtps_c.c.o\x1b[0m\n'}
+[19.285302] (-) TimerEvent: {}
+[19.385690] (-) TimerEvent: {}
+[19.390989] (quad_msgs) StdoutLine: {'line': b'[100%] \x1b[32m\x1b[1mLinking C shared module rosidl_generator_py/quad_msgs/quad_msgs_s__rosidl_typesupport_introspection_c.so\x1b[0m\n'}
+[19.391243] (quad_msgs) StdoutLine: {'line': b'[100%] \x1b[32m\x1b[1mLinking C shared module rosidl_generator_py/quad_msgs/quad_msgs_s__rosidl_typesupport_fastrtps_c.so\x1b[0m\n'}
+[19.391376] (quad_msgs) StdoutLine: {'line': b'[100%] \x1b[32m\x1b[1mLinking C shared module rosidl_generator_py/quad_msgs/quad_msgs_s__rosidl_typesupport_c.so\x1b[0m\n'}
+[19.427312] (quad_msgs) StdoutLine: {'line': b'[100%] Built target quad_msgs_s__rosidl_typesupport_c\n'}
+[19.428506] (quad_msgs) StdoutLine: {'line': b'[100%] Built target quad_msgs_s__rosidl_typesupport_fastrtps_c\n'}
+[19.428760] (quad_msgs) StdoutLine: {'line': b'[100%] Built target quad_msgs_s__rosidl_typesupport_introspection_c\n'}
+[19.442910] (quad_msgs) JobEnded: {'identifier': 'quad_msgs', 'rc': 'SIGINT'}
+[19.453669] (-) EventReactorShutdown: {}

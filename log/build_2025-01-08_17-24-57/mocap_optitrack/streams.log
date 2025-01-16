@@ -1,0 +1,58 @@
+[0.015s] Invoking command in '/home/dologan/ros2_ws/src/quad-sdk/build/mocap_optitrack': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/jazzy CONDA_PROMPT_MODIFIER=(base) DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake --build /home/dologan/ros2_ws/src/quad-sdk/build/mocap_optitrack -- -j8 -l8
+[0.096s] [ 11%] [32mBuilding CXX object src/CMakeFiles/mocap_optitrack_mocap_node.dir/version.cpp.o[0m
+[0.097s] [ 33%] [32mBuilding CXX object src/CMakeFiles/mocap_optitrack_mocap_node.dir/natnet/natnet_packet_definition.cpp.o[0m
+[0.103s] [ 22%] [32mBuilding CXX object src/CMakeFiles/mocap_optitrack_mocap_node.dir/mocap_node.cpp.o[0m
+[0.103s] [ 44%] [32mBuilding CXX object src/CMakeFiles/mocap_optitrack_mocap_node.dir/natnet/natnet_messages.cpp.o[0m
+[0.103s] [ 55%] [32mBuilding CXX object src/CMakeFiles/mocap_optitrack_mocap_node.dir/socket.cpp.o[0m
+[0.105s] [ 66%] [32mBuilding CXX object src/CMakeFiles/mocap_optitrack_mocap_node.dir/rigid_body_publisher.cpp.o[0m
+[0.114s] [ 77%] [32mBuilding CXX object src/CMakeFiles/mocap_optitrack_mocap_node.dir/mocap_config.cpp.o[0m
+[0.114s] [ 88%] [32mBuilding CXX object src/CMakeFiles/mocap_optitrack_mocap_node.dir/data_model.cpp.o[0m
+[0.655s] In file included from [01m[K/home/dologan/ros2_ws/src/quad-sdk/external/mocap_optitrack/src/natnet/natnet_messages.cpp:29[m[K:
+[0.655s] [01m[K/home/dologan/ros2_ws/src/quad-sdk/external/mocap_optitrack/src/natnet/natnet_messages.h:43:22:[m[K [01;35m[Kwarning: [m[K‘[01m[Kvirtual void natnet::MessageInterface::[01;32m[Kdeserialize[m[K(const natnet::MessageBuffer&, mocap_optitrack::DataModel*)[m[K’ was hidden [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Woverloaded-virtual=-Woverloaded-virtual=]8;;[m[K]
+[0.655s]    43 |         virtual void [01;35m[Kdeserialize[m[K(MessageBuffer const&, mocap_optitrack::DataModel*) {};
+[0.655s]       |                      [01;35m[K^~~~~~~~~~~[m[K
+[0.655s] [01m[K/home/dologan/ros2_ws/src/quad-sdk/external/mocap_optitrack/src/natnet/natnet_messages.h:68:22:[m[K [01;36m[Knote: [m[K  by ‘[01m[Kvirtual void natnet::DataFrameMessage::[01;32m[Kdeserialize[m[K(rclcpp::Logger, const natnet::MessageBuffer&, mocap_optitrack::DataModel*)[m[K’
+[0.656s]    68 |         virtual void [01;36m[Kdeserialize[m[K(rclcpp::Logger, MessageBuffer const&, mocap_optitrack::DataModel*);
+[0.656s]       |                      [01;36m[K^~~~~~~~~~~[m[K
+[1.110s] [01m[K/home/dologan/ros2_ws/src/quad-sdk/external/mocap_optitrack/src/natnet/natnet_messages.cpp:[m[K In function ‘[01m[Kvoid natnet::utilities::[01;32m[Kstringify_timecode[m[K(unsigned int, unsigned int, char*, int)[m[K’:
+[1.110s] [01m[K/home/dologan/ros2_ws/src/quad-sdk/external/mocap_optitrack/src/natnet/natnet_messages.cpp:84:10:[m[K [01;35m[Kwarning: [m[Kunused variable ‘[01m[KbValid[m[K’ [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wunused-variable-Wunused-variable]8;;[m[K]
+[1.110s]    84 |     bool [01;35m[KbValid[m[K;
+[1.110s]       |          [01;35m[K^~~~~~[m[K
+[1.124s] [01m[K/home/dologan/ros2_ws/src/quad-sdk/external/mocap_optitrack/src/natnet/natnet_messages.cpp:[m[K In member function ‘[01m[Kvirtual void natnet::DataFrameMessage::[01;32m[Kdeserialize[m[K(rclcpp::Logger, const natnet::MessageBuffer&, mocap_optitrack::DataModel*)[m[K’:
+[1.124s] [01m[K/home/dologan/ros2_ws/src/quad-sdk/external/mocap_optitrack/src/natnet/natnet_messages.cpp:330:16:[m[K [01;35m[Kwarning: [m[Kunused variable ‘[01m[KbHasModel[m[K’ [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wunused-variable-Wunused-variable]8;;[m[K]
+[1.124s]   330 |           bool [01;35m[KbHasModel[m[K = (params & 0x08) != 0;
+[1.124s]       |                [01;35m[K^~~~~~~~~[m[K
+[1.125s] [01m[K/home/dologan/ros2_ws/src/quad-sdk/external/mocap_optitrack/src/natnet/natnet_messages.cpp:332:16:[m[K [01;35m[Kwarning: [m[Kunused variable ‘[01m[KbUnlabeled[m[K’ [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wunused-variable-Wunused-variable]8;;[m[K]
+[1.125s]   332 |           bool [01;35m[KbUnlabeled[m[K = (params & 0x10) != 0;
+[1.125s]       |                [01;35m[K^~~~~~~~~~[m[K
+[1.125s] [01m[K/home/dologan/ros2_ws/src/quad-sdk/external/mocap_optitrack/src/natnet/natnet_messages.cpp:334:16:[m[K [01;35m[Kwarning: [m[Kunused variable ‘[01m[KbActiveMarker[m[K’ [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wunused-variable-Wunused-variable]8;;[m[K]
+[1.125s]   334 |           bool [01;35m[KbActiveMarker[m[K = (params & 0x20) != 0;
+[1.125s]       |                [01;35m[K^~~~~~~~~~~~~[m[K
+[1.128s] [01m[K/home/dologan/ros2_ws/src/quad-sdk/external/mocap_optitrack/src/natnet/natnet_messages.cpp:322:14:[m[K [01;35m[Kwarning: [m[Kunused variable ‘[01m[KbOccluded[m[K’ [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wunused-variable-Wunused-variable]8;;[m[K]
+[1.129s]   322 |         bool [01;35m[KbOccluded[m[K = (params & 0x01) != 0;
+[1.129s]       |              [01;35m[K^~~~~~~~~[m[K
+[1.129s] [01m[K/home/dologan/ros2_ws/src/quad-sdk/external/mocap_optitrack/src/natnet/natnet_messages.cpp:324:14:[m[K [01;35m[Kwarning: [m[Kunused variable ‘[01m[KbPCSolved[m[K’ [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wunused-variable-Wunused-variable]8;;[m[K]
+[1.129s]   324 |         bool [01;35m[KbPCSolved[m[K = (params & 0x02) != 0;
+[1.129s]       |              [01;35m[K^~~~~~~~~[m[K
+[1.129s] [01m[K/home/dologan/ros2_ws/src/quad-sdk/external/mocap_optitrack/src/natnet/natnet_messages.cpp:326:14:[m[K [01;35m[Kwarning: [m[Kunused variable ‘[01m[KbModelSolved[m[K’ [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wunused-variable-Wunused-variable]8;;[m[K]
+[1.129s]   326 |         bool [01;35m[KbModelSolved[m[K = (params & 0x04) != 0;
+[1.130s]       |              [01;35m[K^~~~~~~~~~~~[m[K
+[1.137s] [01m[K/home/dologan/ros2_ws/src/quad-sdk/external/mocap_optitrack/src/natnet/natnet_messages.cpp:484:8:[m[K [01;35m[Kwarning: [m[Kunused variable ‘[01m[KbIsRecording[m[K’ [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wunused-variable-Wunused-variable]8;;[m[K]
+[1.137s]   484 |   bool [01;35m[KbIsRecording[m[K = (params & 0x01) != 0;
+[1.138s]       |        [01;35m[K^~~~~~~~~~~~[m[K
+[1.138s] [01m[K/home/dologan/ros2_ws/src/quad-sdk/external/mocap_optitrack/src/natnet/natnet_messages.cpp:486:8:[m[K [01;35m[Kwarning: [m[Kunused variable ‘[01m[KbTrackedModelsChanged[m[K’ [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wunused-variable-Wunused-variable]8;;[m[K]
+[1.138s]   486 |   bool [01;35m[KbTrackedModelsChanged[m[K = (params & 0x02) != 0;
+[1.138s]       |        [01;35m[K^~~~~~~~~~~~~~~~~~~~~[m[K
+[3.500s] In file included from [01m[K/home/dologan/ros2_ws/src/quad-sdk/external/mocap_optitrack/src/mocap_node.cpp:35[m[K:
+[3.500s] [01m[K/home/dologan/ros2_ws/src/quad-sdk/external/mocap_optitrack/src/natnet/natnet_messages.h:43:22:[m[K [01;35m[Kwarning: [m[K‘[01m[Kvirtual void natnet::MessageInterface::[01;32m[Kdeserialize[m[K(const natnet::MessageBuffer&, mocap_optitrack::DataModel*)[m[K’ was hidden [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Woverloaded-virtual=-Woverloaded-virtual=]8;;[m[K]
+[3.500s]    43 |         virtual void [01;35m[Kdeserialize[m[K(MessageBuffer const&, mocap_optitrack::DataModel*) {};
+[3.500s]       |                      [01;35m[K^~~~~~~~~~~[m[K
+[3.500s] [01m[K/home/dologan/ros2_ws/src/quad-sdk/external/mocap_optitrack/src/natnet/natnet_messages.h:68:22:[m[K [01;36m[Knote: [m[K  by ‘[01m[Kvirtual void natnet::DataFrameMessage::[01;32m[Kdeserialize[m[K(rclcpp::Logger, const natnet::MessageBuffer&, mocap_optitrack::DataModel*)[m[K’
+[3.500s]    68 |         virtual void [01;36m[Kdeserialize[m[K(rclcpp::Logger, MessageBuffer const&, mocap_optitrack::DataModel*);
+[3.500s]       |                      [01;36m[K^~~~~~~~~~~[m[K
+[3.524s] [01m[K/home/dologan/ros2_ws/src/quad-sdk/external/mocap_optitrack/src/mocap_node.cpp:[m[K In member function ‘[01m[Kvoid mocap_optitrack::OptiTrackRosBridge::[01;32m[Kinitialize[m[K()[m[K’:
+[3.524s] [01m[K/home/dologan/ros2_ws/src/quad-sdk/external/mocap_optitrack/src/mocap_node.cpp:80:15:[m[K [01;35m[Kwarning: [m[Kunused variable ‘[01m[Kret[m[K’ [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wunused-variable-Wunused-variable]8;;[m[K]
+[3.525s]    80 |           int [01;35m[Kret[m[K = multicastClientSocketPtr->send(&connectionRequestMsgBuffer[0], connectionRequestMsgBuffer.size(),
+[3.525s]       |               [01;35m[K^~~[m[K
+[11.399s] [100%] [32m[1mLinking CXX executable mocap_node[0m
+[18.974s] [100%] Built target mocap_optitrack_mocap_node

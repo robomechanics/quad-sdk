@@ -1,0 +1,27 @@
+[0.016s] Invoking command in '/home/dologan/ros2_ws/src/quad-sdk/build/mocap_optitrack': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/jazzy CONDA_PROMPT_MODIFIER=(base) DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake --build /home/dologan/ros2_ws/src/quad-sdk/build/mocap_optitrack -- -j8 -l8
+[0.133s] [100%] Built target mocap_optitrack_mocap_node
+[0.165s] Invoked command in '/home/dologan/ros2_ws/src/quad-sdk/build/mocap_optitrack' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/jazzy CONDA_PROMPT_MODIFIER=(base) DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake --build /home/dologan/ros2_ws/src/quad-sdk/build/mocap_optitrack -- -j8 -l8
+[0.166s] Invoking command in '/home/dologan/ros2_ws/src/quad-sdk/build/mocap_optitrack': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/jazzy CONDA_PROMPT_MODIFIER=(base) DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake --install /home/dologan/ros2_ws/src/quad-sdk/build/mocap_optitrack
+[0.177s] -- Install configuration: ""
+[0.177s] -- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/mocap_optitrack/share/mocap_optitrack//launch
+[0.178s] -- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/mocap_optitrack/share/mocap_optitrack//launch/mocap.launch.py
+[0.178s] -- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/mocap_optitrack/share/mocap_optitrack//config
+[0.178s] -- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/mocap_optitrack/share/mocap_optitrack//config/mocap.yaml
+[0.179s] -- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/mocap_optitrack/share/ament_index/resource_index/package_run_dependencies/mocap_optitrack
+[0.179s] -- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/mocap_optitrack/share/ament_index/resource_index/parent_prefix_path/mocap_optitrack
+[0.179s] -- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/mocap_optitrack/share/mocap_optitrack/environment/ament_prefix_path.sh
+[0.179s] -- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/mocap_optitrack/share/mocap_optitrack/environment/ament_prefix_path.dsv
+[0.179s] -- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/mocap_optitrack/share/mocap_optitrack/environment/path.sh
+[0.180s] -- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/mocap_optitrack/share/mocap_optitrack/environment/path.dsv
+[0.180s] -- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/mocap_optitrack/share/mocap_optitrack/local_setup.bash
+[0.180s] -- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/mocap_optitrack/share/mocap_optitrack/local_setup.sh
+[0.180s] -- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/mocap_optitrack/share/mocap_optitrack/local_setup.zsh
+[0.180s] -- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/mocap_optitrack/share/mocap_optitrack/local_setup.dsv
+[0.180s] -- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/mocap_optitrack/share/mocap_optitrack/package.dsv
+[0.181s] -- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/mocap_optitrack/share/ament_index/resource_index/packages/mocap_optitrack
+[0.181s] -- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/mocap_optitrack/share/mocap_optitrack/cmake/mocap_optitrackConfig.cmake
+[0.181s] -- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/mocap_optitrack/share/mocap_optitrack/cmake/mocap_optitrackConfig-version.cmake
+[0.181s] -- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/mocap_optitrack/share/mocap_optitrack/package.xml
+[0.181s] -- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/mocap_optitrack/lib/mocap_optitrack/mocap_node
+[0.186s] -- Set non-toolchain portion of runtime path of "/home/dologan/ros2_ws/src/quad-sdk/install/mocap_optitrack/lib/mocap_optitrack/mocap_node" to ""
+[0.187s] Invoked command in '/home/dologan/ros2_ws/src/quad-sdk/build/mocap_optitrack' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/jazzy CONDA_PROMPT_MODIFIER=(base) DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake --install /home/dologan/ros2_ws/src/quad-sdk/build/mocap_optitrack

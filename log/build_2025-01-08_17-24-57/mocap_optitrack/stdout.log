@@ -1,0 +1,10 @@
+[ 11%] [32mBuilding CXX object src/CMakeFiles/mocap_optitrack_mocap_node.dir/version.cpp.o[0m
+[ 33%] [32mBuilding CXX object src/CMakeFiles/mocap_optitrack_mocap_node.dir/natnet/natnet_packet_definition.cpp.o[0m
+[ 22%] [32mBuilding CXX object src/CMakeFiles/mocap_optitrack_mocap_node.dir/mocap_node.cpp.o[0m
+[ 44%] [32mBuilding CXX object src/CMakeFiles/mocap_optitrack_mocap_node.dir/natnet/natnet_messages.cpp.o[0m
+[ 55%] [32mBuilding CXX object src/CMakeFiles/mocap_optitrack_mocap_node.dir/socket.cpp.o[0m
+[ 66%] [32mBuilding CXX object src/CMakeFiles/mocap_optitrack_mocap_node.dir/rigid_body_publisher.cpp.o[0m
+[ 77%] [32mBuilding CXX object src/CMakeFiles/mocap_optitrack_mocap_node.dir/mocap_config.cpp.o[0m
+[ 88%] [32mBuilding CXX object src/CMakeFiles/mocap_optitrack_mocap_node.dir/data_model.cpp.o[0m
+[100%] [32m[1mLinking CXX executable mocap_node[0m
+[100%] Built target mocap_optitrack_mocap_node

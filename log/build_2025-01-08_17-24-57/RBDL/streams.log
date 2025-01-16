@@ -1,0 +1,29 @@
+[0.018s] Invoking command in '/home/dologan/ros2_ws/src/quad-sdk/build/RBDL': CONDA_PROMPT_MODIFIER=(base) DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake --build /home/dologan/ros2_ws/src/quad-sdk/build/RBDL -- -j8 -l8
+[0.086s] [100%] Built target rbdl
+[0.116s] Invoked command in '/home/dologan/ros2_ws/src/quad-sdk/build/RBDL' returned '0': CONDA_PROMPT_MODIFIER=(base) DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake --build /home/dologan/ros2_ws/src/quad-sdk/build/RBDL -- -j8 -l8
+[0.132s] Invoking command in '/home/dologan/ros2_ws/src/quad-sdk/build/RBDL': CONDA_PROMPT_MODIFIER=(base) DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake --install /home/dologan/ros2_ws/src/quad-sdk/build/RBDL
+[0.154s] -- Install configuration: "Release"
+[0.156s] -- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/RBDL/lib/librbdl.so.3.0.0
+[0.159s] -- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/RBDL/lib/librbdl.so
+[0.159s] -- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/RBDL/include/rbdl/rbdl_config.h
+[0.159s] -- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/RBDL/include/rbdl/Body.h
+[0.159s] -- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/RBDL/include/rbdl/Constraint.h
+[0.159s] -- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/RBDL/include/rbdl/Constraint_Contact.h
+[0.160s] -- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/RBDL/include/rbdl/Constraint_Loop.h
+[0.160s] -- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/RBDL/include/rbdl/Constraints.h
+[0.167s] -- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/RBDL/include/rbdl/Dynamics.h
+[0.167s] -- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/RBDL/include/rbdl/Joint.h
+[0.167s] -- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/RBDL/include/rbdl/Kinematics.h
+[0.168s] -- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/RBDL/include/rbdl/Logging.h
+[0.168s] -- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/RBDL/include/rbdl/Model.h
+[0.168s] -- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/RBDL/include/rbdl/Quaternion.h
+[0.168s] -- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/RBDL/include/rbdl/SpatialAlgebraOperators.h
+[0.168s] -- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/RBDL/include/rbdl/compileassert.h
+[0.168s] -- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/RBDL/include/rbdl/rbdl.h
+[0.168s] -- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/RBDL/include/rbdl/rbdl_eigenmath.h
+[0.168s] -- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/RBDL/include/rbdl/rbdl_errors.h
+[0.168s] -- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/RBDL/include/rbdl/rbdl_math.h
+[0.177s] -- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/RBDL/include/rbdl/rbdl_mathutils.h
+[0.177s] -- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/RBDL/include/rbdl/rbdl_utils.h
+[0.177s] -- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/RBDL/lib/pkgconfig/rbdl.pc
+[0.177s] Invoked command in '/home/dologan/ros2_ws/src/quad-sdk/build/RBDL' returned '0': CONDA_PROMPT_MODIFIER=(base) DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake --install /home/dologan/ros2_ws/src/quad-sdk/build/RBDL

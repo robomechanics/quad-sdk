@@ -1,0 +1,517 @@
+[  1%] Built target quad_msgs__rosidl_generator_type_description
+[  1%] Built target ament_cmake_python_copy_quad_msgs
+[  1%] Built target quad_msgs__cpp
+[ 28%] Built target quad_msgs__rosidl_generator_c
+[ 37%] Built target quad_msgs__rosidl_typesupport_c
+[ 46%] Built target quad_msgs__rosidl_typesupport_introspection_c
+[ 56%] Built target quad_msgs__rosidl_typesupport_introspection_cpp
+[ 66%] Built target quad_msgs__rosidl_typesupport_fastrtps_cpp
+[ 76%] Built target quad_msgs__rosidl_typesupport_cpp
+[ 86%] Built target quad_msgs__rosidl_typesupport_fastrtps_c
+[ 86%] Built target quad_msgs
+[ 87%] Built target quad_msgs__py
+[ 96%] Built target quad_msgs__rosidl_generator_py
+[ 98%] Built target quad_msgs_s__rosidl_typesupport_fastrtps_c
+[ 98%] Built target quad_msgs_s__rosidl_typesupport_c
+[100%] Built target quad_msgs_s__rosidl_typesupport_introspection_c
+running egg_info
+writing quad_msgs.egg-info/PKG-INFO
+writing dependency_links to quad_msgs.egg-info/dependency_links.txt
+writing top-level names to quad_msgs.egg-info/top_level.txt
+reading manifest file 'quad_msgs.egg-info/SOURCES.txt'
+writing manifest file 'quad_msgs.egg-info/SOURCES.txt'
+[100%] Built target ament_cmake_python_build_quad_msgs_egg
+-- Install configuration: ""
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/share/ament_index/resource_index/rosidl_interfaces/quad_msgs
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/share/quad_msgs/msg/BodyForceEstimate.json
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/share/quad_msgs/msg/RobotState.json
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/share/quad_msgs/msg/BodyState.json
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/share/quad_msgs/msg/GRFArray.json
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/share/quad_msgs/msg/RobotPlan.json
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/share/quad_msgs/msg/RobotPlanDiagnostics.json
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/share/quad_msgs/msg/FootState.json
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/share/quad_msgs/msg/MultiFootState.json
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/share/quad_msgs/msg/MultiFootPlanContinuous.json
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/share/quad_msgs/msg/FootPlanDiscrete.json
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/share/quad_msgs/msg/MultiFootPlanDiscrete.json
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/share/quad_msgs/msg/LegContactMode.json
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/share/quad_msgs/msg/ContactMode.json
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/share/quad_msgs/msg/MotorCommand.json
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/share/quad_msgs/msg/LegCommand.json
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/share/quad_msgs/msg/LegCommandArray.json
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/rosidl_generator_c__visibility_control.h
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/multi_foot_plan_discrete.h
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/multi_foot_state.h
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/robot_state.h
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/motor_command.h
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/robot_plan.h
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/leg_command_array.h
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/multi_foot_plan_continuous.h
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/body_force_estimate.h
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/robot_plan_diagnostics.h
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/foot_state.h
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/leg_command.h
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/leg_contact_mode.h
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/grf_array.h
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/contact_mode.h
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/body_state.h
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/foot_plan_discrete.h
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/foot_state__struct.h
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/multi_foot_plan_discrete__functions.h
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/contact_mode__type_support.h
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/leg_command_array__type_support.c
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/grf_array__struct.h
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/grf_array__functions.h
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/leg_command__functions.c
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/multi_foot_plan_continuous__functions.h
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/robot_plan_diagnostics__type_support.c
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/body_state__functions.h
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/multi_foot_state__functions.c
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/leg_contact_mode__description.c
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/multi_foot_plan_continuous__description.c
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/body_state__description.c
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/robot_plan__type_support.c
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/robot_plan_diagnostics__functions.h
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/body_force_estimate__description.c
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/robot_plan__functions.h
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/multi_foot_plan_continuous__functions.c
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/leg_command__type_support.h
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/leg_command__description.c
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/robot_state__type_support.h
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/body_force_estimate__functions.c
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/foot_plan_discrete__functions.c
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/body_force_estimate__functions.h
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/robot_plan__struct.h
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/foot_plan_discrete__functions.h
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/foot_state__functions.c
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/robot_state__struct.h
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/leg_contact_mode__struct.h
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/body_force_estimate__struct.h
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/grf_array__type_support.c
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/foot_state__type_support.h
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/contact_mode__type_support.c
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/multi_foot_state__description.c
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/leg_contact_mode__functions.h
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/leg_command_array__description.c
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/motor_command__type_support.h
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/leg_contact_mode__type_support.h
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/robot_state__functions.h
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/multi_foot_state__functions.h
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/motor_command__description.c
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/body_state__struct.h
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/multi_foot_plan_discrete__functions.c
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/grf_array__type_support.h
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/motor_command__type_support.c
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/body_state__type_support.h
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/multi_foot_plan_discrete__type_support.h
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/leg_command_array__functions.h
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/body_force_estimate__type_support.h
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/robot_plan_diagnostics__type_support.h
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/multi_foot_plan_discrete__description.c
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/robot_state__description.c
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/robot_plan__type_support.h
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/multi_foot_plan_discrete__type_support.c
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/contact_mode__functions.c
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/multi_foot_state__struct.h
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/robot_state__functions.c
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/contact_mode__description.c
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/grf_array__description.c
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/multi_foot_plan_continuous__struct.h
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/robot_plan__functions.c
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/body_state__type_support.c
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/body_force_estimate__type_support.c
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/motor_command__functions.c
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/leg_command_array__struct.h
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/leg_contact_mode__type_support.c
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/leg_command__struct.h
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/multi_foot_state__type_support.c
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/multi_foot_plan_discrete__struct.h
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/foot_state__type_support.c
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/robot_plan_diagnostics__description.c
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/motor_command__functions.h
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/robot_plan_diagnostics__struct.h
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/foot_plan_discrete__type_support.h
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/foot_plan_discrete__description.c
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/leg_contact_mode__functions.c
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/leg_command__type_support.c
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/foot_plan_discrete__type_support.c
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/foot_state__functions.h
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/leg_command__functions.h
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/grf_array__functions.c
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/contact_mode__functions.h
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/foot_state__description.c
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/contact_mode__struct.h
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/robot_plan__description.c
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/leg_command_array__type_support.h
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/multi_foot_state__type_support.h
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/leg_command_array__functions.c
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/motor_command__struct.h
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/body_state__functions.c
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/foot_plan_discrete__struct.h
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/multi_foot_plan_continuous__type_support.c
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/multi_foot_plan_continuous__type_support.h
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/robot_state__type_support.c
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/robot_plan_diagnostics__functions.c
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/share/quad_msgs/environment/library_path.sh
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/share/quad_msgs/environment/library_path.dsv
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/lib/libquad_msgs__rosidl_generator_c.so
+-- Set non-toolchain portion of runtime path of "/home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/lib/libquad_msgs__rosidl_generator_c.so" to ""
+-- Up-to-date: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs
+-- Up-to-date: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/rosidl_typesupport_fastrtps_c__visibility_control.h
+-- Up-to-date: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/contact_mode__rosidl_typesupport_fastrtps_c.h
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/multi_foot_state__rosidl_typesupport_fastrtps_c.h
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/foot_plan_discrete__rosidl_typesupport_fastrtps_c.h
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/body_force_estimate__rosidl_typesupport_fastrtps_c.h
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/grf_array__rosidl_typesupport_fastrtps_c.h
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/body_state__rosidl_typesupport_fastrtps_c.h
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/foot_state__rosidl_typesupport_fastrtps_c.h
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/robot_state__rosidl_typesupport_fastrtps_c.h
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/multi_foot_plan_discrete__rosidl_typesupport_fastrtps_c.h
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/motor_command__rosidl_typesupport_fastrtps_c.h
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/multi_foot_plan_continuous__rosidl_typesupport_fastrtps_c.h
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/robot_plan_diagnostics__rosidl_typesupport_fastrtps_c.h
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/leg_command_array__rosidl_typesupport_fastrtps_c.h
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/leg_command__rosidl_typesupport_fastrtps_c.h
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/leg_contact_mode__rosidl_typesupport_fastrtps_c.h
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/robot_plan__rosidl_typesupport_fastrtps_c.h
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/lib/libquad_msgs__rosidl_typesupport_fastrtps_c.so
+-- Set non-toolchain portion of runtime path of "/home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/lib/libquad_msgs__rosidl_typesupport_fastrtps_c.so" to ""
+-- Up-to-date: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs
+-- Up-to-date: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/foot_plan_discrete.hpp
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/motor_command.hpp
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/body_state.hpp
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/contact_mode.hpp
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/leg_command.hpp
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/body_force_estimate.hpp
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/multi_foot_plan_discrete.hpp
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/robot_plan_diagnostics.hpp
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/multi_foot_state.hpp
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/foot_state.hpp
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/robot_plan.hpp
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/grf_array.hpp
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/robot_state.hpp
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/leg_contact_mode.hpp
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/multi_foot_plan_continuous.hpp
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/rosidl_generator_cpp__visibility_control.hpp
+-- Up-to-date: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/body_force_estimate__struct.hpp
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/leg_command__builder.hpp
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/grf_array__builder.hpp
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/multi_foot_plan_discrete__struct.hpp
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/leg_contact_mode__traits.hpp
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/robot_plan__builder.hpp
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/body_force_estimate__type_support.hpp
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/grf_array__type_support.hpp
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/foot_state__type_support.hpp
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/leg_command_array__builder.hpp
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/robot_plan_diagnostics__struct.hpp
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/foot_plan_discrete__struct.hpp
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/multi_foot_plan_continuous__struct.hpp
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/multi_foot_state__type_support.hpp
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/robot_plan__struct.hpp
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/body_state__struct.hpp
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/leg_command__type_support.hpp
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/multi_foot_plan_discrete__builder.hpp
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/robot_state__struct.hpp
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/robot_plan__traits.hpp
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/multi_foot_state__struct.hpp
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/contact_mode__struct.hpp
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/leg_command_array__traits.hpp
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/leg_command__struct.hpp
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/multi_foot_state__traits.hpp
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/robot_plan_diagnostics__builder.hpp
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/body_force_estimate__traits.hpp
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/foot_state__struct.hpp
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/multi_foot_plan_continuous__type_support.hpp
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/motor_command__type_support.hpp
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/foot_state__traits.hpp
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/foot_plan_discrete__builder.hpp
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/body_force_estimate__builder.hpp
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/robot_state__type_support.hpp
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/multi_foot_plan_discrete__traits.hpp
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/leg_contact_mode__builder.hpp
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/grf_array__struct.hpp
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/robot_state__builder.hpp
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/leg_contact_mode__type_support.hpp
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/grf_array__traits.hpp
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/motor_command__struct.hpp
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/leg_command__traits.hpp
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/robot_state__traits.hpp
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/leg_command_array__type_support.hpp
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/contact_mode__type_support.hpp
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/multi_foot_plan_continuous__builder.hpp
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/robot_plan_diagnostics__type_support.hpp
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/body_state__builder.hpp
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/robot_plan__type_support.hpp
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/foot_plan_discrete__traits.hpp
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/body_state__type_support.hpp
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/robot_plan_diagnostics__traits.hpp
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/body_state__traits.hpp
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/contact_mode__builder.hpp
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/motor_command__builder.hpp
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/foot_plan_discrete__type_support.hpp
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/multi_foot_state__builder.hpp
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/leg_contact_mode__struct.hpp
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/motor_command__traits.hpp
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/foot_state__builder.hpp
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/multi_foot_plan_continuous__traits.hpp
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/contact_mode__traits.hpp
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/multi_foot_plan_discrete__type_support.hpp
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/leg_command_array__struct.hpp
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/leg_command_array.hpp
+-- Up-to-date: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs
+-- Up-to-date: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/rosidl_typesupport_fastrtps_cpp__visibility_control.h
+-- Up-to-date: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/dds_fastrtps
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/multi_foot_plan_discrete__rosidl_typesupport_fastrtps_cpp.hpp
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/leg_command__rosidl_typesupport_fastrtps_cpp.hpp
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/robot_plan_diagnostics__rosidl_typesupport_fastrtps_cpp.hpp
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/grf_array__rosidl_typesupport_fastrtps_cpp.hpp
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/contact_mode__rosidl_typesupport_fastrtps_cpp.hpp
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/robot_plan__rosidl_typesupport_fastrtps_cpp.hpp
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/body_state__rosidl_typesupport_fastrtps_cpp.hpp
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/robot_state__rosidl_typesupport_fastrtps_cpp.hpp
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/multi_foot_plan_continuous__rosidl_typesupport_fastrtps_cpp.hpp
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/multi_foot_state__rosidl_typesupport_fastrtps_cpp.hpp
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/leg_command_array__rosidl_typesupport_fastrtps_cpp.hpp
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/leg_contact_mode__rosidl_typesupport_fastrtps_cpp.hpp
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/foot_state__rosidl_typesupport_fastrtps_cpp.hpp
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/motor_command__rosidl_typesupport_fastrtps_cpp.hpp
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/foot_plan_discrete__rosidl_typesupport_fastrtps_cpp.hpp
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/body_force_estimate__rosidl_typesupport_fastrtps_cpp.hpp
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/lib/libquad_msgs__rosidl_typesupport_fastrtps_cpp.so
+-- Set non-toolchain portion of runtime path of "/home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/lib/libquad_msgs__rosidl_typesupport_fastrtps_cpp.so" to ""
+-- Up-to-date: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs
+-- Up-to-date: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/rosidl_typesupport_introspection_c__visibility_control.h
+-- Up-to-date: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/leg_command_array__type_support.c
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/robot_plan_diagnostics__type_support.c
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/leg_command_array__rosidl_typesupport_introspection_c.h
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/multi_foot_plan_continuous__rosidl_typesupport_introspection_c.h
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/robot_plan__type_support.c
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/robot_plan_diagnostics__rosidl_typesupport_introspection_c.h
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/leg_command__rosidl_typesupport_introspection_c.h
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/foot_state__rosidl_typesupport_introspection_c.h
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/multi_foot_plan_discrete__rosidl_typesupport_introspection_c.h
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/multi_foot_state__rosidl_typesupport_introspection_c.h
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/grf_array__type_support.c
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/leg_contact_mode__rosidl_typesupport_introspection_c.h
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/contact_mode__type_support.c
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/robot_plan__rosidl_typesupport_introspection_c.h
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/motor_command__rosidl_typesupport_introspection_c.h
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/motor_command__type_support.c
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/multi_foot_plan_discrete__type_support.c
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/body_state__type_support.c
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/body_force_estimate__type_support.c
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/leg_contact_mode__type_support.c
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/multi_foot_state__type_support.c
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/foot_state__type_support.c
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/robot_state__rosidl_typesupport_introspection_c.h
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/leg_command__type_support.c
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/body_state__rosidl_typesupport_introspection_c.h
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/foot_plan_discrete__type_support.c
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/contact_mode__rosidl_typesupport_introspection_c.h
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/multi_foot_plan_continuous__type_support.c
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/body_force_estimate__rosidl_typesupport_introspection_c.h
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/grf_array__rosidl_typesupport_introspection_c.h
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/foot_plan_discrete__rosidl_typesupport_introspection_c.h
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/robot_state__type_support.c
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/lib/libquad_msgs__rosidl_typesupport_introspection_c.so
+-- Set non-toolchain portion of runtime path of "/home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/lib/libquad_msgs__rosidl_typesupport_introspection_c.so" to ""
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/lib/libquad_msgs__rosidl_typesupport_c.so
+-- Set non-toolchain portion of runtime path of "/home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/lib/libquad_msgs__rosidl_typesupport_c.so" to ""
+-- Up-to-date: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs
+-- Up-to-date: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg
+-- Up-to-date: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/motor_command__type_support.cpp
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/leg_command__rosidl_typesupport_introspection_cpp.hpp
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/contact_mode__rosidl_typesupport_introspection_cpp.hpp
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/body_force_estimate__type_support.cpp
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/body_state__type_support.cpp
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/multi_foot_plan_discrete__rosidl_typesupport_introspection_cpp.hpp
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/multi_foot_state__rosidl_typesupport_introspection_cpp.hpp
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/robot_plan__type_support.cpp
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/foot_plan_discrete__type_support.cpp
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/robot_plan_diagnostics__rosidl_typesupport_introspection_cpp.hpp
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/multi_foot_plan_discrete__type_support.cpp
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/motor_command__rosidl_typesupport_introspection_cpp.hpp
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/body_force_estimate__rosidl_typesupport_introspection_cpp.hpp
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/grf_array__type_support.cpp
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/robot_plan__rosidl_typesupport_introspection_cpp.hpp
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/leg_contact_mode__type_support.cpp
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/robot_state__type_support.cpp
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/multi_foot_plan_continuous__type_support.cpp
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/leg_command__type_support.cpp
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/grf_array__rosidl_typesupport_introspection_cpp.hpp
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/foot_state__rosidl_typesupport_introspection_cpp.hpp
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/robot_plan_diagnostics__type_support.cpp
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/foot_state__type_support.cpp
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/multi_foot_state__type_support.cpp
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/leg_contact_mode__rosidl_typesupport_introspection_cpp.hpp
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/leg_command_array__rosidl_typesupport_introspection_cpp.hpp
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/contact_mode__type_support.cpp
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/robot_state__rosidl_typesupport_introspection_cpp.hpp
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/leg_command_array__type_support.cpp
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/foot_plan_discrete__rosidl_typesupport_introspection_cpp.hpp
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/multi_foot_plan_continuous__rosidl_typesupport_introspection_cpp.hpp
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/body_state__rosidl_typesupport_introspection_cpp.hpp
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/lib/libquad_msgs__rosidl_typesupport_introspection_cpp.so
+-- Set non-toolchain portion of runtime path of "/home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/lib/libquad_msgs__rosidl_typesupport_introspection_cpp.so" to ""
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/lib/libquad_msgs__rosidl_typesupport_cpp.so
+-- Set non-toolchain portion of runtime path of "/home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/lib/libquad_msgs__rosidl_typesupport_cpp.so" to ""
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/share/quad_msgs/environment/pythonpath.sh
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/share/quad_msgs/environment/pythonpath.dsv
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/lib/python3.11/site-packages/quad_msgs-0.0.1-py3.11.egg-info
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/lib/python3.11/site-packages/quad_msgs-0.0.1-py3.11.egg-info/top_level.txt
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/lib/python3.11/site-packages/quad_msgs-0.0.1-py3.11.egg-info/SOURCES.txt
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/lib/python3.11/site-packages/quad_msgs-0.0.1-py3.11.egg-info/PKG-INFO
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/lib/python3.11/site-packages/quad_msgs-0.0.1-py3.11.egg-info/dependency_links.txt
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/lib/python3.11/site-packages/quad_msgs
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/lib/python3.11/site-packages/quad_msgs/_quad_msgs_s.ep.rosidl_typesupport_fastrtps_c.c
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/lib/python3.11/site-packages/quad_msgs/quad_msgs_s__rosidl_typesupport_fastrtps_c.so
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/lib/python3.11/site-packages/quad_msgs/_quad_msgs_s.ep.rosidl_typesupport_c.c
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/lib/python3.11/site-packages/quad_msgs/quad_msgs_s__rosidl_typesupport_introspection_c.so
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/lib/python3.11/site-packages/quad_msgs/quad_msgs_s__rosidl_typesupport_c.so
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/lib/python3.11/site-packages/quad_msgs/__init__.py
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/lib/python3.11/site-packages/quad_msgs/msg
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/lib/python3.11/site-packages/quad_msgs/msg/_body_force_estimate_s.c
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/lib/python3.11/site-packages/quad_msgs/msg/_leg_command_array.py
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/lib/python3.11/site-packages/quad_msgs/msg/_robot_plan_s.c
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/lib/python3.11/site-packages/quad_msgs/msg/_multi_foot_plan_discrete_s.c
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/lib/python3.11/site-packages/quad_msgs/msg/_foot_plan_discrete_s.c
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/lib/python3.11/site-packages/quad_msgs/msg/_motor_command_s.c
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/lib/python3.11/site-packages/quad_msgs/msg/_body_state.py
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/lib/python3.11/site-packages/quad_msgs/msg/_leg_command_s.c
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/lib/python3.11/site-packages/quad_msgs/msg/_foot_state.py
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/lib/python3.11/site-packages/quad_msgs/msg/_body_state_s.c
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/lib/python3.11/site-packages/quad_msgs/msg/_leg_command.py
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/lib/python3.11/site-packages/quad_msgs/msg/_robot_plan_diagnostics_s.c
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/lib/python3.11/site-packages/quad_msgs/msg/_leg_contact_mode_s.c
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/lib/python3.11/site-packages/quad_msgs/msg/__init__.py
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/lib/python3.11/site-packages/quad_msgs/msg/_grf_array_s.c
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/lib/python3.11/site-packages/quad_msgs/msg/_foot_plan_discrete.py
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/lib/python3.11/site-packages/quad_msgs/msg/_multi_foot_plan_continuous.py
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/lib/python3.11/site-packages/quad_msgs/msg/_multi_foot_state.py
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/lib/python3.11/site-packages/quad_msgs/msg/_contact_mode_s.c
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/lib/python3.11/site-packages/quad_msgs/msg/_contact_mode.py
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/lib/python3.11/site-packages/quad_msgs/msg/_grf_array.py
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/lib/python3.11/site-packages/quad_msgs/msg/_motor_command.py
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/lib/python3.11/site-packages/quad_msgs/msg/_foot_state_s.c
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/lib/python3.11/site-packages/quad_msgs/msg/_leg_command_array_s.c
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/lib/python3.11/site-packages/quad_msgs/msg/_robot_plan.py
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/lib/python3.11/site-packages/quad_msgs/msg/_multi_foot_plan_discrete.py
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/lib/python3.11/site-packages/quad_msgs/msg/_robot_state_s.c
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/lib/python3.11/site-packages/quad_msgs/msg/_robot_plan_diagnostics.py
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/lib/python3.11/site-packages/quad_msgs/msg/_leg_contact_mode.py
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/lib/python3.11/site-packages/quad_msgs/msg/_body_force_estimate.py
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/lib/python3.11/site-packages/quad_msgs/msg/_multi_foot_plan_continuous_s.c
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/lib/python3.11/site-packages/quad_msgs/msg/_multi_foot_state_s.c
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/lib/python3.11/site-packages/quad_msgs/msg/_robot_state.py
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/lib/python3.11/site-packages/quad_msgs/_quad_msgs_s.ep.rosidl_typesupport_introspection_c.c
+Listing '/home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/lib/python3.11/site-packages/quad_msgs'...
+Compiling '/home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/lib/python3.11/site-packages/quad_msgs/__init__.py'...
+Listing '/home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/lib/python3.11/site-packages/quad_msgs/msg'...
+Compiling '/home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/lib/python3.11/site-packages/quad_msgs/msg/__init__.py'...
+Compiling '/home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/lib/python3.11/site-packages/quad_msgs/msg/_body_force_estimate.py'...
+Compiling '/home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/lib/python3.11/site-packages/quad_msgs/msg/_body_state.py'...
+Compiling '/home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/lib/python3.11/site-packages/quad_msgs/msg/_contact_mode.py'...
+Compiling '/home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/lib/python3.11/site-packages/quad_msgs/msg/_foot_plan_discrete.py'...
+Compiling '/home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/lib/python3.11/site-packages/quad_msgs/msg/_foot_state.py'...
+Compiling '/home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/lib/python3.11/site-packages/quad_msgs/msg/_grf_array.py'...
+Compiling '/home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/lib/python3.11/site-packages/quad_msgs/msg/_leg_command.py'...
+Compiling '/home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/lib/python3.11/site-packages/quad_msgs/msg/_leg_command_array.py'...
+Compiling '/home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/lib/python3.11/site-packages/quad_msgs/msg/_leg_contact_mode.py'...
+Compiling '/home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/lib/python3.11/site-packages/quad_msgs/msg/_motor_command.py'...
+Compiling '/home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/lib/python3.11/site-packages/quad_msgs/msg/_multi_foot_plan_continuous.py'...
+Compiling '/home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/lib/python3.11/site-packages/quad_msgs/msg/_multi_foot_plan_discrete.py'...
+Compiling '/home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/lib/python3.11/site-packages/quad_msgs/msg/_multi_foot_state.py'...
+Compiling '/home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/lib/python3.11/site-packages/quad_msgs/msg/_robot_plan.py'...
+Compiling '/home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/lib/python3.11/site-packages/quad_msgs/msg/_robot_plan_diagnostics.py'...
+Compiling '/home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/lib/python3.11/site-packages/quad_msgs/msg/_robot_state.py'...
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/lib/python3.11/site-packages/quad_msgs/quad_msgs_s__rosidl_typesupport_fastrtps_c.so
+-- Set non-toolchain portion of runtime path of "/home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/lib/python3.11/site-packages/quad_msgs/quad_msgs_s__rosidl_typesupport_fastrtps_c.so" to ""
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/lib/python3.11/site-packages/quad_msgs/quad_msgs_s__rosidl_typesupport_introspection_c.so
+-- Set non-toolchain portion of runtime path of "/home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/lib/python3.11/site-packages/quad_msgs/quad_msgs_s__rosidl_typesupport_introspection_c.so" to ""
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/lib/python3.11/site-packages/quad_msgs/quad_msgs_s__rosidl_typesupport_c.so
+-- Set non-toolchain portion of runtime path of "/home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/lib/python3.11/site-packages/quad_msgs/quad_msgs_s__rosidl_typesupport_c.so" to ""
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/lib/libquad_msgs__rosidl_generator_py.so
+-- Set non-toolchain portion of runtime path of "/home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/lib/libquad_msgs__rosidl_generator_py.so" to ""
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/share/quad_msgs/msg/BodyForceEstimate.idl
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/share/quad_msgs/msg/RobotState.idl
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/share/quad_msgs/msg/BodyState.idl
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/share/quad_msgs/msg/GRFArray.idl
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/share/quad_msgs/msg/RobotPlan.idl
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/share/quad_msgs/msg/RobotPlanDiagnostics.idl
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/share/quad_msgs/msg/FootState.idl
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/share/quad_msgs/msg/MultiFootState.idl
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/share/quad_msgs/msg/MultiFootPlanContinuous.idl
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/share/quad_msgs/msg/FootPlanDiscrete.idl
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/share/quad_msgs/msg/MultiFootPlanDiscrete.idl
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/share/quad_msgs/msg/LegContactMode.idl
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/share/quad_msgs/msg/ContactMode.idl
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/share/quad_msgs/msg/MotorCommand.idl
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/share/quad_msgs/msg/LegCommand.idl
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/share/quad_msgs/msg/LegCommandArray.idl
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/share/quad_msgs/msg/BodyForceEstimate.msg
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/share/quad_msgs/msg/RobotState.msg
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/share/quad_msgs/msg/BodyState.msg
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/share/quad_msgs/msg/GRFArray.msg
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/share/quad_msgs/msg/RobotPlan.msg
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/share/quad_msgs/msg/RobotPlanDiagnostics.msg
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/share/quad_msgs/msg/FootState.msg
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/share/quad_msgs/msg/MultiFootState.msg
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/share/quad_msgs/msg/MultiFootPlanContinuous.msg
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/share/quad_msgs/msg/FootPlanDiscrete.msg
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/share/quad_msgs/msg/MultiFootPlanDiscrete.msg
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/share/quad_msgs/msg/LegContactMode.msg
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/share/quad_msgs/msg/ContactMode.msg
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/share/quad_msgs/msg/MotorCommand.msg
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/share/quad_msgs/msg/LegCommand.msg
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/share/quad_msgs/msg/LegCommandArray.msg
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/share/ament_index/resource_index/package_run_dependencies/quad_msgs
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/share/ament_index/resource_index/parent_prefix_path/quad_msgs
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/share/quad_msgs/environment/ament_prefix_path.sh
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/share/quad_msgs/environment/ament_prefix_path.dsv
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/share/quad_msgs/environment/path.sh
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/share/quad_msgs/environment/path.dsv
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/share/quad_msgs/local_setup.bash
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/share/quad_msgs/local_setup.sh
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/share/quad_msgs/local_setup.zsh
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/share/quad_msgs/local_setup.dsv
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/share/quad_msgs/package.dsv
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/share/ament_index/resource_index/packages/quad_msgs
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/share/quad_msgs/cmake/export_quad_msgs__rosidl_generator_cExport.cmake
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/share/quad_msgs/cmake/export_quad_msgs__rosidl_generator_cExport-noconfig.cmake
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/share/quad_msgs/cmake/export_quad_msgs__rosidl_typesupport_fastrtps_cExport.cmake
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/share/quad_msgs/cmake/export_quad_msgs__rosidl_typesupport_fastrtps_cExport-noconfig.cmake
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/share/quad_msgs/cmake/export_quad_msgs__rosidl_generator_cppExport.cmake
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/share/quad_msgs/cmake/export_quad_msgs__rosidl_typesupport_fastrtps_cppExport.cmake
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/share/quad_msgs/cmake/export_quad_msgs__rosidl_typesupport_fastrtps_cppExport-noconfig.cmake
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/share/quad_msgs/cmake/quad_msgs__rosidl_typesupport_introspection_cExport.cmake
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/share/quad_msgs/cmake/quad_msgs__rosidl_typesupport_introspection_cExport-noconfig.cmake
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/share/quad_msgs/cmake/quad_msgs__rosidl_typesupport_cExport.cmake
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/share/quad_msgs/cmake/quad_msgs__rosidl_typesupport_cExport-noconfig.cmake
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/share/quad_msgs/cmake/quad_msgs__rosidl_typesupport_introspection_cppExport.cmake
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/share/quad_msgs/cmake/quad_msgs__rosidl_typesupport_introspection_cppExport-noconfig.cmake
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/share/quad_msgs/cmake/quad_msgs__rosidl_typesupport_cppExport.cmake
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/share/quad_msgs/cmake/quad_msgs__rosidl_typesupport_cppExport-noconfig.cmake
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/share/quad_msgs/cmake/export_quad_msgs__rosidl_generator_pyExport.cmake
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/share/quad_msgs/cmake/export_quad_msgs__rosidl_generator_pyExport-noconfig.cmake
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/share/quad_msgs/cmake/rosidl_cmake-extras.cmake
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/share/quad_msgs/cmake/ament_cmake_export_dependencies-extras.cmake
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/share/quad_msgs/cmake/ament_cmake_export_include_directories-extras.cmake
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/share/quad_msgs/cmake/ament_cmake_export_libraries-extras.cmake
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/share/quad_msgs/cmake/ament_cmake_export_targets-extras.cmake
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/share/quad_msgs/cmake/rosidl_cmake_export_typesupport_targets-extras.cmake
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/share/quad_msgs/cmake/rosidl_cmake_export_typesupport_libraries-extras.cmake
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/share/quad_msgs/cmake/quad_msgsConfig.cmake
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/share/quad_msgs/cmake/quad_msgsConfig-version.cmake
+-- Installing: /home/dologan/ros2_ws/src/quad-sdk/install/quad_msgs/share/quad_msgs/package.xml

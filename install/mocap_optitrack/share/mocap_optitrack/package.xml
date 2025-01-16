@@ -1,0 +1,45 @@
+<?xml version="1.0"?>
+<?xml-model href="http://download.ros.org/schema/package_format2.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
+<package format="2">
+  <name>mocap_optitrack</name>
+  <version>1.0.0</version>
+  <description>
+    Streaming of OptiTrack mocap data to tf
+    <p>
+    This package contains a node that translates motion capture data from an
+    OptiTrack rig to tf transforms, poses and 2D poses. The node receives
+    packets that are streamed by a NatNet compliant source, decodes them and
+    broadcasts the poses of configured rigid bodies as tf transforms, poses,
+    and/or 2D poses.
+    </p>
+    <p>
+    Currently, this node supports the NatNet streaming protocol v3.0
+    </p>
+    <p>
+    Copyright (c) 2013, Clearpath Robotics<br/> 
+    Copyright (c) 2010, University of Bonn, Computer Science Institute VI<br/>
+    All rights reserved.
+    </p>
+  </description>
+  <maintainer email="tony@baltovski.ca">Tony Baltovski</maintainer>
+  <author email="graeve@ais.uni-bonn.de">Kathrin Gräve</author>
+  <author email="abencz@clearpathrobotics.com">Alex Bencz/</author>
+  <author email="tony@baltovski.ca">Tony Baltovski</author>
+  <author email="jyamokoski@houstonmechatronics.com">JD Yamokoski</author>
+  <author email="vinnam.kim@samsung.com">Vinnam Kim</author>
+  <license>BSD</license>
+
+  <url type="website">http://ros.org/wiki/mocap_optitrack</url>
+  <url type="repository">https://github.com/ros-drivers/mocap_optitrack</url>
+
+  <buildtool_depend>ament_cmake</buildtool_depend>
+  
+  <depend>rclcpp</depend>
+  <depend>tf2_ros</depend>
+  <build_export_depend>geometry_msgs</build_export_depend>
+  <build_export_depend>nav_msgs</build_export_depend>
+
+  <export>
+    <build_type>ament_cmake</build_type>
+  </export>
+</package>

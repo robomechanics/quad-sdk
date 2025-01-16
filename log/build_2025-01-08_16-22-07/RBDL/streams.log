@@ -1,0 +1,33 @@
+[0.018s] Invoking command in '/home/dologan/ros2_ws/src/quad-sdk/build/RBDL': CONDA_PROMPT_MODIFIER=(base) DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake /home/dologan/ros2_ws/src/quad-sdk/external/rbdl-orb -DCMAKE_INSTALL_PREFIX=/home/dologan/ros2_ws/src/quad-sdk/install/RBDL
+[0.076s] -- The C compiler identification is GNU 13.3.0
+[0.136s] -- The CXX compiler identification is GNU 13.3.0
+[0.154s] -- Detecting C compiler ABI info
+[0.236s] -- Detecting C compiler ABI info - done
+[0.252s] -- Check for working C compiler: /usr/bin/cc - skipped
+[0.252s] -- Detecting C compile features
+[0.253s] -- Detecting C compile features - done
+[0.261s] -- Detecting CXX compiler ABI info
+[0.353s] -- Detecting CXX compiler ABI info - done
+[0.363s] -- Check for working CXX compiler: /usr/bin/c++ - skipped
+[0.363s] -- Detecting CXX compile features
+[0.363s] -- Detecting CXX compile features - done
+[0.367s] -- Setting build type to 'Release' as none was specified.
+[0.393s] -- Configuring done (0.4s)
+[0.398s] -- Generating done (0.0s)
+[0.400s] -- Build files have been written to: /home/dologan/ros2_ws/src/quad-sdk/build/RBDL
+[0.406s] Invoked command in '/home/dologan/ros2_ws/src/quad-sdk/build/RBDL' returned '0': CONDA_PROMPT_MODIFIER=(base) DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake /home/dologan/ros2_ws/src/quad-sdk/external/rbdl-orb -DCMAKE_INSTALL_PREFIX=/home/dologan/ros2_ws/src/quad-sdk/install/RBDL
+[0.408s] Invoking command in '/home/dologan/ros2_ws/src/quad-sdk/build/RBDL': CONDA_PROMPT_MODIFIER=(base) DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake --build /home/dologan/ros2_ws/src/quad-sdk/build/RBDL -- -j8 -l8
+[0.460s] [  7%] [32mBuilding CXX object CMakeFiles/rbdl.dir/src/rbdl_mathutils.cc.o[0m
+[0.460s] [ 23%] [32mBuilding CXX object CMakeFiles/rbdl.dir/src/rbdl_errors.cc.o[0m
+[0.460s] [ 23%] [32mBuilding CXX object CMakeFiles/rbdl.dir/src/Constraints.cc.o[0m
+[0.461s] [ 38%] [32mBuilding CXX object CMakeFiles/rbdl.dir/src/rbdl_version.cc.o[0m
+[0.461s] [ 38%] [32mBuilding CXX object CMakeFiles/rbdl.dir/src/Constraint_Contact.cc.o[0m
+[0.464s] [ 46%] [32mBuilding CXX object CMakeFiles/rbdl.dir/src/rbdl_utils.cc.o[0m
+[0.473s] [ 53%] [32mBuilding CXX object CMakeFiles/rbdl.dir/src/Constraint_Loop.cc.o[0m
+[0.473s] [ 61%] [32mBuilding CXX object CMakeFiles/rbdl.dir/src/Dynamics.cc.o[0m
+[1.244s] [ 69%] [32mBuilding CXX object CMakeFiles/rbdl.dir/src/Logging.cc.o[0m
+[1.309s] [ 76%] [32mBuilding CXX object CMakeFiles/rbdl.dir/src/Joint.cc.o[0m
+[1.990s] [ 84%] [32mBuilding CXX object CMakeFiles/rbdl.dir/src/Model.cc.o[0m
+[8.527s] [ 92%] [32mBuilding CXX object CMakeFiles/rbdl.dir/src/Kinematics.cc.o[0m
+[37.029s] [100%] [32m[1mLinking CXX shared library librbdl.so[0m
+[37.163s] [100%] Built target rbdl
