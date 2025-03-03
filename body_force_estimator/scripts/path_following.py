@@ -32,8 +32,8 @@ def path_following():
     y_pt = 0.0 # Lateral shift
     yaw_pt = 0.0 #math.pi # Yaw angle
     y_gain = 1.0 # Lateral P gain in m/s per m (or Hz)
-    yaw_kp = 50.0 # 1.0 # Yaw P gain in rad/s per rad (or Hz)
-    yaw_kd = 10.0 # 1.0 # Yaw D gain in rad/s per rad (or Hz)
+    yaw_kp = 10.0 # 1.0 # Yaw P gain in rad/s per rad (or Hz)
+    yaw_kd = 2.0 # 1.0 # Yaw D gain in rad/s per rad (or Hz)
     speed_i = 0.0 # Integration rate
 
     yaw_error_last = 0.0 # Yaw error of last time step

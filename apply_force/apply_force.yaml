@@ -1,12 +1,12 @@
 apply_force:
   force:
     x: 0.0 # Applied Force in x direction (N)
-    y: 50.0  # Applied Force in y direction (N)
+    y: 15.0  # Applied Force in y direction (N)
     z: 0.0 # Applied Force in z direction (N)
   torque:
     x: 0.0 # Applied torque in x direction (Nm)
     y: 0.0 #Applied torque in y direction (Nm)
     z: 0.0 # Applied torque in z direction (Nm)
   duration:
-    dt: 0.25 # Duration of Applied Wrench (s)
+    dt: 10 # Duration of Applied Wrench (s)
     update_rate: 100
