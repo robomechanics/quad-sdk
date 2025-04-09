@@ -113,14 +113,7 @@
                     <izz>1.0</izz>
                 </inertia>
             </inertial>
-            <visual name="rightbelt_visual">
-                <geometry>
-                    <box><size>100 1 0.005</size></box>
-                </geometry>
-                <material>
-                    <ambient>0.0 1.0 0.0 1.0</ambient>  <!-- green -->
-                </material>
-            </visual>
+            
             <collision name="left_belt_moving_collision">
                 <geometry>
                     <box><size>100 1 0.005</size></box>
@@ -153,6 +146,194 @@
             </collision>
         </link>
 
+        <!-- Inclined split belt --> 
+
+        <joint name="base_plate_fixed_joint" type="fixed">
+            <parent>world</parent>
+            <child>inclined_base</child>
+        </joint>
+
+        <link name="inclined_base">
+            <pose>7.5 2 0.03 1.57 0 0</pose>
+            <inertial>
+                <mass>100.0</mass>
+                <inertia>
+                    <ixx>10.0</ixx>
+                    <iyy>10.0</iyy>
+                    <izz>10.0</izz>
+                </inertia>
+            </inertial>
+            <visual name="inclined_base_visual">
+                <geometry>
+                    <mesh>
+                        <uri>model:///meshes/inclined_base.dae</uri>
+                        <scale>0.1 0.1 0.1</scale>
+                    </mesh>
+                </geometry>
+                <material>
+                    <ambient>0.4 0.4 0.4 1.0</ambient>  <!-- green -->
+                </material>
+            </visual>
+            <collision name="right_belt_moving_collision">
+                <geometry>
+                    <mesh>
+                        <uri>model:///meshes/inclined_base.dae</uri>
+                        <scale>0.1 0.1 0.1</scale>
+                    </mesh>
+                </geometry>
+            </collision>
+        </link>
+
+        <joint name="tl" type="fixed">
+            <parent>world</parent>
+            <child>left_belt_incline_visual</child>
+        </joint>
+        <joint name="tr" type="fixed">
+            <parent>world</parent>
+            <child>left_belt_incline_visual</child>
+        </joint>
+
+        <link name="left_belt_incline_visual">
+            <pose>7.5 0.5 0.045 0 -0.245 0</pose>
+            <inertial>
+                <mass>50.0</mass>
+                <inertia>
+                    <ixx>10.0</ixx>
+                    <iyy>10.0</iyy>
+                    <izz>10.0</izz>
+                </inertia>
+            </inertial>
+            <visual name="leftbelt_incline_visual">
+                <geometry>
+                    <box><size>10 1 0.005</size></box>
+                </geometry>
+                <material>0
+                    <ambient>0.0 0.0 1.0 1.0</ambient>  <!-- blue -->
+                </material>
+            </visual>
+            <collision name="left_belt_incline_collision">
+                <geometry>
+                    <box><size>10 1 0.005</size></box>  <!-- length of X,Y,Z direction -->
+                </geometry>
+                <surface>
+                    <friction>
+                        <ode>
+                            <mu>10</mu>
+                            <mu2>10</mu2>
+                        </ode>
+                    </friction>
+                </surface>
+            </collision>
+        </link>
+
+        <link name="right_belt_incline_visual">
+            <pose>7.5 -0.5 0.045 0 -0.245 0</pose>
+            <inertial>
+                <mass>50.0</mass>
+                <inertia>
+                    <ixx>10.0</ixx>
+                    <iyy>10.0</iyy>
+                    <izz>10.0</izz>
+                </inertia>
+            </inertial>
+            <visual name="rightbelt_incline_visual">
+                <geometry>
+                    <box><size>10 1 0.005</size></box>
+                </geometry>
+                <material>
+                    <ambient>0.0 1.0 0.0 1.0</ambient>  <!-- green -->
+                </material>
+            </visual>
+            <collision name="right_belt_incline_collision">
+                <geometry>
+                    <box><size>10 1 0.005</size></box>
+                </geometry>
+                <surface>
+                    <friction>
+                        <ode>
+                            <mu>10</mu>
+                            <mu2>10</mu2>
+                        </ode>
+                    </friction>
+                </surface>
+            </collision>
+        </link>
+
+        <!-- left belt test -->
+        <joint name="l1" type="prismatic">
+            <parent>world</parent>
+            <child>left_belt_incline_moving</child>
+            <axis>
+                <xyz>4 1 0</xyz>  <!-- along x -->
+                <limit>
+                    <lower>-1e16</lower>
+                    <upper>1e16</upper>
+                </limit>
+                <dynamics>
+                    <damping>0.1</damping>
+                </dynamics>
+            </axis>
+        </joint>
+
+        <joint name="r1" type="prismatic">
+            <parent>world</parent>
+            <child>right_belt_incline_moving</child>
+            <axis>
+                <xyz>4 1 0</xyz>
+                <limit>
+                    <lower>-1e16</lower>
+                    <upper>1e16</upper>
+                </limit>
+                <dynamics>
+                    <damping>0.1</damping>
+                </dynamics>
+            </axis>
+        </joint>
+
+        <!-- Define the actual moving belts -->
+        <link name="left_belt_incline_moving">
+            <pose>0 0.5 0.005 0 0 0</pose>
+            <inertial>
+                <mass>10.0</mass>
+                <inertia>
+                    <ixx>1.0</ixx>
+                    <iyy>1.0</iyy>
+                    <izz>1.0</izz>
+                </inertia>
+            </inertial>
+            
+            <collision name="left_belt_incline_moving_collision">
+                <geometry>
+                    <box><size>100 1 0.005</size></box>
+                </geometry>
+            </collision>
+        </link>
+
+        <link name="right_belt_incline_moving">
+            <pose>0 -0.5 0.005 0 0 0</pose>
+            <inertial>
+                <mass>1.0</mass>
+                <inertia>
+                    <ixx>1.0</ixx>
+                    <iyy>1.0</iyy>
+                    <izz>1.0</izz>
+                </inertia>
+            </inertial>
+            <visual name="rightbelt_incline_visual">
+                <geometry>
+                    <box><size>100 1 0.005</size></box>
+                </geometry>
+                <material>
+                    <ambient>0.0 0.0 1.0 1.0</ambient>  <!-- green -->
+                </material>
+            </visual>
+            <collision name="right_belt_incline_moving_collision">
+                <geometry>
+                    <box><size>100 1 0.005</size></box>
+                </geometry>
+            </collision>
+        </link>
+
         <!-- Plugin for Left Conveyor Belt -->
         <plugin name="conveyor_belt_plugin_1" filename="libROSConveyorBeltPlugin.so">
             <robot_namespace>/belt1</robot_namespace>
@@ -167,6 +348,24 @@
             <robot_namespace>/belt2</robot_namespace>
             <link>right_belt_moving</link>
             <joint>right_belt_joint</joint>
+            <power>0.0</power>
+            <max_velocity>5.0</max_velocity>
+        </plugin>
+
+        <!-- Plugin for Left Incline Conveyor Belt -->
+        <plugin name="conveyor_belt_incline_plugin_1" filename="libROSConveyorBeltPlugin.so">
+            <robot_namespace>/l2</robot_namespace>
+            <link>left_belt_incline_moving</link>
+            <joint>l1</joint>
+            <power>0.0</power>
+            <max_velocity>5.0</max_velocity>
+        </plugin>
+
+        <!-- Plugin for Right Incline Conveyor Belt -->
+        <plugin name="conveyor_belt_incline_plugin_2" filename="libROSConveyorBeltPlugin.so">
+            <robot_namespace>/r2</robot_namespace>
+            <link>right_belt_incline_moving</link>
+            <joint>r1</joint>
             <power>0.0</power>
             <max_velocity>5.0</max_velocity>
         </plugin>
