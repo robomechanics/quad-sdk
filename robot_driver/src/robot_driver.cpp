@@ -1,4 +1,5 @@
 #include "robot_driver/robot_driver.h"
+#include "robot_driver/SetJointDegradation.h"
 // New comments to test David's stuff
 // 10/06/2023 @ 15:25
 
@@ -150,6 +151,10 @@ RobotDriver::RobotDriver(ros::NodeHandle nh, int argc, char **argv) {
 
   // Initialize state estimator object
   initStateEstimator();
+
+  // Callback for motor degradation service  
+  degradation_service_ = nh_.advertiseService(
+    "/set_joint_degradation", &RobotDriver::setJointDegradationCallback, this);
 }
 
 void RobotDriver::initStateEstimator() {
@@ -558,6 +563,20 @@ bool RobotDriver::updateControl() {
       leg_command_array_msg_.leg_commands.at(i)
           .motor_commands.at(j)
           .fb_component = fb_component;
+
+      // Determine the joint name like "LF_HAA", "LF_HFE", etc.
+      std::string leg_names[4] = {"LF", "RF", "LH", "RH"};
+      std::string joint_types[3] = {"0", "1", "2"};
+      std::string joint_name = leg_names[i] + "_" + joint_types[j];
+
+      // Apply degradation factor if set
+      double factor = 1.0;
+      if (joint_degradation_factors_.find(joint_name) != joint_degradation_factors_.end()) {
+          factor = joint_degradation_factors_[joint_name];
+          ROS_INFO_STREAM("Set degradation for joint [" << joint_name << "] to factor: " << factor);
+          effort *= factor;
+      }
+        
       leg_command_array_msg_.leg_commands.at(i).motor_commands.at(j).effort =
           effort;
       leg_command_array_msg_.leg_commands.at(i).motor_commands.at(j).fb_ratio =
@@ -595,6 +614,17 @@ void RobotDriver::publishHeartbeat() {
     last_robot_heartbeat_msg_.stamp = ros::Time::now();
     robot_heartbeat_pub_.publish(last_robot_heartbeat_msg_);
   }
+}
+
+bool RobotDriver::setJointDegradationCallback(
+  robot_driver::SetJointDegradation::Request &req,
+  robot_driver::SetJointDegradation::Response &res) {
+
+  joint_degradation_factors_[req.joint_name] = req.degradation_factor;
+  ROS_INFO_STREAM("Set degradation for joint [" << req.joint_name
+                  << "] to factor: " << req.degradation_factor);
+  res.success = true;
+  return true;
 }
 
 void RobotDriver::spin() {

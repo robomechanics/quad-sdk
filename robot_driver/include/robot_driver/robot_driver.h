@@ -32,6 +32,8 @@
 #include "robot_driver/hardware_interfaces/spirit_interface.h"
 #include "robot_driver/robot_driver_utils.h"
 
+#include "robot_driver/SetJointDegradation.h"
+
 #define MATH_PI 3.141592
 
 //! ROS-based driver to handle computation and interfacing for state and
@@ -398,6 +400,18 @@ class RobotDriver {
 
   /// Required for some hardware interfaces
   char** argv_;
+
+  /// Degradation map for individual joints
+  std::map<std::string, double> joint_degradation_factors_;
+
+  /// ROS service for setting degradation factor
+  ros::ServiceServer degradation_service_;
+
+  /// Degradation service callback
+  bool setJointDegradationCallback(
+    robot_driver::SetJointDegradation::Request &req,
+    robot_driver::SetJointDegradation::Response &res);
+
 };
 
 #endif  // ROBOT_DRIVER_H

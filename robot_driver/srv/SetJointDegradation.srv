@@ -1,0 +1,4 @@
+string joint_name
+float64 degradation_factor
+---
+bool success
