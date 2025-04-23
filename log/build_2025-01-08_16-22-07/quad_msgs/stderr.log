@@ -1,6 +1,0 @@
-[33mCMake Warning:
-  Manually-specified variables were not used by the project:
-
-    CATKIN_INSTALL_INTO_PREFIX_ROOT
-
-[0m

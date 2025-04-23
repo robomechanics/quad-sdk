@@ -1,4 +1,0 @@
-*.asv
-logs/*
-
-!logs/.gitkeep
