@@ -6,6 +6,8 @@ echo "#########################"
 echo
 sudo apt install -y doxygen libeigen3-dev python3-pip
 sudo apt install -y python3-colcon-common-extensions
+sudo apt install -y python3-rosdep2
+sudo apt install python3-colcon-clean
 pip3 install cpplint
 
 # Install all dependencies from package setup files
@@ -30,4 +32,4 @@ echo "#######################"
 echo "Install all rosdeps"
 echo "#######################"
 echo
-rosdep install --from-paths .. --ignore-src -r -y --rosdistro jazzy
+rosdep install --from-paths .. --ignore-src -r -y --rosdistro humble
