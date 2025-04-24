@@ -15,6 +15,8 @@ sudo curl https://packages.osrfoundation.org/gazebo.gpg --output /usr/share/keyr
 echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/pkgs-osrf-archive-keyring.gpg] http://packages.osrfoundation.org/gazebo/ubuntu-stable $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/gazebo-stable.list > /dev/null
 sudo apt-get update
 sudo apt-get install ignition-fortress
+sudo apt install -y mesa-utils\
+      gz-tools
 
 sudo apt install -y \
     ros-humble-gazebo-ros-pkgs \
@@ -22,7 +24,11 @@ sudo apt install -y \
     ros-humble-effort-controllers \
     ros-humble-robot-state-publisher \
     ros-humble-imu-tools \
+    ros-humble-ros-gz \
 
+#Notes:
+#ros-humble-gazebo-ros-pkgs Integration with Gazebo Classic
+#ros-humble-ros-gz Integration with Ignition Gazebo
 
 # sudo apt install -y ros-melodic-controller-manager
 # sudo apt install -y ros-melodic-joint-state-controller
