@@ -1,85 +1,107 @@
 from launch import LaunchDescription
-from launch.actions import DeclareLaunchArgument, OpaqueFunction
-from launch.substitutions import LaunchConfiguration
-from launch.actions import IncludeLaunchDescription
-from launch.launch_description_sources import PythonLaunchDescriptionSource
-from ament_index_python.packages import get_package_share_directory
-import os
-
-
-def launch_setup(context, *args, **kwargs):
-    # Retrieve launch configurations
-    gui = LaunchConfiguration('gui').perform(context).lower() == 'true'
-    paused = LaunchConfiguration('paused').perform(context).lower() == 'true'
-    world = LaunchConfiguration('world').perform(context)
-    robot_type = LaunchConfiguration('robot_type').perform(context)
-    use_sim_time = LaunchConfiguration('use_sim_time').perform(context)
-
-    # Build absolute path to the SDF world file
-    gazebo_scripts_pkg = get_package_share_directory('gazebo_scripts')
-    world_file = os.path.join(
-        gazebo_scripts_pkg,
-        'worlds',
-        world,
-        f"{world}.sdf"
-    )
-
-    # Include Ignition Gazebo via ros_ign_gazebo
-    ros_ign_pkg = get_package_share_directory('ros_ign_gazebo')
-    ign_launch = os.path.join(ros_ign_pkg, 'launch', 'ign_gazebo.launch.py')
-    # Prepare ign_args: world file first, then flags
-    ign_args_list = [world_file]
-    if gui:
-        ign_args_list.append('--gui')
-    if paused:
-        ign_args_list.append('--paused')
-    ign_args = ' '.join(ign_args_list)
-
-    include_ign = IncludeLaunchDescription(
-        PythonLaunchDescriptionSource(ign_launch),
-        launch_arguments={
-            'ign_args': ign_args,
-            'use_sim_time': use_sim_time
-        }.items()
-    )
-
-    # Include your mapping launch
-    quad_utils_pkg = get_package_share_directory('quad_utils')
-    mapping_launch = IncludeLaunchDescription(
-        PythonLaunchDescriptionSource(
-            os.path.join(
-                quad_utils_pkg,
-                'launch',
-                'mapping.launch.py'
-            )
-        ),
-        launch_arguments={
-            'input_type': 'mesh',
-            'world': world,
-            'robot_type': robot_type
-        }.items()
-    )
-
-    return [include_ign] #, mapping_launch]
-
+from launch.actions import DeclareLaunchArgument, GroupAction
+from launch.conditions import IfCondition
+from launch.substitutions import LaunchConfiguration, PythonExpression
+from launch_ros.actions import Node
+from launch.substitutions import PathJoinSubstitution
+from launch_ros.substitutions import FindPackageShare
 
 def generate_launch_description():
-    ld = LaunchDescription()
-    # Declare launch arguments
-    for name, default, description in [
-        ('robot_type', 'spirit', 'Type of robot to launch'),
-        ('gui', 'false', 'Enable GUI'),
-        ('paused', 'false', 'Start paused'),
-        ('world', 'flat', 'Name of the world directory'),
-        ('use_sim_time', 'true', 'Use simulation time')
-    ]:
-        ld.add_action(
-            DeclareLaunchArgument(
-                name,
-                default_value=default,
-                description=description
+    # Declare all launch arguments
+    declared_arguments = [
+        DeclareLaunchArgument(
+            'robot_configs', 
+            default_value='[{"name": "robot_1", "type": "spirit", "controller": "inverse_dynamics"}]',
+            description='A JSON List of robot configurations: MUST specifiy name, type, and controller'),
+        DeclareLaunchArgument('input_type', default_value='grid',
+            description='Input used to generate terrain data'),
+        DeclareLaunchArgument('frame_id_mesh_loaded', default_value='map'),
+        DeclareLaunchArgument('grid_map_layer_name', default_value='z'),
+        DeclareLaunchArgument('grid_map_resolution', default_value='0.05'),
+        DeclareLaunchArgument('latch_grid_map_pub', default_value='true'),
+        DeclareLaunchArgument('verbose', default_value='true'),
+        DeclareLaunchArgument('world', default_value='step_20cm.sdf'),
+    ]
+
+    # Node for terrain_map_publisher if input_type == "grid"
+    # Launch the node to generate simple terrain from csv or compute in node
+
+    # terrain_map_group = GroupAction(
+    #     actions=[
+    #         Node(
+    #             package='quad_utils',
+    #             executable='terrain_map_publisher_node',
+    #             name='terrain_map_publisher',
+    #             output='screen'
+    #         )
+    #     ],
+    #     condition=IfCondition(PythonExpression(["'", LaunchConfiguration('input_type'), "' == 'grid'"]))
+    # )
+
+    # Node for mesh_to_grid_map_node if input_type == "mesh"
+    # Launch the node to generate a mesh
+    mesh_to_grid_group = GroupAction(
+        actions=[
+            Node(
+                package='quad_utils',
+                executable='mesh_to_grid_map_node',
+                name='mesh_to_grid_map_node',
+                output='screen',
+                parameters=[{
+                    'frame_id_mesh_loaded': LaunchConfiguration('frame_id_mesh_loaded'),
+                    'grid_map_resolution': LaunchConfiguration('grid_map_resolution'),
+                    'layer_name': LaunchConfiguration('grid_map_layer_name'),
+                    'latch_grid_map_pub': LaunchConfiguration('latch_grid_map_pub'),
+                    'verbose': LaunchConfiguration('verbose'),
+                    'world': LaunchConfiguration('world'),
+                }]
             )
-        )
-    # Delay inclusion until after args are parsed
-    ld.add_action(OpaqueFunction(function=launch_setup))
-    return ld
+        ],
+        condition=IfCondition(PythonExpression(["'", LaunchConfiguration('input_type'), "' == 'mesh'"]))
+    )
+
+    # Launch the grid map visualizer
+    grid_map_visualization = Node(
+        package='grid_map_visualization',
+        executable='grid_map_visualization',
+        name='grid_map_visualization',
+        output='screen',
+        # parameters=[ PathJoinSubstitution([
+        #         FindPackageShare('quad_utils'),
+        #         'config',
+        #         'demo.yaml'
+        #     ]),
+
+        # ]
+    )
+
+    # Launch the grid map filters demo node
+    grid_map_filter_node = Node(
+        package='grid_map_demos',
+        executable='filters_demo',
+        name='grid_map_filters',
+        output='screen',
+        parameters=[
+            PathJoinSubstitution([
+                FindPackageShare('quad_utils'),
+                'config',
+                'filter_chain.yaml'
+            ]),
+            # {'input_topic': '/mapping/terrain_map_raw'},
+            # {'output_topic': '/mapping/terrain_map'},
+        ],
+        arguments=[],
+        remappings=[],
+    )
+
+
+    return LaunchDescription(
+        declared_arguments + [
+            # terrain_map_group,
+            mesh_to_grid_group,
+            grid_map_visualization,
+            grid_map_filter_node,
+            # rviz2_node,
+            # static_tf
+        ]
+    )

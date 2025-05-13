@@ -1,0 +1,63 @@
+name: mocap_optitrack_ci
+
+on:
+  push:
+  pull_request:
+  schedule:
+    - cron: "0 0 * * *" # every day at midnight
+
+jobs:
+  mocap_optitrack_osrf_industrial_ci_humble:
+    name: Humble OSRF Industrial
+    strategy:
+      matrix:
+        env:
+          - {ROS_REPO: testing, ROS_DISTRO: humble}
+          - {ROS_REPO: main, ROS_DISTRO: humble}
+      fail-fast: false
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v3
+      - uses: 'ros-industrial/industrial_ci@master'
+        env: ${{matrix.env}}
+  mocap_optitrack_src_ci_humble:
+    name: Humble Clearpath Source
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v3
+      - uses: ros-tooling/setup-ros@v0.7
+        with:
+          required-ros-distributions: humble
+      - uses: ros-tooling/action-ros-ci@v0.3
+        id: action_ros_ci_step
+        with:
+          target-ros2-distro: humble
+          package-name: |
+            mocap_optitrack
+  mocap_optitrack_osrf_industrial_ci_jazzy:
+    name: Jazzy OSRF Industrial
+    strategy:
+      matrix:
+        env:
+          - {ROS_REPO: testing, ROS_DISTRO: jazzy}
+          - {ROS_REPO: main, ROS_DISTRO: jazzy}
+      fail-fast: false
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v3
+      - uses: 'ros-industrial/industrial_ci@master'
+        env: ${{matrix.env}}
+  mocap_optitrack_src_ci_jazzy:
+    name: Jazzy Clearpath Source
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v3
+      - uses: ros-tooling/setup-ros@v0.7
+        with:
+          required-ros-distributions: jazzy
+      - uses: ros-tooling/action-ros-ci@v0.3
+        id: action_ros_ci_step
+        with:
+          target-ros2-distro: jazzy
+          package-name: |
+            mocap_optitrack

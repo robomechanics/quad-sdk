@@ -1,5 +1,17 @@
-PREFIX="$HOME/ros2_ws/install/gazebo_scripts/share/gazebo_scripts"
-IGN_GAZEBO_RESOURCE_PATH_UPDATE="export IGN_GAZEBO_RESOURCE_PATH=${IGN_GAZEBO_RESOURCE_PATH}::${PREFIX}/spirit_description:${PREFIX}/other/sensor_description:${PREFIX}/other/objects_description:${PREFIX}/gazebo_scripts/worlds:${PREFIX}/gazebo_scripts/models"
+IGN_GAZEBO_RESOURCE_PATH_UPDATE="export IGN_GAZEBO_RESOURCE_PATH=\$IGN_GAZEBO_RESOURCE_PATH:\
+$HOME/ros2_ws/install/gazebo_scripts/share/gazebo_scripts/models:\
+$HOME/ros2_ws/install/gazebo_scripts/share/gazebo_scripts/worlds:\
+$HOME/ros2_ws/install/spirit_description/share/spirit_description/models:\
+$HOME/ros2_ws/install/sensor_description/share/sensor_description/models:\
+$HOME/ros2_ws/install/objects_description/share/objects_description/models"
+
+if grep "$IGN_GAZEBO_RESOURCE_PATH_UPDATE" ~/.bashrc > /dev/null
+then
+   echo "bashrc already contains IGN_GAZEBO_RESOURCE_PATH update"
+else
+   echo "Adding IGN_GAZEBO_RESOURCE_PATH update to bashrc"
+   echo "$IGN_GAZEBO_RESOURCE_PATH_UPDATE" >> ~/.bashrc
+fi
 
 if grep -Fxq "$IGN_GAZEBO_RESOURCE_PATH_UPDATE" ~/.bashrc > /dev/null
 then
@@ -24,7 +36,7 @@ sudo apt install -y \
     ros-humble-effort-controllers \
     ros-humble-robot-state-publisher \
     ros-humble-imu-tools \
-    ros-humble-ros-gz \
+   #  ros-humble-ros-gz \
 
 #Notes:
 #ros-humble-gazebo-ros-pkgs Integration with Gazebo Classic
