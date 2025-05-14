@@ -9,10 +9,10 @@
          </mesh>
         </geometry>
         <material>
-          <script>
-            <name>Gazebo/RedGlow</name>
-            <uri>file://media/materials/scripts/gazebo.material</uri>
-          </script>
+          <ambient>0.6 0.0 0.0 1</ambient> 
+          <diffuse>1.0 0.0 0.0 1</diffuse> 
+          <specular>0.1 0.0 0.0 1</specular> 
+          <emissive>0.2 0.0 0.0 1</emissive> 
         </material>
       </visual>
       <inertial>

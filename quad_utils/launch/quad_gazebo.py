@@ -31,7 +31,8 @@ def launch_ignition_world(context, *args, **kwargs):
             ExecuteProcess(
                 cmd=cmd,
                 output='log',
-                additional_env={'IGN_GAZEBO_RESOURCE_PATH': (EnvironmentVariable('IGN_GAZEBO_RESOURCE_PATH'))}
+                additional_env={'IGN_GAZEBO_RESOURCE_PATH': (EnvironmentVariable('IGN_GAZEBO_RESOURCE_PATH')),
+                                'IGN_GAZEBO_SYSTEM_PLUGIN_PATH': (EnvironmentVariable('IGN_GAZEBO_SYSTEM_PLUGIN_PATH'))}
             )
         ])
     ]
@@ -127,7 +128,7 @@ def generate_launch_description():
         OpaqueFunction(function=launch_ignition_world),
         OpaqueFunction(function=launch_robot_mapping),
         OpaqueFunction(function=launch_robot_group),
-        OpaqueFunction(function=launch_visualization)
+        # OpaqueFunction(function=launch_visualization)
     ])
 
 
