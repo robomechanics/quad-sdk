@@ -43,6 +43,7 @@ SOFTWARE.
   <material name="scots-rose">
     <color rgba="0.937 0.2 0.251 1.0"/>
   </material>
+
   <!-- Body -->
   <link name="body">
     <visual>
@@ -977,6 +978,79 @@ SOFTWARE.
     <child link="text_left"/>
     <origin xyz="-0.04 0 -0.005" rpy="0 0 3.14159"/>
   </joint>
+
+  <ros2_control name="GazeboSimSystem" type="system">
+    <hardware>
+      <plugin>gz_ros2_control/GazeboSimSystem</plugin>
+    </hardware>
+    <joint name="0">
+      <command_interface name="effort" />
+      <state_interface name="effort" />
+      <state_interface name="position" />
+    </joint>
+    <joint name="1">
+      <command_interface name="effort" />
+      <state_interface name="effort" />
+      <state_interface name="position" />
+    </joint>
+    <joint name="2">
+      <command_interface name="effort" />
+      <state_interface name="effort" />
+      <state_interface name="position" />
+    </joint>
+    <joint name="3">
+      <command_interface name="effort" />
+      <state_interface name="effort" />
+      <state_interface name="position" />
+    </joint>
+    <joint name="4">
+      <command_interface name="effort" />
+      <state_interface name="effort" />
+      <state_interface name="position" />
+    </joint>
+    <joint name="5">
+      <command_interface name="effort" />
+      <state_interface name="effort" />
+      <state_interface name="position" />
+    </joint>
+    <joint name="6">
+      <command_interface name="effort" />
+      <state_interface name="effort" />
+      <state_interface name="position" />
+    </joint>
+    <joint name="7">
+      <command_interface name="effort" />
+      <state_interface name="effort" />
+      <state_interface name="position" />
+    </joint>
+    <joint name="8">
+      <command_interface name="effort" />
+      <state_interface name="effort" />
+      <state_interface name="position" />
+    </joint>
+    <joint name="9">
+      <command_interface name="effort" />
+      <state_interface name="effort" />
+      <state_interface name="position" />
+    </joint>
+    <joint name="10">
+      <command_interface name="effort" />
+      <state_interface name="effort" />
+      <state_interface name="position" />
+    </joint>
+    <joint name="11">
+      <command_interface name="effort" />
+      <state_interface name="effort" />
+      <state_interface name="position" />
+    </joint>
+  </ros2_control>
+
+  <!-- <gazebo>
+    <plugin name='gz_ros2_control::GazeboSimROS2ControlPlugin' filename='gz_ros2_control-system'>
+      <controlPeriod>0.002</controlPeriod>
+      <parameters>model://gazebo_scripts/config/quad_control.yaml</parameters>
+    </plugin>
+  </gazebo> -->
   
 </robot>
 

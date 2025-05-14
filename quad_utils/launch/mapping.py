@@ -46,7 +46,7 @@ def generate_launch_description():
                 package='quad_utils',
                 executable='mesh_to_grid_map_node',
                 name='mesh_to_grid_map_node',
-                output='screen',
+                # output='screen',
                 parameters=[{
                     'frame_id_mesh_loaded': LaunchConfiguration('frame_id_mesh_loaded'),
                     'grid_map_resolution': LaunchConfiguration('grid_map_resolution'),
@@ -65,7 +65,7 @@ def generate_launch_description():
         package='grid_map_visualization',
         executable='grid_map_visualization',
         name='grid_map_visualization',
-        output='screen',
+        # output='screen',
         # parameters=[ PathJoinSubstitution([
         #         FindPackageShare('quad_utils'),
         #         'config',
@@ -80,7 +80,7 @@ def generate_launch_description():
         package='grid_map_demos',
         executable='filters_demo',
         name='grid_map_filters',
-        output='screen',
+        # output='screen',
         parameters=[
             PathJoinSubstitution([
                 FindPackageShare('quad_utils'),

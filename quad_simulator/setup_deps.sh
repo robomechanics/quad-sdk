@@ -5,20 +5,20 @@ $HOME/ros2_ws/install/spirit_description/share/spirit_description/models:\
 $HOME/ros2_ws/install/sensor_description/share/sensor_description/models:\
 $HOME/ros2_ws/install/objects_description/share/objects_description/models"
 
-if grep "$IGN_GAZEBO_RESOURCE_PATH_UPDATE" ~/.bashrc > /dev/null
-then
-   echo "bashrc already contains IGN_GAZEBO_RESOURCE_PATH update"
-else
+IGN_GAZEBO_SYSTEM_PLUGIN_PATH_UPDATE="export IGN_GAZEBO_SYSTEM_PLUGIN_PATH=$IGN_GAZEBO_SYSTEM_PLUGIN_PATH:/opt/ros/humble/lib"
+
+if ! grep -Fxq "$IGN_GAZEBO_RESOURCE_PATH_UPDATE" ~/.bashrc; then
    echo "Adding IGN_GAZEBO_RESOURCE_PATH update to bashrc"
    echo "$IGN_GAZEBO_RESOURCE_PATH_UPDATE" >> ~/.bashrc
+else
+   echo "bashrc already contains IGN_GAZEBO_RESOURCE_PATH update"
 fi
 
-if grep -Fxq "$IGN_GAZEBO_RESOURCE_PATH_UPDATE" ~/.bashrc > /dev/null
-then
-   echo "bashrc contains gazebo model path update"
+if ! grep -Fxq "$IGN_GAZEBO_SYSTEM_PLUGIN_PATH_UPDATE" ~/.bashrc; then
+   echo "Adding IGN_GAZEBO_SYSTEM_PLUGIN_PATH update to bashrc"
+   echo "$IGN_GAZEBO_SYSTEM_PLUGIN_PATH_UPDATE" >> ~/.bashrc
 else
-   echo "Adding gazebo model path update to bashrc"
-   echo "$IGN_GAZEBO_RESOURCE_PATH_UPDATE" >> ~/.bashrc
+   echo "bashrc already contains IGN_GAZEBO_SYSTEM_PLUGIN_PATH update"
 fi
 
 sudo apt-get update

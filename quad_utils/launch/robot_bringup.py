@@ -1,9 +1,10 @@
 from launch import LaunchDescription
-from launch.actions import DeclareLaunchArgument, OpaqueFunction, IncludeLaunchDescription, ExecuteProcess
+from launch.actions import DeclareLaunchArgument, OpaqueFunction, IncludeLaunchDescription, ExecuteProcess, TimerAction, RegisterEventHandler
 from launch.substitutions import LaunchConfiguration, EnvironmentVariable
 from launch_ros.actions import Node
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch_ros.substitutions import FindPackageShare
+from launch.event_handlers import OnProcessStart
 import os
 
 def load_robot_params(context, *args, **kwargs):
@@ -31,9 +32,10 @@ def load_robot_params(context, *args, **kwargs):
 
     # Merge the Paths
     desc_path = FindPackageShare(desc_pkg).perform(context)
+    urdf_path = os.path.join(desc_path, 'urdf', sdf_file)
     sdf_path = os.path.join(desc_path, 'models','spirit', sdf_file)
 
-    # Load URDF and SDF from disk
+    # Load URDF and SDF from disk, Might be Unnecessary
     with open(os.path.join(desc_path, 'models','spirit','urdf', urdf_file), 'r') as f:
         urdf = f.read()
     with open(os.path.join(desc_path, 'models','spirit', sdf_file), 'r') as f:
@@ -42,6 +44,7 @@ def load_robot_params(context, *args, **kwargs):
     context.robot_urdf = urdf
     context.robot_sdf = sdf
     context.robot_sdf_path = sdf_path
+    context.robot_urdf_path = urdf_path
 
 def spawn_sdf_model(context, *args, **kwargs):
     namespace = LaunchConfiguration('namespace').perform(context)
@@ -49,41 +52,22 @@ def spawn_sdf_model(context, *args, **kwargs):
     sdf = context.robot_sdf
     sdf_path = context.robot_sdf_path
 
-    ign_path = os.environ.get("IGN_GAZEBO_RESOURCE_PATH", "")
-    print(f"[DEBUG] IGN_GAZEBO_RESOURCE_PATH: {ign_path}")
-
-    # spawn_node = Node(
-    #     package='ros_gz_sim',
-    #     executable='create',
-    #     output='screen',
-    #     arguments=[
-    #         '-name', namespace,
-    #         '-file', sdf_path,
-    #         '-x', init_pose.split()[1],
-    #         '-y', init_pose.split()[3],
-    #         '-z', init_pose.split()[5],
-    #         '-allow_renaming', 'true'
-    #     ],
-    #     additional_env={  # 👈 THIS FIXES IT
-    #         'IGN_GAZEBO_RESOURCE_PATH': ign_path
-    #     }
-    # )
-    # return [spawn_node] 
-    return [
-        ExecuteProcess(
-            cmd=[
-                'ros2', 'run', 'ros_gz_sim', 'create',
-                '-name', namespace,
-                '-file', sdf_path,
-                '-x', init_pose.split()[1],
-                '-y', init_pose.split()[3],
-                '-z', init_pose.split()[5],
-                '-allow_renaming', 'true'
-            ],
-            output='screen',
-            additional_env={'IGN_GAZEBO_RESOURCE_PATH': (EnvironmentVariable('IGN_GAZEBO_RESOURCE_PATH'))}
-        )
-    ]
+    spawn_node = Node(
+        package='ros_gz_sim',
+        executable='create',
+        output='screen',
+        arguments=[
+            '-name', namespace,
+            '-file', sdf_path,
+            '-x', init_pose.split()[1],
+            '-y', init_pose.split()[3],
+            '-z', init_pose.split()[5],
+            '-allow_renaming', 'true'
+        ],
+        additional_env={  
+            'IGN_GAZEBO_RESOURCE_PATH': (EnvironmentVariable('IGN_GAZEBO_RESOURCE_PATH'))}
+    )
+    return [spawn_node] 
 
 def launch_robot_driver(context, *args, **kwargs):
     namespace = LaunchConfiguration('namespace').perform(context)
@@ -91,10 +75,6 @@ def launch_robot_driver(context, *args, **kwargs):
     controller = LaunchConfiguration('controller').perform(context)
     urdf = context.robot_urdf
     sdf = context.robot_sdf
-    quad_utils_path = FindPackageShare('quad_utils').perform(context)
-    gazebo_scripts_path = FindPackageShare('quad_utils').perform(context)
-
-
     quad_utils_path = FindPackageShare('quad_utils').perform(context)
 
     robot_driver_node = IncludeLaunchDescription(
@@ -112,38 +92,86 @@ def launch_robot_driver(context, *args, **kwargs):
         )
     return [robot_driver_node]
 
-# def launch_controller_plugins(context, *args, **kwargs):
-    # namespace = LaunchConfiguration('namespace').perform(context)
+def launch_controller_manager(context, *args, **kwargs):
+    namespace = LaunchConfiguration('namespace').perform(context)
+    urdf = context.robot_urdf
+    urdf_path = context.robot_urdf_path
+    gazebo_scripts_path = FindPackageShare('gazebo_scripts').perform(context)
 
-    # return [
-    #     ExecuteProcess(
-    #         cmd=[
-    #             'ros2', 'run', 'controller_manager', 'spawner',
-    #             'joint_controller', 'joint_state_controller',
-    #             '--controller-manager', f'/{namespace}/controller_manager'
-    #         ],
-    #         output='screen'
-    #     )
-    # ]
-#     return [controller_plugin_node]
+    robot_state_urdf_node = Node(
+        package='robot_state_publisher',
+        executable='robot_state_publisher',
+        name='robot_state_publisher',
+        parameters=[{
+            'robot_description': urdf
+        }],
+    )
+    controller_manager_node = Node(
+        package='controller_manager',
+        executable='ros2_control_node',
+        name='controller_manager',
+        parameters=[
+            os.path.join(gazebo_scripts_path, 'config', 'quad_control.yaml')
+        ],
+        output='screen'
+    )
+    controller_start_handler = RegisterEventHandler(
+        OnProcessStart(
+            target_action=robot_state_urdf_node,
+            on_start=[controller_manager_node]
+        )
+    )
+
+    return [robot_state_urdf_node, controller_start_handler]
+
+def spawn_controller_broadcasters(context, *args, **kwards):
+    namespace = LaunchConfiguration('namespace').perform(context)
+    spawn_joint_state_broadcaster = ExecuteProcess(
+        cmd=[
+            'ros2', 'run', 'controller_manager', 'spawner',
+            'joint_state_broadcaster',
+            '--controller-manager', '/controller_manager'
+        ],
+    )
+
+    spawn_joint_controller = ExecuteProcess(
+        cmd=[
+            'ros2', 'run', 'controller_manager', 'spawner',
+            'joint_controller',
+            '--controller-manager', '/controller_manager'
+        ],
+        output='screen'
+    )
+
+    # Optional delay to give controller_manager time to start
+    return[ 
+        TimerAction(
+            period=3.0,
+            actions=[
+                spawn_joint_state_broadcaster,
+                spawn_joint_controller
+            ]
+        )
+    ]
+
 
 # def launch_contact_state_publisher(context, *args, **kwargs):
-    # namespace = LaunchConfiguration('namespace').perform(context)
-    # robot_type = LaunchConfiguration('robot_type').perform(context)
-    # gazebo_scripts_path = FindPackageShare('gazebo_scripts').perform(context)
-    # config_file = os.path.join(gazebo_scripts_path, 'config', f'{robot_type}.yaml')
+# #Contact Handler Node
+#     namespace = LaunchConfiguration('namespace').perform(context)
+#     robot_type = LaunchConfiguration('robot_type').perform(context)
+#     gazebo_scripts_path = FindPackageShare('gazebo_scripts').perform(context)
+#     config_file = os.path.join(gazebo_scripts_path, 'config', f'{robot_type}.yaml')
 
-    # return [
-    #     Node(
-    #         package='gazebo_scripts',
-    #         executable='contact_state_publisher_node',
-    #         name=f'{namespace}_contact_publisher',
-    #         namespace=namespace,
-    #         output='screen',
-    #         parameters=[config_file]
-    #     )
-    # ]
-#     return [contact_state_publisher_node]
+#     return [
+#         Node(
+#             package='gazebo_scripts',
+#             executable='contact_state_publisher_node',
+#             name=f'{namespace}_contact_state_publisher',
+#             namespace=namespace,
+#             output='screen',
+#             parameters=[config_file]
+#         )
+#     ]
 
 def generate_launch_description():
     return LaunchDescription([
@@ -154,7 +182,8 @@ def generate_launch_description():
         OpaqueFunction(function=load_robot_params),
         OpaqueFunction(function=spawn_sdf_model), 
         # OpaqueFunction(function=launch_robot_driver),
-        # OpaqueFunction(function=launch_controller_plugins),
+        OpaqueFunction(function=launch_controller_manager),
+        # OpaqueFunction(function=spawn_controller_broadcasters)
         # OpaqueFunction(function=launch_contact_state_publisher)
     ])
 
