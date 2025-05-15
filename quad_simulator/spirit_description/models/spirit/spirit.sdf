@@ -956,6 +956,15 @@
     <joint name='jtoe0' type='fixed'>
       <child>toe0</child>
       <parent>lower0</parent>
+        <sensor name="toe0_grf" type="force_torque">
+        <always_on>true</always_on>
+        <update_rate>500</update_rate>
+        <force_torque>
+          <frame>child</frame> <!-- or parent, depending on your setup -->
+        </force_torque>
+        <plugin filename="libignition-gazebo-forcetorque-system.so"
+                name="ignition::gazebo::systems::ForceTorque"/>
+      </sensor>
     </joint>
 
     <link name='toe1'>
@@ -1011,11 +1020,12 @@
       <sensor name="toe1_contact" type="contact">
         <alwaysOn>true</alwaysOn>
         <updateRate>500</updateRate>
-        <topic>gazebo/toe1_contact_state</topic>
+        <topic>/gazebo/toe1_contact_state</topic>
         <frameName>world</frameName>
         <contact>
           <collision>toe1_collision</collision>
         </contact>
+        <plugin filename="libignition-gazebo-contact-system.so" name="ignition::gazebo::systems::Contact"> </plugin>
       </sensor>
       <visual name='toe1_visual'>
         <pose frame=''>0 0 0 0 -0 0</pose>
@@ -1036,6 +1046,15 @@
     <joint name='jtoe1' type='fixed'>
       <child>toe1</child>
       <parent>lower1</parent>
+      <sensor name="toe1_grf" type="force_torque">
+        <always_on>true</always_on>
+        <update_rate>500</update_rate>
+        <force_torque>
+          <frame>child</frame> <!-- or parent, depending on your setup -->
+        </force_torque>
+        <plugin filename="libignition-gazebo-forcetorque-system.so"
+                name="ignition::gazebo::systems::ForceTorque"/>
+      </sensor>
     </joint>
 
     <link name='toe2'>
@@ -1116,6 +1135,15 @@
     <joint name='jtoe2' type='fixed'>
       <child>toe2</child>
       <parent>lower2</parent>
+      <sensor name="toe2_grf" type="force_torque">
+        <always_on>true</always_on>
+        <update_rate>500</update_rate>
+        <force_torque>
+          <frame>child</frame> <!-- or parent, depending on your setup -->
+        </force_torque>
+        <plugin filename="libignition-gazebo-forcetorque-system.so"
+                name="ignition::gazebo::systems::ForceTorque"/>
+      </sensor>
     </joint>
 
     <link name='toe3'>
@@ -1196,6 +1224,15 @@
     <joint name='jtoe3' type='fixed'>
       <child>toe3</child>
       <parent>lower3</parent>
+      <sensor name="toe3_grf" type="force_torque">
+        <always_on>true</always_on>
+        <update_rate>500</update_rate>
+        <force_torque>
+          <frame>child</frame> <!-- or parent, depending on your setup -->
+        </force_torque>
+        <plugin filename="libignition-gazebo-forcetorque-system.so"
+                name="ignition::gazebo::systems::ForceTorque"/>
+      </sensor>
     </joint>
 
     <include>

@@ -1,7 +1,7 @@
 #include <rclcpp/rclcpp.hpp>
 #include "quad_utils/mesh_to_grid_map_converter.hpp"
 
-int main(int argc,char** argv)
+int main(int argc, char** argv)
 {
     rclcpp::init(argc, argv);
 
