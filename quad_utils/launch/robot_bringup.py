@@ -130,7 +130,7 @@ def spawn_controller_broadcasters(context, *args, **kwards):
         cmd=[
             'ros2', 'run', 'controller_manager', 'spawner',
             'joint_state_broadcaster',
-            '--controller-manager', '/controller_manager'
+            '--controller-manager', f'/{namespace}/controller_manager'
         ],
     )
 
@@ -138,7 +138,7 @@ def spawn_controller_broadcasters(context, *args, **kwards):
         cmd=[
             'ros2', 'run', 'controller_manager', 'spawner',
             'joint_controller',
-            '--controller-manager', '/controller_manager'
+            '--controller-manager', f'/{namespace}/controller_manager'
         ],
         output='screen'
     )
@@ -155,23 +155,22 @@ def spawn_controller_broadcasters(context, *args, **kwards):
     ]
 
 
-# def launch_contact_state_publisher(context, *args, **kwargs):
-# #Contact Handler Node
-#     namespace = LaunchConfiguration('namespace').perform(context)
-#     robot_type = LaunchConfiguration('robot_type').perform(context)
-#     gazebo_scripts_path = FindPackageShare('gazebo_scripts').perform(context)
-#     config_file = os.path.join(gazebo_scripts_path, 'config', f'{robot_type}.yaml')
+def launch_contact_state_publisher(context, *args, **kwargs):
+    namespace = LaunchConfiguration('namespace').perform(context)
+    robot_type = LaunchConfiguration('robot_type').perform(context)
+    gazebo_scripts_path = FindPackageShare('gazebo_scripts').perform(context)
+    config_file = os.path.join(gazebo_scripts_path, 'config', f'{robot_type}.yaml')
 
-#     return [
-#         Node(
-#             package='gazebo_scripts',
-#             executable='contact_state_publisher_node',
-#             name=f'{namespace}_contact_state_publisher',
-#             namespace=namespace,
-#             output='screen',
-#             parameters=[config_file]
-#         )
-#     ]
+    return [
+        Node(
+            package='gazebo_scripts',
+            executable='contact_state_publisher_node',
+            name=f'{namespace}_contact_state_publisher',
+            namespace=namespace,
+            output='screen',
+            parameters=[config_file]
+        )
+    ]
 
 def generate_launch_description():
     return LaunchDescription([
@@ -182,8 +181,8 @@ def generate_launch_description():
         OpaqueFunction(function=load_robot_params),
         OpaqueFunction(function=spawn_sdf_model), 
         # OpaqueFunction(function=launch_robot_driver),
-        OpaqueFunction(function=launch_controller_manager),
-        # OpaqueFunction(function=spawn_controller_broadcasters)
+        # OpaqueFunction(function=launch_controller_manager),
+        # OpaqueFunction(function=spawn_controller_broadcasters),
         # OpaqueFunction(function=launch_contact_state_publisher)
     ])
 

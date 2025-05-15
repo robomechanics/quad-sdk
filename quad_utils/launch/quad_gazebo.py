@@ -136,6 +136,5 @@ def generate_launch_description():
 # ros2 launch quad_utils quad_gazebo_multi.py \
 #     robot_configs:='[
 #         {"name": "robot_1", "type": "spirit", "controller": "inverse_dynamics"},
-#         {"name": "robot_2", "type": "go1", "controller": "underbrush"},
-#         {"name": "robot_3", "type": "aliengo", "controller": "impedance"}
+#         {"name": "robot_2", "type": "go1", "controller": "inverse_dynamics"},
 #     ]'
