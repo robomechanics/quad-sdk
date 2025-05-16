@@ -8,54 +8,98 @@ endif()
 # find dependencies
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
-find_package(grid_map_msgs REQUIRED)
+find_package(std_msgs REQUIRED)
+find_package(nav_msgs)
+find_package(nav2_msgs)
+find_package(sensor_msgs REQUIRED)
+find_package(geometry_msgs REQUIRED)
+find_package(visualization_msgs REQUIRED)
 find_package(grid_map_core REQUIRED)
-find_package(quad_msgs REQUIRED)
-find_package(grid_map_pcl REQUIRED)
 find_package(grid_map_ros REQUIRED)
+find_package(grid_map_pcl REQUIRED)
+find_package(grid_map_msgs REQUIRED)
+find_package(quad_msgs REQUIRED)
 find_package(PCL REQUIRED)
 find_package(pcl_msgs REQUIRED)
 find_package(pcl_conversions REQUIRED)
-find_package(nav_msgs)
-find_package(nav2_msgs)
 find_package(cv_bridge REQUIRED)
-find_package(visualization_msgs REQUIRED)
+find_package(Eigen3 REQUIRED)
+find_package(tf2 REQUIRED)
+find_package(tf2_geometry_msgs REQUIRED)
+find_package(PythonLibs REQUIRED)
 
-# uncomment the following section in order to fill in
-# further dependencies manually.
-# find_package(<dependency> REQUIRED)
+
+# We need to add the project source path to the CMake module path so that
+# the FindRBDL.cmake script can be found.
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
+
+# Search for the RBDL include directory and library
+find_package(RBDL REQUIRED COMPONENTS URDFREADER)
+
+add_library(quad_utils
+  src/mesh_to_grid_map_converter.cpp
+  src/math_utils.cpp
+  src/ros_utils.cpp
+  src/quad_kd.cpp
+  # Add other reusable sources here if needed
+)
+
+target_include_directories(quad_utils PUBLIC
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+  $<INSTALL_INTERFACE:include>
+  ${PCL_INCLUDE_DIRS}
+  ${EIGEN3_INCLUDE_DIRS}
+  ${RBDL_INCLUDE_DIR}
+  ${RBDL_URDFREADER_INCLUDE_DIR}
+  ${PYTHON_INCLUDE_DIRS}
+)
+
+# Make sure Quad-Utils can access RBDL Libraries
+target_link_libraries(quad_utils
+  ${RBDL_LIBRARY}
+  ${RBDL_URDFREADER_LIBRARY}
+)
 
 add_executable(mesh_to_grid_map_node 
   src/mesh_to_grid_map_node.cpp
   src/mesh_to_grid_map_converter.cpp)
+  
+target_link_libraries(mesh_to_grid_map_node
+  quad_utils
+  ${PCL_LIBRARIES}
+  Eigen3::Eigen
+  ${PYTHON_LIBRARIES}
+  ${tf2_LIBRARIES}
+  ${tf2_geometry_msgs_LIBRARIES}
+)
 
-ament_target_dependencies(mesh_to_grid_map_node 
+ament_target_dependencies(quad_utils 
   rclcpp 
-  grid_map_msgs 
-  grid_map_core 
-  grid_map_pcl 
-  grid_map_ros
+  std_msgs
+  nav_msgs
+  nav2_msgs
+  sensor_msgs
+  geometry_msgs
+  visualization_msgs
+  grid_map_core
+  grid_map_ros 
+  grid_map_pcl
+  grid_map_msgs  
   quad_msgs 
   pcl_msgs
   pcl_conversions
-  nav_msgs
-  nav2_msgs
+  Eigen3
+  tf2
+  tf2_geometry_msgs
   cv_bridge
-  visualization_msgs
 )
 
-target_include_directories(mesh_to_grid_map_node PUBLIC
-  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-  $<INSTALL_INTERFACE:include>
-  ${PCL_INCLUDE_DIRS}
-)
 
-target_link_libraries(mesh_to_grid_map_node
-  ${PCL_LIBRARIES}
-)
+ament_target_dependencies(mesh_to_grid_map_node rclcpp)
 
 # Install Executables
 install(TARGETS
+  quad_utils
   mesh_to_grid_map_node
   DESTINATION lib/${PROJECT_NAME}
 )
@@ -79,6 +123,15 @@ install(
 install(
   DIRECTORY rviz/
   DESTINATION share/${PROJECT_NAME}/rviz
+)
+
+
+ament_export_include_directories(include)
+ament_export_libraries(quad_utils)
+ament_export_dependencies(
+  rclcpp std_msgs nav_msgs nav2_msgs sensor_msgs geometry_msgs visualization_msgs
+  grid_map_core grid_map_ros grid_map_pcl grid_map_msgs quad_msgs
+  pcl_msgs pcl_conversions Eigen3 tf2 tf2_geometry_msgs cv_bridge
 )
 
 

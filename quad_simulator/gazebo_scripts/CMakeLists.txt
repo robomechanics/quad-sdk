@@ -7,6 +7,8 @@ endif()
 
 # find dependencies
 find_package(ament_cmake REQUIRED)
+find_package(ignition-transport11 REQUIRED)
+# find_library(Protobuf REQUIRED)
 # uncomment the following section in order to fill in
 # further dependencies manually.
 # find_package(<dependency> REQUIRED)
@@ -25,6 +27,11 @@ install(FILES
   config/quad_control.yaml
   DESTINATION share/${PROJECT_NAME}/config
 )
+
+# Link Targets to IGN Transport Libraries
+# target_link_libraries(ContactStatePublisher
+#   ignition-transport11::ignition-transport
+# )
 
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)

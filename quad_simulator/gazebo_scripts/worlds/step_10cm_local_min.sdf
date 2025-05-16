@@ -17,6 +17,38 @@
     </scene>
 
     <gravity>0 0 -9.81</gravity>
+
+    <!-- Add system-level physics and sensor plugins to each world -->
+    <plugin
+      filename="ignition-gazebo-physics-system"
+      name="ignition::gazebo::systems::Physics">
+    </plugin>
+
+    <plugin
+      filename="ignition-gazebo-scene-broadcaster-system"
+      name="ignition::gazebo::systems::SceneBroadcaster">
+    </plugin>
+
+    <plugin 
+      filename="ignition-gazebo-sensors-system"
+      name="ignition::gazebo::systems::Sensors"/>
+
+    <plugin 
+      filename="ignition-gazebo-user-commands-system"
+      name="ignition::gazebo::systems::UserCommands"/>
+    <plugin
+      filename="libignition-gazebo-contact-system.so"
+      name="ignition::gazebo::systems::Contact">
+    </plugin>
+
+    <plugin 
+      filename="libignition-gazebo-imu-system.so"
+      name="ignition::gazebo::systems::Imu">
+    </plugin>
+
+    <plugin 
+      filename="libignition-gazebo-forcetorque-system.so"
+      name="ignition::gazebo::systems::ForceTorque"/>
       
     <light name="sun" type="directional">
       <cast_shadows>true</cast_shadows>
