@@ -181,7 +181,7 @@ def generate_launch_description():
         OpaqueFunction(function=load_robot_params),
         OpaqueFunction(function=spawn_sdf_model), 
         # OpaqueFunction(function=launch_robot_driver),
-        # OpaqueFunction(function=launch_controller_manager),
+        OpaqueFunction(function=launch_controller_manager),
         # OpaqueFunction(function=spawn_controller_broadcasters),
         # OpaqueFunction(function=launch_contact_state_publisher)
     ])
