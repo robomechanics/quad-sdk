@@ -36,6 +36,7 @@ sudo apt install -y \
     ros-humble-effort-controllers \
     ros-humble-robot-state-publisher \
     ros-humble-imu-tools \
+    ros-humble-ros-ign-bridge
    #  ros-humble-ros-gz \
 
 #Notes:

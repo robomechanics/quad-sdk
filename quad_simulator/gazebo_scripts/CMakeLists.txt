@@ -8,10 +8,46 @@ endif()
 # find dependencies
 find_package(ament_cmake REQUIRED)
 find_package(ignition-transport11 REQUIRED)
+find_package(quad_utils)
+find_package(std_msgs)
+find_package(tf2_ros REQUIRED)
 # find_library(Protobuf REQUIRED)
 # uncomment the following section in order to fill in
 # further dependencies manually.
 # find_package(<dependency> REQUIRED)
+
+# include_directories(${IGNITION-TRANSPORT_INCLUDE_DIRS})
+
+# Link Targets to IGN Transport Libraries
+# add_executable(contact_state_publisher_node src/contact_state_publisher_node)
+# ament_target_dependencies(contact_state_publisher_node quad_utils std_msgs rclcpp)
+# target_link_libraries(contact_state_publisher_node ${IGNITION-TRANSPORT_LIBRARIES})
+
+
+add_executable(contact_state_publisher_node
+  src/contact_state_publisher_node.cpp
+  src/contact_state_publisher.cpp
+)
+target_include_directories(contact_state_publisher_node PUBLIC
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+  $<INSTALL_INTERFACE:include>
+)
+target_link_libraries(contact_state_publisher_node
+  ${IGNITION-TRANSPORT_LIBRARIES}
+)
+
+ament_target_dependencies(contact_state_publisher_node
+  rclcpp
+  std_msgs
+  tf2
+  tf2_ros
+  quad_utils
+)
+
+
+install(TARGETS contact_state_publisher_node
+  DESTINATION lib/${PROJECT_NAME}
+)
 
 install(
   DIRECTORY worlds
@@ -23,15 +59,18 @@ install(
   DESTINATION share/${PROJECT_NAME}/
 )
 
+install(
+  DIRECTORY include/
+  DESTINATION include
+)
+
 install(FILES
   config/quad_control.yaml
   DESTINATION share/${PROJECT_NAME}/config
 )
 
-# Link Targets to IGN Transport Libraries
-# target_link_libraries(ContactStatePublisher
-#   ignition-transport11::ignition-transport
-# )
+
+ament_export_include_directories(include)
 
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)

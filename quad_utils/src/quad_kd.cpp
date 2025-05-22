@@ -4,6 +4,7 @@ using namespace quad_utils;
 
 Eigen::IOFormat CleanFmt(4, 0, ", ", "\n", "[", "]");
 
+
 QuadKD::QuadKD(rclcpp::Node::SharedPtr node) : node_(node) { initModel(""); }
 
 QuadKD::QuadKD(rclcpp::Node::SharedPtr node, std::string ns) : node_(node) {

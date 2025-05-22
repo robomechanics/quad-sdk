@@ -85,6 +85,7 @@ def launch_robot_group(context, *args, **kwargs):
                     'robot_type': TextSubstitution(text=robot_type),
                     'namespace': TextSubstitution(text=robot_ns),
                     'controller': TextSubstitution(text=controller),
+                    'world': LaunchConfiguration('world'),
                 }.items()
             )
         ])
@@ -128,7 +129,7 @@ def generate_launch_description():
         OpaqueFunction(function=launch_ignition_world),
         OpaqueFunction(function=launch_robot_mapping),
         OpaqueFunction(function=launch_robot_group),
-        # OpaqueFunction(function=launch_visualization)
+        OpaqueFunction(function=launch_visualization)
     ])
 
 

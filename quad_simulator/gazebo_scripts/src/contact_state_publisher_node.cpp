@@ -1,17 +1,18 @@
-#include <rclcpp/rclcpp.hpp>
 #include <iostream>
-#include "contact_state_publisher.h"
+#include <rclcpp/rclcpp.hpp>
 
-int main(int argc, char**argv)
-{
-    rclcpp::init(argc, argv)
-    
-    // Create the Node
-    auto options= rclcpp::NodeOptions();
-    auto node = std::make_shared<ContactStatePublisher>();
+#include "gazebo_scripts/contact_state_publisher.h"
 
-    // Create Contact State Publisher with node pointer
-    rclcpp::spin(node);
-    rclcpp::shutdown();
-    return 0;
+int main(int argc, char** argv) {
+  rclcpp::init(argc, argv);
+
+  // Create the Node
+  //   auto options = rclcpp::NodeOptions();
+  auto node = std::make_shared<rclcpp::Node>("contact_state_publisher_node");
+  auto contact_state_publisher = std::make_shared<ContactStatePublisher>(node);
+
+  // Create Contact State Publisher with node pointer
+  contact_state_publisher->spin();
+  rclcpp::shutdown();
+  return 0;
 }
