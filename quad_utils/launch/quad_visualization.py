@@ -73,19 +73,19 @@ def generate_launch_description():
         arguments=['-d', rviz_config_file]
     )
 
-    static_tf = Node(
-        package='tf2_ros',
-        executable='static_transform_publisher',
-        parameters=[{ 'use_sim_time': True }],
-        arguments=['0', '0', '0', '0', '0', '0', 'world', 'map'],
-        output='screen'
-    )
+    # static_tf = Node(
+    #     package='tf2_ros',
+    #     executable='static_transform_publisher',
+    #     parameters=[{ 'use_sim_time': True }],
+    #     arguments=['0', '0', '0', '0', '0', '0', 'world', 'map'],
+    #     output='screen'
+    # )
 
     return LaunchDescription(
         declared_arguments + [
         plot_juggler_group,
         rqt_dash_group,
         rviz2_node,
-        static_tf
+        # static_tf
         ]
     )

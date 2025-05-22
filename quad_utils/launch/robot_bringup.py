@@ -32,7 +32,7 @@ def load_robot_params(context, *args, **kwargs):
 
     # Merge the Paths
     desc_path = FindPackageShare(desc_pkg).perform(context)
-    urdf_path = os.path.join(desc_path, 'urdf', sdf_file)
+    urdf_path = os.path.join(desc_path, 'urdf', urdf_file)
     sdf_path = os.path.join(desc_path, 'models','spirit', sdf_file)
 
     # Load URDF and SDF from disk, Might be Unnecessary
@@ -69,6 +69,20 @@ def spawn_sdf_model(context, *args, **kwargs):
     )
     return [spawn_node] 
 
+def ign_ros_bridge(context, *args, **kwargs):
+    namespace = LaunchConfiguration('namespace').perform(context)
+    quad_utils_path = FindPackageShare('quad_utils').perform(context)
+
+    ign_ros_bridge_node = IncludeLaunchDescription(
+            PythonLaunchDescriptionSource(
+                os.path.join(quad_utils_path, 'launch', 'ign_quad_bridge.py')
+            ),
+            launch_arguments={
+                'namespace': namespace,
+            }.items()
+        )
+    return [ign_ros_bridge_node]
+
 def launch_robot_driver(context, *args, **kwargs):
     namespace = LaunchConfiguration('namespace').perform(context)
     robot_type = LaunchConfiguration('robot_type').perform(context)
@@ -79,7 +93,7 @@ def launch_robot_driver(context, *args, **kwargs):
 
     robot_driver_node = IncludeLaunchDescription(
             PythonLaunchDescriptionSource(
-                os.path.join(quad_utils_path, 'launch', 'robot_driver.launch.py')
+                os.path.join(quad_utils_path, 'launch', 'robot_driver.py')
             ),
             launch_arguments={
                 'robot_type': robot_type,
@@ -158,32 +172,65 @@ def spawn_controller_broadcasters(context, *args, **kwards):
 def launch_contact_state_publisher(context, *args, **kwargs):
     namespace = LaunchConfiguration('namespace').perform(context)
     robot_type = LaunchConfiguration('robot_type').perform(context)
-    gazebo_scripts_path = FindPackageShare('gazebo_scripts').perform(context)
-    config_file = os.path.join(gazebo_scripts_path, 'config', f'{robot_type}.yaml')
+    world_name = LaunchConfiguration('world').perform(context)
+    quad_utils_path = FindPackageShare('quad_utils').perform(context)
+    config_file = os.path.join(quad_utils_path, 'config', 'topics_robot.yaml')
 
     return [
         Node(
             package='gazebo_scripts',
             executable='contact_state_publisher_node',
-            name=f'{namespace}_contact_state_publisher',
-            namespace=namespace,
+            # name='contact_state_publisher_node',
+            # namespace=namespace,
             output='screen',
-            parameters=[config_file]
+            parameters=[config_file,
+                        {'namespace': namespace, 
+                         'world': world_name}]
         )
     ]
 
+def launch_visualization_plugins(context, *args, **kwargs):
+    from launch.substitutions import LaunchConfiguration
+
+    # Get arguments from the context
+    namespace = LaunchConfiguration('namespace').perform(context)
+    robot_type = LaunchConfiguration('robot_type').perform(context)
+    controller = LaunchConfiguration('controller').perform(context)
+    urdf = context.robot_urdf
+    sdf = context.robot_sdf
+
+    quad_utils_path = FindPackageShare('quad_utils').perform(context)
+
+    # Launch the visualization launch file
+    visualization_plugins_launch = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource(
+            os.path.join(quad_utils_path, 'launch', 'visualization_plugins.py')
+        ),
+        launch_arguments={
+            'namespace': namespace,
+            'robot_type': robot_type,
+            'controller': controller,
+            'robot_description': urdf,
+        }.items()
+    )
+
+    return [visualization_plugins_launch]
+
 def generate_launch_description():
     return LaunchDescription([
+        DeclareLaunchArgument('world', default_value = 'flat.sdf', description = 'Loaded World SDF File'),
         DeclareLaunchArgument('robot_type', default_value = 'spirit', description='Robot type'),
         DeclareLaunchArgument('namespace', default_value = 'robot_1', description='Robot namespace'),
         DeclareLaunchArgument('controller', default_value = 'inverse_kinematics', description='Controller type'),
         DeclareLaunchArgument('init_pose', default_value = '-x 0.0 -y 0.0 -z 0.5', description= "Initial Robot Position"),
         OpaqueFunction(function=load_robot_params),
         OpaqueFunction(function=spawn_sdf_model), 
+        # OpaqueFunction(function=ign_ros_bridge),
         # OpaqueFunction(function=launch_robot_driver),
         OpaqueFunction(function=launch_controller_manager),
         # OpaqueFunction(function=spawn_controller_broadcasters),
-        # OpaqueFunction(function=launch_contact_state_publisher)
+        OpaqueFunction(function=launch_contact_state_publisher),
+        OpaqueFunction(function= launch_visualization_plugins)
     ])
 
 

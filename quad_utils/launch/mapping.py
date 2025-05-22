@@ -94,6 +94,14 @@ def generate_launch_description():
         remappings=[],
     )
 
+    static_tf = Node(
+        package='tf2_ros',
+        executable='static_transform_publisher',
+        parameters=[{ 'use_sim_time': True }],
+        arguments=['0', '0', '0', '0', '0', '0', 'world', 'map'],
+        output='screen',
+        emulate_tty=True
+    )
 
     return LaunchDescription(
         declared_arguments + [
@@ -102,6 +110,6 @@ def generate_launch_description():
             grid_map_visualization,
             grid_map_filter_node,
             # rviz2_node,
-            # static_tf
+            static_tf
         ]
     )

@@ -5,10 +5,8 @@ namespace quad_utils {
 void updateStateHeaders(quad_msgs::msg::RobotState &msg, rclcpp::Time stamp,
                         std::string frame, int traj_index) {
   // Fill in the data across the messages
-  builtin_interfaces::msg::Time ros_time = stamp.to_builtin_time();
-  msg.header.stamp = ros_time;
+  msg.header.stamp = stamp;
   msg.header.frame_id = frame;
-  msg.header.seq = traj_index;
   msg.body.header = msg.header;
   msg.feet.header = msg.header;
   for (int i = 0; i < msg.feet.feet.size(); i++) {
@@ -38,13 +36,12 @@ void interpHeader(std_msgs::msg::Header header_1,
       static_cast<int64_t>(t_interp * state_duration.nanoseconds());
 
   // Duration Takes Argument Nanoseconds, not Double
-  rclcpp::Duration interp_duration(interp_ns);
+  rclcpp::Duration interp_duration = rclcpp::Duration::from_nanoseconds(interp_ns);
   rclcpp::Time interp_time = time1 + interp_duration;
 
   // Copy and Update the Header
   interp_header.stamp = interp_time;
   interp_header.frame_id = header_1.frame_id;
-  interp_header.seq = header_1.seq;
 }
 
 void interpOdometry(quad_msgs::msg::BodyState state_1,
@@ -414,7 +411,7 @@ void ikRobotState(const quad_utils::QuadKD &kinematics,
 void fkRobotState(const quad_utils::QuadKD &kinematics,
                   quad_msgs::msg::BodyState body_state,
                   sensor_msgs::msg::JointState joint_state,
-                  quad_msgs::MultiFootState &multi_foot_state) {
+                  quad_msgs::msg::MultiFootState &multi_foot_state) {
   multi_foot_state.header = joint_state.header;
   // If this message is empty set the joint names
 

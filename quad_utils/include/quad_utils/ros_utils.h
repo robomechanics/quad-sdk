@@ -5,6 +5,7 @@
 #include <geometry_msgs/msg/pose.hpp>
 #include <geometry_msgs/msg/vector3.hpp>
 #include <rclcpp/rclcpp.hpp>
+#include <rclcpp/time.hpp>
 #include <std_msgs/msg/header.hpp>
 
 #include "quad_utils/math_utils.h"
@@ -67,7 +68,7 @@ inline void getPlanIndex(rclcpp::Time plan_start, double dt, int &index,
 template <class ParamType>
 inline bool loadROSParam(rclcpp::Node::SharedPtr &node, std::string paramName,
                          ParamType &varName) {
-  if (!node.get_parameter(paramName, varName)) {
+  if (!node->get_parameter(paramName, varName)) {
     RCLCPP_ERROR(node->get_logger(),
                  "Can't find param %s from parameter server",
                  paramName.c_str());
@@ -86,9 +87,9 @@ inline bool loadROSParam(rclcpp::Node::SharedPtr &node, std::string paramName,
  * @return boolean (true if found rosparam, false if loaded default)
  */
 template <class ParamType>
-inline bool loadROSParamDefault(rclcpp::Node::SharedPtr, std::string paramName,
+inline bool loadROSParamDefault(rclcpp::Node::SharedPtr node, std::string paramName,
                                 ParamType &varName, ParamType defaultVal) {
-  if (!node.get_parameter(paramName, varName)) {
+  if (!node->get_parameter(paramName, varName)) {
     varName = defaultVal;
     RCLCPP_INFO(
         node->get_logger(),

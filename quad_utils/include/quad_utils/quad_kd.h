@@ -31,6 +31,7 @@ class QuadKD {
    * @brief Constructor for QuadKD Class
    * @return Constructed object of type QuadKD
    */
+  QuadKD();
   QuadKD(rclcpp::Node::SharedPtr node);
 
   /**
