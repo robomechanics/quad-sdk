@@ -19,7 +19,7 @@ def launch_ignition_world(context, *args, **kwargs):
     model_path = os.path.join(pkg_share, 'models')
 
     # Build the command for `ign gazebo`
-    cmd = ['ign', 'gazebo', world_path, '-r']
+    cmd = ['gz', 'sim', world_path, '-r']
     if not gui:
         cmd.append('-s')
     if verbose:
@@ -31,8 +31,8 @@ def launch_ignition_world(context, *args, **kwargs):
             ExecuteProcess(
                 cmd=cmd,
                 output='log',
-                additional_env={'IGN_GAZEBO_RESOURCE_PATH': (EnvironmentVariable('IGN_GAZEBO_RESOURCE_PATH')),
-                                'IGN_GAZEBO_SYSTEM_PLUGIN_PATH': (EnvironmentVariable('IGN_GAZEBO_SYSTEM_PLUGIN_PATH'))}
+                additional_env={'GZ_SIM_RESOURCE_PATH': (EnvironmentVariable('GZ_SIM_RESOURCE_PATH')),
+                                'GZ_SIM_SYSTEM_PLUGIN_PATH': (EnvironmentVariable('GZ_SIM_SYSTEM_PLUGIN_PATH'))}
             )
         ])
     ]

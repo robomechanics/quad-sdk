@@ -14,7 +14,7 @@
   <depend>tf2</depend>
   <depend>tf2_ros</depend>
   <depend>quad_utils</depend>
-  <depend>ignition-transport11</depend>
+  <depend>quad_msgs</depend>
 
 
   <test_depend>ament_lint_auto</test_depend>

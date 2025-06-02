@@ -4,13 +4,16 @@ project(gazebo_scripts)
 if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   add_compile_options(-Wall -Wextra -Wpedantic)
 endif()
+# list(APPEND CMAKE_PREFIX_PATH "/usr/lib/x86_64-linux-gnu/cmake/gz-transport13")
 
 # find dependencies
 find_package(ament_cmake REQUIRED)
-find_package(ignition-transport11 REQUIRED)
+find_package(gz-transport13 REQUIRED)
 find_package(quad_utils)
 find_package(std_msgs)
 find_package(tf2_ros REQUIRED)
+  # Mark the existing target as non-global and allow duplicates
+
 # find_library(Protobuf REQUIRED)
 # uncomment the following section in order to fill in
 # further dependencies manually.
@@ -23,7 +26,7 @@ find_package(tf2_ros REQUIRED)
 # ament_target_dependencies(contact_state_publisher_node quad_utils std_msgs rclcpp)
 # target_link_libraries(contact_state_publisher_node ${IGNITION-TRANSPORT_LIBRARIES})
 
-
+# Contact State Publisher
 add_executable(contact_state_publisher_node
   src/contact_state_publisher_node.cpp
   src/contact_state_publisher.cpp
@@ -33,7 +36,7 @@ target_include_directories(contact_state_publisher_node PUBLIC
   $<INSTALL_INTERFACE:include>
 )
 target_link_libraries(contact_state_publisher_node
-  ${IGNITION-TRANSPORT_LIBRARIES}
+  gz-transport13::gz-transport13
 )
 
 ament_target_dependencies(contact_state_publisher_node
@@ -42,9 +45,10 @@ ament_target_dependencies(contact_state_publisher_node
   tf2
   tf2_ros
   quad_utils
+  gz-transport13
 )
 
-
+# Install Targets
 install(TARGETS contact_state_publisher_node
   DESTINATION lib/${PROJECT_NAME}
 )

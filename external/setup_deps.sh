@@ -8,7 +8,7 @@ quiet_mkdir () {
 
 #Setup and Build for TeleopTwist
 #Setup and Build for RBDL
-sudo apt install -y ros-humble-urdf
+sudo apt install -y ros-jazzy-urdf
 cd rbdl-orb
 quiet_mkdir build
 cd build

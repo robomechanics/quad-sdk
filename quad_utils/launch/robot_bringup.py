@@ -1,5 +1,6 @@
 from launch import LaunchDescription
 from launch.actions import DeclareLaunchArgument, OpaqueFunction, IncludeLaunchDescription, ExecuteProcess, TimerAction, RegisterEventHandler
+from launch.actions import SetEnvironmentVariable
 from launch.substitutions import LaunchConfiguration, EnvironmentVariable
 from launch_ros.actions import Node
 from launch.launch_description_sources import PythonLaunchDescriptionSource
@@ -46,6 +47,24 @@ def load_robot_params(context, *args, **kwargs):
     context.robot_sdf_path = sdf_path
     context.robot_urdf_path = urdf_path
 
+def launch_robot_urdf_node(context, *args, **kwargs):
+    namespace = LaunchConfiguration('namespace').perform(context)
+    urdf = context.robot_urdf
+
+    set_qos_env = SetEnvironmentVariable(
+        name='RMW_QOS_PROFILE_SENSOR_DATA',
+        value='rmw_qos_profile_default'
+    )
+
+    robot_state_urdf_node = Node(
+        package='robot_state_publisher',
+        executable='robot_state_publisher',
+        name='robot_state_publisher',
+        parameters=[{'robot_description': urdf}],
+        output='screen'
+    )
+    return [set_qos_env, robot_state_urdf_node]
+
 def spawn_sdf_model(context, *args, **kwargs):
     namespace = LaunchConfiguration('namespace').perform(context)
     init_pose = LaunchConfiguration('init_pose').perform(context)
@@ -65,23 +84,43 @@ def spawn_sdf_model(context, *args, **kwargs):
             '-allow_renaming', 'true'
         ],
         additional_env={  
-            'IGN_GAZEBO_RESOURCE_PATH': (EnvironmentVariable('IGN_GAZEBO_RESOURCE_PATH'))}
+            'GZ_SIM_RESOURCE_PATH': (EnvironmentVariable('GZ_SIM_RESOURCE_PATH')),
+            'GZ_SIM_SYSTEM_PLUGIN_PATH': (EnvironmentVariable('GZ_SIM_SYSTEM_PLUGIN_PATH'))}
+            
     )
     return [spawn_node] 
 
-def ign_ros_bridge(context, *args, **kwargs):
+def harmonic_ros_bridge(context, *args, **kwargs):
     namespace = LaunchConfiguration('namespace').perform(context)
     quad_utils_path = FindPackageShare('quad_utils').perform(context)
+    joint_state_bridge = Node(
+        package='ros_gz_bridge',
+        executable='parameter_bridge',
+        name='joint_state_bridge',
+        # namespace=namespace,
+        output='screen',
+        arguments=[
+            f'/world/default/model/{namespace}/joint_state@sensor_msgs/msg/JointState[gz.msgs.Model'
+        ],
+        remappings=[
+            (f'/world/default/model/{namespace}/joint_state', f'/{namespace}/joint_states')
+        ]
+    )
+    # If you want to do it with a YAML file
+    # joint_state_bridge = Node(
+    #     package='ros_gz_bridge',
+    #     executable='parameter_bridge',
+    #     name='joint_state_bridge',
+    #     # namespace=namespace,
+    #     output='screen',
+    #     parameters=[{
+    #         'config_file': os.path.join(quad_utils_path, 'config', 'ros_gz_bridge.yaml'),
+    #         # 'qos_overrides./tf_static.publisher.durability': 'transient_local',
+    #     }],
+    # )
 
-    ign_ros_bridge_node = IncludeLaunchDescription(
-            PythonLaunchDescriptionSource(
-                os.path.join(quad_utils_path, 'launch', 'ign_quad_bridge.py')
-            ),
-            launch_arguments={
-                'namespace': namespace,
-            }.items()
-        )
-    return [ign_ros_bridge_node]
+
+    return [joint_state_bridge]
 
 def launch_robot_driver(context, *args, **kwargs):
     namespace = LaunchConfiguration('namespace').perform(context)
@@ -108,18 +147,8 @@ def launch_robot_driver(context, *args, **kwargs):
 
 def launch_controller_manager(context, *args, **kwargs):
     namespace = LaunchConfiguration('namespace').perform(context)
-    urdf = context.robot_urdf
-    urdf_path = context.robot_urdf_path
     gazebo_scripts_path = FindPackageShare('gazebo_scripts').perform(context)
 
-    robot_state_urdf_node = Node(
-        package='robot_state_publisher',
-        executable='robot_state_publisher',
-        name='robot_state_publisher',
-        parameters=[{
-            'robot_description': urdf
-        }],
-    )
     controller_manager_node = Node(
         package='controller_manager',
         executable='ros2_control_node',
@@ -129,14 +158,7 @@ def launch_controller_manager(context, *args, **kwargs):
         ],
         output='screen'
     )
-    controller_start_handler = RegisterEventHandler(
-        OnProcessStart(
-            target_action=robot_state_urdf_node,
-            on_start=[controller_manager_node]
-        )
-    )
-
-    return [robot_state_urdf_node, controller_start_handler]
+    return [controller_manager_node]
 
 def spawn_controller_broadcasters(context, *args, **kwards):
     namespace = LaunchConfiguration('namespace').perform(context)
@@ -224,12 +246,13 @@ def generate_launch_description():
         DeclareLaunchArgument('controller', default_value = 'inverse_kinematics', description='Controller type'),
         DeclareLaunchArgument('init_pose', default_value = '-x 0.0 -y 0.0 -z 0.5', description= "Initial Robot Position"),
         OpaqueFunction(function=load_robot_params),
+        OpaqueFunction(function=launch_robot_urdf_node),
         OpaqueFunction(function=spawn_sdf_model), 
-        # OpaqueFunction(function=ign_ros_bridge),
+        OpaqueFunction(function=harmonic_ros_bridge),
         # OpaqueFunction(function=launch_robot_driver),
-        OpaqueFunction(function=launch_controller_manager),
+        # OpaqueFunction(function=launch_controller_manager),
         # OpaqueFunction(function=spawn_controller_broadcasters),
-        OpaqueFunction(function=launch_contact_state_publisher),
+        # OpaqueFunction(function=launch_contact_state_publisher),
         OpaqueFunction(function= launch_visualization_plugins)
     ])
 
