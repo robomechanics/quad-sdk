@@ -1,24 +1,24 @@
-IGN_GAZEBO_RESOURCE_PATH_UPDATE="export IGN_GAZEBO_RESOURCE_PATH=\$IGN_GAZEBO_RESOURCE_PATH:\
+GZ_SIM_RESOURCE_PATH_UPDATE="export GZ_SIM_RESOURCE_PATH=\$GZ_SIM_RESOURCE_PATH:\
 $HOME/ros2_ws/install/gazebo_scripts/share/gazebo_scripts/models:\
 $HOME/ros2_ws/install/gazebo_scripts/share/gazebo_scripts/worlds:\
 $HOME/ros2_ws/install/spirit_description/share/spirit_description/models:\
 $HOME/ros2_ws/install/sensor_description/share/sensor_description/models:\
 $HOME/ros2_ws/install/objects_description/share/objects_description/models"
 
-IGN_GAZEBO_SYSTEM_PLUGIN_PATH_UPDATE="export IGN_GAZEBO_SYSTEM_PLUGIN_PATH=$IGN_GAZEBO_SYSTEM_PLUGIN_PATH:/opt/ros/humble/lib"
+GZ_SIM_SYSTEM_PLUGIN_PATH_UPDATE="export GZ_SIM_SYSTEM_PLUGIN_PATH=$GZ_SIM_SYSTEM_PLUGIN_PATH:/opt/ros/jazzy/lib"
 
-if ! grep -Fxq "$IGN_GAZEBO_RESOURCE_PATH_UPDATE" ~/.bashrc; then
-   echo "Adding IGN_GAZEBO_RESOURCE_PATH update to bashrc"
-   echo "$IGN_GAZEBO_RESOURCE_PATH_UPDATE" >> ~/.bashrc
+if ! grep -Fxq "$GZ_SIM_RESOURCE_PATH_UPDATE" ~/.bashrc; then
+   echo "Adding GZ_SIM_RESOURCE_PATH update to bashrc"
+   echo "$GZ_SIM_RESOURCE_PATH_UPDATE" >> ~/.bashrc
 else
-   echo "bashrc already contains IGN_GAZEBO_RESOURCE_PATH update"
+   echo "bashrc already contains GZ_SIM_RESOURCE_PATH update"
 fi
 
-if ! grep -Fxq "$IGN_GAZEBO_SYSTEM_PLUGIN_PATH_UPDATE" ~/.bashrc; then
-   echo "Adding IGN_GAZEBO_SYSTEM_PLUGIN_PATH update to bashrc"
-   echo "$IGN_GAZEBO_SYSTEM_PLUGIN_PATH_UPDATE" >> ~/.bashrc
+if ! grep -Fxq "$GZ_SIM_SYSTEM_PLUGIN_PATH_UPDATE" ~/.bashrc; then
+   echo "Adding GZ_SIM_SYSTEM_PLUGIN_PATH update to bashrc"
+   echo "$GZ_SIM_SYSTEM_PLUGIN_PATH_UPDATE" >> ~/.bashrc
 else
-   echo "bashrc already contains IGN_GAZEBO_SYSTEM_PLUGIN_PATH update"
+   echo "bashrc already contains GZ_SIM_SYSTEM_PLUGIN_PATH update"
 fi
 
 sudo apt-get update
@@ -26,22 +26,23 @@ sudo apt-get install lsb-release gnupg
 sudo curl https://packages.osrfoundation.org/gazebo.gpg --output /usr/share/keyrings/pkgs-osrf-archive-keyring.gpg
 echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/pkgs-osrf-archive-keyring.gpg] http://packages.osrfoundation.org/gazebo/ubuntu-stable $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/gazebo-stable.list > /dev/null
 sudo apt-get update
-sudo apt-get install ignition-fortress
+sudo apt-get install gz-harmonic
 sudo apt install -y mesa-utils\
-      gz-tools
+      ros-jazzy-gz-tools-vendor\
+      ros-jazzy-gz-sim-vendor
 
 sudo apt install -y \
-    ros-humble-gazebo-ros-pkgs \
-    ros-humble-controller-manager \
-    ros-humble-effort-controllers \
-    ros-humble-robot-state-publisher \
-    ros-humble-imu-tools \
-    ros-humble-ros-ign-bridge
-   #  ros-humble-ros-gz \
+    ros-jazzy-controller-manager \
+    ros-jazzy-effort-controllers \
+    ros-jazzy-robot-state-publisher \
+    ros-jazzy-imu-tools \
+    ros-jazzy-ros-gz \
+    ros-jazzy-ros-gz-sim
+   #  ros-jazzy-ros-gz \
 
 #Notes:
-#ros-humble-gazebo-ros-pkgs Integration with Gazebo Classic
-#ros-humble-ros-gz Integration with Ignition Gazebo
+#ros-jazzy-gazebo-ros-pkgs Integration with Gazebo Classic
+#ros-jazzy-ros-gz Integration with Ignition Gazebo
 
 # sudo apt install -y ros-melodic-controller-manager
 # sudo apt install -y ros-melodic-joint-state-controller

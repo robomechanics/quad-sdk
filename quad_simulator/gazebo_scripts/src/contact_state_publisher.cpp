@@ -1,9 +1,9 @@
 #include "gazebo_scripts/contact_state_publisher.h"
 
-#include <ignition/msgs/contacts.pb.h>
-#include <ignition/msgs/vector3d.pb.h>
+#include <gz/msgs/contacts.pb.h>
+#include <gz/msgs/vector3d.pb.h>
 
-#include <ignition/transport/Node.hh>
+#include <gz/transport/Node.hh>
 
 ContactStatePublisher::ContactStatePublisher(rclcpp::Node::SharedPtr node)
     : node_(node),
@@ -102,13 +102,13 @@ ContactStatePublisher::ContactStatePublisher(rclcpp::Node::SharedPtr node)
 }
 
 template <int toe_idx>
-void ContactStatePublisher::onWrenchToe(const ignition::msgs::Wrench &msg) {
+void ContactStatePublisher::onWrenchToe(const gz::msgs::Wrench &msg) {
   // std::cout << "Updating Wrench" << std::endl;
   last_wrench_msgs_[toe_idx] = msg;
 }
 
 template <int toe_idx>
-void ContactStatePublisher::onContactToe(const ignition::msgs::Contacts &msg) {
+void ContactStatePublisher::onContactToe(const gz::msgs::Contacts &msg) {
   std::string terrain_name =
       std::regex_replace(world_name, std::regex("\\.sdf$"), "");
   std::string toe_collision_names[4] = {"toe0_collision", "toe1_collision",
@@ -202,22 +202,22 @@ void ContactStatePublisher::onContactToe(const ignition::msgs::Contacts &msg) {
 }
 
 template void ContactStatePublisher::onContactToe<0>(
-    const ignition::msgs::Contacts &);
+    const gz::msgs::Contacts &);
 template void ContactStatePublisher::onContactToe<1>(
-    const ignition::msgs::Contacts &);
+    const gz::msgs::Contacts &);
 template void ContactStatePublisher::onContactToe<2>(
-    const ignition::msgs::Contacts &);
+    const gz::msgs::Contacts &);
 template void ContactStatePublisher::onContactToe<3>(
-    const ignition::msgs::Contacts &);
+    const gz::msgs::Contacts &);
 
 template void ContactStatePublisher::onWrenchToe<0>(
-    const ignition::msgs::Wrench &);
+    const gz::msgs::Wrench &);
 template void ContactStatePublisher::onWrenchToe<1>(
-    const ignition::msgs::Wrench &);
+    const gz::msgs::Wrench &);
 template void ContactStatePublisher::onWrenchToe<2>(
-    const ignition::msgs::Wrench &);
+    const gz::msgs::Wrench &);
 template void ContactStatePublisher::onWrenchToe<3>(
-    const ignition::msgs::Wrench &);
+    const gz::msgs::Wrench &);
 
 bool ContactStatePublisher::checkMessageTiming(double current_sim_time,
                                                int toe_idx) {

@@ -27,7 +27,7 @@
   <depend>tf2</depend>
   <depend>tf2_ros</depend>
   <depend>tf2_geometry_msgs</depend>
-  <depend>eigen3</depend>
+  <depend>eigen</depend>
   <depend>python_cmake_module</depend>
   <depend>rviz2</depend>
 

@@ -99,7 +99,7 @@ def generate_launch_description():
         executable='static_transform_publisher',
         parameters=[{ 'use_sim_time': True }],
         arguments=['0', '0', '0', '0', '0', '0', 'world', 'map'],
-        output='screen',
+        # output='screen',
         emulate_tty=True
     )
 

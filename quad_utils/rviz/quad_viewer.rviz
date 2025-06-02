@@ -172,7 +172,7 @@ Visualization Manager:
           Show Trail: false
           Value: true
       Name: Robot 1 Ground Truth State
-      Robot Description: robot_description
+      Description Topic: /robot_1/robot_description
       TF Prefix: robot_1_ground_truth
       Update Interval: 0
       Value: true

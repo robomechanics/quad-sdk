@@ -1,8 +1,8 @@
 #ifndef CONTACT_STATE_PUBLISHER_H
 #define CONTACT_STATE_PUBLISHER_H
 
-#include <ignition/msgs/contacts.pb.h>
-#include <ignition/msgs/wrench.pb.h>
+#include <gz/msgs/contacts.pb.h>
+#include <gz/msgs/wrench.pb.h>
 #include <quad_utils/ros_utils.h>
 #include <tf2_ros/buffer.h>
 #include <tf2_ros/transform_listener.h>
@@ -12,15 +12,16 @@
 #include <cmath>
 #include <deque>
 #include <eigen3/Eigen/Eigen>
-#include <ignition/transport/Node.hh>
+#include <gz/transport/Node.hh>
 #include <quad_msgs/msg/grf_array.hpp>
 #include <rclcpp/rclcpp.hpp>
 #include <string>
+#include <regex>
 #define MATH_PI 3.141592
 
-//! Publishes contact states from Ignition Gazebo
+//! Publishes contact states from gz Gazebo
 /*!
-   This class subscribes to Ignition Gazebo contact state messages and publishes
+   This class subscribes to gz Gazebo contact state messages and publishes
    their data under one GRFArray message.
 */
 
@@ -43,10 +44,10 @@ class ContactStatePublisher {
    * @param[in] msg New contact state data
    */
   template <int toe_idx>
-  void onContactToe(const ignition::msgs::Contacts &msg);
+  void onContactToe(const gz::msgs::Contacts &msg);
 
   template <int toe_idx>
-  void onWrenchToe(const ignition::msgs::Wrench &msg);
+  void onWrenchToe(const gz::msgs::Wrench &msg);
 
   //   void contactStateCallback(const gazebo_msgs::ContactsState::ConstPtr
   //   &msg,
@@ -60,9 +61,9 @@ class ContactStatePublisher {
    */
   void publishContactState();
 
-  std::array<ignition::msgs::Wrench, 4> last_wrench_msgs_;
+  std::array<gz::msgs::Wrench, 4> last_wrench_msgs_;
 
-  std::array<ignition::msgs::Contact, 4> last_contact_msgs_;
+  std::array<gz::msgs::Contact, 4> last_contact_msgs_;
 
   std::array<double, 4> last_contact_time_;
 
@@ -88,11 +89,11 @@ class ContactStatePublisher {
 
   rclcpp::Publisher<quad_msgs::msg::GRFArray>::SharedPtr grf_pub_;
 
-  ignition::transport::Node ign_node_;
+  gz::transport::Node ign_node_;
 
-  std::array<ignition::msgs::Contacts, 4> contact_data_;
+  std::array<gz::msgs::Contacts, 4> contact_data_;
 
-  std::array<ignition::msgs::Wrench, 4> wrench_data_;
+  std::array<gz::msgs::Wrench, 4> wrench_data_;
 
   std::array<bool, 4> contact_received_;
 

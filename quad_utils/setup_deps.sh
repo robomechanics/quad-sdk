@@ -1,9 +1,9 @@
 sudo apt install -y tmux
-sudo apt install -y ros-humble-plotjuggler-ros
+sudo apt install -y ros-jazzy-plotjuggler-ros
 # sudo apt install -y python-pygame
-sudo apt install -y ros-humble-grid-map
-sudo apt install -y ros-humble-cv-bridge
-sudo apt install -y ros-humble-vision-opencv
-sudo apt install -y ros-humble-ros-gz-sim
-sudo apt install -y ros-humble-gz-ros2-control
-sudo apt install -y ros-humble-gazebo-ros2-control
+sudo apt install -y ros-jazzy-grid-map
+sudo apt install -y ros-jazzy-cv-bridge
+sudo apt install -y ros-jazzy-vision-opencv
+sudo apt install -y ros-jazzy-ros-gz-sim
+sudo apt install -y ros-jazzy-gz-ros2-control
+

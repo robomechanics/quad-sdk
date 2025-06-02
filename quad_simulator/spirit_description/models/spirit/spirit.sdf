@@ -962,8 +962,8 @@
         <force_torque>
           <frame>child</frame> <!-- or parent, depending on your setup -->
         </force_torque>
-        <plugin filename="libignition-gazebo-forcetorque-system.so"
-                name="ignition::gazebo::systems::ForceTorque"/>
+        <plugin filename="libgz-sim8-forcetorque-system.so"
+                name="gz::sim::systems::ForceTorque"/>
       </sensor>
     </joint>
 
@@ -1025,7 +1025,7 @@
         <contact>
           <collision>toe1_collision</collision>
         </contact>
-        <plugin filename="libignition-gazebo-contact-system.so" name="ignition::gazebo::systems::Contact"> </plugin>
+        <plugin filename="libgz-sim8-contact-system.so" name="gz::sim::systems::Contact"> </plugin>
       </sensor>
       <visual name='toe1_visual'>
         <pose frame=''>0 0 0 0 -0 0</pose>
@@ -1052,8 +1052,8 @@
         <force_torque>
           <frame>child</frame> <!-- or parent, depending on your setup -->
         </force_torque>
-        <plugin filename="libignition-gazebo-forcetorque-system.so"
-                name="ignition::gazebo::systems::ForceTorque"/>
+        <plugin filename="libgz-sim8-forcetorque-system.so"
+                name="gz::sim::systems::ForceTorque"/>
       </sensor>
     </joint>
 
@@ -1141,8 +1141,8 @@
         <force_torque>
           <frame>child</frame> <!-- or parent, depending on your setup -->
         </force_torque>
-        <plugin filename="libignition-gazebo-forcetorque-system.so"
-                name="ignition::gazebo::systems::ForceTorque"/>
+        <plugin filename="libgz-sim8-forcetorque-system.so"
+                name="gz::sim::systems::ForceTorque"/>
       </sensor>
     </joint>
 
@@ -1230,8 +1230,8 @@
         <force_torque>
           <frame>child</frame> <!-- or parent, depending on your setup -->
         </force_torque>
-        <plugin filename="libignition-gazebo-forcetorque-system.so"
-                name="ignition::gazebo::systems::ForceTorque"/>
+        <plugin filename="libgz-sim8-forcetorque-system.so"
+                name="gz::sim::systems::ForceTorque"/>
       </sensor>
     </joint>
 
@@ -1265,6 +1265,15 @@
     <!-- Publish ground truth state data -->
     <plugin filename="libground_truth_estimator.so" name="ground_truth_estimator">
       <updateRateHZ>500.0</updateRateHZ>
+      <ground_truth_state_topic>state/ground_truth</ground_truth_state_topic>
+      <ground_truth_body_frame_topic>state/ground_truth_body_frame</ground_truth_body_frame_topic>
     </plugin>
+    <!-- Publish joint state state data -->
+    <plugin
+        filename="gz-sim-joint-state-publisher-system" name="gz::sim::systems::JointStatePublisher">
+    </plugin>
+    
+    <!-- <plugin filename="ignition-gazebo-joint-state-publisher-system" name="ignition::gazebo::systems::JointStatePublisher"/> -->
+
   </model>
 </sdf>

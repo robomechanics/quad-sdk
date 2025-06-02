@@ -26,7 +26,7 @@ find_package(cv_bridge REQUIRED)
 find_package(Eigen3 REQUIRED)
 find_package(tf2 REQUIRED)
 find_package(tf2_geometry_msgs REQUIRED)
-find_package(PythonLibs REQUIRED)
+find_package(Python3 REQUIRED)
 
 # We need to add the project source path to the CMake module path so that
 # the FindRBDL.cmake script can be found.
@@ -164,10 +164,12 @@ install(
   DESTINATION share/${PROJECT_NAME}/rviz
 )
 
-
+install(FILES cmake/FindRBDL.cmake 
+  DESTINATION share/${PROJECT_NAME}/cmake
+)
 
 ament_export_include_directories(include)
-ament_export_libraries(quad_utils)
+ament_export_libraries(quad_utils ${RBDL_LIBRARY} ${RBDL_URDFREADER_LIBRARY})
 ament_export_dependencies(
   rclcpp std_msgs nav_msgs nav2_msgs sensor_msgs geometry_msgs visualization_msgs
   grid_map_core grid_map_ros grid_map_pcl grid_map_msgs quad_msgs
