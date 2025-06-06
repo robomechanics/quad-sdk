@@ -2,7 +2,7 @@
 
 <robot xmlns:xacro="http://www.ros.org/wiki/xacro">
 
-    <xacro:include filename="$(find go2_description)/xacro/transmission.xacro"/>
+    <xacro:include filename="$(find go2_description)/models/go2/xacro/transmission.xacro"/>
 
     <xacro:macro name="leg" params="name mirror mirror_dae front_hind front_hind_dae">
 

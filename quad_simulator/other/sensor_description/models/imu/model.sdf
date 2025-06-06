@@ -25,7 +25,6 @@
         <always_on>1</always_on>
         <update_rate>1</update_rate>
         <visualize>true</visualize>
-        <topic>imu</topic>
       </sensor>
     </link>
   </model>

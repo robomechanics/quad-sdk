@@ -68,8 +68,8 @@ install(
   DESTINATION include
 )
 
-install(FILES
-  config/quad_control.yaml
+install(
+  DIRECTORY config/
   DESTINATION share/${PROJECT_NAME}/config
 )
 

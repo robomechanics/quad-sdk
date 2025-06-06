@@ -7,6 +7,7 @@ from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch_ros.substitutions import FindPackageShare
 from launch.event_handlers import OnProcessStart
 import os
+import xacro
 
 def load_robot_params(context, *args, **kwargs):
     # Load Robot URDF and Robot Centric Parameters
@@ -15,17 +16,17 @@ def load_robot_params(context, *args, **kwargs):
     # Find URDF, SDF, and YAML file for the Corresponding Robot
     if robot_type == 'spirit' or robot_type == 'spirit_rotors':
         desc_pkg = 'spirit_description'
-        urdf_file = 'spirit.urdf'
+        urdf_file = 'spirit.urdf.xacro'
         sdf_file = 'spirit_rotors.sdf' if robot_type == 'spirit_rotors' else 'spirit.sdf'
         config_file = 'spirit.yaml'
     elif robot_type == 'a1':
         desc_pkg = 'a1_description'
-        urdf_file = 'a1.urdf'
+        urdf_file = 'a1.urdf.xacro'
         sdf_file = 'a1.sdf'
         config_file = 'a1.yaml'
     elif robot_type == 'go2':
         desc_pkg = 'go2_description'
-        urdf_file = 'go2.urdf'
+        urdf_file = 'go2.urdf.xacro'
         sdf_file = 'go2.sdf'
         config_file = 'go2.yaml'
     else:
@@ -33,13 +34,14 @@ def load_robot_params(context, *args, **kwargs):
 
     # Merge the Paths
     desc_path = FindPackageShare(desc_pkg).perform(context)
-    urdf_path = os.path.join(desc_path, 'urdf', urdf_file)
-    sdf_path = os.path.join(desc_path, 'models','spirit', sdf_file)
+    urdf_path = os.path.join(desc_path, 'models', robot_type, 'urdf', urdf_file)
+    sdf_path = os.path.join(desc_path, 'models', robot_type, sdf_file)
 
     # Load URDF and SDF from disk, Might be Unnecessary
-    with open(os.path.join(desc_path, 'models','spirit','urdf', urdf_file), 'r') as f:
-        urdf = f.read()
-    with open(os.path.join(desc_path, 'models','spirit', sdf_file), 'r') as f:
+    # with open(os.path.join(desc_path, 'models',robot_type,'urdf', urdf_file), 'r') as f:
+    #     urdf = f.read()
+    urdf = xacro.process_file(urdf_path).toxml()
+    with open(os.path.join(desc_path, 'models',robot_type, sdf_file), 'r') as f:
         sdf = f.read()
 
     context.robot_urdf = urdf
@@ -90,37 +92,52 @@ def spawn_sdf_model(context, *args, **kwargs):
     )
     return [spawn_node] 
 
-def harmonic_ros_bridge(context, *args, **kwargs):
+def launch_controller_manager(context, *args, **kwargs):
     namespace = LaunchConfiguration('namespace').perform(context)
-    quad_utils_path = FindPackageShare('quad_utils').perform(context)
-    joint_state_bridge = Node(
-        package='ros_gz_bridge',
-        executable='parameter_bridge',
-        name='joint_state_bridge',
-        # namespace=namespace,
-        output='screen',
-        arguments=[
-            f'/world/default/model/{namespace}/joint_state@sensor_msgs/msg/JointState[gz.msgs.Model'
+    gazebo_scripts_path = FindPackageShare('gazebo_scripts').perform(context)
+
+    controller_manager_node = Node(
+        package='controller_manager',
+        executable='ros2_control_node',
+        name='controller_manager',
+        parameters=[
+            os.path.join(gazebo_scripts_path, 'config', 'quad_control.yaml')
         ],
-        remappings=[
-            (f'/world/default/model/{namespace}/joint_state', f'/{namespace}/joint_states')
-        ]
+        output='screen'
     )
-    # If you want to do it with a YAML file
-    # joint_state_bridge = Node(
-    #     package='ros_gz_bridge',
-    #     executable='parameter_bridge',
-    #     name='joint_state_bridge',
-    #     # namespace=namespace,
-    #     output='screen',
-    #     parameters=[{
-    #         'config_file': os.path.join(quad_utils_path, 'config', 'ros_gz_bridge.yaml'),
-    #         # 'qos_overrides./tf_static.publisher.durability': 'transient_local',
-    #     }],
-    # )
+    return [controller_manager_node]
 
+def spawn_controller_broadcasters(context, *args, **kwargs):
+    namespace = LaunchConfiguration('namespace').perform(context)
+    gazebo_scripts_path = FindPackageShare('gazebo_scripts').perform(context)
+    spawn_joint_state_broadcaster = ExecuteProcess(
+        cmd=[
+            'ros2', 'run', 'controller_manager', 'spawner',
+            'joint_state_broadcaster',
+            '--controller-manager', f'/{namespace}/controller_manager',
+        ],
+        output='screen'
+    ) 
 
-    return [joint_state_bridge]
+    spawn_joint_controller = ExecuteProcess(
+        cmd=[
+            'ros2', 'run', 'controller_manager', 'spawner',
+            'joint_controller',
+            '--controller-manager', f'/{namespace}/controller_manager'
+        ],
+        output='screen'
+    )
+
+    # Optional delay to give controller_manager time to start
+    return[ 
+        TimerAction(
+            period=3.0,
+            actions=[
+                spawn_joint_state_broadcaster,
+                spawn_joint_controller
+            ]
+        )
+    ]
 
 def launch_robot_driver(context, *args, **kwargs):
     namespace = LaunchConfiguration('namespace').perform(context)
@@ -145,51 +162,66 @@ def launch_robot_driver(context, *args, **kwargs):
         )
     return [robot_driver_node]
 
-def launch_controller_manager(context, *args, **kwargs):
+
+def harmonic_ros_bridge(context, *args, **kwargs):
     namespace = LaunchConfiguration('namespace').perform(context)
-    gazebo_scripts_path = FindPackageShare('gazebo_scripts').perform(context)
+    quad_utils_path = FindPackageShare('quad_utils').perform(context)
+    
+    # joint_state_bridge = Node(
+    #     package='ros_gz_bridge',
+    #     executable='parameter_bridge',
+    #     name='joint_state_bridge',
+    #     # namespace=namespace,
+    #     # output='screen',
+    #     arguments=[
+    #         f'/world/default/model/{namespace}/joint_state@sensor_msgs/msg/JointState[gz.msgs.Model'
+    #     ],
+    #     remappings=[
+    #         (f'/world/default/model/{namespace}/joint_state', f'/{namespace}/joint_states')
+    #     ]
+    # )
+    # If you want to do it with a YAML file
+    # joint_state_bridge = Node(
+    #     package='ros_gz_bridge',
+    #     executable='parameter_bridge',
+    #     name='joint_state_bridge',
+    #     # namespace=namespace,
+    #     output='screen',
+    #     parameters=[{
+    #         'config_file': os.path.join(quad_utils_path, 'config', 'ros_gz_bridge.yaml'),
+    #         # 'qos_overrides./tf_static.publisher.durability': 'transient_local',
+    #     }],
+    # )
+    toe_args, toe_remaps = [],[]
+    for toe_id in range(4):
+        toe_args.append(f'/world/default/model/{namespace}/link/toe{toe_id}/sensor/toe{toe_id}_contact/contact@ros_gz_interfaces/msg/Contacts[gz.msgs.Contacts')
+        toe_remaps.append((f'/world/default/model/{namespace}/link/toe{toe_id}/sensor/toe{toe_id}_contact/contact', f'/{namespace}/gazebo/toe{toe_id}_contact_states'))
 
-    controller_manager_node = Node(
-        package='controller_manager',
-        executable='ros2_control_node',
-        name='controller_manager',
-        parameters=[
-            os.path.join(gazebo_scripts_path, 'config', 'quad_control.yaml')
-        ],
-        output='screen'
+    contact_state_bridge = Node(
+        package='ros_gz_bridge',
+        executable='parameter_bridge',
+        name='contact_state_bridge',
+        # namespace=namespace,
+        # output='screen',
+        arguments=toe_args,
+        remappings=toe_remaps
+        
     )
-    return [controller_manager_node]
 
-def spawn_controller_broadcasters(context, *args, **kwards):
-    namespace = LaunchConfiguration('namespace').perform(context)
-    spawn_joint_state_broadcaster = ExecuteProcess(
-        cmd=[
-            'ros2', 'run', 'controller_manager', 'spawner',
-            'joint_state_broadcaster',
-            '--controller-manager', f'/{namespace}/controller_manager'
+    imu_bridge = Node(
+                package='ros_gz_bridge',
+        executable='parameter_bridge',
+        name='imu_bridge',
+        # namespace=namespace,
+        # output='screen',
+        arguments=[
+            f'/world/default/model/{namespace}/model/imu/link/link/sensor/imu_sensor/imu@sensor_msgs/msg/Imu[gz.msgs.IMU'
         ],
+        remappings=[
+            (f'/world/default/model/{namespace}/model/imu/link/link/sensor/imu_sensor/imu', f'/{namespace}/imu')
+        ]
     )
-
-    spawn_joint_controller = ExecuteProcess(
-        cmd=[
-            'ros2', 'run', 'controller_manager', 'spawner',
-            'joint_controller',
-            '--controller-manager', f'/{namespace}/controller_manager'
-        ],
-        output='screen'
-    )
-
-    # Optional delay to give controller_manager time to start
-    return[ 
-        TimerAction(
-            period=3.0,
-            actions=[
-                spawn_joint_state_broadcaster,
-                spawn_joint_controller
-            ]
-        )
-    ]
-
+    return [contact_state_bridge, imu_bridge]
 
 def launch_contact_state_publisher(context, *args, **kwargs):
     namespace = LaunchConfiguration('namespace').perform(context)
@@ -220,6 +252,7 @@ def launch_visualization_plugins(context, *args, **kwargs):
     controller = LaunchConfiguration('controller').perform(context)
     urdf = context.robot_urdf
     sdf = context.robot_sdf
+    urdf_path = context.robot_urdf_path
 
     quad_utils_path = FindPackageShare('quad_utils').perform(context)
 
@@ -233,6 +266,7 @@ def launch_visualization_plugins(context, *args, **kwargs):
             'robot_type': robot_type,
             'controller': controller,
             'robot_description': urdf,
+            'robot_urdf_path': urdf_path,
         }.items()
     )
 
@@ -244,14 +278,14 @@ def generate_launch_description():
         DeclareLaunchArgument('robot_type', default_value = 'spirit', description='Robot type'),
         DeclareLaunchArgument('namespace', default_value = 'robot_1', description='Robot namespace'),
         DeclareLaunchArgument('controller', default_value = 'inverse_kinematics', description='Controller type'),
-        DeclareLaunchArgument('init_pose', default_value = '-x 0.0 -y 0.0 -z 0.5', description= "Initial Robot Position"),
+        DeclareLaunchArgument('init_pose', default_value = '-x 2.0 -y 0.0 -z 0.5', description= "Initial Robot Position"),
         OpaqueFunction(function=load_robot_params),
         OpaqueFunction(function=launch_robot_urdf_node),
         OpaqueFunction(function=spawn_sdf_model), 
         OpaqueFunction(function=harmonic_ros_bridge),
         # OpaqueFunction(function=launch_robot_driver),
         # OpaqueFunction(function=launch_controller_manager),
-        # OpaqueFunction(function=spawn_controller_broadcasters),
+        OpaqueFunction(function=spawn_controller_broadcasters),
         # OpaqueFunction(function=launch_contact_state_publisher),
         OpaqueFunction(function= launch_visualization_plugins)
     ])

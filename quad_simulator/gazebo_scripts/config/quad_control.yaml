@@ -1,26 +1,48 @@
 /**/controller_manager:
     ros__parameters:
       update_rate: 500
-
-      joint_state_controller:
+      joint_state_broadcaster:
         type: joint_state_broadcaster/JointStateBroadcaster
-
       # Position Controllers ---------------------------------
       joint_controller:
         type: effort_controllers/QuadController
-        joints:
-          - '0'
-          - '1'
-          - '2'
-          - '3'
-          - '4'
-          - '5'
-          - '6'
-          - '7'
-          - '8'
-          - '9'
-          - '10'
-          - '11'
+        # joints:
+        # - '0'
+        # - '1'
+        # - '2'
+        # - '3'
+        # - '4'
+        # - '5'
+        # - '6'
+        # - '7'
+        # - '8'
+        # - '9'
+        # - '10'
+        # - '11'
+      # topics:
+      #   control:
+      #     joint_command: control/joint_command
+        
+
+
+/**/joint_controller:
+  ros__parameters:
+      joints:
+        - '0'
+        - '1'
+        - '2'
+        - '3'
+        - '4'
+        - '5'
+        - '6'
+        - '7'
+        - '8'
+        - '9'
+        - '10'
+        - '11'
+      topics:
+        control:
+          joint_command: control/joint_command
 
       
       # Shouldn't be Handled by Controller Manager, moved to ign gazebo sensor modules instead

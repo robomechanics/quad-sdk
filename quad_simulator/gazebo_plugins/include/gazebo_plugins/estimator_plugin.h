@@ -12,6 +12,8 @@
 #include <gz/sim/System.hh>
 #include <gz/sim/Util.hh>
 #include <gz/sim/components.hh>
+#include <gz/sim/Link.hh>
+#include <gz/sim/Joint.hh>
 #include <gz/plugin/Register.hh>
 #include <gz/transport/Node.hh>
 

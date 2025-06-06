@@ -2,7 +2,7 @@ from launch import LaunchDescription
 from launch.actions import DeclareLaunchArgument, OpaqueFunction, GroupAction, IncludeLaunchDescription, ExecuteProcess
 from launch.substitutions import LaunchConfiguration, TextSubstitution, EnvironmentVariable
 from launch.launch_description_sources import PythonLaunchDescriptionSource
-from launch_ros.actions import PushRosNamespace
+from launch_ros.actions import PushRosNamespace, Node
 from launch_ros.substitutions import FindPackageShare
 from launch.substitutions import PathJoinSubstitution
 
@@ -35,6 +35,18 @@ def launch_ignition_world(context, *args, **kwargs):
                                 'GZ_SIM_SYSTEM_PLUGIN_PATH': (EnvironmentVariable('GZ_SIM_SYSTEM_PLUGIN_PATH'))}
             )
         ])
+    ]
+
+def bridge_global_clock(context, *args, **kwargs):
+    return [
+        Node(
+            package='ros_gz_bridge',
+            executable='parameter_bridge',
+            name='clock_bridge',
+            namespace='',
+            arguments=['/clock@rosgraph_msgs/msg/Clock[gz.msgs.Clock'],
+            output='screen'
+        )
     ]
 
 def launch_robot_mapping(context, *args, **kwargs):
@@ -127,6 +139,7 @@ def generate_launch_description():
 
     return LaunchDescription(declared_args + [
         OpaqueFunction(function=launch_ignition_world),
+        OpaqueFunction(function=bridge_global_clock),
         OpaqueFunction(function=launch_robot_mapping),
         OpaqueFunction(function=launch_robot_group),
         OpaqueFunction(function=launch_visualization)

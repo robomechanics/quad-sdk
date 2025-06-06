@@ -956,15 +956,6 @@
     <joint name='jtoe0' type='fixed'>
       <child>toe0</child>
       <parent>lower0</parent>
-        <sensor name="toe0_grf" type="force_torque">
-        <always_on>true</always_on>
-        <update_rate>500</update_rate>
-        <force_torque>
-          <frame>child</frame> <!-- or parent, depending on your setup -->
-        </force_torque>
-        <plugin filename="libgz-sim8-forcetorque-system.so"
-                name="gz::sim::systems::ForceTorque"/>
-      </sensor>
     </joint>
 
     <link name='toe1'>
@@ -1046,15 +1037,6 @@
     <joint name='jtoe1' type='fixed'>
       <child>toe1</child>
       <parent>lower1</parent>
-      <sensor name="toe1_grf" type="force_torque">
-        <always_on>true</always_on>
-        <update_rate>500</update_rate>
-        <force_torque>
-          <frame>child</frame> <!-- or parent, depending on your setup -->
-        </force_torque>
-        <plugin filename="libgz-sim8-forcetorque-system.so"
-                name="gz::sim::systems::ForceTorque"/>
-      </sensor>
     </joint>
 
     <link name='toe2'>
@@ -1135,15 +1117,6 @@
     <joint name='jtoe2' type='fixed'>
       <child>toe2</child>
       <parent>lower2</parent>
-      <sensor name="toe2_grf" type="force_torque">
-        <always_on>true</always_on>
-        <update_rate>500</update_rate>
-        <force_torque>
-          <frame>child</frame> <!-- or parent, depending on your setup -->
-        </force_torque>
-        <plugin filename="libgz-sim8-forcetorque-system.so"
-                name="gz::sim::systems::ForceTorque"/>
-      </sensor>
     </joint>
 
     <link name='toe3'>
@@ -1224,15 +1197,6 @@
     <joint name='jtoe3' type='fixed'>
       <child>toe3</child>
       <parent>lower3</parent>
-      <sensor name="toe3_grf" type="force_torque">
-        <always_on>true</always_on>
-        <update_rate>500</update_rate>
-        <force_torque>
-          <frame>child</frame> <!-- or parent, depending on your setup -->
-        </force_torque>
-        <plugin filename="libgz-sim8-forcetorque-system.so"
-                name="gz::sim::systems::ForceTorque"/>
-      </sensor>
     </joint>
 
     <include>
@@ -1257,23 +1221,26 @@
       <child>imu::link</child>
       <parent>body</parent>
     </joint>
+
     <!-- Setup ros control -->
-    <!-- <plugin name='gz_ros2_control::GazeboSimROS2ControlPlugin' filename='gz_ros2_control-system'>
-      <controlPeriod>0.002</controlPeriod>
-      <parameters>model://gazebo_scripts/config/quad_control.yaml</parameters>
-    </plugin> -->
+      <plugin 
+          filename="libgz_ros2_control-system.so"
+          name="gz_ros2_control::GazeboSimROS2ControlPlugin">
+          <controlPeriod>0.002</controlPeriod>
+          <parameters>/home/rml/ros2_ws/install/gazebo_scripts/share/gazebo_scripts/config/quad_control.yaml</parameters>
+              <ros>
+                <namespace>robot_1</namespace>
+            </ros>
+      </plugin>
+
     <!-- Publish ground truth state data -->
     <plugin filename="libground_truth_estimator.so" name="ground_truth_estimator">
       <updateRateHZ>500.0</updateRateHZ>
       <ground_truth_state_topic>state/ground_truth</ground_truth_state_topic>
       <ground_truth_body_frame_topic>state/ground_truth_body_frame</ground_truth_body_frame_topic>
     </plugin>
+
     <!-- Publish joint state state data -->
-    <plugin
-        filename="gz-sim-joint-state-publisher-system" name="gz::sim::systems::JointStatePublisher">
-    </plugin>
-    
-    <!-- <plugin filename="ignition-gazebo-joint-state-publisher-system" name="ignition::gazebo::systems::JointStatePublisher"/> -->
 
   </model>
 </sdf>
