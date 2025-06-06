@@ -4,11 +4,11 @@
 
     <xacro:arg name="DEBUG" default="false"/>
 
-    <xacro:include filename="$(find go2_description)/xacro/const.xacro"/>
-    <xacro:include filename="$(find go2_description)/xacro/materials.xacro"/>
-    <xacro:include filename="$(find go2_description)/xacro/leg.xacro"/>
+    <xacro:include filename="$(find go2_description)/models/go2/xacro/const.xacro"/>
+    <xacro:include filename="$(find go2_description)/models/go2/xacro/materials.xacro"/>
+    <xacro:include filename="$(find go2_description)/models/go2/xacro/leg.xacro"/>
     <!-- <xacro:include filename="$(find go2_description)/xacro/stairs.xacro"/> -->
-    <xacro:include filename="$(find go2_description)/xacro/gazebo.xacro"/>
+    <xacro:include filename="$(find go2_description)/models/go2/xacro/gazebo.xacro"/>
     <!-- <xacro:include filename="$(find go2_gazebo)/launch/stairs.urdf.xacro"/> -->
 
     <!-- <xacro:stairs stairs="15" xpos="0" ypos="0" zpos="0" /> -->

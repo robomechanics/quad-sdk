@@ -1,0 +1,11 @@
+
+<library path="libquad_controller">
+  <class name="effort_controllers/QuadController" 
+  type="effort_controllers::QuadController" 
+  base_class_type="controller_interface::ControllerInterface">
+    <description>
+      The QuadController tracks positions commands w/ specified feedforward torques and specified feedback gains
+    </description>
+  </class>
+
+</library>

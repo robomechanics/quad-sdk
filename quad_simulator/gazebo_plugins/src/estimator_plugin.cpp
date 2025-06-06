@@ -62,23 +62,14 @@ void GroundTruthEstimator::Configure(
         if (!this->urdf_received_) {
           this->urdf_received_ = true;
           RCLCPP_INFO(this->node_->get_logger(), "Inside Callback.");
-          // RCLCPP_INFO(this->node_->get_logger(), "URDF (raw msg):\n%s",
-          //             msg->data.c_str());
-          // Declare and set the robot_description parameter manually
-          // if (!this->node_->has_parameter("robot_description")) {
+
           this->node_->declare_parameter<std::string>("robot_description",
                                                       msg->data);
-          // } else {
-          //   this->node_->set_parameter(
-          //       rclcpp::Parameter("robot_description", msg->data));
-          // }
 
           RCLCPP_INFO(this->node_->get_logger(),
                       "Received and set robot_description parameter.");
 
-          // You can now create QuadKD since robot_description is set
           try {
-            // RCLCPP_INFO(this->node_->get_logger(), "Inside Try Block");
             this->quadKD_ = std::make_shared<quad_utils::QuadKD>(this->node_);
             RCLCPP_INFO(this->node_->get_logger(), "Makes QuadKD Class.");
           } catch (const std::exception &e) {
@@ -130,18 +121,24 @@ void GroundTruthEstimator::Configure(
     }
   }
 
-  // RCLCPP_INFO(this->node_->get_logger(),
-  //             "Makes it to the end of the Configure");
-  // this->quadKD_ = std::make_shared<quad_utils::QuadKD>(node_, robot_ns);
+  for (const auto &joint_name : joint_names) {
+    auto joint_entity = this->model_.JointByName(ecm, joint_name);
+    if (joint_entity != gz::sim::kNullEntity) {
+      gz::sim::Joint joint(joint_entity);
+      joint.EnableVelocityCheck(ecm, true);
+      joint.EnablePositionCheck(ecm, true);
+      joint.EnableTransmittedWrenchCheck(ecm, true);
+    }
+  }
 }
 
 void GroundTruthEstimator::PostUpdate(
     const gz::sim::UpdateInfo &info,
     const gz::sim::EntityComponentManager &ecm) {
-  // RCLCPP_INFO(this->node_->get_logger(), "Updating the Estimate");
+
   rclcpp::spin_some(this->node_);
   if (!this->node_ || !this->model_.Valid(ecm)) return;
-  // RCLCPP_INFO(this->node_->get_logger(), "Valid Node, Model");
+
   if (!urdf_received_) return;
 
   if (!this->time_initialized_) {
@@ -151,24 +148,15 @@ void GroundTruthEstimator::PostUpdate(
                 std::chrono::duration<double>(last_time_).count());
     return;
   }
-  // if (this->last_time_.count() == 0) {
-  //   this->last_time_ = info.simTime;
-  //     RCLCPP_INFO(this->node_->get_logger(), "Doing this too often");
-  //   return;
-  // }
-  // RCLCPP_INFO(this->node_->get_logger(), "Initializing Time");
+
   double dt = std::chrono::duration<double>(info.simTime - last_time_).count();
-  // RCLCPP_INFO(this->node_->get_logger(), "dt: %.6f", dt);
-  // RCLCPP_INFO(this->node_->get_logger(), "SimTime: %.6f, LastTime: %.6f",
-  //             std::chrono::duration<double>(info.simTime).count(),
-  //             std::chrono::duration<double>(last_time_).count());
   if (this->update_rate_ > 0.0 && dt < (1.0 / this->update_rate_)) return;
-  // RCLCPP_INFO(this->node_->get_logger(), "Passing Update Rate Check");
   this->last_time_ = info.simTime;
+
   // Extract all relevant information from the simulator
-  auto body_link = this->model_.LinkByName(ecm, "body");
-  // RCLCPP_INFO(this->node_->get_logger(), "Finds Body");
-  if (!body_link) {
+  auto body_entity = this->model_.LinkByName(ecm, "body");
+
+  if (body_entity == gz::sim::kNullEntity) {
     RCLCPP_WARN_THROTTLE(this->node_->get_logger(), *this->node_->get_clock(),
                          2000,
                          "Can't find body link in sdf. Make sure the name in "
@@ -176,43 +164,35 @@ void GroundTruthEstimator::PostUpdate(
     return;
   }
 
-  auto lower0 = this->model_.LinkByName(ecm, "lower0");
-  auto lower1 = this->model_.LinkByName(ecm, "lower1");
-  auto lower2 = this->model_.LinkByName(ecm, "lower2");
-  auto lower3 = this->model_.LinkByName(ecm, "lower3");
+  auto lower0_entity = this->model_.LinkByName(ecm, "lower0");
+  auto lower1_entity = this->model_.LinkByName(ecm, "lower1");
+  auto lower2_entity = this->model_.LinkByName(ecm, "lower2");
+  auto lower3_entity = this->model_.LinkByName(ecm, "lower3");
 
-  auto toe0 = this->model_.LinkByName(ecm, "toe0");
-  auto toe1 = this->model_.LinkByName(ecm, "toe1");
-  auto toe2 = this->model_.LinkByName(ecm, "toe2");
-  auto toe3 = this->model_.LinkByName(ecm, "toe3");
+  auto toe0_entity = this->model_.LinkByName(ecm, "toe0");
+  auto toe1_entity = this->model_.LinkByName(ecm, "toe1");
+  auto toe2_entity = this->model_.LinkByName(ecm, "toe2");
+  auto toe3_entity = this->model_.LinkByName(ecm, "toe3");
 
-  // Ign Gazebo returns these as std::optional<gz::math::Pose3d>
-  // Dereference them before assignment
-  // RCLCPP_INFO(this->node_->get_logger(), "3");
-  auto pose_comp = ecm.Component<gz::sim::components::Pose>(body_link);
-  auto lin_vel_comp =
-      ecm.Component<gz::sim::components::WorldLinearVelocity>(body_link);
-  auto ang_vel_comp =
-      ecm.Component<gz::sim::components::AngularVelocity>(body_link);
-  // RCLCPP_INFO(this->node_->get_logger(), "4");
-  // if (!pose_comp) {
-  //   RCLCPP_WARN(this->node_->get_logger(),
-  //               "[Tick] Pose component still missing");
-  // }
-  // if (!lin_vel_comp) {
-  //   RCLCPP_WARN(this->node_->get_logger(),
-  //               "[Tick] LinVel  component still missing");
-  // }
-  // if (!ang_vel_comp) {
-  //   RCLCPP_WARN(this->node_->get_logger(),
-  //               "[Tick] AngVel component still missing");
-  // }
+  gz::sim::Link body_link(body_entity);
 
-  if (!pose_comp || !lin_vel_comp || !ang_vel_comp) return;
-  const auto &pose = pose_comp->Data();
-  const auto &lin_vel = lin_vel_comp->Data();
-  const auto &ang_vel = ang_vel_comp->Data();
-  // RCLCPP_INFO(this->node_->get_logger(), "5");
+  gz::sim::Link lower0(lower0_entity);
+  gz::sim::Link lower1(lower1_entity);
+  gz::sim::Link lower2(lower2_entity);
+  gz::sim::Link lower3(lower3_entity);
+
+  gz::sim::Link toe0(toe0_entity);
+  gz::sim::Link toe1(toe1_entity);
+  gz::sim::Link toe2(toe2_entity);
+  gz::sim::Link toe3(toe3_entity);
+
+  auto pose_opt = body_link.WorldPose(ecm);
+  auto lin_vel_opt = body_link.WorldLinearVelocity(ecm);
+  auto ang_vel_opt = body_link.WorldAngularVelocity(ecm);
+
+  const auto &pose    = *pose_opt;
+  const auto &lin_vel = *lin_vel_opt;
+  const auto &ang_vel = *ang_vel_opt;
 
   // Update and publish state estimate message
   quad_msgs::msg::RobotState state;
@@ -232,6 +212,7 @@ void GroundTruthEstimator::PostUpdate(
   state.body.twist.angular.y = ang_vel.Y();
   state.body.twist.angular.z = ang_vel.Z();
 
+  // Sanity Check Robot Spawn Pose
   // RCLCPP_INFO(this->node_->get_logger(),
   //             "Body Position: x=%.3f, y=%.3f, z=%.3f",
   //             state.body.pose.position.x, state.body.pose.position.y,
@@ -241,18 +222,44 @@ void GroundTruthEstimator::PostUpdate(
   int num_joints = 12;
   state.joints.name = {"8",  "0", "1", "9",  "2", "3",
                        "10", "4", "5", "11", "6", "7"};
+
   for (int i = 0; i < num_joints; i++) {
-    auto joint = this->model_.JointByName(ecm, state.joints.name[i]);
-    double jpos = 0.0, jvel = 0.0;
-    if (joint) {
-      auto posComp = ecm.Component<gz::sim::components::JointPosition>(joint);
-      auto velComp = ecm.Component<gz::sim::components::JointVelocity>(joint);
-      if (posComp && !posComp->Data().empty()) jpos = posComp->Data()[0];
-      if (velComp && !velComp->Data().empty()) jvel = velComp->Data()[0];
+    auto joint_entity = this->model_.JointByName(ecm, state.joints.name[i]);
+    double pos = 0.0, vel = 0.0, torque = 0.0;
+    if (joint_entity) {
+
+      gz::sim::Joint joint(joint_entity);
+      auto pos_opt = joint.Position(ecm);
+      auto vel_opt = joint.Velocity(ecm);
+      auto wrench_opt = joint.TransmittedWrench(ecm);
+
+      if (pos_opt && !pos_opt->empty()) {
+        pos = (*pos_opt)[0];
+      }
+      if ( vel_opt && !vel_opt->empty()) {
+        vel = (*vel_opt)[0];
+      }
+      if (wrench_opt) {
+        const auto &wrench_msg = (*wrench_opt)[0];
+        const auto &torque_msg = wrench_msg.torque();
+
+        // Interpret based on leg phase (same logic as Classic)
+        switch (i % 3) {
+          case 0:  // Abad
+            torque = torque_msg.x();
+            break;
+          case 1:  // Hip
+            torque = -torque_msg.y();
+            break;
+          case 2:  // Knee
+            torque = torque_msg.y();
+            break;
+        }
+      }
     }
-    state.joints.position.push_back(jpos);
-    state.joints.velocity.push_back(jvel);
-    state.joints.effort.push_back(0.0);  // Torque placeholder
+    state.joints.position.push_back(pos);
+    state.joints.velocity.push_back(vel);
+    state.joints.effort.push_back(torque);
   }
 
   int num_feet = 4;
@@ -260,20 +267,20 @@ void GroundTruthEstimator::PostUpdate(
   quad_utils::fkRobotState(*this->quadKD_, state);
 
   // Update the Feet Positions and Velocities
-  std::vector<gz::sim::Entity> toes = {toe0, toe1, toe2, toe3};
+  std::vector<gz::sim::Link> toes = {toe0, toe1, toe2, toe3};
 
   for (int i = 0; i < 4; i++) {
-    auto toe_pose_comp = ecm.Component<gz::sim::components::Pose>(toes[i]);
-    auto toe_vel_comp =
-        ecm.Component<gz::sim::components::WorldLinearVelocity>(toes[i]);
-    if (toe_pose_comp) {
-      const auto &toe_pose = toe_pose_comp->Data();
+    auto toe_pose_opt = toes[i].WorldPose(ecm);
+    auto toe_vel_opt = toes[i].WorldLinearVelocity(ecm);
+    if (toe_pose_opt) {
+      const auto &toe_pose = *toe_pose_opt;
       state.feet.feet[i].position.x = toe_pose.Pos().X();
       state.feet.feet[i].position.y = toe_pose.Pos().Y();
       state.feet.feet[i].position.z = toe_pose.Pos().Z();
+
     }
-    if (toe_vel_comp) {
-      const auto &toe_vel = toe_vel_comp->Data();
+    if (toe_vel_opt) {
+      const auto &toe_vel = *toe_vel_opt;
       state.feet.feet[i].velocity.x = toe_vel.X();
       state.feet.feet[i].velocity.y = toe_vel.Y();
       state.feet.feet[i].velocity.z = toe_vel.Z();

@@ -1,5 +1,6 @@
+<?xml version='1.0'?>
 <sdf version='1.6'>
-  <model name='a1_description'>
+  <model name='a1'>
     <link name='body'>
       <pose frame=''>0 0 0 0 -0 0</pose>
       <inertial>
@@ -14,7 +15,7 @@
           <izz>0.0457542</izz>
         </inertia>
       </inertial>
-      <collision name='body_collision_collision'>
+      <collision name='body_collision'>
         <pose frame=''>0 0 0 0 -0 0</pose>
         <geometry>
           <box>
@@ -57,25 +58,25 @@
           </box>
         </geometry>
         <material>
-          <script>
-            <name>Gazebo/Green</name>
-            <uri>file://media/materials/scripts/gazebo.material</uri>
-          </script>
+          <ambient>0.2 0.2 0.2 1.0</ambient>
+          <diffuse>0.2 0.2 0.2 1.0</diffuse>
+          <specular>0.05 0.05 0.05 1.0</specular>
+          <emissive>0 0 0 1</emissive>
         </material>
       </visual>
-      <visual name='body_visual_visual_1'>
+      <visual name='body_visual_1'>
         <pose frame=''>0 0 0 0 -0 0</pose>
         <geometry>
           <mesh>
             <scale>1 1 1</scale>
-            <uri>model://a1_description/meshes/trunk.dae</uri>
+            <uri>model://a1/meshes/trunk.dae</uri>
           </mesh>
         </geometry>
         <material>
-          <script>
-            <name>Gazebo/Green</name>
-            <uri>file://media/materials/scripts/gazebo.material</uri>
-          </script>
+          <ambient>0.2 0.2 0.2 1.0</ambient>
+          <diffuse>0.2 0.2 0.2 1.0</diffuse>
+          <specular>0.05 0.05 0.05 1.0</specular>
+          <emissive>0 0 0 1</emissive>
         </material>
       </visual>
       <visual name='body_fixed_joint_lump__imu_link_visual_2'>
@@ -86,34 +87,12 @@
           </box>
         </geometry>
         <material>
-          <script>
-            <name>Gazebo/Red</name>
-            <uri>file://media/materials/scripts/gazebo.material</uri>
-          </script>
+          <ambient>0.8 0.0 0.0 1.0</ambient>
+          <diffuse>0.8 0.0 0.0 1.0</diffuse>
+          <specular>0.1 0.1 0.1 1.0</specular>
+          <emissive>0 0 0 1</emissive>
         </material>
       </visual>
-      <velocity_decay/>
-      <velocity_decay/>
-      <velocity_decay/>
-      <gravity>1</gravity>
-      <sensor name='imu_sensor' type='imu'>
-        <always_on>1</always_on>
-        <update_rate>1000</update_rate>
-        <visualize>1</visualize>
-        <topic>__default_topic__</topic>
-        <plugin name='imu_plugin' filename='libgazebo_ros_imu_sensor.so'>
-          <topicName>trunk_imu</topicName>
-          <bodyName>imu_link</bodyName>
-          <updateRateHZ>1000.0</updateRateHZ>
-          <gaussianNoise>0.0</gaussianNoise>
-          <xyzOffset>0 0 0</xyzOffset>
-          <rpyOffset>0 0 0</rpyOffset>
-          <frameName>imu_link</frameName>
-        </plugin>
-        <pose frame=''>0 0 0 0 -0 0</pose>
-      </sensor>
-      <gravity>1</gravity>
-      <velocity_decay/>
     </link>
     <link name='hip2'>
       <pose frame=''>0.1805 -0.047 0 0 -0 0</pose>
@@ -129,7 +108,7 @@
           <izz>0.000552929</izz>
         </inertia>
       </inertial>
-      <collision name='hip2_collision_collision'>
+      <collision name='hip2_collision'>
         <pose frame=''>0 0 0 1.5708 -0 0</pose>
         <geometry>
           <cylinder>
@@ -149,19 +128,19 @@
           </friction>
         </surface>
       </collision>
-      <visual name='hip2_visual_visual'>
+      <visual name='hip2_visual'>
         <pose frame=''>0 0 0 -3.14159 -0 0</pose>
         <geometry>
           <mesh>
             <scale>1 1 1</scale>
-            <uri>model://a1_description/meshes/hip.dae</uri>
+            <uri>model://a1/meshes/hip.dae</uri>
           </mesh>
         </geometry>
         <material>
-          <script>
-            <name>Gazebo/DarkGrey</name>
-            <uri>file://media/materials/scripts/gazebo.material</uri>
-          </script>
+          <ambient>0.2 0.2 0.2 1.0</ambient>
+          <diffuse>0.2 0.2 0.2 1.0</diffuse>
+          <specular>0.05 0.05 0.05 1.0</specular>
+          <emissive>0 0 0 1</emissive>
         </material>
       </visual>
       <gravity>1</gravity>
@@ -201,7 +180,7 @@
           <izz>0.00136779</izz>
         </inertia>
       </inertial>
-      <collision name='upper2_collision_collision'>
+      <collision name='upper2_collision'>
         <pose frame=''>0 0 -0.1 3.14159 1.57079 3.14159</pose>
         <geometry>
           <box>
@@ -223,19 +202,19 @@
           </friction>
         </surface>
       </collision>
-      <visual name='upper2_visual_visual'>
+      <visual name='upper2_visual'>
         <pose frame=''>0 0 0 0 -0 0</pose>
         <geometry>
           <mesh>
             <scale>1 1 1</scale>
-            <uri>model://a1_description/meshes/thigh_mirror.dae</uri>
+            <uri>model://a1/meshes/thigh_mirror.dae</uri>
           </mesh>
         </geometry>
         <material>
-          <script>
-            <name>Gazebo/DarkGrey</name>
-            <uri>file://media/materials/scripts/gazebo.material</uri>
-          </script>
+          <ambient>0.2 0.2 0.2 1.0</ambient>
+          <diffuse>0.2 0.2 0.2 1.0</diffuse>
+          <specular>0.05 0.05 0.05 1.0</specular>
+          <emissive>0 0 0 1</emissive>
         </material>
       </visual>
       <gravity>1</gravity>
@@ -276,7 +255,7 @@
           <izz>3.2426e-05</izz>
         </inertia>
       </inertial>
-      <collision name='lower2_collision_collision'>
+      <collision name='lower2_collision'>
         <pose frame=''>0 0 -0.1 3.14159 1.57079 3.14159</pose>
         <geometry>
           <box>
@@ -295,19 +274,19 @@
           </friction>
         </surface>
       </collision>
-      <visual name='lower2_visual_visual'>
+      <visual name='lower2_visual'>
         <pose frame=''>0 0 0 0 -0 0</pose>
         <geometry>
           <mesh>
             <scale>1 1 1</scale>
-            <uri>model://a1_description/meshes/calf.dae</uri>
+            <uri>model://a1/meshes/calf.dae</uri>
           </mesh>
         </geometry>
         <material>
-          <script>
-            <uri>__default__</uri>
-            <name>__default__</name>
-          </script>
+          <ambient>0.5 0.5 0.5 1.0</ambient>
+          <diffuse>0.5 0.5 0.5 1.0</diffuse>
+          <specular>0.1 0.1 0.1 1.0</specular>
+          <emissive>0 0 0 1.0</emissive>
         </material>
       </visual>
       <gravity>1</gravity>
@@ -348,7 +327,7 @@
           <izz>9.6e-06</izz>
         </inertia>
       </inertial>
-      <collision name='toe2_collision_collision'>
+      <collision name='toe2_collision'>
         <pose frame=''>0 0 0 0 -0 0</pose>
         <geometry>
           <sphere>
@@ -370,7 +349,7 @@
           </friction>
         </surface>
       </collision>
-      <visual name='toe2_visual_visual'>
+      <visual name='toe2_visual'>
         <pose frame=''>0 0 0 0 -0 0</pose>
         <geometry>
           <sphere>
@@ -378,25 +357,21 @@
           </sphere>
         </geometry>
         <material>
-          <script>
-            <name>Gazebo/DarkGrey</name>
-            <uri>file://media/materials/scripts/gazebo.material</uri>
-          </script>
+          <ambient>0.2 0.2 0.2 1.0</ambient>
+          <diffuse>0.2 0.2 0.2 1.0</diffuse>
+          <specular>0.05 0.05 0.05 1.0</specular>
+          <emissive>0 0 0 1</emissive>
         </material>
       </visual>
       <velocity_decay/>
-      <sensor name='toe2_contact' type='contact'>
-        <plugin name='toe2_plugin' filename='libgazebo_ros_bumper.so'>
-          <alwaysOn>1</alwaysOn>
-          <updateRate>500</updateRate>
-          <bumperTopicName>gazebo/toe2_contact_state</bumperTopicName>
-          <frameName>world</frameName>
-        </plugin>
+      <sensor name="toe2_contact" type="contact">
+        <alwaysOn>true</alwaysOn>
+        <updateRate>500</updateRate>
+        <topic>gazebo/toe2_contact_state</topic>
+        <frameName>world</frameName>
         <contact>
           <collision>toe2_collision</collision>
-          <topic>__default_topic__</topic>
         </contact>
-        <update_rate>500</update_rate>
       </sensor>
       <gravity>1</gravity>
       <velocity_decay/>
@@ -440,7 +415,7 @@
           <izz>0.000552929</izz>
         </inertia>
       </inertial>
-      <collision name='hip3_collision_collision'>
+      <collision name='hip3_collision'>
         <pose frame=''>0 0 0 1.5708 -0 0</pose>
         <geometry>
           <cylinder>
@@ -460,19 +435,19 @@
           </friction>
         </surface>
       </collision>
-      <visual name='hip3_visual_visual'>
+      <visual name='hip3_visual'>
         <pose frame=''>0 0 0 0 -0 3.14159</pose>
         <geometry>
           <mesh>
             <scale>1 1 1</scale>
-            <uri>model://a1_description/meshes/hip.dae</uri>
+            <uri>model://a1/meshes/hip.dae</uri>
           </mesh>
         </geometry>
         <material>
-          <script>
-            <name>Gazebo/DarkGrey</name>
-            <uri>file://media/materials/scripts/gazebo.material</uri>
-          </script>
+          <ambient>0.2 0.2 0.2 1.0</ambient>
+          <diffuse>0.2 0.2 0.2 1.0</diffuse>
+          <specular>0.05 0.05 0.05 1.0</specular>
+          <emissive>0 0 0 1</emissive>
         </material>
       </visual>
       <gravity>1</gravity>
@@ -512,7 +487,7 @@
           <izz>0.00136779</izz>
         </inertia>
       </inertial>
-      <collision name='upper3_collision_collision'>
+      <collision name='upper3_collision'>
         <pose frame=''>0 0 -0.1 3.14159 1.57079 3.14159</pose>
         <geometry>
           <box>
@@ -534,19 +509,19 @@
           </friction>
         </surface>
       </collision>
-      <visual name='upper3_visual_visual'>
+      <visual name='upper3_visual'>
         <pose frame=''>0 0 0 0 -0 0</pose>
         <geometry>
           <mesh>
             <scale>1 1 1</scale>
-            <uri>model://a1_description/meshes/thigh_mirror.dae</uri>
+            <uri>model://a1/meshes/thigh_mirror.dae</uri>
           </mesh>
         </geometry>
         <material>
-          <script>
-            <name>Gazebo/DarkGrey</name>
-            <uri>file://media/materials/scripts/gazebo.material</uri>
-          </script>
+          <ambient>0.2 0.2 0.2 1.0</ambient>
+          <diffuse>0.2 0.2 0.2 1.0</diffuse>
+          <specular>0.05 0.05 0.05 1.0</specular>
+          <emissive>0 0 0 1</emissive>
         </material>
       </visual>
       <gravity>1</gravity>
@@ -587,7 +562,7 @@
           <izz>3.2426e-05</izz>
         </inertia>
       </inertial>
-      <collision name='lower3_collision_collision'>
+      <collision name='lower3_collision'>
         <pose frame=''>0 0 -0.1 3.14159 1.57079 3.14159</pose>
         <geometry>
           <box>
@@ -606,19 +581,19 @@
           </friction>
         </surface>
       </collision>
-      <visual name='lower3_visual_visual'>
+      <visual name='lower3_visual'>
         <pose frame=''>0 0 0 0 -0 0</pose>
         <geometry>
           <mesh>
             <scale>1 1 1</scale>
-            <uri>model://a1_description/meshes/calf.dae</uri>
+            <uri>model://a1/meshes/calf.dae</uri>
           </mesh>
         </geometry>
         <material>
-          <script>
-            <uri>__default__</uri>
-            <name>__default__</name>
-          </script>
+          <ambient>0.5 0.5 0.5 1.0</ambient>
+          <diffuse>0.5 0.5 0.5 1.0</diffuse>
+          <specular>0.1 0.1 0.1 1.0</specular>
+          <emissive>0 0 0 1.0</emissive>
         </material>
       </visual>
       <gravity>1</gravity>
@@ -659,7 +634,7 @@
           <izz>9.6e-06</izz>
         </inertia>
       </inertial>
-      <collision name='toe3_collision_collision'>
+      <collision name='toe3_collision'>
         <pose frame=''>0 0 0 0 -0 0</pose>
         <geometry>
           <sphere>
@@ -681,7 +656,7 @@
           </friction>
         </surface>
       </collision>
-      <visual name='toe3_visual_visual'>
+      <visual name='toe3_visual'>
         <pose frame=''>0 0 0 0 -0 0</pose>
         <geometry>
           <sphere>
@@ -689,25 +664,21 @@
           </sphere>
         </geometry>
         <material>
-          <script>
-            <name>Gazebo/DarkGrey</name>
-            <uri>file://media/materials/scripts/gazebo.material</uri>
-          </script>
+          <ambient>0.2 0.2 0.2 1.0</ambient>
+          <diffuse>0.2 0.2 0.2 1.0</diffuse>
+          <specular>0.05 0.05 0.05 1.0</specular>
+          <emissive>0 0 0 1</emissive>
         </material>
       </visual>
       <velocity_decay/>
-      <sensor name='toe3_contact' type='contact'>
-        <plugin name='toe3_plugin' filename='libgazebo_ros_bumper.so'>
-          <alwaysOn>1</alwaysOn>
-          <updateRate>500</updateRate>
-          <bumperTopicName>gazebo/toe3_contact_state</bumperTopicName>
-          <frameName>world</frameName>
-        </plugin>
+      <sensor name="toe3_contact" type="contact">
+        <alwaysOn>true</alwaysOn>
+        <updateRate>500</updateRate>
+        <topic>gazebo/toe3_contact_state</topic>
+        <frameName>world</frameName>
         <contact>
           <collision>toe3_collision</collision>
-          <topic>__default_topic__</topic>
         </contact>
-        <update_rate>500</update_rate>
       </sensor>
       <gravity>1</gravity>
       <velocity_decay/>
@@ -751,7 +722,7 @@
           <izz>0.000552929</izz>
         </inertia>
       </inertial>
-      <collision name='hip0_collision_collision'>
+      <collision name='hip0_collision'>
         <pose frame=''>0 0 0 1.5708 -0 0</pose>
         <geometry>
           <cylinder>
@@ -771,19 +742,19 @@
           </friction>
         </surface>
       </collision>
-      <visual name='hip0_visual_visual'>
+      <visual name='hip0_visual'>
         <pose frame=''>0 0 0 0 -0 0</pose>
         <geometry>
           <mesh>
             <scale>1 1 1</scale>
-            <uri>model://a1_description/meshes/hip.dae</uri>
+            <uri>model://a1/meshes/hip.dae</uri>
           </mesh>
         </geometry>
         <material>
-          <script>
-            <name>Gazebo/DarkGrey</name>
-            <uri>file://media/materials/scripts/gazebo.material</uri>
-          </script>
+          <ambient>0.2 0.2 0.2 1.0</ambient>
+          <diffuse>0.2 0.2 0.2 1.0</diffuse>
+          <specular>0.05 0.05 0.05 1.0</specular>
+          <emissive>0 0 0 1</emissive>
         </material>
       </visual>
       <gravity>1</gravity>
@@ -823,7 +794,7 @@
           <izz>0.00136779</izz>
         </inertia>
       </inertial>
-      <collision name='upper0_collision_collision'>
+      <collision name='upper0_collision'>
         <pose frame=''>0 0 -0.1 3.14159 1.57079 3.14159</pose>
         <geometry>
           <box>
@@ -845,19 +816,19 @@
           </friction>
         </surface>
       </collision>
-      <visual name='upper0_visual_visual'>
+      <visual name='upper0_visual'>
         <pose frame=''>0 0 0 0 -0 0</pose>
         <geometry>
           <mesh>
             <scale>1 1 1</scale>
-            <uri>model://a1_description/meshes/thigh.dae</uri>
+            <uri>model://a1/meshes/thigh.dae</uri>
           </mesh>
         </geometry>
         <material>
-          <script>
-            <name>Gazebo/DarkGrey</name>
-            <uri>file://media/materials/scripts/gazebo.material</uri>
-          </script>
+          <ambient>0.2 0.2 0.2 1.0</ambient>
+          <diffuse>0.2 0.2 0.2 1.0</diffuse>
+          <specular>0.05 0.05 0.05 1.0</specular>
+          <emissive>0 0 0 1</emissive>
         </material>
       </visual>
       <gravity>1</gravity>
@@ -898,7 +869,7 @@
           <izz>3.2426e-05</izz>
         </inertia>
       </inertial>
-      <collision name='lower0_collision_collision'>
+      <collision name='lower0_collision'>
         <pose frame=''>0 0 -0.1 3.14159 1.57079 3.14159</pose>
         <geometry>
           <box>
@@ -917,19 +888,19 @@
           </friction>
         </surface>
       </collision>
-      <visual name='lower0_visual_visual'>
+      <visual name='lower0_visual'>
         <pose frame=''>0 0 0 0 -0 0</pose>
         <geometry>
           <mesh>
             <scale>1 1 1</scale>
-            <uri>model://a1_description/meshes/calf.dae</uri>
+            <uri>model://a1/meshes/calf.dae</uri>
           </mesh>
         </geometry>
         <material>
-          <script>
-            <uri>__default__</uri>
-            <name>__default__</name>
-          </script>
+          <ambient>0.5 0.5 0.5 1.0</ambient>
+          <diffuse>0.5 0.5 0.5 1.0</diffuse>
+          <specular>0.1 0.1 0.1 1.0</specular>
+          <emissive>0 0 0 1.0</emissive>
         </material>
       </visual>
       <gravity>1</gravity>
@@ -970,7 +941,7 @@
           <izz>9.6e-06</izz>
         </inertia>
       </inertial>
-      <collision name='toe0_collision_collision'>
+      <collision name='toe0_collision'>
         <pose frame=''>0 0 0 0 -0 0</pose>
         <geometry>
           <sphere>
@@ -992,7 +963,7 @@
           </friction>
         </surface>
       </collision>
-      <visual name='toe0_visual_visual'>
+      <visual name='toe0_visual'>
         <pose frame=''>0 0 0 0 -0 0</pose>
         <geometry>
           <sphere>
@@ -1000,25 +971,21 @@
           </sphere>
         </geometry>
         <material>
-          <script>
-            <name>Gazebo/DarkGrey</name>
-            <uri>file://media/materials/scripts/gazebo.material</uri>
-          </script>
+          <ambient>0.2 0.2 0.2 1.0</ambient>
+          <diffuse>0.2 0.2 0.2 1.0</diffuse>
+          <specular>0.05 0.05 0.05 1.0</specular>
+          <emissive>0 0 0 1</emissive>
         </material>
       </visual>
       <velocity_decay/>
-      <sensor name='toe0_contact' type='contact'>
-        <plugin name='toe0_plugin' filename='libgazebo_ros_bumper.so'>
-          <alwaysOn>1</alwaysOn>
-          <updateRate>500</updateRate>
-          <bumperTopicName>gazebo/toe0_contact_state</bumperTopicName>
-          <frameName>world</frameName>
-        </plugin>
+      <sensor name="toe0_contact" type="contact">
+        <alwaysOn>true</alwaysOn>
+        <updateRate>500</updateRate>
+        <frameName>world</frameName>
+        <topic>gazebo/toe0_contact_state</topic>
         <contact>
           <collision>toe0_collision</collision>
-          <topic>__default_topic__</topic>
         </contact>
-        <update_rate>500</update_rate>
       </sensor>
       <gravity>1</gravity>
       <velocity_decay/>
@@ -1062,7 +1029,7 @@
           <izz>0.000552929</izz>
         </inertia>
       </inertial>
-      <collision name='hip1_collision_collision'>
+      <collision name='hip1_collision'>
         <pose frame=''>0 0 0 1.5708 -0 0</pose>
         <geometry>
           <cylinder>
@@ -1082,19 +1049,19 @@
           </friction>
         </surface>
       </collision>
-      <visual name='hip1_visual_visual'>
+      <visual name='hip1_visual'>
         <pose frame=''>0 0 0 3.14159 -0 3.14159</pose>
         <geometry>
           <mesh>
             <scale>1 1 1</scale>
-            <uri>model://a1_description/meshes/hip.dae</uri>
+            <uri>model://a1/meshes/hip.dae</uri>
           </mesh>
         </geometry>
         <material>
-          <script>
-            <name>Gazebo/DarkGrey</name>
-            <uri>file://media/materials/scripts/gazebo.material</uri>
-          </script>
+          <ambient>0.2 0.2 0.2 1.0</ambient>
+          <diffuse>0.2 0.2 0.2 1.0</diffuse>
+          <specular>0.05 0.05 0.05 1.0</specular>
+          <emissive>0 0 0 1</emissive>
         </material>
       </visual>
       <gravity>1</gravity>
@@ -1134,7 +1101,7 @@
           <izz>0.00136779</izz>
         </inertia>
       </inertial>
-      <collision name='upper1_collision_collision'>
+      <collision name='upper1_collision'>
         <pose frame=''>0 0 -0.1 3.14159 1.57079 3.14159</pose>
         <geometry>
           <box>
@@ -1156,19 +1123,19 @@
           </friction>
         </surface>
       </collision>
-      <visual name='upper1_visual_visual'>
+      <visual name='upper1_visual'>
         <pose frame=''>0 0 0 0 -0 0</pose>
         <geometry>
           <mesh>
             <scale>1 1 1</scale>
-            <uri>model://a1_description/meshes/thigh.dae</uri>
+            <uri>model://a1/meshes/thigh.dae</uri>
           </mesh>
         </geometry>
         <material>
-          <script>
-            <name>Gazebo/DarkGrey</name>
-            <uri>file://media/materials/scripts/gazebo.material</uri>
-          </script>
+          <ambient>0.2 0.2 0.2 1.0</ambient>
+          <diffuse>0.2 0.2 0.2 1.0</diffuse>
+          <specular>0.05 0.05 0.05 1.0</specular>
+          <emissive>0 0 0 1</emissive>
         </material>
       </visual>
       <gravity>1</gravity>
@@ -1209,7 +1176,7 @@
           <izz>3.2426e-05</izz>
         </inertia>
       </inertial>
-      <collision name='lower1_collision_collision'>
+      <collision name='lower1_collision'>
         <pose frame=''>0 0 -0.1 3.14159 1.57079 3.14159</pose>
         <geometry>
           <box>
@@ -1228,19 +1195,19 @@
           </friction>
         </surface>
       </collision>
-      <visual name='lower1_visual_visual'>
+      <visual name='lower1_visual'>
         <pose frame=''>0 0 0 0 -0 0</pose>
         <geometry>
           <mesh>
             <scale>1 1 1</scale>
-            <uri>model://a1_description/meshes/calf.dae</uri>
+            <uri>model://a1/meshes/calf.dae</uri>
           </mesh>
         </geometry>
         <material>
-          <script>
-            <uri>__default__</uri>
-            <name>__default__</name>
-          </script>
+          <ambient>0.5 0.5 0.5 1.0</ambient>
+          <diffuse>0.5 0.5 0.5 1.0</diffuse>
+          <specular>0.1 0.1 0.1 1.0</specular>
+          <emissive>0 0 0 1.0</emissive>
         </material>
       </visual>
       <gravity>1</gravity>
@@ -1281,7 +1248,7 @@
           <izz>9.6e-06</izz>
         </inertia>
       </inertial>
-      <collision name='toe1_collision_collision'>
+      <collision name='toe1_collision'>
         <pose frame=''>0 0 0 0 -0 0</pose>
         <geometry>
           <sphere>
@@ -1303,7 +1270,7 @@
           </friction>
         </surface>
       </collision>
-      <visual name='toe1_visual_visual'>
+      <visual name='toe1_visual'>
         <pose frame=''>0 0 0 0 -0 0</pose>
         <geometry>
           <sphere>
@@ -1311,25 +1278,22 @@
           </sphere>
         </geometry>
         <material>
-          <script>
-            <name>Gazebo/DarkGrey</name>
-            <uri>file://media/materials/scripts/gazebo.material</uri>
-          </script>
+          <ambient>0.2 0.2 0.2 1.0</ambient>
+          <diffuse>0.2 0.2 0.2 1.0</diffuse>
+          <specular>0.05 0.05 0.05 1.0</specular>
+          <emissive>0 0 0 1</emissive>
         </material>
       </visual>
       <velocity_decay/>
-      <sensor name='toe1_contact' type='contact'>
-        <plugin name='toe1_plugin' filename='libgazebo_ros_bumper.so'>
-          <alwaysOn>1</alwaysOn>
-          <updateRate>500</updateRate>
-          <bumperTopicName>gazebo/toe1_contact_state</bumperTopicName>
-          <frameName>world</frameName>
-        </plugin>
+      <sensor name="toe1_contact" type="contact">
+        <alwaysOn>true</alwaysOn>
+        <updateRate>500</updateRate>
+        <topic>/gazebo/toe1_contact_state</topic>
+        <frameName>world</frameName>
         <contact>
           <collision>toe1_collision</collision>
-          <topic>__default_topic__</topic>
         </contact>
-        <update_rate>500</update_rate>
+        <plugin filename="libgz-sim8-contact-system.so" name="gz::sim::systems::Contact"> </plugin>
       </sensor>
       <gravity>1</gravity>
       <velocity_decay/>
@@ -1359,18 +1323,28 @@
         </ode>
       </physics>
     </joint>
-    <plugin name='gazebo_ros_control' filename='libgazebo_ros_control.so'>
-      <robotSimType>gazebo_ros_control/DefaultRobotHWSim</robotSimType>
-    </plugin>
-    <plugin name='ground_truth_estimator' filename='libground_truth_estimator.so'>
+    <!-- Publish imu sensor readings -->
+    <include>
+      <uri>model://imu</uri>
+      <name>imu</name>
+      <pose>0 0 0 0 0 0 </pose>
+    </include>
+
+    <joint name="imu_joint" type="fixed">
+      <child>imu::link</child>
+      <parent>body</parent>
+    </joint>
+
+    <!-- Publish ground truth state data -->
+    <plugin filename="libground_truth_estimator.so" name="ground_truth_estimator">
       <updateRateHZ>500.0</updateRateHZ>
+      <ground_truth_state_topic>state/ground_truth</ground_truth_state_topic>
+      <ground_truth_body_frame_topic>state/ground_truth_body_frame</ground_truth_body_frame_topic>
     </plugin>
-    <static>0</static>
-    <plugin name='gazebo_ros_force' filename='libgazebo_ros_force.so'>
-      <topicName>/apply_force/trunk</topicName>
-      <bodyName>body</bodyName>
-      <xyzOffset>0 0 0</xyzOffset>
-      <rpyOffset>0 -0 0</rpyOffset>
+
+    <plugin
+        filename="gz-sim-joint-state-publisher-system" name="gz::sim::systems::JointStatePublisher">
     </plugin>
+
   </model>
 </sdf>

@@ -2,6 +2,9 @@ GZ_SIM_RESOURCE_PATH_UPDATE="export GZ_SIM_RESOURCE_PATH=\$GZ_SIM_RESOURCE_PATH:
 $HOME/ros2_ws/install/gazebo_scripts/share/gazebo_scripts/models:\
 $HOME/ros2_ws/install/gazebo_scripts/share/gazebo_scripts/worlds:\
 $HOME/ros2_ws/install/spirit_description/share/spirit_description/models:\
+$HOME/ros2_ws/install/a1_description/share/a1_description/models:\
+$HOME/ros2_ws/install/go2_description/share/go2_description/models:\
+$HOME/ros2_ws/install/go2w_description/share/go2w_description/models:\
 $HOME/ros2_ws/install/sensor_description/share/sensor_description/models:\
 $HOME/ros2_ws/install/objects_description/share/objects_description/models"
 

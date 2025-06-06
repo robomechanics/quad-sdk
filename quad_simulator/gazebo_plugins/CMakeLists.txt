@@ -7,6 +7,13 @@ endif()
 
 # find dependencies
 find_package(ament_cmake REQUIRED)
+find_package(rclcpp REQUIRED)
+find_package(controller_interface REQUIRED)
+find_package(hardware_interface REQUIRED)
+find_package(pluginlib REQUIRED)
+find_package(angles REQUIRED)
+find_package(realtime_tools REQUIRED)
+find_package(urdf REQUIRED)
 find_package(quad_utils REQUIRED)
 find_package(std_msgs REQUIRED)
 find_package(quad_msgs REQUIRED)
@@ -28,12 +35,17 @@ add_library(ground_truth_estimator SHARED
   src/estimator_plugin.cpp
 )
 
-# target_link_libraries(ground_truth_estimator
-#   ${RBDL_LIBRARY}
-#   ${RBDL_URDFREADER_LIBRARY}
-# )
+add_library(quad_controller SHARED
+ src/controller_plugin.cpp 
+)
+
 
 target_include_directories(ground_truth_estimator PUBLIC
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+  $<INSTALL_INTERFACE:include>
+)
+
+target_include_directories(quad_controller PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
   $<INSTALL_INTERFACE:include>
 )
@@ -47,7 +59,24 @@ ament_target_dependencies(ground_truth_estimator
   gz-plugin2
 )
 
-install(TARGETS ground_truth_estimator
+ament_target_dependencies(quad_controller
+  rclcpp
+  controller_interface
+  hardware_interface
+  pluginlib
+  angles
+  realtime_tools
+  urdf
+  quad_msgs
+  quad_utils
+)
+
+
+pluginlib_export_plugin_description_file(controller_interface controller_plugin.xml)
+
+install(TARGETS 
+  ground_truth_estimator
+  quad_controller
   DESTINATION lib
 )
 
@@ -55,6 +84,8 @@ install(
   DIRECTORY include/
   DESTINATION include
 )
+
+
 
 ament_export_include_directories(include)
 
