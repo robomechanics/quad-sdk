@@ -292,7 +292,6 @@ void RobotDriver::mocapCallback(
 
 void RobotDriver::robotStateCallback(
     const quad_msgs::msg::RobotState::SharedPtr msg) {
-  RCLCPP_INFO(node_->get_logger(), "Getting New Robot States");
   last_robot_state_msg_ = *msg;
 }
 
@@ -369,14 +368,6 @@ bool RobotDriver::updateState() {
     }
   } else {
     // State information coming through sim subscribers, not hardware interface
-    std::stringstream ss;
-      ss << "last_robot_state_msg_.joints.position: [";
-      for (size_t i = 0; i < last_robot_state_msg_.joints.position.size(); ++i) {
-        ss << last_robot_state_msg_.joints.position[i];
-        if (i < last_robot_state_msg_.joints.position.size() - 1) ss << ", ";
-      }
-      ss << "]";
-      RCLCPP_INFO(node_->get_logger(), "%s", ss.str().c_str());
     return true;
   }
 }
@@ -400,15 +391,10 @@ bool RobotDriver::updateControl() {
   if (rclcpp::Time(last_robot_state_msg_.header.stamp).seconds() == 0) {
     return false;
   }
-  // RCLCPP_INFO(node_->get_logger(), "2");
-  // RCLCPP_INFO(node_->get_logger(), "last_robot_state_msg_.header.stamp: %.9f", rclcpp::Time(last_robot_state_msg_.header.stamp).seconds());
-  // RCLCPP_INFO(node_->get_logger(), "last_robot_state_msg_.body.pose.x: %.9f", last_robot_state_msg_.body.pose.position.x);
-  // RCLCPP_INFO(node_->get_logger(), "last_robot_state_msg_.body.pose.y: %.9f", last_robot_state_msg_.body.pose.position.y);
-  // RCLCPP_INFO(node_->get_logger(), "last_robot_state_msg_.body.pose.y: %.9f", last_robot_state_msg_.body.pose.position.z);
 
   if (last_robot_state_msg_.joints.position.empty()) {
-    RCLCPP_WARN(node_->get_logger(),
-                "updateControl(): received RobotState with empty joint.position → aborting control update");
+    // RCLCPP_WARN(node_->get_logger(),
+    //             "updateControl(): received RobotState with empty joint.position → aborting control update");
     return false;
   }
 
@@ -521,7 +507,6 @@ bool RobotDriver::updateControl() {
   const int knee_idx = 2;
   const int knee_soft_ub = 3.0;
   const int knee_soft_ub_kd = 50.0;
-  RCLCPP_INFO(node_->get_logger(), "3");
   for (int i = 0; i < num_feet_; ++i) {
     for (int j = 0; j < 3; ++j) {
       int joint_idx = 3 * i + j;
@@ -537,36 +522,18 @@ bool RobotDriver::updateControl() {
                 knee_soft_ub_kd * (joint_positions(joint_idx) - knee_soft_ub),
             -torque_limits_[j]);
       }
-      RCLCPP_INFO(node_->get_logger(), "4");
       quad_msgs::msg::MotorCommand cmd =
           leg_command_array_msg_.leg_commands.at(i).motor_commands.at(j);
-          RCLCPP_INFO(node_->get_logger(), "5");
-          RCLCPP_INFO(node_->get_logger(), "joint_idx = %d", joint_idx);
-          RCLCPP_INFO(node_->get_logger(),
-            "joint_idx = %d | kp = %.3f, kd = %.3f, pos_sp = %.3f, vel_sp = %.3f, torque_ff = %.3f",
-            joint_idx, cmd.kp, cmd.kd, cmd.pos_setpoint, cmd.vel_setpoint, cmd.torque_ff);
-          std::stringstream ss;
-          ss << "joint_positions: [";
-          for (int i = 0; i < joint_positions.size(); ++i) {
-            ss << joint_positions[i];
-            if (i < joint_positions.size() - 1) ss << ", ";
-          }
-          ss << "]";
-          RCLCPP_INFO(node_->get_logger(), "%s", ss.str().c_str());
 
       double pos_component =
           cmd.kp * (cmd.pos_setpoint - joint_positions[joint_idx]);
       double vel_component =
           cmd.kd * (cmd.vel_setpoint - joint_velocities[joint_idx]);
-      RCLCPP_INFO(node_->get_logger(), "pos_component: %.4f, vel_component: %.4f", pos_component, vel_component);
 
       double fb_component = pos_component + vel_component;
-      RCLCPP_INFO(node_->get_logger(), "5.25");
       double effort = fb_component + cmd.torque_ff;
-      RCLCPP_INFO(node_->get_logger(), "5.5");
       double fb_ratio =
           abs(fb_component) / (abs(fb_component) + abs(cmd.torque_ff));
-      RCLCPP_INFO(node_->get_logger(), "6");
       if (abs(cmd.torque_ff) >= torque_limits_[j]) {
         RCLCPP_WARN(node_->get_logger(),
             "Leg %d motor %d: ff effort = %5.3f Nm exceeds threshold of %5.3f "
@@ -581,7 +548,6 @@ bool RobotDriver::updateControl() {
         effort =
             std::min(std::max(effort, -torque_limits_[j]), torque_limits_[j]);
       }
-      RCLCPP_INFO(node_->get_logger(), "5");
       leg_command_array_msg_.leg_commands.at(i)
           .motor_commands.at(j)
           .pos_component = pos_component;
@@ -597,7 +563,6 @@ bool RobotDriver::updateControl() {
           fb_ratio;
     }
   }
-  RCLCPP_INFO(node_->get_logger(), "4");
   return valid_cmd;
 }
 
@@ -644,21 +609,18 @@ void RobotDriver::spin() {
   while (rclcpp::ok()) {
     // Collect new messages on subscriber topics and publish heartbeat
     rclcpp::spin_some(node_);
-    RCLCPP_INFO(node_->get_logger(), "Node is Spinning");
 
     // Get the newest state information
     updateState();
-    RCLCPP_INFO(node_->get_logger(), "Updates State");
 
     // Compute the leg command and publish if valid
     bool is_valid = updateControl();
-    RCLCPP_INFO(node_->get_logger(), "Updates Control");
     publishControl(is_valid);
     //  RCLCPP_INFO(node_->get_logger(), "Publishes Control");
 
     // // // Publish state and heartbeat
-    // publishState();
-    // publishHeartbeat();
+    publishState();
+    publishHeartbeat();
     //  RCLCPP_INFO(node_->get_logger(), "Publishes State");
 
     // Enforce update rate
