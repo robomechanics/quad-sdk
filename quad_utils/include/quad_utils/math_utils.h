@@ -60,7 +60,7 @@ inline double wrapToPi(double val) {
  */
 inline std::vector<double> wrapToPi(std::vector<double> data) {
   std::vector<double> data_wrapped = data;
-  for (auto i = 0; i < data.size(); i++) {
+  for (size_t i = 0; i < data.size(); i++) {
     data_wrapped[i] = wrapToPi(data[i]);
   }
   return data_wrapped;

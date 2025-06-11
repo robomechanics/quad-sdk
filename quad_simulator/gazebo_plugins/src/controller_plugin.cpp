@@ -73,11 +73,12 @@ controller_interface::CallbackReturn QuadController::on_init(){
 
   node_ = get_node();
   node_->declare_parameter<std::vector<std::string>>("joints");
-//   node_->declare_parameter<std::string>("robot_description");
   node_->declare_parameter<std::string>("topics.control.joint_command");
-  for (const auto & param : node_->list_parameters({}, 10).names) {
-    RCLCPP_INFO(node_->get_logger(), "Param: %s", param.c_str());
-    }
+  node_->declare_parameter<std::vector<double>>("torque_lims", {21.0, 21.0, 32.0});
+  node_->declare_parameter<std::vector<double>>("speed_lims", {37.7, 37.7, 25.1});
+//   for (const auto & param : node_->list_parameters({}, 10).names) {
+//     RCLCPP_INFO(node_->get_logger(), "Param: %s", param.c_str());
+//     }
 
   return controller_interface::CallbackReturn::SUCCESS;
 }
@@ -101,6 +102,23 @@ controller_interface::CallbackReturn QuadController::on_configure(const rclcpp_l
             "Failed to get parameter '" << param_name
                                         << "' (namespace: " << node_->get_namespace() << ")");
     return controller_interface::CallbackReturn::ERROR;
+    }
+    std::string torque_param = "torque_lims";
+    if (!node_->get_parameter(torque_param, torque_lims_)) {
+        RCLCPP_ERROR_STREAM(
+            node_->get_logger(),
+            "Failed to get parameter '" << torque_param
+                                        << "' (namespace: " << node_->get_namespace() << ")");
+        return controller_interface::CallbackReturn::ERROR;
+    }
+
+    std::string speed_param = "speed_lims";
+    if (!node_->get_parameter(speed_param, speed_lims_)) {
+        RCLCPP_ERROR_STREAM(
+            node_->get_logger(),
+            "Failed to get parameter '" << speed_param
+                                        << "' (namespace: " << node_->get_namespace() << ")");
+        return controller_interface::CallbackReturn::ERROR;
     }
 
     n_joints_ = joint_names_.size();
