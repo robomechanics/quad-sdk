@@ -1,11 +1,13 @@
 from launch import LaunchDescription
 from launch.actions import DeclareLaunchArgument, OpaqueFunction, IncludeLaunchDescription, ExecuteProcess, TimerAction, RegisterEventHandler
-from launch.actions import SetEnvironmentVariable
+from launch.actions import SetEnvironmentVariable, GroupAction, SetLaunchConfiguration
 from launch.substitutions import LaunchConfiguration, EnvironmentVariable
 from launch_ros.actions import Node
 from launch.launch_description_sources import PythonLaunchDescriptionSource
+from launch_ros.parameter_descriptions import ParameterValue
 from launch_ros.substitutions import FindPackageShare
-from launch.event_handlers import OnProcessStart
+from launch.event_handlers import OnProcessStart, OnProcessExit
+from functools import partial
 import os
 import xacro
 
@@ -44,14 +46,17 @@ def load_robot_params(context, *args, **kwargs):
     with open(os.path.join(desc_path, 'models',robot_type, sdf_file), 'r') as f:
         sdf = f.read()
 
-    context.robot_urdf = urdf
-    context.robot_sdf = sdf
-    context.robot_sdf_path = sdf_path
-    context.robot_urdf_path = urdf_path
+    return [
+        SetLaunchConfiguration('robot_urdf', urdf),
+        SetLaunchConfiguration('robot_sdf', sdf),
+        SetLaunchConfiguration('robot_urdf_path', urdf_path),
+        SetLaunchConfiguration('robot_sdf_path', sdf_path)
+    ]
+
 
 def launch_robot_urdf_node(context, *args, **kwargs):
     namespace = LaunchConfiguration('namespace').perform(context)
-    urdf = context.robot_urdf
+    urdf = LaunchConfiguration('robot_urdf').perform(context)
 
     set_qos_env = SetEnvironmentVariable(
         name='RMW_QOS_PROFILE_SENSOR_DATA',
@@ -70,8 +75,8 @@ def launch_robot_urdf_node(context, *args, **kwargs):
 def spawn_sdf_model(context, *args, **kwargs):
     namespace = LaunchConfiguration('namespace').perform(context)
     init_pose = LaunchConfiguration('init_pose').perform(context)
-    sdf = context.robot_sdf
-    sdf_path = context.robot_sdf_path
+    sdf = LaunchConfiguration('robot_sdf').perform(context)
+    sdf_path = LaunchConfiguration('robot_sdf_path').perform(context)
 
     spawn_node = Node(
         package='ros_gz_sim',
@@ -143,8 +148,8 @@ def launch_robot_driver(context, *args, **kwargs):
     namespace = LaunchConfiguration('namespace').perform(context)
     robot_type = LaunchConfiguration('robot_type').perform(context)
     controller = LaunchConfiguration('controller').perform(context)
-    urdf = context.robot_urdf
-    sdf = context.robot_sdf
+    urdf = LaunchConfiguration('robot_urdf').perform(context)
+    sdf = LaunchConfiguration('robot_sdf').perform(context)
     quad_utils_path = FindPackageShare('quad_utils').perform(context)
 
     robot_driver_node = IncludeLaunchDescription(
@@ -162,6 +167,70 @@ def launch_robot_driver(context, *args, **kwargs):
         )
     return [robot_driver_node]
 
+# def launch_robot_driver(namespace, robot_type, controller, urdf, context, *args, **kwargs):
+#     # namespace = LaunchConfiguration('namespace').perform(context)
+#     # robot_type = LaunchConfiguration('robot_type').perform(context)
+#     # controller = LaunchConfiguration('controller').perform(context)
+#     # urdf = LaunchConfiguration('robot_urdf').perform(context)
+#     # sdf = LaunchConfiguration('robot_sdf').perform(context)
+#     quad_utils_path = FindPackageShare('quad_utils').perform(context)
+
+#     robot_driver_node = IncludeLaunchDescription(
+#             PythonLaunchDescriptionSource(
+#                 os.path.join(quad_utils_path, 'launch', 'robot_driver.py')
+#             ),
+#             launch_arguments={
+#                 'robot_type': robot_type,
+#                 'controller': controller,
+#                 'mocap': 'false',
+#                 'is_hardware': 'false',
+#                 'namespace': namespace,
+#                 'robot_description': urdf
+#             }.items()
+#         )
+#     return [robot_driver_node]
+
+
+# def spawn_sdf_model_with_driver(context, *arg, **kwargs):
+#     [spawn_node] = spawn_sdf_model(context)
+#     namespace = LaunchConfiguration('namespace').perform(context)
+#     robot_type = LaunchConfiguration('robot_type').perform(context)
+#     controller = LaunchConfiguration('controller').perform(context)
+#     urdf = LaunchConfiguration('robot_urdf').perform(context)
+#     mocap = LaunchConfiguration('mocap').perform(context)
+#     is_hardware = LaunchConfiguration('is_hardware').perform(context)
+    
+#     return [
+#         spawn_node,
+#         RegisterEventHandler(
+#             OnProcessExit(
+#                 target_action=spawn_node,
+#                 on_exit=[OpaqueFunction(function=partial(launch_robot_driver, robot_type, controller, mocap, is_hardware, namespace, urdf))]
+#             )
+#         )
+#     ]
+
+def spawn_sdf_model_with_driver(context, *arg, **kwargs):
+    [spawn_node] = spawn_sdf_model(context)
+    namespace = LaunchConfiguration('namespace').perform(context)
+    robot_type = LaunchConfiguration('robot_type').perform(context)
+    controller = LaunchConfiguration('controller').perform(context)
+    urdf = LaunchConfiguration('robot_urdf').perform(context)
+    mocap = LaunchConfiguration('mocap').perform(context)
+    is_hardware = LaunchConfiguration('is_hardware').perform(context)
+
+    def on_exit_rd(inner_context, *args, **kwargs):
+        return launch_robot_driver(namespace, robot_type, controller, urdf, inner_context)
+    
+    return [
+        spawn_node,
+        RegisterEventHandler(
+            OnProcessExit(
+                target_action=spawn_node,
+                on_exit=[OpaqueFunction(function=on_exit_rd)]
+            )
+        )
+    ]
 
 def harmonic_ros_bridge(context, *args, **kwargs):
     namespace = LaunchConfiguration('namespace').perform(context)
@@ -250,9 +319,9 @@ def launch_visualization_plugins(context, *args, **kwargs):
     namespace = LaunchConfiguration('namespace').perform(context)
     robot_type = LaunchConfiguration('robot_type').perform(context)
     controller = LaunchConfiguration('controller').perform(context)
-    urdf = context.robot_urdf
-    sdf = context.robot_sdf
-    urdf_path = context.robot_urdf_path
+    urdf = LaunchConfiguration('robot_urdf').perform(context)
+    sdf = LaunchConfiguration('robot_sdf').perform(context)
+    urdf_path = LaunchConfiguration('robot_urdf_path').perform(context)
 
     quad_utils_path = FindPackageShare('quad_utils').perform(context)
 
@@ -279,13 +348,16 @@ def generate_launch_description():
         DeclareLaunchArgument('namespace', default_value = 'robot_1', description='Robot namespace'),
         DeclareLaunchArgument('controller', default_value = 'inverse_kinematics', description='Controller type'),
         DeclareLaunchArgument('init_pose', default_value = '-x 2.0 -y 0.0 -z 0.5', description= "Initial Robot Position"),
+        DeclareLaunchArgument('is_hardware', default_value = 'false', description="Simulation or Hardware"),
+        DeclareLaunchArgument('mocap', default_value = 'false', description='Launch the Motion Capture Node'),
         OpaqueFunction(function=load_robot_params),
         OpaqueFunction(function=launch_robot_urdf_node),
-        OpaqueFunction(function=spawn_sdf_model), 
+        OpaqueFunction(function=spawn_sdf_model),
+        # OpaqueFunction(function=spawn_sdf_model_with_driver), 
         OpaqueFunction(function=harmonic_ros_bridge),
-        # OpaqueFunction(function=launch_robot_driver),
         # OpaqueFunction(function=launch_controller_manager),
         OpaqueFunction(function=spawn_controller_broadcasters),
+        OpaqueFunction(function=launch_robot_driver),
         # OpaqueFunction(function=launch_contact_state_publisher),
         OpaqueFunction(function= launch_visualization_plugins)
     ])

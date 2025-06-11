@@ -32,6 +32,7 @@ rosidl_generate_interfaces(${PROJECT_NAME}
   "msg/MotorCommand.msg"
   "msg/LegCommand.msg"
   "msg/LegCommandArray.msg"
+  "msg/BodyForceEstimate.msg"
   DEPENDENCIES
     std_msgs
     sensor_msgs

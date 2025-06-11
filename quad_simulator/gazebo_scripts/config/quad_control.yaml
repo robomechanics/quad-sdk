@@ -43,6 +43,9 @@
       topics:
         control:
           joint_command: control/joint_command
+      limits:
+        torque_lims: [21.0, 21.0, 32.0] # For Spirit
+        speed_lims: [37.7, 37.7, 25.1] # For Spirit
 
       
       # Shouldn't be Handled by Controller Manager, moved to ign gazebo sensor modules instead
