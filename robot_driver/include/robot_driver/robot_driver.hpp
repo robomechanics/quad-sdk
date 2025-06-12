@@ -21,10 +21,10 @@
 #include <cmath>
 #include <eigen3/Eigen/Eigen>
 
-// #include "robot_driver/controllers/grf_pid_controller.hpp"
+#include "robot_driver/controllers/grf_pid_controller.hpp"
 #include "robot_driver/controllers/inverse_dynamics_controller.hpp"
-// #include "robot_driver/controllers/underbrush_inverse_dynamics.hpp"
-// #include "robot_driver/controllers/inertia_estimation_controller.hpp"
+#include "robot_driver/controllers/underbrush_inverse_dynamics.hpp"
+#include "robot_driver/controllers/inertia_estimation_controller.hpp"
 #include "robot_driver/controllers/joint_controller.hpp"
 #include "robot_driver/controllers/leg_controller.hpp"
 #include "robot_driver/estimators/comp_filter_estimator.hpp"

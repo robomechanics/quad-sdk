@@ -1371,4 +1371,73 @@ Stephen Brawner (brawner@gmail.com)
   <link 
     name="front_camera">
   </link>
+
+  <ros2_control name="GazeboSimSystem" type="system">
+    <hardware>
+      <plugin>gz_ros2_control/GazeboSimSystem</plugin>
+    </hardware>
+    <joint name="0">
+      <command_interface name="effort" />
+      <state_interface name="velocity" />
+      <state_interface name="position" />
+    </joint>
+    <joint name="1">
+      <command_interface name="effort" />
+      <state_interface name="velocity" />
+      <state_interface name="position" />
+    </joint>
+    <joint name="2">
+      <command_interface name="effort" />
+      <state_interface name="velocity" />
+      <state_interface name="position" />
+    </joint>
+    <joint name="3">
+      <command_interface name="effort" />
+      <state_interface name="velocity" />
+      <state_interface name="position" />
+    </joint>
+    <joint name="4">
+      <command_interface name="effort" />
+      <state_interface name="velocity" />
+      <state_interface name="position" />
+    </joint>
+    <joint name="5">
+      <command_interface name="effort" />
+      <state_interface name="velocity" />
+      <state_interface name="position" />
+    </joint>
+    <joint name="6">
+      <command_interface name="effort" />
+      <state_interface name="velocity" />
+      <state_interface name="position" />
+    </joint>
+    <joint name="7">
+      <command_interface name="effort" />
+      <state_interface name="velocity" />
+      <state_interface name="position" />
+    </joint>
+    <joint name="8">
+      <command_interface name="effort" />
+      <state_interface name="velocity" />
+      <state_interface name="position" />
+    </joint>
+    <joint name="9">
+      <command_interface name="effort" />
+      <state_interface name="velocity" />
+      <state_interface name="position" />
+    </joint>
+    <joint name="10">
+      <command_interface name="effort" />
+      <state_interface name="velocity" />
+      <state_interface name="position" />
+    </joint>
+    <joint name="11">
+      <command_interface name="effort" />
+      <state_interface name="velocity" />
+      <state_interface name="position" />
+    </joint>
+  </ros2_control>
+  
+
+
 </robot>

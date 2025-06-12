@@ -347,7 +347,7 @@ def generate_launch_description():
         DeclareLaunchArgument('robot_type', default_value = 'spirit', description='Robot type'),
         DeclareLaunchArgument('namespace', default_value = 'robot_1', description='Robot namespace'),
         DeclareLaunchArgument('controller', default_value = 'inverse_kinematics', description='Controller type'),
-        DeclareLaunchArgument('init_pose', default_value = '-x 2.0 -y 0.0 -z 0.5', description= "Initial Robot Position"),
+        DeclareLaunchArgument('init_pose', default_value = '-x 2.0 -y 0.0 -z 1.5', description= "Initial Robot Position"),
         DeclareLaunchArgument('is_hardware', default_value = 'false', description="Simulation or Hardware"),
         DeclareLaunchArgument('mocap', default_value = 'false', description='Launch the Motion Capture Node'),
         OpaqueFunction(function=load_robot_params),

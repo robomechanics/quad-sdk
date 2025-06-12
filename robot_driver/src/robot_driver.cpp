@@ -166,30 +166,30 @@ void RobotDriver::initStateEstimator() {
 void RobotDriver::initLegController() {
     if (controller_id_ == "inverse_dynamics") {
     leg_controller_ = std::make_shared<InverseDynamicsController>(node_, robot_ns);
-    // } else if (controller_id_ == "grf_pid") {
-    // leg_controller_ = std::make_shared<GrfPidController>();
-    // } else if (controller_id_ == "joint") {
-    // leg_controller_ = std::make_shared<JointController>();
-    // } else if (controller_id_ == "underbrush") {
-    // leg_controller_ = std::make_shared<UnderbrushInverseDynamicsController>();
-    // double retract_vel, tau_push, tau_contact_start, tau_contact_end,
-    //     min_switch, t_down, t_up;
-    // quad_utils::loadROSParam(node_, "/underbrush_swing/retract_vel", retract_vel);
-    // quad_utils::loadROSParam(node_, "/underbrush_swing/tau_push", tau_push);
-    // quad_utils::loadROSParam(node_, "/underbrush_swing/tau_contact_start",
-    //                          tau_contact_start);
-    // quad_utils::loadROSParam(node_, "/underbrush_swing/tau_contact_end",
-    //                          tau_contact_end);
-    // quad_utils::loadROSParam(node_, "/underbrush_swing/min_switch", min_switch);
-    // quad_utils::loadROSParam(node_, "/underbrush_swing/t_down", t_down);
-    // quad_utils::loadROSParam(node_, "/underbrush_swing/t_up", t_up);
-    // UnderbrushInverseDynamicsController *c =
-    //     dynamic_cast<UnderbrushInverseDynamicsController *>(
-    //         leg_controller_.get());
-    // c->setUnderbrushParams(retract_vel, tau_push, tau_contact_start,
-    //                        tau_contact_end, min_switch, t_down, t_up);
-    // } else if (controller_id_ == "inertia_estimation") {
-    //     leg_controller_ = std::make_shared<InertiaEstimationController>();
+    } else if (controller_id_ == "grf_pid") {
+    leg_controller_ = std::make_shared<GrfPidController>(node_, robot_ns);
+    } else if (controller_id_ == "joint") {
+    leg_controller_ = std::make_shared<JointController>(node_, robot_ns);
+    } else if (controller_id_ == "underbrush") {
+    leg_controller_ = std::make_shared<UnderbrushInverseDynamicsController>(node_, robot_ns);
+    double retract_vel, tau_push, tau_contact_start, tau_contact_end,
+        min_switch, t_down, t_up;
+    quad_utils::loadROSParam(node_, "underbrush_swing.retract_vel", retract_vel);
+    quad_utils::loadROSParam(node_, "underbrush_swing.tau_push", tau_push);
+    quad_utils::loadROSParam(node_, "underbrush_swing.tau_contact_start",
+                             tau_contact_start);
+    quad_utils::loadROSParam(node_, "underbrush_swing.tau_contact_end",
+                             tau_contact_end);
+    quad_utils::loadROSParam(node_, "underbrush_swing.min_switch", min_switch);
+    quad_utils::loadROSParam(node_, "underbrush_swing.t_down", t_down);
+    quad_utils::loadROSParam(node_, "underbrush_swing.t_up", t_up);
+    UnderbrushInverseDynamicsController *c =
+        dynamic_cast<UnderbrushInverseDynamicsController *>(
+            leg_controller_.get());
+    c->setUnderbrushParams(retract_vel, tau_push, tau_contact_start,
+                           tau_contact_end, min_switch, t_down, t_up);
+    } else if (controller_id_ == "inertia_estimation") {
+        leg_controller_ = std::make_shared<InertiaEstimationController>(node_, robot_ns);
     } 
     else {
         RCLCPP_ERROR(node_->get_logger(), "Invalid controller id %s, returning nullptr", controller_id_.c_str());
@@ -297,12 +297,12 @@ void RobotDriver::robotStateCallback(
 
 void RobotDriver::bodyForceEstimateCallback(
     const quad_msgs::msg::BodyForceEstimate::SharedPtr msg) {
-  // if (controller_id_ == "underbrush") {
-  //   UnderbrushInverseDynamicsController *c =
-  //       reinterpret_cast<UnderbrushInverseDynamicsController *>(
-  //           leg_controller_.get());
-  //   c->updateBodyForceEstimate(msg);
-  // }
+  if (controller_id_ == "underbrush") {
+    UnderbrushInverseDynamicsController *c =
+        reinterpret_cast<UnderbrushInverseDynamicsController *>(
+            leg_controller_.get());
+    c->updateBodyForceEstimate(msg);
+  }
 }
 
 void RobotDriver::remoteHeartbeatCallback(
@@ -384,7 +384,6 @@ bool RobotDriver::updateControl() {
   // Check if state machine should be skipped
   bool valid_cmd = true;
 
-  RCLCPP_INFO(node_->get_logger(), "1");
   // Check incoming messages to determine if we should enter safety mode
   checkMessagesForSafety();
 

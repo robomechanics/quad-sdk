@@ -352,7 +352,16 @@ bool UnderbrushInverseDynamicsController::computeLegCommandArray(
 
         if (t_now2 - t_LO_.at(i) < t_up_) {
           if (last_mode_.at(i)) {
-            force_mode_.at(i) = 1;  // retain previous modec
+            force_mode_.at(i) = 1;  // retain previous mode
+            t_switch_.at(i) = t_LO_.at(i);
+          }
+        }
+
+        if (!force_mode_.at(i)) {
+          // Usual swing mode
+          for (int j = 0; j < 3; ++j) {
+            int joint_idx = 3 * i + j;
+
             leg_command_array_msg.leg_commands.at(i)
                 .motor_commands.at(j)
                 .pos_setpoint = ref_state_msg_.joints.position.at(joint_idx);
