@@ -1,7 +1,7 @@
 #ifndef UNDERBRUSH_INVERSE_DYNAMICS_H
 #define UNDERBRUSH_INVERSE_DYNAMICS_H
 
-#include <quad_msgs/BodyForceEstimate.hpp>
+#include <quad_msgs/msg/body_force_estimate.hpp>
 #include <robot_driver/controllers/leg_controller.hpp>
 
 //! Implements inverse dynamics as a controller within the ROS framework.
@@ -16,7 +16,7 @@ class UnderbrushInverseDynamicsController : public LegController {
    * @brief Constructor for InverseDynamicsController
    * @return Constructed object of type InverseDynamicsController
    */
-  UnderbrushInverseDynamicsController(rclcpp::Node::SharedPtr node, std:;string& robot_ns);
+  UnderbrushInverseDynamicsController(rclcpp::Node::SharedPtr node, std::string& robot_ns);
 
   /**
    * @brief Update body force estimate
@@ -67,7 +67,7 @@ class UnderbrushInverseDynamicsController : public LegController {
   const double grf_exp_filter_const_ = 1.0;  // 1.0 = no filtering
 
   /// Most recent body force estimate
-  quad_msgs::msg:::BodyForceEstimate::SharedPtr last_body_force_estimate_msg_;
+  quad_msgs::msg::BodyForceEstimate::SharedPtr last_body_force_estimate_msg_;
 
   /// Leg swing mode logic
   std::vector<int> force_mode_;

@@ -866,7 +866,7 @@
         </material>
       </visual>
     </link>
-    <!-- <frame name='hip0_rotor_joint' attached_to='body'>
+    <frame name='hip0_rotor_joint' attached_to='body'>
       <pose>0.11215 0.04675 0 0 0 0</pose>
     </frame>
     <frame name='hip0_rotor' attached_to='hip0_rotor_joint'>
@@ -1039,7 +1039,7 @@
     </frame>
     <frame name='foot3' attached_to='foot3_joint'>
       <pose>0 0 0 0 0 0</pose>
-    </frame> -->
+    </frame>
     <!-- Publish imu sensor readings -->
     <include>
       <uri>model://imu</uri>
@@ -1052,16 +1052,23 @@
       <parent>body</parent>
     </joint>
 
+    <!-- Setup ros control -->
+      <plugin 
+          filename="libgz_ros2_control-system.so"
+          name="gz_ros2_control::GazeboSimROS2ControlPlugin">
+          <controlPeriod>0.002</controlPeriod>
+          <parameters>/home/rml/ros2_ws/install/gazebo_scripts/share/gazebo_scripts/config/quad_control.yaml</parameters>
+              <ros>
+                <namespace>robot_1</namespace>
+            </ros>
+      </plugin>
+
     <!-- Publish ground truth state data -->
-    <!-- <plugin filename="libground_truth_estimator.so" name="ground_truth_estimator">
+    <plugin filename="libground_truth_estimator.so" name="ground_truth_estimator">
       <updateRateHZ>500.0</updateRateHZ>
       <ground_truth_state_topic>state/ground_truth</ground_truth_state_topic>
       <ground_truth_body_frame_topic>state/ground_truth_body_frame</ground_truth_body_frame_topic>
     </plugin>
-
-    <plugin
-        filename="gz-sim-joint-state-publisher-system" name="gz::sim::systems::JointStatePublisher">
-    </plugin> -->
 
   </model>
 </sdf>

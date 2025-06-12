@@ -125,7 +125,7 @@ bool InertiaEstimationController::computeLegCommandArray(
         jacobian.block(0, 0, 3 * num_feet_, 3 * num_feet_).transpose() *
         swing_cart_fb;
 
-    double t = ros::Time::now().toSec();
+    double t = node_->now().seconds();
 
     for (int i = 0; i < num_feet_; ++i) {
       leg_command_array_msg.leg_commands.at(i).motor_commands.resize(3);
