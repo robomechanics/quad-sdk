@@ -1,31 +1,13 @@
 #include "gazebo_scripts/contact_state_publisher.h"
 
-#include <gz/msgs/contacts.pb.h>
-#include <gz/msgs/vector3d.pb.h>
-
-#include <gz/transport/Node.hh>
-
 ContactStatePublisher::ContactStatePublisher(rclcpp::Node::SharedPtr node)
     : node_(node),
       tf_buffer_(node_->get_clock(), tf2::durationFromSec(10.0), node_),
       tf_listener_(tf_buffer_, node_) {
+
   // Load rosparams from parameter server
   std::string grf_topic, toe0_contact_state_topic, toe1_contact_state_topic,
-      toe2_contact_state_topic, toe3_contact_state_topic,
-      toe0_wrench_state_topic, toe1_wrench_state_topic, toe2_wrench_state_topic,
-      toe3_wrench_state_topic;
-
-  node_->declare_parameter<std::string>("topics.state.grfs");
-  node_->declare_parameter<std::string>("namespace");
-  node_->declare_parameter<std::string>("world");
-  node_->declare_parameter<std::string>("topics.gazebo.toe0_contact_state");
-  node_->declare_parameter<std::string>("topics.gazebo.toe1_contact_state");
-  node_->declare_parameter<std::string>("topics.gazebo.toe2_contact_state");
-  node_->declare_parameter<std::string>("topics.gazebo.toe3_contact_state");
-  node_->declare_parameter<std::string>("topics.gazebo.toe0_wrench_state");
-  node_->declare_parameter<std::string>("topics.gazebo.toe1_wrench_state");
-  node_->declare_parameter<std::string>("topics.gazebo.toe2_wrench_state");
-  node_->declare_parameter<std::string>("topics.gazebo.toe3_wrench_state");
+      toe2_contact_state_topic, toe3_contact_state_topic;
 
   // Load Rosparams from Node Specific yaml File
   quad_utils::loadROSParam(node_, "topics.state.grfs", grf_topic);
@@ -38,56 +20,20 @@ ContactStatePublisher::ContactStatePublisher(rclcpp::Node::SharedPtr node)
   quad_utils::loadROSParam(node_, "topics.gazebo.toe3_contact_state",
                            toe3_contact_state_topic);
 
-  quad_utils::loadROSParam(node_, "topics.gazebo.toe0_wrench_state",
-                           toe0_wrench_state_topic);
-  quad_utils::loadROSParam(node_, "topics.gazebo.toe1_wrench_state",
-                           toe1_wrench_state_topic);
-  quad_utils::loadROSParam(node_, "topics.gazebo.toe2_wrench_state",
-                           toe2_wrench_state_topic);
-  quad_utils::loadROSParam(node_, "topics.gazebo.toe3_wrench_state",
-                           toe3_wrench_state_topic);
   quad_utils::loadROSParam(node_, "namespace", ns);
   quad_utils::loadROSParam(node_, "world", world_name);
 
-  // Update Topics with Correct Robot Namespace
-  toe0_contact_state_topic = std::regex_replace(
-      toe0_contact_state_topic, std::regex("robot_namespace"), ns);
-  toe1_contact_state_topic = std::regex_replace(
-      toe1_contact_state_topic, std::regex("robot_namespace"), ns);
-  toe2_contact_state_topic = std::regex_replace(
-      toe2_contact_state_topic, std::regex("robot_namespace"), ns);
-  toe3_contact_state_topic = std::regex_replace(
-      toe3_contact_state_topic, std::regex("robot_namespace"), ns);
-  toe0_wrench_state_topic = std::regex_replace(
-      toe0_wrench_state_topic, std::regex("robot_namespace"), ns);
-  toe1_wrench_state_topic = std::regex_replace(
-      toe1_wrench_state_topic, std::regex("robot_namespace"), ns);
-  toe2_wrench_state_topic = std::regex_replace(
-      toe2_wrench_state_topic, std::regex("robot_namespace"), ns);
-  toe3_wrench_state_topic = std::regex_replace(
-      toe3_wrench_state_topic, std::regex("robot_namespace"), ns);
+  toe_0_contact_state_sub_ = node_->create_subscription<ros_gz_interfaces::msg::Contacts>(toe0_contact_state_topic, 1, 
+    std::bind(&ContactStatePublisher::onContactToe<0>, this, std::placeholders::_1));
+  toe_1_contact_state_sub_ = node_->create_subscription<ros_gz_interfaces::msg::Contacts>(toe1_contact_state_topic, 1, 
+    std::bind(&ContactStatePublisher::onContactToe<1>, this, std::placeholders::_1));
+  toe_2_contact_state_sub_ = node_->create_subscription<ros_gz_interfaces::msg::Contacts>(toe2_contact_state_topic, 1, 
+    std::bind(&ContactStatePublisher::onContactToe<2>, this, std::placeholders::_1));  
+  toe_3_contact_state_sub_ = node_->create_subscription<ros_gz_interfaces::msg::Contacts>(toe3_contact_state_topic, 1, 
+    std::bind(&ContactStatePublisher::onContactToe<3>, this, std::placeholders::_1));
 
-  // Debug Namespace Topic
-  ign_node_.Subscribe(toe0_contact_state_topic,
-                      &ContactStatePublisher::onContactToe<0>, this);
-  ign_node_.Subscribe(toe1_contact_state_topic,
-                      &ContactStatePublisher::onContactToe<1>, this);
-  ign_node_.Subscribe(toe2_contact_state_topic,
-                      &ContactStatePublisher::onContactToe<2>, this);
-  ign_node_.Subscribe(toe3_contact_state_topic,
-                      &ContactStatePublisher::onContactToe<3>, this);
-
-  ign_node_.Subscribe(toe0_wrench_state_topic,
-                      &ContactStatePublisher::onWrenchToe<0>, this);
-  ign_node_.Subscribe(toe1_wrench_state_topic,
-                      &ContactStatePublisher::onWrenchToe<1>, this);
-  ign_node_.Subscribe(toe2_wrench_state_topic,
-                      &ContactStatePublisher::onWrenchToe<2>, this);
-  ign_node_.Subscribe(toe3_wrench_state_topic,
-                      &ContactStatePublisher::onWrenchToe<3>, this);
-
-  contact_received_.fill(false);
-  wrench_received_.fill(true);
+  // RCLCPP_INFO( node_->get_logger(), "Subscription Topic: [%s] ", toe0_contact_state_topic.c_str());
+  // RCLCPP_INFO( node_->get_logger(), "Publisher Topic: [%s] ", grf_topic.c_str());
 
   // Setup pubs
   grf_pub_ = node_->create_publisher<quad_msgs::msg::GRFArray>(grf_topic, 10);
@@ -102,20 +48,21 @@ ContactStatePublisher::ContactStatePublisher(rclcpp::Node::SharedPtr node)
 }
 
 template <int toe_idx>
-void ContactStatePublisher::onWrenchToe(const gz::msgs::Wrench &msg) {
-  // std::cout << "Updating Wrench" << std::endl;
-  last_wrench_msgs_[toe_idx] = msg;
-}
+void ContactStatePublisher::onContactToe(const ros_gz_interfaces::msg::Contacts::SharedPtr msg) {
 
-template <int toe_idx>
-void ContactStatePublisher::onContactToe(const gz::msgs::Contacts &msg) {
-  std::string terrain_name =
-      std::regex_replace(world_name, std::regex("\\.sdf$"), "");
+  std::string terrain_name = "flat::body::collision"; //Change this to be the world name 
   std::string toe_collision_names[4] = {"toe0_collision", "toe1_collision",
                                         "toe2_collision", "toe3_collision"};
   std::string toe_string = toe_collision_names[toe_idx];
-  const std::string toe_frame =
-      ns + "_ground_truthtoe" + std::to_string(toe_idx);
+
+  // Toe Transform Names
+  std::string ns = node_->get_namespace();
+  if (!ns.empty() && ns.front() == '/'){
+    ns = ns.substr(1); // Remove leading slash
+  }
+  const std::array<std::string, 4> toe_transform_names = {
+    ns + "_ground_truth/toe0", ns + "_ground_truth/toe1",
+    ns + "_ground_truth/toe2", ns + "_ground_truth/toe3"};
 
   // Initialize outputs
   grf_array_msg_.vectors[toe_idx].x = 0.0;
@@ -127,97 +74,74 @@ void ContactStatePublisher::onContactToe(const gz::msgs::Contacts &msg) {
   grf_array_msg_.points[toe_idx].z = 0.0;
 
   grf_array_msg_.contact_states[toe_idx] = false;
-  // std::cout << "BEgin Contact" << std::endl;
 
-  for (int i = 0; i < msg.contact_size(); ++i) {
-    const auto &contact = msg.contact(i);
-    const std::string &col1 = contact.collision1().name();
-    const std::string &col2 = contact.collision2().name();
+  for(const auto& contact : msg->contacts){
+    const std::string& str_toe = contact.collision1.name;
+    const std::string& str_terrain = contact.collision2.name;
+    // RCLCPP_INFO( node_->get_logger(), "Contact detected between: [%s] and [%s]", str_toe.c_str(), str_terrain.c_str());
 
-    bool found_toe = col1.find(toe_string) != std::string::npos ||
-                     col2.find(toe_string) != std::string::npos;
-    bool found_terrain = col1.find(terrain_name) != std::string::npos ||
-                         col2.find(terrain_name) != std::string::npos;
+    std::size_t found_toe =  str_toe.find(toe_string);
+    std::size_t found_terrain = str_terrain.find(terrain_name);
 
-    if (found_toe && found_terrain) {
+    if((found_toe !=std::string::npos) && (found_terrain != std::string::npos)){
       last_contact_time_[toe_idx] = node_->get_clock()->now().seconds();
-      // Sum all contact forces and positions
-      int n_points = contact.position_size();
-
-      for (int j = 0; j < n_points; ++j) {
-        const auto &pos = contact.position(j);
-        const auto &wrench = last_wrench_msgs_[toe_idx];
-
-        grf_array_msg_.points[toe_idx].x += pos.x();
-        grf_array_msg_.points[toe_idx].y += pos.y();
-        grf_array_msg_.points[toe_idx].z += pos.z();
-
-        grf_array_msg_.vectors[toe_idx].x = wrench.force().x();
-        grf_array_msg_.vectors[toe_idx].y = wrench.force().y();
-        grf_array_msg_.vectors[toe_idx].z = wrench.force().z();
+      // Get total wrench
+      if (!contact.wrenches.empty()) {
+        double fx = 0.0, fy = 0.0, fz = 0.0;
+        for (const auto& wrench : contact.wrenches) {
+          fx += wrench.body_1_wrench.force.x;
+          fy += wrench.body_1_wrench.force.y;
+          fz += wrench.body_1_wrench.force.z;
+        }
+        grf_array_msg_.vectors[toe_idx].x = fx;
+        grf_array_msg_.vectors[toe_idx].y = fy;
+        grf_array_msg_.vectors[toe_idx].z = fz;
       }
-
-      if (n_points > 0) {
-        grf_array_msg_.points[toe_idx].x /= n_points;
-        grf_array_msg_.points[toe_idx].y /= n_points;
-        grf_array_msg_.points[toe_idx].z /= n_points;
+      // Add up position - there might be multiple contact points for one contaxct pair
+      for (const auto& pos : contact.positions) {
+        grf_array_msg_.points[toe_idx].x += pos.x;
+        grf_array_msg_.points[toe_idx].y += pos.y;
+        grf_array_msg_.points[toe_idx].z += pos.z;
       }
-
+      // Compute averaged contact position
+      if (!contact.positions.empty()) {
+        grf_array_msg_.points[toe_idx].x /= contact.positions.size();
+        grf_array_msg_.points[toe_idx].y /= contact.positions.size();
+        grf_array_msg_.points[toe_idx].z /= contact.positions.size();
+      }
+      // Assign contact state
       grf_array_msg_.contact_states[toe_idx] = true;
-      break;  // Only take the first match
+
+      // We only want the contact pair with ground
+      break;  // Only use the first matching contact
+
     }
   }
-  // RCLCPP_INFO(
-  //     node_->get_logger(),
-  //     "GRF toe %d: point = (%.3f, %.3f, %.3f), vector = (%.3f, %.3f, %.3f), "
-  //     "contact = %s",
-  //     toe_idx, grf_array_msg_.points[toe_idx].x,
-  //     grf_array_msg_.points[toe_idx].y, grf_array_msg_.points[toe_idx].z,
-  //     grf_array_msg_.vectors[toe_idx].x, grf_array_msg_.vectors[toe_idx].y,
-  //     grf_array_msg_.vectors[toe_idx].z,
-  //     grf_array_msg_.contact_states[toe_idx] ? "true" : "false");
-
-  // std::cout << "End COntact" << std::endl;
-
+  geometry_msgs::msg::TransformStamped transform_stamped;
   try {
-    geometry_msgs::msg::TransformStamped tf = tf_buffer_.lookupTransform(
-        "map", toe_frame, tf2::TimePointZero);  // "0" == latest
+    transform_stamped = tf_buffer_.lookupTransform(
+        "map", toe_transform_names[toe_idx], tf2::TimePointZero);
 
-    // Zero translation; preserve only rotation
-    tf.transform.translation.x = 0.0;
-    tf.transform.translation.y = 0.0;
-    tf.transform.translation.z = 0.0;
-
-    // Transform GRF vector into map/world frame
-    tf2::doTransform(grf_array_msg_.vectors[toe_idx],
-                     grf_array_msg_.vectors[toe_idx], tf);
   } catch (tf2::TransformException &ex) {
     RCLCPP_WARN_THROTTLE(node_->get_logger(), *node_->get_clock(), 1000, "%s",
                          ex.what());
     ready_to_publish_ = false;
     return;
   }
+  transform_stamped.transform.translation.x = 0;
+  transform_stamped.transform.translation.y = 0;
+  transform_stamped.transform.translation.z = 0;
 
+  tf2::doTransform(grf_array_msg_.vectors[toe_idx],
+                   grf_array_msg_.vectors[toe_idx], transform_stamped);
   ready_to_publish_ = true;
 }
 
-template void ContactStatePublisher::onContactToe<0>(
-    const gz::msgs::Contacts &);
-template void ContactStatePublisher::onContactToe<1>(
-    const gz::msgs::Contacts &);
-template void ContactStatePublisher::onContactToe<2>(
-    const gz::msgs::Contacts &);
-template void ContactStatePublisher::onContactToe<3>(
-    const gz::msgs::Contacts &);
-
-template void ContactStatePublisher::onWrenchToe<0>(
-    const gz::msgs::Wrench &);
-template void ContactStatePublisher::onWrenchToe<1>(
-    const gz::msgs::Wrench &);
-template void ContactStatePublisher::onWrenchToe<2>(
-    const gz::msgs::Wrench &);
-template void ContactStatePublisher::onWrenchToe<3>(
-    const gz::msgs::Wrench &);
+// At bottom of contact_state_publisher.cpp
+template void ContactStatePublisher::onContactToe<0>(ros_gz_interfaces::msg::Contacts::SharedPtr msg);
+template void ContactStatePublisher::onContactToe<1>(ros_gz_interfaces::msg::Contacts::SharedPtr msg);
+template void ContactStatePublisher::onContactToe<2>(ros_gz_interfaces::msg::Contacts::SharedPtr msg);
+template void ContactStatePublisher::onContactToe<3>(ros_gz_interfaces::msg::Contacts::SharedPtr msg);
 
 bool ContactStatePublisher::checkMessageTiming(double current_sim_time,
                                                int toe_idx) {
@@ -256,6 +180,7 @@ void ContactStatePublisher::spin() {
   // rclcpp::Rate r(update_rate_);
   rclcpp::Rate r(update_rate_);
   while (rclcpp::ok()) {
+
     // Collect new messages on subscriber topics
     rclcpp::spin_some(node_);
 
@@ -263,14 +188,11 @@ void ContactStatePublisher::spin() {
     for (int i = 0; i < 4; ++i) {
       if (checkMessageTiming(sim_time_now, i)) {
         // Leg Contact Has Ended
-        // std::cout << "REsetting" << std::endl;
         resetMessage(i);
       }
     }
-    // std::cout << "Spinning" << std::endl;
     // Publish the contact state
     if (ready_to_publish_) {
-      // std::cout << "Makes it Here" << std::endl;
       publishContactState();
     }
 

@@ -97,20 +97,20 @@ def spawn_sdf_model(context, *args, **kwargs):
     )
     return [spawn_node] 
 
-def launch_controller_manager(context, *args, **kwargs):
-    namespace = LaunchConfiguration('namespace').perform(context)
-    gazebo_scripts_path = FindPackageShare('gazebo_scripts').perform(context)
+# def launch_controller_manager(context, *args, **kwargs):
+#     namespace = LaunchConfiguration('namespace').perform(context)
+#     gazebo_scripts_path = FindPackageShare('gazebo_scripts').perform(context)
 
-    controller_manager_node = Node(
-        package='controller_manager',
-        executable='ros2_control_node',
-        name='controller_manager',
-        parameters=[
-            os.path.join(gazebo_scripts_path, 'config', 'quad_control.yaml')
-        ],
-        output='screen'
-    )
-    return [controller_manager_node]
+#     controller_manager_node = Node(
+#         package='controller_manager',
+#         executable='ros2_control_node',
+#         name='controller_manager',
+#         parameters=[
+#             os.path.join(gazebo_scripts_path, 'config', 'quad_control.yaml')
+#         ],
+#         output='screen'
+#     )
+#     return [controller_manager_node]
 
 def spawn_controller_broadcasters(context, *args, **kwargs):
     namespace = LaunchConfiguration('namespace').perform(context)
@@ -347,7 +347,7 @@ def generate_launch_description():
         DeclareLaunchArgument('robot_type', default_value = 'spirit', description='Robot type'),
         DeclareLaunchArgument('namespace', default_value = 'robot_1', description='Robot namespace'),
         DeclareLaunchArgument('controller', default_value = 'inverse_kinematics', description='Controller type'),
-        DeclareLaunchArgument('init_pose', default_value = '-x 2.0 -y 0.0 -z 1.5', description= "Initial Robot Position"),
+        DeclareLaunchArgument('init_pose', default_value = '-x 2.0 -y 0.0 -z 15', description= "Initial Robot Position"),
         DeclareLaunchArgument('is_hardware', default_value = 'false', description="Simulation or Hardware"),
         DeclareLaunchArgument('mocap', default_value = 'false', description='Launch the Motion Capture Node'),
         OpaqueFunction(function=load_robot_params),
@@ -358,7 +358,7 @@ def generate_launch_description():
         # OpaqueFunction(function=launch_controller_manager),
         OpaqueFunction(function=spawn_controller_broadcasters),
         OpaqueFunction(function=launch_robot_driver),
-        # OpaqueFunction(function=launch_contact_state_publisher),
+        OpaqueFunction(function=launch_contact_state_publisher),
         OpaqueFunction(function= launch_visualization_plugins)
     ])
 

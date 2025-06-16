@@ -54,14 +54,10 @@
         foot_2_plan_continuous: visualization/foot_2_plan_continuous
         foot_3_plan_continuous: visualization/foot_3_plan_continuous
       gazebo:
-        toe0_contact_state: /world/default/model/robot_namespace/link/toe0/sensor/toe0_contact/contact
-        toe1_contact_state: /world/default/model/robot_namespace/link/toe1/sensor/toe1_contact/contact
-        toe2_contact_state: /world/default/model/robot_namespace/link/toe2/sensor/toe2_contact/contact
-        toe3_contact_state: /world/default/model/robot_namespace/link/toe3/sensor/toe3_contact/contact
-        toe0_wrench_state: /world/default/model/robot_namespace/joint/jtoe0/sensor/toe0_grf/forcetorque
-        toe1_wrench_state: /world/default/model/robot_namespace/joint/jtoe1/sensor/toe1_grf/forcetorque
-        toe2_wrench_state: /world/default/model/robot_namespace/joint/jtoe2/sensor/toe2_grf/forcetorque
-        toe3_wrench_state: /world/default/model/robot_namespace/joint/jtoe3/sensor/toe3_grf/forcetorque
+        toe0_contact_state: gazebo/toe0_contact_states
+        toe1_contact_state: gazebo/toe1_contact_states
+        toe2_contact_state: gazebo/toe2_contact_states
+        toe3_contact_state: gazebo/toe3_contact_states
 
       mocap: mocap_node/quad/pose
     map_frame: map

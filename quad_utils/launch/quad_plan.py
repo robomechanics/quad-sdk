@@ -1,0 +1,64 @@
+from launch import LaunchDescription
+from launch.actions import DeclareLaunchArgument, OpaqueFunction, GroupAction, IncludeLaunchDescription, ExecuteProcess
+from launch.substitutions import LaunchConfiguration, TextSubstitution, EnvironmentVariable
+from launch.launch_description_sources import PythonLaunchDescriptionSource
+from launch_ros.actions import PushRosNamespace, Node
+from launch_ros.substitutions import FindPackageShare
+from launch.substitutions import PathJoinSubstitution
+
+import json
+
+def launch_robot_group(context, *args, **kwargs):
+    robot_configs_raw = LaunchConfiguration('robot_configs').perform(context)
+
+    try:
+        robot_configs = json.loads(robot_configs_raw)
+    except json.JSONDecodeError as e:
+        raise RuntimeError(f"Invalid JSON in 'robot_configs': {e}")
+
+    robot_groups = []
+
+    for config in robot_configs:
+        robot_ns = config["name"]
+        robot_type = config["type"]
+        reference = config["reference"]
+        twist_input = config["twist_input"]
+
+        planning_launch_file = PathJoinSubstitution([
+            FindPackageShare('quad_utils'),
+            'launch',
+            'planning.py'
+        ])
+
+        group = GroupAction([
+            PushRosNamespace(robot_ns),
+            IncludeLaunchDescription(
+                PythonLaunchDescriptionSource(planning_launch_file),
+                launch_arguments={
+                    'robot_type': TextSubstitution(text=robot_type),
+                    'namespace': TextSubstitution(text=robot_ns),
+                    'reference': TextSubstitution(text=reference),
+                    'twist_input': TextSubstitution(text=twist_input),
+                    'logging' : LaunchConfiguration('logging'),
+                    'leaping' : LaunchConfiguration('leaping'),
+                    'ac' : LaunchConfiguration('ac')
+                }.items()
+            )
+        ])
+        robot_groups.append(group)
+
+    return robot_groups
+
+
+def generate_launch_description():
+    return LaunchDescription([
+        DeclareLaunchArgument('logging', default_value='false'),
+        DeclareLaunchArgument('leaping', default_value='true'),
+        DeclareLaunchArgument('ac', default_value='false'),
+        DeclareLaunchArgument(
+            'robot_configs',
+            default_value='[{"name": "robot_1", "type": "spirit", "reference": "twist", "twist_input": "joy"}]',
+            description='A JSON List of robot configurations: MUST specifiy name, type, and controller'
+        ),
+        OpaqueFunction(function=launch_robot_group)
+    ])
