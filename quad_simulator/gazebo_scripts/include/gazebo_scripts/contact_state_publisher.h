@@ -1,18 +1,16 @@
 #ifndef CONTACT_STATE_PUBLISHER_H
 #define CONTACT_STATE_PUBLISHER_H
 
-#include <gz/msgs/contacts.pb.h>
-#include <gz/msgs/wrench.pb.h>
 #include <quad_utils/ros_utils.h>
 #include <tf2_ros/buffer.h>
 #include <tf2_ros/transform_listener.h>
+#include <ros_gz_interfaces/msg/contacts.hpp>
 
 #include <algorithm>
 #include <array>
 #include <cmath>
 #include <deque>
 #include <eigen3/Eigen/Eigen>
-#include <gz/transport/Node.hh>
 #include <quad_msgs/msg/grf_array.hpp>
 #include <rclcpp/rclcpp.hpp>
 #include <string>
@@ -43,15 +41,8 @@ class ContactStatePublisher {
    * @brief Processes new contact state data, GRF data
    * @param[in] msg New contact state data
    */
-  template <int toe_idx>
-  void onContactToe(const gz::msgs::Contacts &msg);
-
-  template <int toe_idx>
-  void onWrenchToe(const gz::msgs::Wrench &msg);
-
-  //   void contactStateCallback(const gazebo_msgs::ContactsState::ConstPtr
-  //   &msg,
-  //                             const int toe_idx);
+   template<int toe_idx>
+   void onContactToe(const ros_gz_interfaces::msg::Contacts::SharedPtr msg);
 
   bool checkMessageTiming(double current_sim_time, int toe_idx);
   void resetMessage(int toe_idx);
@@ -61,9 +52,10 @@ class ContactStatePublisher {
    */
   void publishContactState();
 
-  std::array<gz::msgs::Wrench, 4> last_wrench_msgs_;
-
-  std::array<gz::msgs::Contact, 4> last_contact_msgs_;
+  rclcpp::Subscription<ros_gz_interfaces::msg::Contacts>::SharedPtr toe_0_contact_state_sub_;
+  rclcpp::Subscription<ros_gz_interfaces::msg::Contacts>::SharedPtr toe_1_contact_state_sub_;
+  rclcpp::Subscription<ros_gz_interfaces::msg::Contacts>::SharedPtr toe_2_contact_state_sub_;
+  rclcpp::Subscription<ros_gz_interfaces::msg::Contacts>::SharedPtr toe_3_contact_state_sub_;
 
   std::array<double, 4> last_contact_time_;
 
@@ -89,15 +81,10 @@ class ContactStatePublisher {
 
   rclcpp::Publisher<quad_msgs::msg::GRFArray>::SharedPtr grf_pub_;
 
-  gz::transport::Node ign_node_;
-
-  std::array<gz::msgs::Contacts, 4> contact_data_;
-
-  std::array<gz::msgs::Wrench, 4> wrench_data_;
-
   std::array<bool, 4> contact_received_;
 
   std::array<bool, 4> wrench_received_;
+
   std::string ns, world_name;
 
   tf2_ros::Buffer tf_buffer_;

@@ -8,10 +8,10 @@ endif()
 
 # find dependencies
 find_package(ament_cmake REQUIRED)
-find_package(gz-transport13 REQUIRED)
 find_package(quad_utils)
 find_package(std_msgs)
 find_package(tf2_ros REQUIRED)
+find_package(ros_gz_interfaces REQUIRED)
   # Mark the existing target as non-global and allow duplicates
 
 # find_library(Protobuf REQUIRED)
@@ -35,9 +35,6 @@ target_include_directories(contact_state_publisher_node PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
   $<INSTALL_INTERFACE:include>
 )
-target_link_libraries(contact_state_publisher_node
-  gz-transport13::gz-transport13
-)
 
 ament_target_dependencies(contact_state_publisher_node
   rclcpp
@@ -45,7 +42,7 @@ ament_target_dependencies(contact_state_publisher_node
   tf2
   tf2_ros
   quad_utils
-  gz-transport13
+  ros_gz_interfaces
 )
 
 # Install Targets
