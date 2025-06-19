@@ -1,7 +1,7 @@
 #include <iostream>
 #include <rclcpp/rclcpp.hpp>
 
-#include "gazebo_scripts/contact_state_publisher.h"
+#include "gazebo_scripts/contact_state_publisher.hpp"
 
 int main(int argc, char** argv) {
   rclcpp::init(argc, argv);

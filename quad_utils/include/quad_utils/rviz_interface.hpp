@@ -1,6 +1,6 @@
 #ifndef RVIZ_INTERFACE_H
 #define RVIZ_INTERFACE_H
-#include <quad_utils/ros_utils.h>
+#include <quad_utils/ros_utils.hpp>
 #include <tf2/LinearMath/Quaternion.h>
 #include <tf2_ros/transform_broadcaster.h>
 

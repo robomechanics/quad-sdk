@@ -3,8 +3,8 @@
 
 #include <quad_msgs/msg/contact_mode.hpp>
 #include <quad_msgs/msg/robot_state.hpp>
-#include <quad_utils/quad_kd.h>
-#include <quad_utils/ros_utils.h>
+#include <quad_utils/quad_kd.hpp>
+#include <quad_utils/ros_utils.hpp>
 #include <rclcpp/rclcpp.hpp>
 #include <sensor_msgs/msg/imu.hpp>
 #include <sensor_msgs/msg/joint_state.hpp>

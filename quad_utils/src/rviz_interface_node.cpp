@@ -1,6 +1,6 @@
 #include <rclcpp/rclcpp.hpp>
 
-#include "quad_utils/rviz_interface.h"
+#include "quad_utils/rviz_interface.hpp"
 
 int main(int argc, char** argv) {
   rclcpp::init(argc, argv);

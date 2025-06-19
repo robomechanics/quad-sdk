@@ -10,9 +10,9 @@
 #include <quad_msgs/msg/robot_plan.hpp>
 #include <quad_msgs/msg/robot_state.hpp>
 #include <quad_msgs/msg/body_force_estimate.hpp>
-#include <quad_utils/function_timer.h>
-#include <quad_utils/math_utils.h>
-#include <quad_utils/ros_utils.h>
+#include <quad_utils/function_timer.hpp>
+#include <quad_utils/math_utils.hpp>
+#include <quad_utils/ros_utils.hpp>
 #include <rclcpp/rclcpp.hpp>
 #include <std_msgs/msg/bool.hpp>
 #include <std_msgs/msg/u_int8.h>

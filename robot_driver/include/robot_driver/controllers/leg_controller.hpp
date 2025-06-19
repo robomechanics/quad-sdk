@@ -10,8 +10,8 @@
 #include <quad_msgs/msg/multi_foot_plan_continuous.hpp>
 #include <quad_msgs/msg/robot_plan.hpp>
 #include <quad_msgs/msg/robot_state.hpp>
-#include <quad_utils/math_utils.h>
-#include <quad_utils/ros_utils.h>
+#include <quad_utils/math_utils.hpp>
+#include <quad_utils/ros_utils.hpp>
 #include <robot_driver/hardware_interfaces/spirit_interface.hpp>
 #include <rclcpp/rclcpp.hpp>
 #include <std_msgs/msg/u_int8.hpp>
