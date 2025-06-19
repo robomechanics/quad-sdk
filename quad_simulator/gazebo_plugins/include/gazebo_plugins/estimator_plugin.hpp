@@ -22,9 +22,9 @@
 #include <rclcpp/rclcpp.hpp>
 #include <string>
 #include <vector>
-#include <quad_utils/ros_utils.h>
-#include <quad_utils/math_utils.h>
-#include <quad_utils/quad_kd.h>
+#include <quad_utils/ros_utils.hpp>
+#include <quad_utils/math_utils.hpp>
+#include <quad_utils/quad_kd.hpp>
 #include <std_msgs/msg/string.hpp>
 
 namespace gz_plugins {

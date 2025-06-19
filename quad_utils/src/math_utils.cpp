@@ -1,4 +1,4 @@
-#include <quad_utils/math_utils.h>
+#include <quad_utils/math_utils.hpp>
 
 namespace math_utils {
 

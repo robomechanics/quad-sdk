@@ -1,7 +1,7 @@
 #ifdef LOG
 #undef LOG
 #endif
-#include "gazebo_plugins/estimator_plugin.h"
+#include "gazebo_plugins/estimator_plugin.hpp"
 
 namespace gz_plugins {
 void GroundTruthEstimator::Configure(

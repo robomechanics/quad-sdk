@@ -5,17 +5,16 @@
 #include <rbdl/addons/urdfreader/urdfreader.h>
 #include <rbdl/rbdl.h>
 #include <rbdl/rbdl_utils.h>
+#include <rclcpp/rclcpp.hpp>
 #include <tf2/LinearMath/Quaternion.h>
-
 #include <Eigen/Geometry>
 #include <chrono>
 #include <grid_map_core/GridMap.hpp>
 #include <random>
-#include <rclcpp/rclcpp.hpp>
 #include <vector>
 
-#include "quad_utils/function_timer.h"
-#include "quad_utils/math_utils.h"
+#include "quad_utils/function_timer.hpp"
+#include "quad_utils/math_utils.hpp"
 
 namespace quad_utils {
 

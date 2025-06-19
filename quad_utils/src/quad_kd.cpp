@@ -1,4 +1,4 @@
-#include "quad_utils/quad_kd.h"
+#include "quad_utils/quad_kd.hpp"
 
 using namespace quad_utils;
 

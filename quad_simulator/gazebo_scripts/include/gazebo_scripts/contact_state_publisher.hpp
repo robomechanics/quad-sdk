@@ -1,7 +1,7 @@
 #ifndef CONTACT_STATE_PUBLISHER_H
 #define CONTACT_STATE_PUBLISHER_H
 
-#include <quad_utils/ros_utils.h>
+#include <quad_utils/ros_utils.hpp>
 #include <tf2_ros/buffer.h>
 #include <tf2_ros/transform_listener.h>
 #include <ros_gz_interfaces/msg/contacts.hpp>

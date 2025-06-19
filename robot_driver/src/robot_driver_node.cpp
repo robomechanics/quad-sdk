@@ -8,7 +8,6 @@ int main(int argc, char** argv) {
     rclcpp::init(argc, argv);
     auto node = std::make_shared<rclcpp::Node>("robot_driver_node");
     RobotDriver robot_driver(node, argc, argv);
-    RCLCPP_INFO(node->get_logger(), "Passes Robot Driver Constructor, Starting SPin");
     robot_driver.spin();
     rclcpp::shutdown();
     return 0;

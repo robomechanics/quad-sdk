@@ -1,4 +1,4 @@
-#include "quad_utils/fast_terrain_map.h"
+#include "quad_utils/fast_terrain_map.hpp"
 
 #include <grid_map_core/grid_map_core.hpp>
 #include <iostream>

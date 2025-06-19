@@ -1,4 +1,4 @@
-#include "gazebo_scripts/contact_state_publisher.h"
+#include "gazebo_scripts/contact_state_publisher.hpp"
 
 ContactStatePublisher::ContactStatePublisher(rclcpp::Node::SharedPtr node)
     : node_(node),

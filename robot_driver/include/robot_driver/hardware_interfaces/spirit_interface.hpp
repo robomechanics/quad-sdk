@@ -3,8 +3,8 @@
 
 #include <quad_msgs/msg/leg_command_array.hpp>
 #include <robot_driver/hardware_interfaces/hardware_interface.hpp>
-#include <sensor_msgs/msg/imu.h>
-#include <sensor_msgs/msg/joint_state.h>
+#include <sensor_msgs/msg/imu.hpp>
+#include <sensor_msgs/msg/joint_state.hpp>
 #include <tf2/LinearMath/Quaternion.h>
 #include <tf2_geometry_msgs/tf2_geometry_msgs.hpp>
 

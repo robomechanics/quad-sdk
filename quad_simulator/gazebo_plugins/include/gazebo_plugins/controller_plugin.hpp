@@ -22,7 +22,7 @@
 #include <quad_msgs/msg/leg_command.hpp>
 #include <quad_msgs/msg/leg_command_array.hpp>
 #include <quad_msgs/msg/motor_command.hpp>
-#include <quad_utils/ros_utils.h>
+#include <quad_utils/ros_utils.hpp>
 #include <pluginlib/class_list_macros.hpp>
 #include <string>
 #include <vector>

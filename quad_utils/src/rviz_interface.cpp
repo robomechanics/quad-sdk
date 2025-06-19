@@ -1,4 +1,4 @@
-#include <quad_utils/rviz_interface.h>
+#include <quad_utils/rviz_interface.hpp>
 
 RVizInterface::RVizInterface(rclcpp::Node::SharedPtr node) : node_(node) {
   std::string global_plan_topic, local_plan_topic, discrete_global_plan_topic,

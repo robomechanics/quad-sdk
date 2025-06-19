@@ -9,7 +9,7 @@
 #include <rclcpp/exceptions.hpp>
 #include <std_msgs/msg/header.hpp>
 
-#include "quad_utils/math_utils.h"
+#include "quad_utils/math_utils.hpp"
 
 namespace quad_utils {
 /**

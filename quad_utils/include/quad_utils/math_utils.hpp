@@ -15,8 +15,8 @@
 #include <sensor_msgs/msg/joint_state.hpp>
 #include <tf2_geometry_msgs/tf2_geometry_msgs.hpp>
 
-#include "quad_utils/function_timer.h"
-#include "quad_utils/quad_kd.h"
+#include "quad_utils/function_timer.hpp"
+#include "quad_utils/quad_kd.hpp"
 
 namespace math_utils {
 

@@ -1,7 +1,7 @@
 #ifndef FAST_TERRAIN_MAP_H
 #define FAST_TERRAIN_MAP_H
 
-#include <quad_utils/function_timer.h>
+#include <quad_utils/function_timer.hpp>
 
 #include <chrono>
 #include <eigen3/Eigen/Eigen>

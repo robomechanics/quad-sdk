@@ -1,4 +1,4 @@
-#include "gazebo_plugins/controller_plugin.h"
+#include "gazebo_plugins/controller_plugin.hpp"
 
 #include <angles/angles.h>
 

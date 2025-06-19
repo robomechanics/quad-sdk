@@ -1,4 +1,4 @@
-#include <quad_utils/ros_utils.h>
+#include <quad_utils/ros_utils.hpp>
 
 namespace quad_utils {
 

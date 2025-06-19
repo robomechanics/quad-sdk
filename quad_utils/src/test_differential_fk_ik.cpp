@@ -2,8 +2,8 @@
 
 #include <rclcpp/rclcpp.hpp>
 
-#include "quad_utils/quad_kd.h"
-#include "quad_utils/ros_utils.h"
+#include "quad_utils/quad_kd.hpp"
+#include "quad_utils/ros_utils.hpp"
 
 // #include <gtest/gtest.h>
 
