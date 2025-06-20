@@ -2,18 +2,21 @@
 #define LOCAL_PLANNER_H
 
 #include <gtest/gtest_prod.h>
-#include <local_planner/local_footstep_planner.h>
-#include <local_planner/local_planner_modes.h>
+#include <rbdl/rbdl.h>
+#include <local_planner/local_footstep_planner.hpp>
+#include <local_planner/local_planner_modes.hpp>
 #include <math.h>
-#include <nmpc_controller/nmpc_controller.h>
-#include <quad_msgs/GRFArray.h>
-#include <quad_msgs/MultiFootPlanDiscrete.h>
-#include <quad_msgs/RobotPlan.h>
-#include <quad_msgs/RobotState.h>
-#include <quad_utils/quad_kd.h>
-#include <quad_utils/ros_utils.h>
-#include <ros/ros.h>
-#include <tf2_geometry_msgs/tf2_geometry_msgs.h>
+#include <nmpc_controller/nmpc_controller.hpp>
+#include <quad_msgs/msg/grf_array.hpp>
+#include <quad_msgs/msg/multi_foot_plan_discrete.hpp>
+#include <quad_msgs/msg/robot_plan.hpp>
+#include <quad_msgs/msg/robot_state.hpp>
+#include <quad_utils/quad_kd.hpp>
+#include <quad_utils/ros_utils.hpp>
+#include <rclcpp/rclcpp.hpp>
+#include <tf2/LinearMath/Quaternion.h>
+#include <tf2_geometry_msgs/tf2_geometry_msgs.hpp>
+
 
 //! Local Body Planner library
 /*!
@@ -26,7 +29,7 @@ class LocalPlanner {
    * @param[in] nh ROS NodeHandle to publish and subscribe from
    * @return Constructed object of type LocalPlanner
    */
-  LocalPlanner(ros::NodeHandle nh);
+  LocalPlanner(rclcpp::Node::SharedPtr node);
 
   /**
    * @brief Primary work function in class, called in node file for this
@@ -51,27 +54,27 @@ class LocalPlanner {
    * @brief Callback function to handle new terrain map data
    * @param[in] grid_map_msgs::GridMap contining map data
    */
-  void terrainMapCallback(const grid_map_msgs::GridMap::ConstPtr &msg);
+  void terrainMapCallback(const grid_map_msgs::msg::GridMap::SharedPtr msg);
 
   /**
    * @brief Callback function to handle new plans
    * @param[in] msg Robot state trajectory message
    */
-  void robotPlanCallback(const quad_msgs::RobotPlan::ConstPtr &msg);
+  void robotPlanCallback(const quad_msgs::msg::RobotPlan::SharedPtr msg);
 
   /**
    * @brief Callback function to handle new state estimates
    * @param[in] State estimate message contining position and velocity for each
    * joint and robot body
    */
-  void robotStateCallback(const quad_msgs::RobotState::ConstPtr &msg);
+  void robotStateCallback(const quad_msgs::msg::RobotState::SharedPtr msg);
 
   /**
    * @brief Callback function to handle new desired twist data when using twist
    * input
    * @param[in] msg the message contining twist data
    */
-  void cmdVelCallback(const geometry_msgs::Twist::ConstPtr &msg);
+  void cmdVelCallback(const geometry_msgs::msg::Twist::SharedPtr msg);
 
   /**
    * @brief Function to compute reference trajectory from twist command or
@@ -98,32 +101,35 @@ class LocalPlanner {
   /// Robot type: A1 or Spirit
   std::string robot_name_;
 
+  /// Robot Namespace: robot_1, ...
+  std::string robot_ns_;
+
   /// ROS subscriber for incoming terrain_map
-  ros::Subscriber terrain_map_sub_;
+  rclcpp::Subscription<grid_map_msgs::msg::GridMap>::SharedPtr terrain_map_sub_;
 
   /// ROS subscriber for incoming body plans
-  ros::Subscriber body_plan_sub_;
+  rclcpp::Subscription<quad_msgs::msg::RobotPlan>::SharedPtr body_plan_sub_;
 
   /// ROS Subscriber for incoming states
-  ros::Subscriber robot_state_sub_;
+  rclcpp::Subscription<quad_msgs::msg::RobotState>::SharedPtr robot_state_sub_;
 
   /// Subscriber for twist input messages
-  ros::Subscriber cmd_vel_sub_;
+  rclcpp::Subscription<geometry_msgs::msg::Twist>::SharedPtr cmd_vel_sub_;
 
   /// ROS publisher for local plan output
-  ros::Publisher local_plan_pub_;
+  rclcpp::Publisher<quad_msgs::msg::RobotPlan>::SharedPtr local_plan_pub_;
 
   /// ROS publisher for discrete foot plan
-  ros::Publisher foot_plan_discrete_pub_;
+  rclcpp::Publisher<quad_msgs::msg::MultiFootPlanDiscrete>::SharedPtr foot_plan_discrete_pub_;
 
   /// ROS publisher for continuous foot plan
-  ros::Publisher foot_plan_continuous_pub_;
+  rclcpp::Publisher<quad_msgs::msg::MultiFootPlanContinuous>::SharedPtr foot_plan_continuous_pub_;
 
   /// Define map frame
   std::string map_frame_;
 
   /// Nodehandle to pub to and sub from
-  ros::NodeHandle nh_;
+  rclcpp::Node::SharedPtr node_;
 
   /// Struct for terrain map data
   FastTerrainMap terrain_;
@@ -141,16 +147,16 @@ class LocalPlanner {
   std::shared_ptr<LocalFootstepPlanner> local_footstep_planner_;
 
   /// Most recent robot plan
-  quad_msgs::RobotPlan::ConstPtr body_plan_msg_;
+  quad_msgs::msg::RobotPlan::SharedPtr body_plan_msg_;
 
   /// Most recent robot state
-  quad_msgs::RobotState::ConstPtr robot_state_msg_;
+  quad_msgs::msg::RobotState::SharedPtr robot_state_msg_;
 
   /// Past foothold locations
-  quad_msgs::MultiFootState past_footholds_msg_;
+  quad_msgs::msg::MultiFootState past_footholds_msg_;
 
   /// Timestamp of the state estimate
-  ros::Time current_state_timestamp_;
+  rclcpp::Time current_state_timestamp_;
 
   /// Current state (ground truth or estimate)
   Eigen::VectorXd current_state_;
@@ -249,13 +255,13 @@ class LocalPlanner {
   double z_des_;
 
   /// Time of the most recent cmd_vel data
-  ros::Time last_cmd_vel_msg_time_;
+  rclcpp::Time last_cmd_vel_msg_time_;
 
   /// Threshold for waiting for twist cmd_vel data
   double last_cmd_vel_msg_time_max_;
 
   /// Initial timestamp for contact cycling
-  ros::Time initial_timestamp_;
+  rclcpp::Time initial_timestamp_;
 
   /// Foot initialization flag when using twist input without a global body plan
   bool first_plan_;

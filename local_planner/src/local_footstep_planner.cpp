@@ -1,10 +1,8 @@
 #include "local_planner/local_footstep_planner.hpp"
 
-#include <tf/tf.h>
-
 #include <chrono>
 
-LocalFootstepPlanner::LocalFootstepPlanner() {}
+LocalFootstepPlanner::LocalFootstepPlanner(rclcpp::Node::SharedPtr node) : node_(node) {}
 
 void LocalFootstepPlanner::setTemporalParams(
     double dt, int period, int horizon_length,
@@ -96,7 +94,7 @@ void LocalFootstepPlanner::computeContactSchedule(
   for (int i = 0; i < horizon_length_; i++) {
     contact_schedule[i].resize(num_feet_);
     if (control_mode == LocalPlannerMode::STAND) {
-      for (int j = 0; j < contact_schedule[i].size(); j++) {
+      for (size_t j = 0; j < contact_schedule[i].size(); j++) {
         contact_schedule[i][j] = true;
       }
     } else {
@@ -171,13 +169,13 @@ void LocalFootstepPlanner::computeFootPlan(
     const Eigen::VectorXd &foot_positions_current,
     const Eigen::VectorXd &foot_velocities_current,
     double first_element_duration,
-    quad_msgs::MultiFootState &past_footholds_msg,
+    quad_msgs::msg::MultiFootState &past_footholds_msg,
     Eigen::MatrixXd &foot_positions, Eigen::MatrixXd &foot_velocities,
     Eigen::MatrixXd &foot_accelerations) {
   // Loop through each foot to compute the new footholds
   for (int j = 0; j < num_feet_; j++) {
     // Loop through the horizon to identify instances of touchdown
-    for (int i = 1; i < contact_schedule.size(); i++) {
+    for (size_t i = 1; i < contact_schedule.size(); i++) {
       if (isNewContact(contact_schedule, i, j)) {
         // Declare foot position vectors
         Eigen::Vector3d foot_position, foot_position_grf, foot_position_nominal,
@@ -199,7 +197,7 @@ void LocalFootstepPlanner::computeFootPlan(
           // Compute the index of the end of the stance phase using the nominal
           // stance duration (make sure not smaller than horizon)
           end_of_stance =
-              std::max(i + int(period_ * duty_cycles_[j]), end_of_stance);
+              std::max(static_cast<int>(i) + int(period_ * duty_cycles_[j]), end_of_stance);
 
           // Integrate the plan if out of the horizon
           body_plan_stance = Eigen::MatrixXd(end_of_stance + 1, 12);
@@ -272,7 +270,7 @@ void LocalFootstepPlanner::computeFootPlan(
                                                      foot_position_nominal.y()};
 
         if (!terrain_grid_.isInside(foot_position_grid_map)) {
-          ROS_WARN(
+          RCLCPP_WARN(node_->get_logger(),
               "Foot position is outside the map. Steer the robot in "
               "another direction");
           continue;
@@ -307,7 +305,7 @@ void LocalFootstepPlanner::computeFootPlan(
   for (int j = 0; j < num_feet_; j++) {
     // Declare variables for computing initial swing foot state
     // Identify index for the liftoff and touchdown events
-    quad_msgs::FootState most_recent_foothold_msg = past_footholds_msg.feet[j];
+    quad_msgs::msg::FootState most_recent_foothold_msg = past_footholds_msg.feet[j];
 
     int i_liftoff = most_recent_foothold_msg.traj_index - current_plan_index;
     int i_touchdown = getNextContactIndex(contact_schedule, 0, j);
@@ -351,7 +349,7 @@ void LocalFootstepPlanner::computeFootPlan(
     // Loop through the horizon
     for (int i = 0; i < contact_schedule.size(); i++) {
       // Create the foot state message
-      quad_msgs::FootState foot_state_msg;
+      quad_msgs::msg::FootState foot_state_msg;
       foot_state_msg.traj_index = current_plan_index + i;
 
       Eigen::Vector3d foot_position;
@@ -397,7 +395,7 @@ void LocalFootstepPlanner::computeFootPlan(
             grid_map::Position foot_position_next_grid_map =
                 foot_position_next.head(2);
             if (!terrain_grid_.isInside(foot_position_next_grid_map)) {
-              ROS_WARN(
+              RCLCPP_WARN(node_->get_logger(), 
                   "computeFootPlan prediction receives a position out of "
                   "range, pick the previous position in map!");
               foot_position_next_grid_map = foot_position_prev.head(2);
@@ -519,8 +517,8 @@ void LocalFootstepPlanner::loadFootPlanMsgs(
     const Eigen::MatrixXd &foot_positions,
     const Eigen::MatrixXd &foot_velocities,
     const Eigen::MatrixXd &foot_accelerations,
-    quad_msgs::MultiFootPlanDiscrete &future_footholds_msg,
-    quad_msgs::MultiFootPlanContinuous &foot_plan_continuous_msg) {
+    quad_msgs::msg::MultiFootPlanDiscrete &future_footholds_msg,
+    quad_msgs::msg::MultiFootPlanContinuous &foot_plan_continuous_msg) {
   foot_plan_continuous_msg.states.resize(contact_schedule.size());
   future_footholds_msg.feet.resize(num_feet_);
 
@@ -540,14 +538,14 @@ void LocalFootstepPlanner::loadFootPlanMsgs(
         } else {
           foot_plan_continuous_msg.states[i].header.stamp =
               foot_plan_continuous_msg.header.stamp +
-              ros::Duration(first_element_duration) +
-              ros::Duration((i - 1) * dt_);
+              rclcpp::Duration::from_seconds(first_element_duration) +
+              rclcpp::Duration::from_seconds((i - 1) * dt_);
         }
         foot_plan_continuous_msg.states[i].traj_index = current_plan_index + i;
       }
 
       // Create the foot state message
-      quad_msgs::FootState foot_state_msg;
+      quad_msgs::msg::FootState foot_state_msg;
       foot_state_msg.header = foot_plan_continuous_msg.header;
       foot_state_msg.traj_index = foot_plan_continuous_msg.states[i].traj_index;
       quad_utils::eigenToFootStateMsg(foot_positions.block<1, 3>(i, 3 * j),
@@ -609,8 +607,8 @@ Eigen::Vector3d LocalFootstepPlanner::getNearestValidFoothold(
 
   // If no foothold is found in the radius, keep the nominal and issue a warning
   if (best_kin_cost == std::numeric_limits<double>::max()) {
-    ROS_WARN_THROTTLE(
-        0.1, "No valid foothold found in radius of nominal, returning nominal");
+    RCLCPP_WARN_THROTTLE(node_->get_logger(), *node_->get_clock(), static_cast<rcutils_duration_value_t>(1e9),
+         "No valid foothold found in radius of nominal, returning nominal");
   }
   foot_position_best.z() =
       terrain_grid_.atPosition("z_inpainted", foot_position_best.head<2>(),

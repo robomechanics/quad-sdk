@@ -36,6 +36,8 @@ list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 find_package(RBDL REQUIRED COMPONENTS URDFREADER)
 
 add_library(quad_utils
+  src/rviz_interface.cpp
+  src/fast_terrain_map.cpp
   src/mesh_to_grid_map_converter.cpp
   src/math_utils.cpp
   src/ros_utils.cpp

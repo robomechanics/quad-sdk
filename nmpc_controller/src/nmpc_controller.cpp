@@ -22,28 +22,28 @@ NMPCController::NMPCController(rclcpp::Node::SharedPtr node, int robot_id, std::
   }
 
   // Load parameters set by local planner
-  quad_utils::loadROSParam(node_, "local_planner/horizon_length", N_);
-  quad_utils::loadROSParam(node_, "local_planner/timestep", dt_);
+  quad_utils::loadROSParam(node_, "local_planner.horizon_length", N_);
+  quad_utils::loadROSParam(node_, "local_planner.timestep", dt_);
 
   // Load system parameters
   double mu, panic_weights, constraint_panic_weights, Q_temporal_factor,
       R_temporal_factor;
-  quad_utils::loadROSParam(node_, "nmpc_controller/friction_coefficient", mu);
-  quad_utils::loadROSParam(node_, "nmpc_controller/panic_weights",
+  quad_utils::loadROSParam(node_, "nmpc_controller.friction_coefficient", mu);
+  quad_utils::loadROSParam(node_, "nmpc_controller.panic_weights",
                            panic_weights);
-  quad_utils::loadROSParam(node_, "nmpc_controller/constraint_panic_weights",
+  quad_utils::loadROSParam(node_, "nmpc_controller.constraint_panic_weights",
                            constraint_panic_weights);
-  quad_utils::loadROSParam(node_, "nmpc_controller/Q_temporal_factor",
+  quad_utils::loadROSParam(node_, "nmpc_controller.Q_temporal_factor",
                            Q_temporal_factor);
-  quad_utils::loadROSParam(node_, "nmpc_controller/R_temporal_factor",
+  quad_utils::loadROSParam(node_, "nmpc_controller.R_temporal_factor",
                            R_temporal_factor);
   Q_temporal_factor = std::pow(Q_temporal_factor, 1.0 / (N_ - 2));
   R_temporal_factor = std::pow(R_temporal_factor, 1.0 / (N_ - 2));
 
   // Determine whether to let horizon length vary or not
-  quad_utils::loadROSParam(node_, "nmpc_controller/enable_variable_horizon",
+  quad_utils::loadROSParam(node_, "nmpc_controller.enable_variable_horizon",
                            enable_variable_horizon_);
-  quad_utils::loadROSParam(node_, "nmpc_controller/min_horizon_length", N_min_);
+  quad_utils::loadROSParam(node_, "nmpc_controller.min_horizon_length", N_min_);
   N_max_ = N_;
 
   // Define the components, their order, and which are simple
@@ -64,31 +64,31 @@ NMPCController::NMPCController(rclcpp::Node::SharedPtr node, int robot_id, std::
 
     // Read component parameters
     std::string component = components[i];
-    quad_utils::loadROSParam(node_, "nmpc_controller/" + component + "/x_dim",
+    quad_utils::loadROSParam(node_, "nmpc_controller." + component + ".x_dim",
                              x_dim);
-    quad_utils::loadROSParam(node_, "nmpc_controller/" + component + "/u_dim",
+    quad_utils::loadROSParam(node_, "nmpc_controller." + component + ".u_dim",
                              u_dim);
-    quad_utils::loadROSParam(node_, "nmpc_controller/" + component + "/g_dim",
+    quad_utils::loadROSParam(node_, "nmpc_controller." + component + ".g_dim",
                              g_dim);
-    quad_utils::loadROSParam(node_, "nmpc_controller/" + component + "/x_lb",
+    quad_utils::loadROSParam(node_, "nmpc_controller." + component + ".x_lb",
                              x_lb);
-    quad_utils::loadROSParam(node_, "nmpc_controller/" + component + "/x_ub",
+    quad_utils::loadROSParam(node_, "nmpc_controller." + component + ".x_ub",
                              x_ub);
-    quad_utils::loadROSParam(node_, "nmpc_controller/" + component + "/x_lb_soft",
+    quad_utils::loadROSParam(node_, "nmpc_controller." + component + ".x_lb_soft",
                              x_lb_soft);
-    quad_utils::loadROSParam(node_, "nmpc_controller/" + component + "/x_ub_soft",
+    quad_utils::loadROSParam(node_, "nmpc_controller." + component + ".x_ub_soft",
                              x_ub_soft);
-    quad_utils::loadROSParam(node_, "nmpc_controller/" + component + "/u_lb",
+    quad_utils::loadROSParam(node_, "nmpc_controller." + component + ".u_lb",
                              u_lb);
-    quad_utils::loadROSParam(node_, "nmpc_controller/" + component + "/u_ub",
+    quad_utils::loadROSParam(node_, "nmpc_controller." + component + ".u_ub",
                              u_ub);
-    quad_utils::loadROSParam(node_, "nmpc_controller/" + component + "/g_lb",
+    quad_utils::loadROSParam(node_, "nmpc_controller." + component + ".g_lb",
                              g_lb);
-    quad_utils::loadROSParam(node_, "nmpc_controller/" + component + "/g_ub",
+    quad_utils::loadROSParam(node_, "nmpc_controller." + component + ".g_ub",
                              g_ub);
-    quad_utils::loadROSParam(node_, "nmpc_controller/" + component + "/x_weights",
+    quad_utils::loadROSParam(node_, "nmpc_controller." + component + ".x_weights",
                              x_weights);
-    quad_utils::loadROSParam(node_, "nmpc_controller/" + component + "/u_weights",
+    quad_utils::loadROSParam(node_, "nmpc_controller." + component + ".u_weights",
                              u_weights);
 
     // Make sure the bounds are the correct size
@@ -166,7 +166,7 @@ NMPCController::NMPCController(rclcpp::Node::SharedPtr node, int robot_id, std::
   Eigen::VectorXi fixed_complexity_schedule(N_);
   fixed_complexity_schedule.setZero();
   adaptive_complexity_schedule_ = fixed_complexity_schedule;
-  quad_utils::loadROSParam(node_, "nmpc_controller/enable_mixed_complexity", enable_mixed_complexity_);
+  quad_utils::loadROSParam(node_, "nmpc_controller.enable_mixed_complexity", enable_mixed_complexity_);
 
   // Adaptive complexity is only supported for Spirit
   if (robot_ns_ != "spirit") enable_mixed_complexity_ = false;
@@ -174,15 +174,15 @@ NMPCController::NMPCController(rclcpp::Node::SharedPtr node, int robot_id, std::
   // If mixed complexity is enabled, load the desired structures
   if (enable_mixed_complexity_) {
     default_system = SIMPLE_TO_SIMPLE;
-    quad_utils::loadROSParam(node_, "nmpc_controller/enable_adaptive_complexity",
+    quad_utils::loadROSParam(node_, "nmpc_controller.enable_adaptive_complexity",
                     enable_adaptive_complexity_);
     // Define and load adaptive complexity parameters
     std::vector<int64_t> fixed_complex_idxs;
     int fixed_complex_head, fixed_complex_tail;
 
-    quad_utils::loadROSParam(node_, "nmpc_controller/fixed_complex_idxs", fixed_complex_idxs);
-    quad_utils::loadROSParam(node_, "nmpc_controller/fixed_complex_head", fixed_complex_head);
-    quad_utils::loadROSParam(node_, "nmpc_controller/fixed_complex_tail", fixed_complex_tail);
+    quad_utils::loadROSParam(node_, "nmpc_controller.fixed_complex_idxs", fixed_complex_idxs);
+    quad_utils::loadROSParam(node_, "nmpc_controller.fixed_complex_head", fixed_complex_head);
+    quad_utils::loadROSParam(node_, "nmpc_controller.fixed_complex_tail", fixed_complex_tail);
     for (int idx : fixed_complex_idxs) {
       if (idx >= 0 && idx <= N_) {
         fixed_complexity_schedule[idx] = 1;

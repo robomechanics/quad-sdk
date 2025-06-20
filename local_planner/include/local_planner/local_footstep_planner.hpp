@@ -1,21 +1,22 @@
 #ifndef LOCAL_FOOTSTEP_PLANNER_H
 #define LOCAL_FOOTSTEP_PLANNER_H
 
-#include <eigen_conversions/eigen_msg.h>
+#include <tf2_eigen/tf2_eigen.hpp>
+#include <rbdl/rbdl.h>
 #include <local_planner/local_planner_modes.hpp>
-#include <nav_msgs/Path.hpp>
-#include <quad_msgs/FootPlanDiscrete.hpp>
-#include <quad_msgs/FootState.hpp>
-#include <quad_msgs/MultiFootPlanContinuous.hpp>
-#include <quad_msgs/MultiFootPlanDiscrete.hpp>
-#include <quad_msgs/MultiFootState.hpp>
-#include <quad_msgs/RobotPlan.hpp>
-#include <quad_msgs/RobotState.hpp>
-#include <quad_utils/fast_terrain_map.h>
-#include <quad_utils/function_timer.h>
-#include <quad_utils/math_utils.h>
-#include <quad_utils/quad_kd.h>
-#include <quad_utils/ros_utils.h>
+#include <nav_msgs/msg/path.hpp>
+#include <quad_msgs/msg/foot_plan_discrete.hpp>
+#include <quad_msgs/msg/foot_state.hpp>
+#include <quad_msgs/msg/multi_foot_plan_continuous.hpp>
+#include <quad_msgs/msg/multi_foot_plan_discrete.hpp>
+#include <quad_msgs/msg/multi_foot_state.hpp>
+#include <quad_msgs/msg/robot_plan.hpp>
+#include <quad_msgs/msg/robot_state.hpp>
+#include <quad_utils/fast_terrain_map.hpp>
+#include <quad_utils/function_timer.hpp>
+#include <quad_utils/math_utils.hpp>
+#include <quad_utils/quad_kd.hpp>
+#include <quad_utils/ros_utils.hpp>
 #include <rclcpp/rclcpp.hpp>
 
 #include <eigen3/Eigen/Eigen>
@@ -35,7 +36,7 @@ class LocalFootstepPlanner {
    * @brief Constructor for LocalFootstepPlanner Class
    * @return Constructed object of type LocalFootstepPlanner
    */
-  LocalFootstepPlanner();
+  LocalFootstepPlanner(rclcpp::Node::SharedPtr node);
 
   /**
    * @brief Set the temporal parameters of this object
@@ -142,7 +143,7 @@ class LocalFootstepPlanner {
                        const Eigen::VectorXd &foot_positions_current,
                        const Eigen::VectorXd &foot_velocities_current,
                        double first_element_duration,
-                       quad_msgs::MultiFootState &past_footholds_msg,
+                       quad_msgs::msg::MultiFootState &past_footholds_msg,
                        Eigen::MatrixXd &foot_positions,
                        Eigen::MatrixXd &foot_velocities,
                        Eigen::MatrixXd &foot_accelerations);
@@ -167,13 +168,13 @@ class LocalFootstepPlanner {
       const Eigen::MatrixXd &foot_positions,
       const Eigen::MatrixXd &foot_velocities,
       const Eigen::MatrixXd &foot_accelerations,
-      quad_msgs::MultiFootPlanDiscrete &future_footholds_msg,
-      quad_msgs::MultiFootPlanContinuous &foot_plan_continuous_msg);
+      quad_msgs::msg::MultiFootPlanDiscrete &future_footholds_msg,
+      quad_msgs::msg::MultiFootPlanContinuous &foot_plan_continuous_msg);
 
   inline void printContactSchedule(
       const std::vector<std::vector<bool>> &contact_schedule) {
-    for (int i = 0; i < contact_schedule.size(); i++) {
-      for (int j = 0; j < contact_schedule.at(i).size(); j++) {
+    for (size_t i = 0; i < contact_schedule.size(); i++) {
+      for (size_t j = 0; j < contact_schedule.at(i).size(); j++) {
         if (contact_schedule[i][j]) {
           printf("1 ");
         } else {
@@ -382,6 +383,9 @@ class LocalFootstepPlanner {
     // If no contact is found, return the last index in the horizon
     return (horizon_length_ - 1);
   }
+
+  /// Shared Pointer to Node
+  rclcpp::Node::SharedPtr node_;
 
   /// Struct for terrain map data
   FastTerrainMap terrain_;
