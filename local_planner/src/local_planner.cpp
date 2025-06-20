@@ -14,9 +14,10 @@ LocalPlanner::LocalPlanner(rclcpp::Node::SharedPtr node)
     quad_utils::loadROSParam(node_, "namespace", robot_ns_);
     quad_utils::loadROSParamDefault(node_, "robot_type", robot_name_,
                                     std::string("spirit"));
+    quad_utils::loadROSParam(node_, "map_frame", map_frame_);
     quad_utils::loadROSParam(node_, "topics.terrain_map", terrain_map_topic);
     quad_utils::loadROSParam(node_, "topics.global_plan", body_plan_topic);
-    quad_utils::loadROSParam(node_, "topics.state/ground_truth",
+    quad_utils::loadROSParam(node_, "topics.state.ground_truth",
                              robot_state_topic);
     quad_utils::loadROSParam(node_, "topics.local_plan", local_plan_topic);
     quad_utils::loadROSParam(node_, "topics.foot_plan_discrete",
@@ -24,7 +25,6 @@ LocalPlanner::LocalPlanner(rclcpp::Node::SharedPtr node)
     quad_utils::loadROSParam(node_, "topics.foot_plan_continuous",
                              foot_plan_continuous_topic);
     quad_utils::loadROSParam(node_, "topics.cmd_vel", cmd_vel_topic);
-    quad_utils::loadROSParam(node_, "map_frame", map_frame_);
     quad_utils::loadROSParam(node_, "topics.control.mode", control_mode_topic);
 
     // Setup pubs and subs
