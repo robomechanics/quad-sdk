@@ -39,16 +39,17 @@ def launch_twist_input_nodes(context, *args, **kwargs):
         return [
             Node(
                 package='teleop_twist_keyboard',
-                executable='teleop_twist_keyboard.py',
+                executable='teleop_twist_keyboard',
                 name='teleop_twist_keyboard',
-                output='screen'
+                output='screen',
+                prefix='xterm -e',
             )
         ]
     elif twist_input == 'joy':
         return [
             IncludeLaunchDescription(
                 PythonLaunchDescriptionSource(PathJoinSubstitution([
-                    FindPackageShare('teleop_twist_joy'), 'launch', 'teleop.launch.py'
+                    FindPackageShare('teleop_twist_joy'), 'launch', 'teleop-launch.py'
                 ])),
                 launch_arguments={'joy_config': 'ps3-holonomic'}.items()
             )
@@ -56,8 +57,21 @@ def launch_twist_input_nodes(context, *args, **kwargs):
     return []
     
 def launch_local_planner(context, *args, **kwargs):
+    namespace = LaunchConfiguration('namespace').perform(context)
+    robot_type = LaunchConfiguration('robot_type').perform(context)
     ref = LaunchConfiguration('reference').perform(context)
     ac = LaunchConfiguration('ac').perform(context)
+    quad_utils_pkg = FindPackageShare('quad_utils')
+    local_planner_pkg = FindPackageShare('local_planner')
+    nmpc_controller_pkg = FindPackageShare('nmpc_controller')
+
+
+    nmpc_controller_param_file = PathJoinSubstitution([nmpc_controller_pkg, 'config', 'nmpc_controller.yaml'])
+    local_planner_param_file = PathJoinSubstitution([local_planner_pkg, 'config', 'local_planner.yaml'])
+    local_planner_topics_file = PathJoinSubstitution([local_planner_pkg, 'config', 'local_planner_topics.yaml'])
+    robot_specific_param_file = PathJoinSubstitution([quad_utils_pkg, 'config', LaunchConfiguration('robot_type')])
+    robot_specific_param_file = [robot_specific_param_file, TextSubstitution(text='.yaml')]
+
 
     return [
         Node(
@@ -65,7 +79,12 @@ def launch_local_planner(context, *args, **kwargs):
             executable='local_planner_node',
             name='local_planner',
             output='screen',
-            parameters=[{
+            parameters=[local_planner_param_file,
+                nmpc_controller_param_file, 
+                local_planner_topics_file,
+                {
+                'namespace': namespace,
+                'robot_type': robot_type,
                 'local_planner.use_twist_input': ref == 'twist',
                 'nmpc_controller.enable_adaptive_complexity': ac == 'true'
             }]

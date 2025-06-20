@@ -1,0 +1,14 @@
+/**/local_planner:
+  ros__parameters:
+    topics:
+      terrain_map: terrain_map
+      global_plan: global_plan
+      local_plan: local_plan
+      state:
+        ground_truth: state/ground_truth
+      foot_plan_discrete: foot_plan_discrete
+      foot_plan_continuous: foot_plan_continuous
+      cmd_vel: cmd_vel
+      control:
+        mode: control/mode
+    map_frame: map
