@@ -3,7 +3,7 @@
 <package format="3">
   <name>local_planner</name>
   <version>0.0.0</version>
-  <description>TODO: Package description</description>
+  <description>The local planner package</description>
   <maintainer email="ologandavid@gmail.com">rml</maintainer>
   <license>MIT</license>
 
@@ -11,6 +11,17 @@
 
   <test_depend>ament_lint_auto</test_depend>
   <test_depend>ament_lint_common</test_depend>
+  <depend>rclcpp</depend>
+  <depend>std_msgs</depend>
+  <depend>nav_msgs</depend>
+  <depend>geometry_msgs</depend>
+  <depend>quad_msgs</depend>
+  <depend>quad_utils</depend>
+  <depend>grid_map_core</depend>
+  <depend>grid_map_ros</depend>
+  <depend>eigen</depend>
+  <depend>nmpc_controller</depend>
+  <depend>tf2_eigen</depend>
 
   <export>
     <build_type>ament_cmake</build_type>
