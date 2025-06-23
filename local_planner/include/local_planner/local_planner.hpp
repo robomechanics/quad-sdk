@@ -104,6 +104,9 @@ class LocalPlanner {
   /// Robot Namespace: robot_1, ...
   std::string robot_ns_;
 
+  /// Robot Description urdf
+  std::string robot_description_;
+
   /// ROS subscriber for incoming terrain_map
   rclcpp::Subscription<grid_map_msgs::msg::GridMap>::SharedPtr terrain_map_sub_;
 

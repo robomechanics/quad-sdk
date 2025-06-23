@@ -102,6 +102,7 @@ inline bool loadROSParamDefault(rclcpp::Node::SharedPtr node, std::string paramN
     } catch (const rclcpp::exceptions::ParameterAlreadyDeclaredException &e){
     }
   }
+  
   if (!node->get_parameter(paramName, varName)) {
     varName = defaultVal;
     RCLCPP_INFO(
