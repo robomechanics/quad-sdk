@@ -210,6 +210,19 @@ def launch_robot_driver(context, *args, **kwargs):
 #         )
 #     ]
 
+def access_terrain_map(context, *args, **kwargs):
+    namespace = LaunchConfiguration('namespace').perform(context)
+
+    return [
+        Node(
+            package='topic_tools',
+            executable='relay',
+            name='terrain_map_relay',
+            arguments=['/mapping/terrain_map', 'terrain_map'],  # relative → becomes /robot_X/terrain_map
+            output='screen'
+        )
+    ]
+
 def spawn_sdf_model_with_driver(context, *arg, **kwargs):
     [spawn_node] = spawn_sdf_model(context)
     namespace = LaunchConfiguration('namespace').perform(context)
@@ -355,6 +368,7 @@ def generate_launch_description():
         OpaqueFunction(function=spawn_sdf_model),
         # OpaqueFunction(function=spawn_sdf_model_with_driver), 
         OpaqueFunction(function=harmonic_ros_bridge),
+        OpaqueFunction(function=access_terrain_map),
         # OpaqueFunction(function=launch_controller_manager),
         OpaqueFunction(function=spawn_controller_broadcasters),
         OpaqueFunction(function=launch_robot_driver),

@@ -9,9 +9,13 @@ LocalPlanner::LocalPlanner(rclcpp::Node::SharedPtr node)
     std::string terrain_map_topic, body_plan_topic, robot_state_topic,
         local_plan_topic, foot_plan_discrete_topic, foot_plan_continuous_topic,
         cmd_vel_topic, control_mode_topic;
+    
+    RCLCPP_INFO(node_->get_logger(), "Start Param Loading");
+    
 
     // Load system parameters from launch file (not in config file)
     quad_utils::loadROSParam(node_, "namespace", robot_ns_);
+    quad_utils::loadROSParam(node_, "robot_description", robot_description_);
     quad_utils::loadROSParamDefault(node_, "robot_type", robot_name_,
                                     std::string("spirit"));
     quad_utils::loadROSParam(node_, "map_frame", map_frame_);
@@ -40,7 +44,6 @@ LocalPlanner::LocalPlanner(rclcpp::Node::SharedPtr node)
     local_plan_pub_ = node_->create_publisher<quad_msgs::msg::RobotPlan>(local_plan_topic, 10);
     foot_plan_discrete_pub_ = node_->create_publisher<quad_msgs::msg::MultiFootPlanDiscrete>(foot_plan_discrete_topic, 10);
     foot_plan_continuous_pub_ = node_->create_publisher<quad_msgs::msg::MultiFootPlanContinuous>(foot_plan_continuous_topic, 10);
-
     // Load system parameters from parameter server
     quad_utils::loadROSParam(node_, "local_planner.update_rate", update_rate_);
     quad_utils::loadROSParam(node_, "local_planner.timestep", dt_);
@@ -176,6 +179,7 @@ void LocalPlanner::initLocalFootstepPlanner() {
 void LocalPlanner::terrainMapCallback(
     const grid_map_msgs::msg::GridMap::SharedPtr msg) {
     grid_map::GridMapRosConverter::fromMessage(*msg, terrain_grid_);
+    RCLCPP_INFO(node_->get_logger(), "GRABBING TERRAIN MAP ");
 
     // Convert to FastTerrainMap structure for faster querying
     terrain_.loadDataFromGridMap(terrain_grid_);
@@ -611,19 +615,32 @@ void LocalPlanner::spin() {
     while (rclcpp::ok()) {
         rclcpp::spin_some(node_);
 
+        if (terrain_.isEmpty()) {
+            RCLCPP_WARN(node_->get_logger(), "terrain_ is empty");
+        }
+        if (body_plan_msg_ == NULL && !use_twist_input_) {
+            RCLCPP_WARN(node_->get_logger(), "body_plan_msg_ is NULL and twist input is not used");
+        }
+        if (robot_state_msg_ == NULL) {
+            RCLCPP_WARN(node_->get_logger(), "robot_state_msg_ is NULL");
+        }
+
+
         // Wait until all required data has been received
         if (terrain_.isEmpty() ||
             (body_plan_msg_ == NULL && !use_twist_input_) ||
-            robot_state_msg_ == NULL)
+            robot_state_msg_ == NULL){
             continue;
-
+            }
         // Get the reference plan and robot state into the desired data
         // structures
         getReference();
+        RCLCPP_INFO(node_->get_logger(), "1");
 
         // Compute the local plan and publish if it solved successfully,
         // otherwise just sleep
         if (computeLocalPlan()) publishLocalPlan();
+        RCLCPP_INFO(node_->get_logger(), "2");
 
         r.sleep();
     }

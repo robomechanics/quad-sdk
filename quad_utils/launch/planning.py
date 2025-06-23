@@ -1,13 +1,56 @@
 from launch import LaunchDescription
-from launch.actions import DeclareLaunchArgument, GroupAction, IncludeLaunchDescription, ExecuteProcess
+from launch.actions import DeclareLaunchArgument, GroupAction, IncludeLaunchDescription, ExecuteProcess, SetLaunchConfiguration
 from launch.actions import OpaqueFunction
 from launch.conditions import IfCondition
-from launch.substitutions import LaunchConfiguration, TextSubstitution
+from launch.substitutions import LaunchConfiguration, TextSubstitution, PathJoinSubstitution
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch_ros.actions import Node, PushRosNamespace
 from launch_ros.substitutions import FindPackageShare
-from launch.substitutions import PathJoinSubstitution
+from launch_ros.parameter_descriptions import ParameterValue
+import os
+import xacro
 
+def load_robot_params(context, *args, **kwargs):
+    # Load Robot URDF and Robot Centric Parameters
+    robot_type = LaunchConfiguration('robot_type').perform(context)
+    
+    # Find URDF, SDF, and YAML file for the Corresponding Robot
+    if robot_type == 'spirit' or robot_type == 'spirit_rotors':
+        desc_pkg = 'spirit_description'
+        urdf_file = 'spirit.urdf.xacro'
+        sdf_file = 'spirit_rotors.sdf' if robot_type == 'spirit_rotors' else 'spirit.sdf'
+        config_file = 'spirit.yaml'
+    elif robot_type == 'a1':
+        desc_pkg = 'a1_description'
+        urdf_file = 'a1.urdf.xacro'
+        sdf_file = 'a1.sdf'
+        config_file = 'a1.yaml'
+    elif robot_type == 'go2':
+        desc_pkg = 'go2_description'
+        urdf_file = 'go2.urdf.xacro'
+        sdf_file = 'go2.sdf'
+        config_file = 'go2.yaml'
+    else:
+        raise RuntimeError(f"[robot_bringup] Unsupported robot type: {robot_type}")
+
+    # Merge the Paths
+    desc_path = FindPackageShare(desc_pkg).perform(context)
+    urdf_path = os.path.join(desc_path, 'models', robot_type, 'urdf', urdf_file)
+    sdf_path = os.path.join(desc_path, 'models', robot_type, sdf_file)
+
+    # Load URDF and SDF from disk, Might be Unnecessary
+    # with open(os.path.join(desc_path, 'models',robot_type,'urdf', urdf_file), 'r') as f:
+    #     urdf = f.read()
+    urdf = xacro.process_file(urdf_path).toxml()
+    with open(os.path.join(desc_path, 'models',robot_type, sdf_file), 'r') as f:
+        sdf = f.read()
+
+    return [
+        SetLaunchConfiguration('robot_urdf', urdf),
+        SetLaunchConfiguration('robot_sdf', sdf),
+        SetLaunchConfiguration('robot_urdf_path', urdf_path),
+        SetLaunchConfiguration('robot_sdf_path', sdf_path)
+    ]
 
 def launch_global_planner(context, *args, **kwargs):
     if LaunchConfiguration('reference').perform(context) != 'gbpl':
@@ -46,12 +89,13 @@ def launch_twist_input_nodes(context, *args, **kwargs):
             )
         ]
     elif twist_input == 'joy':
+        # Need to write a custom config file to get this working, and deactivate the safety button
         return [
             IncludeLaunchDescription(
                 PythonLaunchDescriptionSource(PathJoinSubstitution([
                     FindPackageShare('teleop_twist_joy'), 'launch', 'teleop-launch.py'
                 ])),
-                launch_arguments={'joy_config': 'ps3-holonomic'}.items()
+                launch_arguments={'joy_config': 'rml-ps3-holonomic'}.items()
             )
         ]
     return []
@@ -61,6 +105,7 @@ def launch_local_planner(context, *args, **kwargs):
     robot_type = LaunchConfiguration('robot_type').perform(context)
     ref = LaunchConfiguration('reference').perform(context)
     ac = LaunchConfiguration('ac').perform(context)
+    urdf = LaunchConfiguration('robot_urdf').perform(context)
     quad_utils_pkg = FindPackageShare('quad_utils')
     local_planner_pkg = FindPackageShare('local_planner')
     nmpc_controller_pkg = FindPackageShare('nmpc_controller')
@@ -69,9 +114,16 @@ def launch_local_planner(context, *args, **kwargs):
     nmpc_controller_param_file = PathJoinSubstitution([nmpc_controller_pkg, 'config', 'nmpc_controller.yaml'])
     local_planner_param_file = PathJoinSubstitution([local_planner_pkg, 'config', 'local_planner.yaml'])
     local_planner_topics_file = PathJoinSubstitution([local_planner_pkg, 'config', 'local_planner_topics.yaml'])
-    robot_specific_param_file = PathJoinSubstitution([quad_utils_pkg, 'config', LaunchConfiguration('robot_type')])
-    robot_specific_param_file = [robot_specific_param_file, TextSubstitution(text='.yaml')]
+    # robot_specific_param_file = PathJoinSubstitution([quad_utils_pkg, 'config', LaunchConfiguration('robot_type')])
+    # robot_specific_param_file = [robot_specific_param_file, TextSubstitution(text='.yaml')]
+    robot_specific_param_file = os.path.join(quad_utils_pkg.perform(context), 'config', LaunchConfiguration('robot_type').perform(context) + '.yaml')
 
+    # print("[launch_local_planner] namespace =", namespace)
+    # print("[launch_local_planner] robot_type =", robot_type)
+    # print("[launch_local_planner] urdf is string:", isinstance(urdf, str), "length:", len(urdf))
+    # print("[launch_local_planner] use_twist_input =", ref == 'twist')
+    # print("[launch_local_planner] enable_ac =", ac == 'true')
+    # print("[launch_local_planner] robot_specific_param_file =", robot_specific_param_file)
 
     return [
         Node(
@@ -82,11 +134,13 @@ def launch_local_planner(context, *args, **kwargs):
             parameters=[local_planner_param_file,
                 nmpc_controller_param_file, 
                 local_planner_topics_file,
+                robot_specific_param_file, 
                 {
                 'namespace': namespace,
                 'robot_type': robot_type,
+                'robot_description': ParameterValue(urdf, value_type=str),
                 'local_planner.use_twist_input': ref == 'twist',
-                'nmpc_controller.enable_adaptive_complexity': ac == 'true'
+                # 'nmpc_controller.enable_adaptive_complexity': ac == 'true'
             }]
         )
     ]
@@ -137,10 +191,10 @@ def generate_launch_description():
         DeclareLaunchArgument('robot_type', default_value='spirit'),
         DeclareLaunchArgument('leaping', default_value='true'),
         DeclareLaunchArgument('ac', default_value='false'),
-
+        OpaqueFunction(function=load_robot_params), 
         # OpaqueFunction(function=launch_global_planner),
         OpaqueFunction(function=launch_twist_input_nodes),
-        OpaqueFunction(function=launch_local_planner),
+        # OpaqueFunction(function=launch_local_planner),
         # OpaqueFunction(function=launch_body_force_estimator),
         # OpaqueFunction(function=launch_plan_publisher),
         # OpaqueFunction(function=launch_logging),

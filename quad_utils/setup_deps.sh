@@ -7,4 +7,6 @@ sudo apt install -y ros-jazzy-vision-opencv
 sudo apt install -y ros-jazzy-ros-gz
 sudo apt install -y ros-jazzy-gz-ros2-control
 sudo apt install -y ros-jazzy-ros2-controllers
+sudo apt install -y ros-jazzy-topic-tools
+
 

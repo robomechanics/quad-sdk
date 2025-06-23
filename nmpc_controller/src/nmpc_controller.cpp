@@ -91,6 +91,15 @@ NMPCController::NMPCController(rclcpp::Node::SharedPtr node, int robot_id, std::
     quad_utils::loadROSParam(node_, "nmpc_controller." + component + ".u_weights",
                              u_weights);
 
+    if (component == "joints"){
+      x_weights.clear();
+      u_weights.clear();
+      u_lb.clear();
+      u_ub.clear();
+    }
+    RCLCPP_INFO(node_->get_logger(),
+            "Component: %s, u_lb size: %zu",
+            component.c_str(), u_lb.size());
     // Make sure the bounds are the correct size
     if (x_dim != x_lb.size()) throw std::runtime_error("x_lb wrong size");
     if (x_dim != x_ub.size()) throw std::runtime_error("x_ub wrong size");
@@ -184,6 +193,9 @@ NMPCController::NMPCController(rclcpp::Node::SharedPtr node, int robot_id, std::
     quad_utils::loadROSParam(node_, "nmpc_controller.fixed_complex_head", fixed_complex_head);
     quad_utils::loadROSParam(node_, "nmpc_controller.fixed_complex_tail", fixed_complex_tail);
     for (int idx : fixed_complex_idxs) {
+      if (idx == 0 && fixed_complex_idxs.size() == 1){
+        break;
+      }
       if (idx >= 0 && idx <= N_) {
         fixed_complexity_schedule[idx] = 1;
       }
@@ -206,7 +218,7 @@ NMPCController::NMPCController(rclcpp::Node::SharedPtr node, int robot_id, std::
 
   app_->Options()->SetStringValue("print_timing_statistics", "no");
   app_->Options()->SetStringValue("linear_solver", "ma27");
-  app_->Options()->SetIntegerValue("print_level", 0);  // default=0, verbose=5
+  app_->Options()->SetIntegerValue("print_level", 5);  // default=0, verbose=5
   app_->Options()->SetNumericValue("ma57_pre_alloc", 1.5);
   app_->Options()->SetStringValue("fixed_variable_treatment",
                                   "make_parameter_nodual");
