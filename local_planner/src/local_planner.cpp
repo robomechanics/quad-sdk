@@ -230,7 +230,7 @@ void LocalPlanner::getReference() {
         if (use_twist_input_) {
             initial_timestamp_ = node_->now() - rclcpp::Duration::from_seconds(1e-6);
         }
-        RCLCPP_INFO(node_->get_logger(), "Initial Timestamp =  %f", initial_timestamp_.seconds());
+        // RCLCPP_INFO(node_->get_logger(), "Initial Timestamp =  %f", initial_timestamp_.seconds());
     }
     // Make sure we use the most recent global plan timestamp for reference
     if (!use_twist_input_) {
@@ -245,7 +245,7 @@ void LocalPlanner::getReference() {
     int previous_plan_index = current_plan_index_;
     quad_utils::getPlanIndex(node_, initial_timestamp_, dt_, current_plan_index_,
                              first_element_duration_);
-    RCLCPP_INFO(node_->get_logger(), "Current Plan Index: %d, Previous Plan Index: %d", current_plan_index_, previous_plan_index);
+    // RCLCPP_INFO(node_->get_logger(), "Current Plan Index: %d, Previous Plan Index: %d", current_plan_index_, previous_plan_index);
 
     plan_index_diff_ = current_plan_index_ - previous_plan_index;
 
