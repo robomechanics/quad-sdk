@@ -29,8 +29,8 @@ inline double getROSMessageAgeInMs(std_msgs::msg::Header header,
  * @param[in] header ROS Header that we wish to compute the age of
  * @return Age in ms (compared to ros::Time::now())
  */
-inline double getROSMessageAgeInMs(std_msgs::msg::Header header) {
-  rclcpp::Time t_compare = rclcpp::Clock(RCL_ROS_TIME).now();
+inline double getROSMessageAgeInMs(rclcpp::Node::SharedPtr &node, std_msgs::msg::Header header) {
+  rclcpp::Time t_compare = node->get_clock()->now();
   return quad_utils::getROSMessageAgeInMs(header, t_compare);
 }
 
@@ -39,8 +39,8 @@ inline double getROSMessageAgeInMs(std_msgs::msg::Header header) {
  * @param[in] plan_start ROS Time to to compare to
  * @return Time in plan (compared to ros::Time::now())
  */
-inline double getDurationSinceTime(rclcpp::Time plan_start) {
-  rclcpp::Time now = rclcpp::Clock(RCL_ROS_TIME).now();
+inline double getDurationSinceTime(rclcpp::Node::SharedPtr &node, rclcpp::Time plan_start) {
+  rclcpp::Time now = node->get_clock()->now();
   return (now - plan_start).seconds();
 }
 
@@ -52,9 +52,9 @@ inline double getDurationSinceTime(rclcpp::Time plan_start) {
  * @param[in] plan_start ROS Time to to compare to
  * @param[in] dt Timestep used to discretize the plan
  */
-inline void getPlanIndex(rclcpp::Time plan_start, double dt, int &index,
+inline void getPlanIndex(rclcpp::Node::SharedPtr &node, rclcpp::Time plan_start, double dt, int &index,
                          double &first_element_duration) {
-  double duration = getDurationSinceTime(plan_start);
+  double duration = getDurationSinceTime(node, plan_start);
   index = std::floor(duration / dt);
   first_element_duration = (index + 1) * dt - duration;
 }

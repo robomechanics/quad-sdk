@@ -64,6 +64,7 @@ def launch_robot_mapping(context, *args, **kwargs):
                     'input_type': 'mesh',
                     'world': LaunchConfiguration('world'),
                     'robot_configs': LaunchConfiguration('robot_configs'),
+                    'use_sim_time': LaunchConfiguration('use_sim_time')
                 }.items()
             )
         ])
@@ -98,6 +99,7 @@ def launch_robot_group(context, *args, **kwargs):
                     'namespace': TextSubstitution(text=robot_ns),
                     'controller': TextSubstitution(text=controller),
                     'world': LaunchConfiguration('world'),
+                    'use_sim_time': LaunchConfiguration('use_sim_time')
                 }.items()
             )
         ])
@@ -117,6 +119,7 @@ def launch_visualization(context, *args, **kwargs):
             launch_arguments={
                 'live_plot' : LaunchConfiguration('live_plot'),
                 'dash' : LaunchConfiguration('dash'),
+                'use_sim_time': LaunchConfiguration('use_sim_time')
             }.items(),
         )
     ]
@@ -129,7 +132,8 @@ def generate_launch_description():
         DeclareLaunchArgument('verbose', default_value='false', description='Launch the simulator in verbose mode'),
         DeclareLaunchArgument('live_plot', default_value='false', description='Launch Plot Juggler'),
         DeclareLaunchArgument('dash', default_value='false', description='Launch RQT Dashboard'),
-        DeclareLaunchArgument('logging',default_value='false', description='Enable/Disable ROS2 Logging' ),
+        DeclareLaunchArgument('logging', default_value='false', description='Enable/Disable ROS2 Logging' ),
+        DeclareLaunchArgument('use_sim_time', default_value='true', description='Whether to use Computer Clock or Sim Clock'),
         DeclareLaunchArgument(
             'robot_configs',
             default_value='[{"name": "robot_1", "type": "spirit", "controller": "inverse_dynamics"}]',

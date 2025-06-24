@@ -162,7 +162,7 @@ def launch_robot_driver(context, *args, **kwargs):
                 'mocap': 'false',
                 'is_hardware': 'false',
                 'namespace': namespace,
-                'robot_description': urdf
+                'robot_description': urdf, 
             }.items()
         )
     return [robot_driver_node]
@@ -219,7 +219,8 @@ def access_terrain_map(context, *args, **kwargs):
             executable='relay',
             name='terrain_map_relay',
             arguments=['/mapping/terrain_map', 'terrain_map'],  # relative → becomes /robot_X/terrain_map
-            output='screen'
+            output='screen',
+            parameters=[{'use_sim_time': True}],
         )
     ]
 
@@ -286,7 +287,8 @@ def harmonic_ros_bridge(context, *args, **kwargs):
         # namespace=namespace,
         # output='screen',
         arguments=toe_args,
-        remappings=toe_remaps
+        remappings=toe_remaps,
+        parameters=[{'use_sim_time': LaunchConfiguration('use_sim_time')}]
         
     )
 
@@ -301,7 +303,8 @@ def harmonic_ros_bridge(context, *args, **kwargs):
         ],
         remappings=[
             (f'/world/default/model/{namespace}/model/imu/link/link/sensor/imu_sensor/imu', f'/{namespace}/imu')
-        ]
+        ],
+        parameters=[{'use_sim_time': LaunchConfiguration('use_sim_time')}]
     )
     return [contact_state_bridge, imu_bridge]
 
@@ -321,21 +324,18 @@ def launch_contact_state_publisher(context, *args, **kwargs):
             output='screen',
             parameters=[config_file,
                         {'namespace': namespace, 
-                         'world': world_name}]
+                         'world': world_name, 
+                         'use_sim_time' : LaunchConfiguration('use_sim_time')}]
         )
     ]
 
 def launch_visualization_plugins(context, *args, **kwargs):
-    from launch.substitutions import LaunchConfiguration
-
     # Get arguments from the context
     namespace = LaunchConfiguration('namespace').perform(context)
     robot_type = LaunchConfiguration('robot_type').perform(context)
     controller = LaunchConfiguration('controller').perform(context)
     urdf = LaunchConfiguration('robot_urdf').perform(context)
-    sdf = LaunchConfiguration('robot_sdf').perform(context)
     urdf_path = LaunchConfiguration('robot_urdf_path').perform(context)
-
     quad_utils_path = FindPackageShare('quad_utils').perform(context)
 
     # Launch the visualization launch file
@@ -363,6 +363,7 @@ def generate_launch_description():
         DeclareLaunchArgument('init_pose', default_value = '-x 2.0 -y 0.0 -z 15', description= "Initial Robot Position"),
         DeclareLaunchArgument('is_hardware', default_value = 'false', description="Simulation or Hardware"),
         DeclareLaunchArgument('mocap', default_value = 'false', description='Launch the Motion Capture Node'),
+        DeclareLaunchArgument('use_sim_time', default_value = 'true', description='Use Simulation Clock or Computer Clock'),
         OpaqueFunction(function=load_robot_params),
         OpaqueFunction(function=launch_robot_urdf_node),
         OpaqueFunction(function=spawn_sdf_model),

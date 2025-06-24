@@ -18,6 +18,7 @@ def generate_launch_description():
     is_hardware = DeclareLaunchArgument('is_hardware', default_value='true')
     namespace = DeclareLaunchArgument('namespace', default_value='robot_1')
     robot_description = DeclareLaunchArgument('robot_description')
+    use_sim_time = DeclareLaunchArgument('use_sim_time', default_value = 'true')
 
 
     # Paths to included launch files
@@ -56,7 +57,8 @@ def generate_launch_description():
             'namespace': LaunchConfiguration('namespace'),
             'robot_type': LaunchConfiguration('robot_type'),
             'estimator_id' : LaunchConfiguration('estimator'),
-            'robot_description': ParameterValue(LaunchConfiguration('robot_description'), value_type=str)
+            'robot_description': ParameterValue(LaunchConfiguration('robot_description'), value_type=str),
+            'use_sim_time' : LaunchConfiguration('use_sim_time')
         }]
     )
 
@@ -69,6 +71,7 @@ def generate_launch_description():
         is_hardware,
         namespace,
         robot_description,
+        use_sim_time,
 
         # Include robot param loader
         # IncludeLaunchDescription(

@@ -21,6 +21,7 @@ def generate_launch_description():
         DeclareLaunchArgument('latch_grid_map_pub', default_value='true'),
         DeclareLaunchArgument('verbose', default_value='true'),
         DeclareLaunchArgument('world', default_value='step_20cm.sdf'),
+        DeclareLaunchArgument('use_sim_time', default_value='true')
     ]
 
     # Node for terrain_map_publisher if input_type == "grid"
@@ -54,6 +55,7 @@ def generate_launch_description():
                     'latch_grid_map_pub': LaunchConfiguration('latch_grid_map_pub'),
                     'verbose': LaunchConfiguration('verbose'),
                     'world': LaunchConfiguration('world'),
+                    'use_sim_time': LaunchConfiguration('use_sim_time')
                 }]
             )
         ],
@@ -65,6 +67,7 @@ def generate_launch_description():
         package='grid_map_visualization',
         executable='grid_map_visualization',
         name='grid_map_visualization',
+        parameters=[{'use_sim_time': LaunchConfiguration('use_sim_time')}],
         # output='screen',
         # parameters=[ PathJoinSubstitution([
         #         FindPackageShare('quad_utils'),
@@ -80,27 +83,29 @@ def generate_launch_description():
         package='grid_map_demos',
         executable='filters_demo',
         name='grid_map_filters',
-        # output='screen',
+        output='screen',
         parameters=[
             PathJoinSubstitution([
                 FindPackageShare('quad_utils'),
                 'config',
                 'filter_chain.yaml'
             ]),
+            {'use_sim_time': LaunchConfiguration('use_sim_time')},
             # {'input_topic': '/mapping/terrain_map_raw'},
             # {'output_topic': '/mapping/terrain_map'},
         ],
         arguments=[],
         remappings=[],
+        
     )
 
     static_tf = Node(
         package='tf2_ros',
         executable='static_transform_publisher',
-        parameters=[{ 'use_sim_time': True }],
+        parameters=[{ 'use_sim_time': LaunchConfiguration('use_sim_time') }],
         arguments=['0', '0', '0', '0', '0', '0', 'world', 'map'],
         # output='screen',
-        emulate_tty=True
+        emulate_tty=True,
     )
 
     return LaunchDescription(

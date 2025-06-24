@@ -41,7 +41,8 @@ def launch_robot_group(context, *args, **kwargs):
                     'twist_input': TextSubstitution(text=twist_input),
                     'logging' : LaunchConfiguration('logging'),
                     'leaping' : LaunchConfiguration('leaping'),
-                    'ac' : LaunchConfiguration('ac')
+                    'ac' : LaunchConfiguration('ac'), 
+                    'use_sim_time' : LaunchConfiguration('use_sim_time')
                 }.items()
             )
         ])
@@ -52,9 +53,10 @@ def launch_robot_group(context, *args, **kwargs):
 
 def generate_launch_description():
     return LaunchDescription([
-        DeclareLaunchArgument('logging', default_value='false'),
-        DeclareLaunchArgument('leaping', default_value='true'),
-        DeclareLaunchArgument('ac', default_value='false'),
+        DeclareLaunchArgument('logging', default_value='false', description='Rosbag Trial Run'),
+        DeclareLaunchArgument('leaping', default_value='true', description='Enable Leaping in the Global Planner'),
+        DeclareLaunchArgument('ac', default_value='false', description='Enable Adaptive Complexity Planner (Spirit ONLY)'),
+        DeclareLaunchArgument('use_sim_time', default_value='true', description='Use Simulation Clock or Computer Clock'),
         DeclareLaunchArgument(
             'robot_configs',
             default_value='[{"name": "robot_1", "type": "spirit", "reference": "twist", "twist_input": "joy"}]',

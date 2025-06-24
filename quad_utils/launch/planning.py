@@ -52,24 +52,24 @@ def load_robot_params(context, *args, **kwargs):
         SetLaunchConfiguration('robot_sdf_path', sdf_path)
     ]
 
-def launch_global_planner(context, *args, **kwargs):
-    if LaunchConfiguration('reference').perform(context) != 'gbpl':
-        return []
+# def launch_global_planner(context, *args, **kwargs):
+#     if LaunchConfiguration('reference').perform(context) != 'gbpl':
+#         return []
 
-    leaping = LaunchConfiguration('leaping').perform(context)
-    return [
-        Node(
-            package='global_body_planner',
-            executable='global_body_planner_node',
-            name='global_body_planner',
-            output='screen',
-            remappings=[
-                ('start_state', 'state/ground_truth'),
-                ('goal_state', 'clicked_point')
-            ],
-            parameters=[{'enable_leaping': leaping == 'true'}],
-        )
-    ]
+#     leaping = LaunchConfiguration('leaping').perform(context)
+#     return [
+#         Node(
+#             package='global_body_planner',
+#             executable='global_body_planner_node',
+#             name='global_body_planner',
+#             output='screen',
+#             remappings=[
+#                 ('start_state', 'state/ground_truth'),
+#                 ('goal_state', 'clicked_point')
+#             ],
+#             parameters=[{'enable_leaping': leaping == 'true'}],
+#         )
+#     ]
 
 
 def launch_twist_input_nodes(context, *args, **kwargs):
@@ -86,6 +86,8 @@ def launch_twist_input_nodes(context, *args, **kwargs):
                 name='teleop_twist_keyboard',
                 output='screen',
                 prefix='xterm -e',
+                parameters=[{'use_sim_time': LaunchConfiguration('use_sim_time')}]
+                
             )
         ]
     elif twist_input == 'joy':
@@ -95,7 +97,7 @@ def launch_twist_input_nodes(context, *args, **kwargs):
                 PythonLaunchDescriptionSource(PathJoinSubstitution([
                     FindPackageShare('teleop_twist_joy'), 'launch', 'teleop-launch.py'
                 ])),
-                launch_arguments={'joy_config': 'rml-ps3-holonomic'}.items()
+                launch_arguments={'joy_config': 'rml-ps3-holonomic', 'use_sim_time' : TextSubstitution(text='true')}.items()
             )
         ]
     return []
@@ -114,16 +116,7 @@ def launch_local_planner(context, *args, **kwargs):
     nmpc_controller_param_file = PathJoinSubstitution([nmpc_controller_pkg, 'config', 'nmpc_controller.yaml'])
     local_planner_param_file = PathJoinSubstitution([local_planner_pkg, 'config', 'local_planner.yaml'])
     local_planner_topics_file = PathJoinSubstitution([local_planner_pkg, 'config', 'local_planner_topics.yaml'])
-    # robot_specific_param_file = PathJoinSubstitution([quad_utils_pkg, 'config', LaunchConfiguration('robot_type')])
-    # robot_specific_param_file = [robot_specific_param_file, TextSubstitution(text='.yaml')]
     robot_specific_param_file = os.path.join(quad_utils_pkg.perform(context), 'config', LaunchConfiguration('robot_type').perform(context) + '.yaml')
-
-    # print("[launch_local_planner] namespace =", namespace)
-    # print("[launch_local_planner] robot_type =", robot_type)
-    # print("[launch_local_planner] urdf is string:", isinstance(urdf, str), "length:", len(urdf))
-    # print("[launch_local_planner] use_twist_input =", ref == 'twist')
-    # print("[launch_local_planner] enable_ac =", ac == 'true')
-    # print("[launch_local_planner] robot_specific_param_file =", robot_specific_param_file)
 
     return [
         Node(
@@ -140,47 +133,48 @@ def launch_local_planner(context, *args, **kwargs):
                 'robot_type': robot_type,
                 'robot_description': ParameterValue(urdf, value_type=str),
                 'local_planner.use_twist_input': ref == 'twist',
-                # 'nmpc_controller.enable_adaptive_complexity': ac == 'true'
+                'nmpc_controller.enable_adaptive_complexity': ac == 'true',
+                'use_sim_time' : LaunchConfiguration('use_sim_time')
             }]
         )
     ]
 
-def launch_body_force_estimator(context, *args, **kwargs):
-    return [
-        Node(
-            package='body_force_estimator',
-            executable='body_force_estimator_node',
-            name='body_force_estimator',
-            output='screen'
-        )
-    ]
+# def launch_body_force_estimator(context, *args, **kwargs):
+#     return [
+#         Node(
+#             package='body_force_estimator',
+#             executable='body_force_estimator_node',
+#             name='body_force_estimator',
+#             output='screen'
+#         )
+#     ]
 
 
-def launch_plan_publisher(context, *args, **kwargs):
-    return [
-        Node(
-            package='quad_utils',
-            executable='trajectory_publisher_node',
-            name='plan_publisher',
-            output='screen'
-        )
-    ]
+# def launch_plan_publisher(context, *args, **kwargs):
+#     return [
+#         Node(
+#             package='quad_utils',
+#             executable='trajectory_publisher_node',
+#             name='plan_publisher',
+#             output='screen'
+#         )
+#     ]
 
 
-def launch_logging(context, *args, **kwargs):
-    if LaunchConfiguration('logging').perform(context) != 'true':
-        return []
+# def launch_logging(context, *args, **kwargs):
+#     if LaunchConfiguration('logging').perform(context) != 'true':
+#         return []
 
-    namespace = LaunchConfiguration('namespace').perform(context)
+#     namespace = LaunchConfiguration('namespace').perform(context)
 
-    return [
-        IncludeLaunchDescription(
-            PythonLaunchDescriptionSource(PathJoinSubstitution([
-                FindPackageShare('quad_utils'), 'launch', 'logging.launch.py'
-            ])),
-            launch_arguments={'namespace': TextSubstitution(text=namespace)}.items()
-        )
-    ]
+#     return [
+#         IncludeLaunchDescription(
+#             PythonLaunchDescriptionSource(PathJoinSubstitution([
+#                 FindPackageShare('quad_utils'), 'launch', 'logging.launch.py'
+#             ])),
+#             launch_arguments={'namespace': TextSubstitution(text=namespace)}.items()
+#         )
+#     ]
 
 def generate_launch_description():
     return LaunchDescription([
@@ -191,10 +185,11 @@ def generate_launch_description():
         DeclareLaunchArgument('robot_type', default_value='spirit'),
         DeclareLaunchArgument('leaping', default_value='true'),
         DeclareLaunchArgument('ac', default_value='false'),
+        DeclareLaunchArgument('use_sim_time', default_value='true'),
         OpaqueFunction(function=load_robot_params), 
         # OpaqueFunction(function=launch_global_planner),
         OpaqueFunction(function=launch_twist_input_nodes),
-        # OpaqueFunction(function=launch_local_planner),
+        OpaqueFunction(function=launch_local_planner),
         # OpaqueFunction(function=launch_body_force_estimator),
         # OpaqueFunction(function=launch_plan_publisher),
         # OpaqueFunction(function=launch_logging),
