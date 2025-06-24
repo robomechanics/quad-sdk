@@ -1714,7 +1714,7 @@ void quadNLP::update_solver(
   // Copy the previous contact sequence and nlp data for comparison
   Eigen::MatrixXi contact_sequence_prev = contact_sequence_;
   quadNLP nlp_prev = *this;
-
+  RCLCPP_INFO(node_->get_logger(), "Beginning");
   // Update contact sequence
   // Local planner has outer as N and inner as boolean contact
   for (size_t i = 0; i < contact_schedule.size(); i++) {
@@ -1726,21 +1726,22 @@ void quadNLP::update_solver(
       }
     }
   }
-
+  RCLCPP_INFO(node_->get_logger(), "Middle");
   for (size_t i = 0; i < N_ - 1; i++) {
     int idx = i + plan_index_diff;
     if (idx >= N_ - 1) {
       continue;
     }
-
+    RCLCPP_INFO(node_->get_logger(), "In Loop: i = %zu, idx = %d, N_ = %d, plan_index_diff = %d", i, idx, N_, plan_index_diff);
     if ((contact_sequence_prev.col(idx) - contact_sequence_.col(i))
             .cwiseAbs()
             .sum() > 1e-3) {
       // Contact change unexpectedly, update the warmstart info
+       RCLCPP_INFO(node_->get_logger(), "Fucked up the Function");
       get_primal_body_control_var(w0_, idx).fill(0);
       get_primal_body_control_var(z_L0_, idx).fill(1);
       get_primal_body_control_var(z_U0_, idx).fill(1);
-
+       RCLCPP_INFO(node_->get_logger(), "We Still Lit");
       double num_contacts = contact_sequence_.col(i).sum();
       if (num_contacts > 0) {
         for (size_t j = 0; j < 4; j++) {
@@ -1755,7 +1756,7 @@ void quadNLP::update_solver(
       warm_start_ = false;
     }
   }
-
+  RCLCPP_INFO(node_->get_logger(), "REF DO SOMETHING");
   // If the complexity schedule has changed, update the problem structure
   bool new_structure = adaptive_complexity_schedule.size() !=
                        this->adaptive_complexity_schedule_.size();
@@ -1814,7 +1815,7 @@ void quadNLP::update_solver(
     z_U0_ = Eigen::VectorXd(n_vars_).Ones(n_vars_);
     lambda0_ = Eigen::VectorXd(n_constraints_);
     lambda0_.fill(1000);
-
+    RCLCPP_INFO(node_->get_logger(), "Scott Foster");
     // Initialize current state
     get_primal_body_state_var(w0_, 0) = x_current_.head(n_body_);
     if (n_vec_[0] > config_.x_dim_simple) {

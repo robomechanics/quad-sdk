@@ -261,13 +261,13 @@ bool NMPCController::computeLegPlan(
   mynlp_->foot_pos_world_ = foot_positions_world;
   mynlp_->foot_vel_world_ = foot_velocities_world;
   mynlp_->terrain_ = terrain;
-
+  RCLCPP_INFO(node_->get_logger(), "HELP");
   mynlp_->update_solver(initial_state, ref_traj, foot_positions_body,
                         contact_schedule, adaptive_complexity_schedule_,
                         ref_ground_height, first_element_duration,
                         plan_index_diff, require_init_);
   require_init_ = false;
-
+  RCLCPP_INFO(node_->get_logger(), "HELP2");
   bool success = this->computePlan(initial_state, ref_traj, contact_schedule,
                                    foot_positions_world, foot_velocities_world,
                                    state_traj, control_traj);

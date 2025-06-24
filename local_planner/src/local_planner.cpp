@@ -32,7 +32,7 @@ LocalPlanner::LocalPlanner(rclcpp::Node::SharedPtr node)
     quad_utils::loadROSParam(node_, "topics.control.mode", control_mode_topic);
 
     // Setup pubs and subs
-    terrain_map_sub_ = node_->create_subscription<grid_map_msgs::msg::GridMap>(terrain_map_topic, 10, 
+    terrain_map_sub_ = node_->create_subscription<grid_map_msgs::msg::GridMap>(terrain_map_topic, rclcpp::QoS(rclcpp::KeepLast(1)).transient_local(), 
         std::bind(&LocalPlanner::terrainMapCallback, this, std::placeholders::_1));
     body_plan_sub_ = node_->create_subscription<quad_msgs::msg::RobotPlan>(body_plan_topic, 10, 
         std::bind(&LocalPlanner::robotPlanCallback, this, std::placeholders::_1));
@@ -226,13 +226,12 @@ void LocalPlanner::getReference() {
             past_footholds_msg_.feet[i].traj_index =
                 past_footholds_msg_.traj_index;
         }
-
         // We want to start from a full period when using twist input
         if (use_twist_input_) {
             initial_timestamp_ = node_->now() - rclcpp::Duration::from_seconds(1e-6);
         }
+        RCLCPP_INFO(node_->get_logger(), "Initial Timestamp =  %f", initial_timestamp_.seconds());
     }
-
     // Make sure we use the most recent global plan timestamp for reference
     if (!use_twist_input_) {
         initial_timestamp_ = rclcpp::Time(body_plan_msg_->global_plan_timestamp);
@@ -244,8 +243,10 @@ void LocalPlanner::getReference() {
     // Get plan index, compare with the previous one to check if this is a
     // duplicated solve
     int previous_plan_index = current_plan_index_;
-    quad_utils::getPlanIndex(initial_timestamp_, dt_, current_plan_index_,
+    quad_utils::getPlanIndex(node_, initial_timestamp_, dt_, current_plan_index_,
                              first_element_duration_);
+    RCLCPP_INFO(node_->get_logger(), "Current Plan Index: %d, Previous Plan Index: %d", current_plan_index_, previous_plan_index);
+
     plan_index_diff_ = current_plan_index_ - previous_plan_index;
 
     // Get the current body and foot positions into Eigen
@@ -265,6 +266,7 @@ void LocalPlanner::getReference() {
 
     if (use_twist_input_) {
         // Use twist planner
+
         // Check that we have recent twist data, otherwise set cmd_vel to zero
         rclcpp::Duration time_elapsed_since_msg =
             node_->now() - last_cmd_vel_msg_time_;
@@ -273,7 +275,6 @@ void LocalPlanner::getReference() {
             RCLCPP_WARN_THROTTLE(node_->get_logger(), *node_->get_clock(), static_cast<rcutils_duration_value_t>(1e9),
                               "No cmd_vel data, setting twist cmd_vel to zero");
         }
-
         // Set initial ground height
         ref_ground_height_(0) = local_footstep_planner_->getTerrainHeight(
             current_state_(0), current_state_(1));
@@ -470,12 +471,12 @@ bool LocalPlanner::computeLocalPlan() {
 
     // Start the timer
     quad_utils::FunctionTimer timer(__FUNCTION__);
-
+    RCLCPP_INFO(node_->get_logger(), "HEY");
     // Compute the contact schedule
     local_footstep_planner_->computeContactSchedule(
         current_plan_index_, body_plan_, ref_primitive_plan_, control_mode_,
         contact_schedule_);
-
+    RCLCPP_INFO(node_->get_logger(), "HEY1");
     // Compute the new footholds if we have a valid existing plan (i.e. if
     // grf_plan is filled)
     local_footstep_planner_->computeFootPlan(
@@ -484,11 +485,9 @@ bool LocalPlanner::computeLocalPlan() {
         current_foot_velocities_world_, first_element_duration_,
         past_footholds_msg_, foot_positions_world_, foot_velocities_world_,
         foot_accelerations_world_);
-
     // Transform the new foot positions into the body frame for body planning
     local_footstep_planner_->getFootPositionsBodyFrame(
         body_plan_, foot_positions_world_, foot_positions_body_);
-
     // Compute grf position considering the toe radius
     Eigen::MatrixXd grf_positions_body = foot_positions_body_;
     Eigen::MatrixXd grf_positions_world = foot_positions_world_;
@@ -513,7 +512,6 @@ bool LocalPlanner::computeLocalPlan() {
             ref_ground_height_, first_element_duration_, plan_index_diff_,
             terrain_grid_, body_plan_, grf_plan_))
         return false;
-
     N_current_ = body_plan_.rows();
     foot_positions_world_ = grf_positions_world;
     for (size_t i = 0; i < 4; i++) {
@@ -615,15 +613,15 @@ void LocalPlanner::spin() {
     while (rclcpp::ok()) {
         rclcpp::spin_some(node_);
 
-        if (terrain_.isEmpty()) {
-            RCLCPP_WARN(node_->get_logger(), "terrain_ is empty");
-        }
-        if (body_plan_msg_ == NULL && !use_twist_input_) {
-            RCLCPP_WARN(node_->get_logger(), "body_plan_msg_ is NULL and twist input is not used");
-        }
-        if (robot_state_msg_ == NULL) {
-            RCLCPP_WARN(node_->get_logger(), "robot_state_msg_ is NULL");
-        }
+        // if (terrain_.isEmpty()) {
+        //     RCLCPP_WARN(node_->get_logger(), "terrain_ is empty");
+        // }
+        // if (body_plan_msg_ == NULL && !use_twist_input_) {
+        //     RCLCPP_WARN(node_->get_logger(), "body_plan_msg_ is NULL and twist input is not used");
+        // }
+        // if (robot_state_msg_ == NULL) {
+        //     RCLCPP_WARN(node_->get_logger(), "robot_state_msg_ is NULL");
+        // }
 
 
         // Wait until all required data has been received
@@ -635,12 +633,11 @@ void LocalPlanner::spin() {
         // Get the reference plan and robot state into the desired data
         // structures
         getReference();
-        RCLCPP_INFO(node_->get_logger(), "1");
-
         // Compute the local plan and publish if it solved successfully,
         // otherwise just sleep
-        if (computeLocalPlan()) publishLocalPlan();
-        RCLCPP_INFO(node_->get_logger(), "2");
+        if (computeLocalPlan()) {
+            publishLocalPlan();
+        }
 
         r.sleep();
     }
