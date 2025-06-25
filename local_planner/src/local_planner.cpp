@@ -471,12 +471,12 @@ bool LocalPlanner::computeLocalPlan() {
 
     // Start the timer
     quad_utils::FunctionTimer timer(__FUNCTION__);
-    RCLCPP_INFO(node_->get_logger(), "HEY");
+
     // Compute the contact schedule
     local_footstep_planner_->computeContactSchedule(
         current_plan_index_, body_plan_, ref_primitive_plan_, control_mode_,
         contact_schedule_);
-    RCLCPP_INFO(node_->get_logger(), "HEY1");
+
     // Compute the new footholds if we have a valid existing plan (i.e. if
     // grf_plan is filled)
     local_footstep_planner_->computeFootPlan(
@@ -523,9 +523,7 @@ bool LocalPlanner::computeLocalPlan() {
     compute_time_ = 1000.0 * timer.reportSilent();
     mean_compute_time_ = (filter_smoothing_constant_)*mean_compute_time_ +
                          (1 - filter_smoothing_constant_) * compute_time_;
-    RCLCPP_INFO_THROTTLE(node_->get_logger(), *node_->get_clock(),
-                     static_cast<rcutils_duration_value_t>(1e9), "LocalPlanner took %5.3f ms", compute_time_);
-    
+    RCLCPP_INFO(node_->get_logger(),  "LocalPlanner took %5.3f ms", compute_time_);
 
     // Return true if made it this far
     return true;

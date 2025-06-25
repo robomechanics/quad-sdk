@@ -42,6 +42,7 @@ add_library(quad_utils
   src/math_utils.cpp
   src/ros_utils.cpp
   src/quad_kd.cpp
+  # src/trajectory_publisher.cpp
   # Add other reusable sources here if needed
 )
 
@@ -69,10 +70,20 @@ add_executable(rviz_interface_node
   src/rviz_interface_node.cpp
   src/rviz_interface.cpp)
 
+# add_executable(trajectory_publisher_node
+#   src/trajectory_publisher_node.cpp
+#   src/trajectory_publisher.cpp
+#   )
+
 target_include_directories(rviz_interface_node PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
   $<INSTALL_INTERFACE:include>
 )
+
+# target_include_directories(trajectory_publisher_node PUBLIC
+#   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+#   $<INSTALL_INTERFACE:include>
+# )
   
 target_link_libraries(mesh_to_grid_map_node
   quad_utils
@@ -126,12 +137,22 @@ ament_target_dependencies(rviz_interface_node
   tf2_geometry_msgs
 )
 
+# ament_target_dependencies(trajectory_publisher_node
+#   rclcpp
+#   quad_msgs
+#   tf2
+#   tf2_ros
+#   tf2_geometry_msgs
+#   visualization_msgs
+# )
+
 # Install Libraries and Executables
 install(TARGETS quad_utils
   ARCHIVE DESTINATION lib
   LIBRARY DESTINATION lib
   RUNTIME DESTINATION bin
 )
+
 
 install(TARGETS
   mesh_to_grid_map_node
@@ -142,6 +163,7 @@ install(TARGETS
 install(TARGETS
   mesh_to_grid_map_node
   rviz_interface_node
+  # trajectory_publisher_node
   DESTINATION lib/${PROJECT_NAME}
 )
 

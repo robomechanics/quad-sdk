@@ -19,6 +19,11 @@ void GroundTruthEstimator::Configure(
   // options.arguments({"--ros-args", "--namespace", robot_ns});
   this->node_ = std::make_shared<rclcpp::Node>("gz_ground_truth_estimator",
                                                robot_ns, options);
+  if (!this->node_->has_parameter("use_sim_time")) {
+    this->node_->declare_parameter<bool>("use_sim_time", true);
+  } else {
+    this->node_->set_parameter(rclcpp::Parameter("use_sim_time", true));
+  }
 
   // Load update rate from SDF
   if (sdf->HasElement("updateRateHZ")) {
