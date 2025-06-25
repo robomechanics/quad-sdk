@@ -97,21 +97,6 @@ def spawn_sdf_model(context, *args, **kwargs):
     )
     return [spawn_node] 
 
-# def launch_controller_manager(context, *args, **kwargs):
-#     namespace = LaunchConfiguration('namespace').perform(context)
-#     gazebo_scripts_path = FindPackageShare('gazebo_scripts').perform(context)
-
-#     controller_manager_node = Node(
-#         package='controller_manager',
-#         executable='ros2_control_node',
-#         name='controller_manager',
-#         parameters=[
-#             os.path.join(gazebo_scripts_path, 'config', 'quad_control.yaml')
-#         ],
-#         output='screen'
-#     )
-#     return [controller_manager_node]
-
 def spawn_controller_broadcasters(context, *args, **kwargs):
     namespace = LaunchConfiguration('namespace').perform(context)
     gazebo_scripts_path = FindPackageShare('gazebo_scripts').perform(context)
@@ -166,6 +151,23 @@ def launch_robot_driver(context, *args, **kwargs):
             }.items()
         )
     return [robot_driver_node]
+
+
+# def launch_controller_manager(context, *args, **kwargs):
+#     namespace = LaunchConfiguration('namespace').perform(context)
+#     gazebo_scripts_path = FindPackageShare('gazebo_scripts').perform(context)
+
+#     controller_manager_node = Node(
+#         package='controller_manager',
+#         executable='ros2_control_node',
+#         name='controller_manager',
+#         parameters=[
+#             os.path.join(gazebo_scripts_path, 'config', 'quad_control.yaml')
+#         ],
+#         output='screen'
+#     )
+#     return [controller_manager_node]
+
 
 # def launch_robot_driver(namespace, robot_type, controller, urdf, context, *args, **kwargs):
 #     # namespace = LaunchConfiguration('namespace').perform(context)
@@ -349,6 +351,7 @@ def launch_visualization_plugins(context, *args, **kwargs):
             'controller': controller,
             'robot_description': urdf,
             'robot_urdf_path': urdf_path,
+            'use_sim_time': LaunchConfiguration('use_sim_time')
         }.items()
     )
 

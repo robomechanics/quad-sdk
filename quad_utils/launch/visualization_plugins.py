@@ -14,7 +14,9 @@ def generate_launch_description():
         DeclareLaunchArgument('namespace', default_value='robot_1'),
         DeclareLaunchArgument('robot_type', default_value='spirit'),
         DeclareLaunchArgument('robot_description', default_value=''),
-        DeclareLaunchArgument('robot_urdf_path', description='Path to Robot URDF Xacro File')
+        DeclareLaunchArgument('robot_urdf_path', description='Path to Robot URDF Xacro File'),
+        
+        DeclareLaunchArgument('use_sim_time', default_value='true')
     ]
 
     # Launch configurations
@@ -46,7 +48,8 @@ def generate_launch_description():
             namespace='trajectory',
             parameters=[
                 {'robot_description': ParameterValue(trajectory_state_urdf, value_type=str),
-                 'frame_prefix': [namespace, '_trajectory','/']
+                 'frame_prefix': [namespace, '_trajectory','/'],
+                 'use_sim_time' : LaunchConfiguration('use_sim_time')
                  }
             ],
             remappings=[
@@ -65,7 +68,8 @@ def generate_launch_description():
             namespace='ground_truth',
             parameters=[
                 {'robot_description': ParameterValue(ground_truth_urdf, value_type=str),
-                 'frame_prefix': [namespace, '_ground_truth', '/']
+                 'frame_prefix': [namespace, '_ground_truth', '/'],
+                 'use_sim_time' : LaunchConfiguration('use_sim_time')
                  }
             ],
             remappings=[
@@ -82,7 +86,8 @@ def generate_launch_description():
         name='rviz_interface',
         parameters=[
         rviz_yaml_file,
-        {'tf_prefix': namespace}
+        {'tf_prefix': namespace,
+         'use_sim_time' : LaunchConfiguration('use_sim_time')}
     ],
         output='screen'
     )

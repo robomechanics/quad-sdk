@@ -1741,7 +1741,6 @@ void quadNLP::update_solver(
       get_primal_body_control_var(w0_, idx).fill(0);
       get_primal_body_control_var(z_L0_, idx).fill(1);
       get_primal_body_control_var(z_U0_, idx).fill(1);
-       RCLCPP_INFO(node_->get_logger(), "We Still Lit");
       double num_contacts = contact_sequence_.col(i).sum();
       if (num_contacts > 0) {
         for (size_t j = 0; j < 4; j++) {
