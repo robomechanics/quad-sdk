@@ -41,16 +41,6 @@ bool InverseDynamicsController::computeLegCommandArray(
     // double t_now = (ros::Time::now() - last_local_plan_time_).toSec(); // Use
     // time of plan receipt double t_now = (ros::Time::now() -
     // t_first_state).toSec(); // Use time of first state in plan
-    RCLCPP_INFO(node_->get_logger(), "Plan timestamp: %.9f", rclcpp::Time(last_local_plan_msg_->state_timestamp).seconds());
-    RCLCPP_INFO(node_->get_logger(), "Now: %.9f", node_->now().seconds());
-    RCLCPP_INFO(node_->get_logger(), "Elapsed since plan: %.9f", (node_->now() - rclcpp::Time(last_local_plan_msg_->state_timestamp)).seconds());
-    RCLCPP_INFO(node_->get_logger(), "First state time: %.9f", rclcpp::Time(last_local_plan_msg_->states.front().header.stamp).seconds());
-    RCLCPP_INFO(node_->get_logger(), "Last state time: %.9f", rclcpp::Time(last_local_plan_msg_->states.back().header.stamp).seconds());
-    RCLCPP_INFO(node_->get_logger(), "Window start: %.9f", (rclcpp::Time(last_local_plan_msg_->states.front().header.stamp) - rclcpp::Time(last_local_plan_msg_->states.front().header.stamp)).seconds());
-    RCLCPP_INFO(node_->get_logger(), "Window end: %.9f", (rclcpp::Time(last_local_plan_msg_->states.back().header.stamp) - rclcpp::Time(last_local_plan_msg_->states.front().header.stamp)).seconds());
-    RCLCPP_INFO(node_->get_logger(), "Relative time: %.9f", (node_->now() - rclcpp::Time(last_local_plan_msg_->state_timestamp)).seconds());
-
-
     if ((t_now <
          (rclcpp::Time(last_local_plan_msg_->states.front().header.stamp) - t_first_state)
              .seconds()) ||
