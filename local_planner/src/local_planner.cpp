@@ -10,9 +10,6 @@ LocalPlanner::LocalPlanner(rclcpp::Node::SharedPtr node)
         local_plan_topic, foot_plan_discrete_topic, foot_plan_continuous_topic,
         cmd_vel_topic, control_mode_topic;
     
-    RCLCPP_INFO(node_->get_logger(), "Start Param Loading");
-    
-
     // Load system parameters from launch file (not in config file)
     quad_utils::loadROSParam(node_, "namespace", robot_ns_);
     quad_utils::loadROSParam(node_, "robot_description", robot_description_);
@@ -119,6 +116,8 @@ void LocalPlanner::initLocalBodyPlanner() {
     type = SPIRIT;
   } else if (robot_name_ == "a1") {
     type = A1;
+  } else if (robot_name_ == "go2") {
+    type = GO2;
   } else {
     RCLCPP_WARN(node_->get_logger(),"WRONG ROBOT TYPE: '%s'", robot_name_.c_str());
   }
@@ -179,7 +178,6 @@ void LocalPlanner::initLocalFootstepPlanner() {
 void LocalPlanner::terrainMapCallback(
     const grid_map_msgs::msg::GridMap::SharedPtr msg) {
     grid_map::GridMapRosConverter::fromMessage(*msg, terrain_grid_);
-    RCLCPP_INFO(node_->get_logger(), "GRABBING TERRAIN MAP ");
 
     // Convert to FastTerrainMap structure for faster querying
     terrain_.loadDataFromGridMap(terrain_grid_);
@@ -230,7 +228,7 @@ void LocalPlanner::getReference() {
         if (use_twist_input_) {
             initial_timestamp_ = node_->now() - rclcpp::Duration::from_seconds(1e-6);
         }
-        // RCLCPP_INFO(node_->get_logger(), "Initial Timestamp =  %f", initial_timestamp_.seconds());
+        RCLCPP_INFO(node_->get_logger(), "Initial Timestamp =  %f", initial_timestamp_.seconds());
     }
     // Make sure we use the most recent global plan timestamp for reference
     if (!use_twist_input_) {
@@ -245,7 +243,7 @@ void LocalPlanner::getReference() {
     int previous_plan_index = current_plan_index_;
     quad_utils::getPlanIndex(node_, initial_timestamp_, dt_, current_plan_index_,
                              first_element_duration_);
-    // RCLCPP_INFO(node_->get_logger(), "Current Plan Index: %d, Previous Plan Index: %d", current_plan_index_, previous_plan_index);
+    RCLCPP_INFO(node_->get_logger(), "Current Plan Index: %d, Previous Plan Index: %d", current_plan_index_, previous_plan_index);
 
     plan_index_diff_ = current_plan_index_ - previous_plan_index;
 
@@ -523,9 +521,9 @@ bool LocalPlanner::computeLocalPlan() {
     compute_time_ = 1000.0 * timer.reportSilent();
     mean_compute_time_ = (filter_smoothing_constant_)*mean_compute_time_ +
                          (1 - filter_smoothing_constant_) * compute_time_;
-    RCLCPP_INFO(node_->get_logger(),  "LocalPlanner took %5.3f ms", compute_time_);
+    RCLCPP_INFO_THROTTLE(node_->get_logger(), *node_->get_clock(), 
+        static_cast<rcutils_duration_value_t>(100), "LocalPlanner took %5.3f ms", compute_time_);
 
-    // Return true if made it this far
     return true;
 }
 

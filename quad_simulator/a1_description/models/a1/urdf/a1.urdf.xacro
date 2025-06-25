@@ -128,7 +128,7 @@
         </contact>
         </sensor>
     </gazebo> -->
-  <gazebo reference="toe0">
+  <!-- <gazebo reference="toe0">
     <sensor name="toe0_contact" type="contact">
       <plugin filename="libgazebo_ros_bumper.so" name="toe0_plugin">
         <alwaysOn>true</alwaysOn>
@@ -183,7 +183,7 @@
       </contact>
       <update_rate>500</update_rate>
     </sensor>
-  </gazebo>
+  </gazebo> -->
   <gazebo reference="body">
     <material>Gazebo/Green</material>
     <turnGravityOff>false</turnGravityOff>
