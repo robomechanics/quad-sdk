@@ -259,6 +259,77 @@
         </material>
       </visual>
     </link>
+    <joint name='jtoe0' type='fixed'>
+      <pose relative_to='lower0'>0 0 -0.213 0 0 0</pose>
+      <parent>lower0</parent>
+      <child>toe0</child>
+      <axis>
+        <xyz>0 0 1</xyz>
+        <limit>
+          <lower>-1e+16</lower>
+          <upper>1e+16</upper>
+        </limit>
+        <dynamics>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+      </axis>
+      <physics>
+        <ode>
+          <limit>
+            <cfm>0</cfm>
+            <erp>0.2</erp>
+          </limit>
+        </ode>
+      </physics>
+    </joint>
+    <link name="toe0">
+      <pose relative_to='jtoe0'>0 0 0 0 0 0</pose> 
+      <inertial>
+        <mass>0.04</mass>
+        <inertia>
+          <ixx>9.6e-06</ixx>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyy>9.6e-06</iyy>
+          <iyz>0</iyz>
+          <izz>9.6e-06</izz>
+        </inertia>
+      </inertial>
+      <visual name="toe0_visual">
+        <pose>0 0 0 0 0 0</pose>
+        <geometry>
+          <sphere>
+            <radius>0.022</radius>
+          </sphere>
+        </geometry>
+        <material>
+          <ambient>1 1 1 1</ambient>
+          <diffuse>1 1 1 1</diffuse>
+        </material>
+      </visual>
+      <collision name="toe0_collision">
+        <pose>-0.002 0 0 0 0 0</pose>
+        <geometry>
+          <sphere>
+            <radius>0.022</radius>
+          </sphere>
+        </geometry>
+      </collision>
+      <sensor name="toe0_contact" type="contact">
+        <alwaysOn>true</alwaysOn>
+        <updateRate>500</updateRate>
+        <topic>/gazebo/toe0_contact_state</topic>
+        <frameName>world</frameName>
+        <contact>
+          <collision>toe0_collision</collision>
+        </contact>
+        <plugin filename="libgz-sim8-contact-system.so" name="gz::sim::systems::Contact"> </plugin>
+      </sensor>
+      <gravity>1</gravity>
+      <velocity_decay/>
+      <self_collide>0</self_collide>
+    </link>
     <joint name='10' type='revolute'>
       <pose relative_to='body'>0.19339999999999999 -0.0465 0 0 0 0</pose>
       <parent>body</parent>
@@ -463,6 +534,77 @@
           <ambient>1 1 1 1</ambient>
         </material>
       </visual>
+    </link>
+    <joint name='jtoe2' type='fixed'>
+      <pose relative_to='lower2'>0 0 -0.213 0 0 0</pose>
+      <parent>lower2</parent>
+      <child>toe2</child>
+      <axis>
+        <xyz>0 0 1</xyz>
+        <limit>
+          <lower>-1e+16</lower>
+          <upper>1e+16</upper>
+        </limit>
+        <dynamics>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+      </axis>
+      <physics>
+        <ode>
+          <limit>
+            <cfm>0</cfm>
+            <erp>0.2</erp>
+          </limit>
+        </ode>
+      </physics>
+    </joint>
+    <link name="toe2">
+      <pose relative_to='jtoe2'>0 0 0 0 0 0</pose> 
+      <inertial>
+        <mass>0.04</mass>
+        <inertia>
+          <ixx>9.6e-06</ixx>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyy>9.6e-06</iyy>
+          <iyz>0</iyz>
+          <izz>9.6e-06</izz>
+        </inertia>
+      </inertial>
+      <visual name="toe2_visual">
+        <pose>0 0 0 0 0 0</pose>
+        <geometry>
+          <sphere>
+            <radius>0.022</radius>
+          </sphere>
+        </geometry>
+        <material>
+          <ambient>1 1 1 1</ambient>
+          <diffuse>1 1 1 1</diffuse>
+        </material>
+      </visual>
+      <collision name="toe2_collision">
+        <pose>-0.002 0 0 0 0 0</pose>
+        <geometry>
+          <sphere>
+            <radius>0.022</radius>
+          </sphere>
+        </geometry>
+      </collision>
+      <sensor name="toe2_contact" type="contact">
+        <alwaysOn>true</alwaysOn>
+        <updateRate>500</updateRate>
+        <topic>/gazebo/toe2_contact_state</topic>
+        <frameName>world</frameName>
+        <contact>
+          <collision>toe2_collision</collision>
+        </contact>
+        <plugin filename="libgz-sim8-contact-system.so" name="gz::sim::systems::Contact"> </plugin>
+      </sensor>
+      <gravity>1</gravity>
+      <velocity_decay/>
+      <self_collide>0</self_collide>
     </link>
     <joint name='9' type='revolute'>
       <pose relative_to='body'>-0.19339999999999999 0.0465 0 0 0 0</pose>
@@ -669,6 +811,77 @@
         </material>
       </visual>
     </link>
+    <joint name='jtoe1' type='fixed'>
+      <pose relative_to='lower1'>0 0 -0.213 0 0 0</pose>
+      <parent>lower1</parent>
+      <child>toe1</child>
+      <axis>
+        <xyz>0 0 1</xyz>
+        <limit>
+          <lower>-1e+16</lower>
+          <upper>1e+16</upper>
+        </limit>
+        <dynamics>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+      </axis>
+      <physics>
+        <ode>
+          <limit>
+            <cfm>0</cfm>
+            <erp>0.2</erp>
+          </limit>
+        </ode>
+      </physics>
+    </joint>
+    <link name="toe1">
+      <pose relative_to='jtoe1'>0 0 0 0 0 0</pose> 
+      <inertial>
+        <mass>0.04</mass>
+        <inertia>
+          <ixx>9.6e-06</ixx>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyy>9.6e-06</iyy>
+          <iyz>0</iyz>
+          <izz>9.6e-06</izz>
+        </inertia>
+      </inertial>
+      <visual name="toe1_visual">
+        <pose>0 0 0 0 0 0</pose>
+        <geometry>
+          <sphere>
+            <radius>0.022</radius>
+          </sphere>
+        </geometry>
+        <material>
+          <ambient>1 1 1 1</ambient>
+          <diffuse>1 1 1 1</diffuse>
+        </material>
+      </visual>
+      <collision name="toe1_collision">
+        <pose>-0.002 0 0 0 0 0</pose>
+        <geometry>
+          <sphere>
+            <radius>0.022</radius>
+          </sphere>
+        </geometry>
+      </collision>
+      <sensor name="toe1_contact" type="contact">
+        <alwaysOn>true</alwaysOn>
+        <updateRate>500</updateRate>
+        <topic>/gazebo/toe1_contact_state</topic>
+        <frameName>world</frameName>
+        <contact>
+          <collision>toe1_collision</collision>
+        </contact>
+        <plugin filename="libgz-sim8-contact-system.so" name="gz::sim::systems::Contact"> </plugin>
+      </sensor>
+      <gravity>1</gravity>
+      <velocity_decay/>
+      <self_collide>0</self_collide>
+    </link>
     <joint name='11' type='revolute'>
       <pose relative_to='body'>-0.19339999999999999 -0.0465 0 0 0 0</pose>
       <parent>body</parent>
@@ -873,6 +1086,77 @@
           <ambient>1 1 1 1</ambient>
         </material>
       </visual>
+    </link>
+    <joint name='jtoe3' type='fixed'>
+      <pose relative_to='lower3'>0 0 -0.213 0 0 0</pose>
+      <parent>lower3</parent>
+      <child>toe3</child>
+      <axis>
+        <xyz>0 0 1</xyz>
+        <limit>
+          <lower>-1e+16</lower>
+          <upper>1e+16</upper>
+        </limit>
+        <dynamics>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+      </axis>
+      <physics>
+        <ode>
+          <limit>
+            <cfm>0</cfm>
+            <erp>0.2</erp>
+          </limit>
+        </ode>
+      </physics>
+    </joint>
+    <link name="toe3">
+      <pose relative_to='jtoe3'>0 0 0 0 0 0</pose> 
+      <inertial>
+        <mass>0.04</mass>
+        <inertia>
+          <ixx>9.6e-06</ixx>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyy>9.6e-06</iyy>
+          <iyz>0</iyz>
+          <izz>9.6e-06</izz>
+        </inertia>
+      </inertial>
+      <visual name="toe3_visual">
+        <pose>0 0 0 0 0 0</pose>
+        <geometry>
+          <sphere>
+            <radius>0.022</radius>
+          </sphere>
+        </geometry>
+        <material>
+          <ambient>1 1 1 1</ambient>
+          <diffuse>1 1 1 1</diffuse>
+        </material>
+      </visual>
+      <collision name="toe3_collision">
+        <pose>-0.002 0 0 0 0 0</pose>
+        <geometry>
+          <sphere>
+            <radius>0.022</radius>
+          </sphere>
+        </geometry>
+      </collision>
+      <sensor name="toe3_contact" type="contact">
+        <alwaysOn>true</alwaysOn>
+        <updateRate>500</updateRate>
+        <topic>/gazebo/toe3_contact_state</topic>
+        <frameName>world</frameName>
+        <contact>
+          <collision>toe3_collision</collision>
+        </contact>
+        <plugin filename="libgz-sim8-contact-system.so" name="gz::sim::systems::Contact"> </plugin>
+      </sensor>
+      <gravity>1</gravity>
+      <velocity_decay/>
+      <self_collide>0</self_collide>
     </link>
     <frame name='hip0_rotor_joint' attached_to='body'>
       <pose>0.11215 0.04675 0 0 0 0</pose>

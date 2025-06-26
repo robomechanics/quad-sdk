@@ -42,7 +42,7 @@ quadNLP::quadNLP(SystemID default_system, int N, double dt, double mu,
   }
 
   // Compute initial kinematics information
-  quadKD_ = std::make_shared<quad_utils::QuadKD>(node_, robot_ns);
+  quadKD_ = std::make_shared<quad_utils::QuadKD>(node_, robot_ns_);
   Eigen::VectorXd initial_state(12);
   initial_state.fill(0);
   initial_state(2) = 0.2;
@@ -75,6 +75,7 @@ quadNLP::quadNLP(SystemID default_system, int N, double dt, double mu,
   g_max_complex_soft_.tail(num_feet_).fill(-0.05);
 
   loadCasadiFuncs();
+
   loadConstraintNames();
 
   this->fixed_complexity_schedule_ = fixed_complexity_schedule;
@@ -110,7 +111,6 @@ quadNLP::quadNLP(SystemID default_system, int N, double dt, double mu,
 
   // Initialize the time duration to the next plan index as dt
   first_element_duration_ = dt_;
-
   compute_nnz_jac_g();
   compute_nnz_h();
 }
