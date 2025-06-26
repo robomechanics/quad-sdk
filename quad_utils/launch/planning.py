@@ -86,8 +86,8 @@ def launch_twist_input_nodes(context, *args, **kwargs):
                 executable='teleop_twist_keyboard',
                 name='teleop_twist_keyboard',
                 output='screen',
-                prefix='xterm -e',
-                parameters=[{'use_sim_time': use_sim_time}]
+                prefix='xterm -hold -e',
+                parameters=[{'use_sim_time': True}]
                 
             )
         ]
