@@ -107,6 +107,9 @@ LocalPlanner::LocalPlanner(rclcpp::Node::SharedPtr node)
 
     // Initialize the plan index
     current_plan_index_ = 0;
+
+    last_cmd_vel_msg_time_ = rclcpp::Time{0, 0, node_->get_clock()->get_clock_type()};
+
 }
 
 void LocalPlanner::initLocalBodyPlanner() {
@@ -212,6 +215,7 @@ void LocalPlanner::cmdVelCallback(const geometry_msgs::msg::Twist::SharedPtr msg
 
     // Record when this was last reached for safety
     last_cmd_vel_msg_time_ = node_->now();
+
 }
 
 void LocalPlanner::getReference() {
@@ -243,7 +247,6 @@ void LocalPlanner::getReference() {
     int previous_plan_index = current_plan_index_;
     quad_utils::getPlanIndex(node_, initial_timestamp_, dt_, current_plan_index_,
                              first_element_duration_);
-    RCLCPP_INFO(node_->get_logger(), "Current Plan Index: %d, Previous Plan Index: %d", current_plan_index_, previous_plan_index);
 
     plan_index_diff_ = current_plan_index_ - previous_plan_index;
 
@@ -264,7 +267,8 @@ void LocalPlanner::getReference() {
 
     if (use_twist_input_) {
         // Use twist planner
-
+        // RCLCPP_WARN_STREAM(node_->get_logger(), "now() = " << node_->now().seconds());
+        // RCLCPP_WARN_STREAM(node_->get_logger(), "last_cmd_vel_msg_time_ = " << last_cmd_vel_msg_time_.seconds());
         // Check that we have recent twist data, otherwise set cmd_vel to zero
         rclcpp::Duration time_elapsed_since_msg =
             node_->now() - last_cmd_vel_msg_time_;
@@ -607,8 +611,8 @@ void LocalPlanner::spin() {
     rclcpp::Rate r(update_rate_);
 
     while (rclcpp::ok()) {
-        rclcpp::spin_some(node_);
 
+        rclcpp::spin_some(node_);
         // if (terrain_.isEmpty()) {
         //     RCLCPP_WARN(node_->get_logger(), "terrain_ is empty");
         // }

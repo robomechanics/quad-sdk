@@ -150,6 +150,7 @@ NMPCController::NMPCController(rclcpp::Node::SharedPtr node, int robot_id, std::
       }
     }
   }
+  
   config_.x_dim_null = config_.x_dim_complex - config_.x_dim_simple;
   config_.u_dim_null = config_.u_dim_complex - config_.u_dim_simple;
 
@@ -174,13 +175,11 @@ NMPCController::NMPCController(rclcpp::Node::SharedPtr node, int robot_id, std::
       Eigen::Map<Eigen::VectorXd>(g_lb_complex.data(), config_.g_dim_complex);
   config_.g_max_complex =
       Eigen::Map<Eigen::VectorXd>(g_ub_complex.data(), config_.g_dim_complex);
-
   // Construct fixed and adaptive complexity schedules
   Eigen::VectorXi fixed_complexity_schedule(N_);
   fixed_complexity_schedule.setZero();
   adaptive_complexity_schedule_ = fixed_complexity_schedule;
   quad_utils::loadROSParam(node_, "nmpc_controller.enable_mixed_complexity", enable_mixed_complexity_);
-
   // Adaptive complexity is only supported for Spirit
   if (robot_ns_ != "spirit") enable_mixed_complexity_ = false;
 
@@ -192,10 +191,10 @@ NMPCController::NMPCController(rclcpp::Node::SharedPtr node, int robot_id, std::
     // Define and load adaptive complexity parameters
     std::vector<int64_t> fixed_complex_idxs;
     int fixed_complex_head, fixed_complex_tail;
-
     quad_utils::loadROSParam(node_, "nmpc_controller.fixed_complex_idxs", fixed_complex_idxs);
     quad_utils::loadROSParam(node_, "nmpc_controller.fixed_complex_head", fixed_complex_head);
     quad_utils::loadROSParam(node_, "nmpc_controller.fixed_complex_tail", fixed_complex_tail);
+    
     for (int idx : fixed_complex_idxs) {
       if (idx == 0 && fixed_complex_idxs.size() == 1){
         break;
@@ -213,7 +212,6 @@ NMPCController::NMPCController(rclcpp::Node::SharedPtr node, int robot_id, std::
     std::cout << "Mixed complexity enabled, fixed schedule = "
               << fixed_complexity_schedule.transpose() << std::endl;
   }
-
   mynlp_ = new quadNLP(default_system, N_, dt_, mu, panic_weights,
                        constraint_panic_weights, Q_temporal_factor,
                        R_temporal_factor, fixed_complexity_schedule, config_, node_, robot_ns_);
@@ -247,7 +245,6 @@ NMPCController::NMPCController(rclcpp::Node::SharedPtr node, int robot_id, std::
   }
 
   require_init_ = true;
-
   quadKD_ = std::make_shared<quad_utils::QuadKD>(node_, robot_ns_);
 }
 
@@ -347,6 +344,9 @@ bool NMPCController::computePlan(
     mynlp_->warm_start_ = false;
     require_init_ = true;
     RCLCPP_WARN_STREAM(node_->get_logger(), "NMPC solving fail");
+    RCLCPP_WARN_STREAM(
+    node_->get_logger(), "Fail time = " << node_->get_clock()->now().seconds();
+);
     return false;
   }
 }

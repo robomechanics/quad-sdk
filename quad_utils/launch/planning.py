@@ -77,6 +77,7 @@ def launch_twist_input_nodes(context, *args, **kwargs):
         return []
 
     twist_input = LaunchConfiguration('twist_input').perform(context)
+    use_sim_time = LaunchConfiguration('use_sim_time').perform(context)
 
     if twist_input == 'keyboard':
         return [
@@ -86,7 +87,7 @@ def launch_twist_input_nodes(context, *args, **kwargs):
                 name='teleop_twist_keyboard',
                 output='screen',
                 prefix='xterm -e',
-                parameters=[{'use_sim_time': LaunchConfiguration('use_sim_time')}]
+                parameters=[{'use_sim_time': use_sim_time}]
                 
             )
         ]
@@ -97,7 +98,7 @@ def launch_twist_input_nodes(context, *args, **kwargs):
                 PythonLaunchDescriptionSource(PathJoinSubstitution([
                     FindPackageShare('teleop_twist_joy'), 'launch', 'teleop-launch.py'
                 ])),
-                launch_arguments={'joy_config': 'rml-ps3-holonomic', 'use_sim_time' : TextSubstitution(text='true')}.items()
+                launch_arguments={'joy_config': 'rml-ps3-holonomic', 'use_sim_time' : TextSubstitution(text=use_sim_time)}.items()
             )
         ]
     return []
@@ -161,25 +162,25 @@ def launch_local_planner(context, *args, **kwargs):
 #     ]
 
 
-# def launch_logging(context, *args, **kwargs):
-#     if LaunchConfiguration('logging').perform(context) != 'true':
-#         return []
+def launch_logging(context, *args, **kwargs):
+    if LaunchConfiguration('logging').perform(context) != 'true':
+        return []
 
-#     namespace = LaunchConfiguration('namespace').perform(context)
+    namespace = LaunchConfiguration('namespace').perform(context)
 
-#     return [
-#         IncludeLaunchDescription(
-#             PythonLaunchDescriptionSource(PathJoinSubstitution([
-#                 FindPackageShare('quad_utils'), 'launch', 'logging.launch.py'
-#             ])),
-#             launch_arguments={'namespace': TextSubstitution(text=namespace)}.items()
-#         )
-#     ]
+    return [
+        IncludeLaunchDescription(
+            PythonLaunchDescriptionSource(PathJoinSubstitution([
+                FindPackageShare('quad_utils'), 'launch', 'logging.py'
+            ])),
+            launch_arguments={'namespace': TextSubstitution(text=namespace)}.items()
+        )
+    ]
 
 def generate_launch_description():
     return LaunchDescription([
         DeclareLaunchArgument('reference', default_value='twist'),
-        DeclareLaunchArgument('logging', default_value='false'),
+        DeclareLaunchArgument('logging', default_value='true'),
         DeclareLaunchArgument('twist_input', default_value='none'),
         DeclareLaunchArgument('namespace', default_value='robot_1'),
         DeclareLaunchArgument('robot_type', default_value='spirit'),
@@ -192,5 +193,5 @@ def generate_launch_description():
         OpaqueFunction(function=launch_local_planner),
         # OpaqueFunction(function=launch_body_force_estimator),
         # OpaqueFunction(function=launch_plan_publisher),
-        # OpaqueFunction(function=launch_logging),
+        OpaqueFunction(function=launch_logging),
     ])
