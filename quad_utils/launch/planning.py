@@ -187,11 +187,11 @@ def generate_launch_description():
         DeclareLaunchArgument('leaping', default_value='true'),
         DeclareLaunchArgument('ac', default_value='false'),
         DeclareLaunchArgument('use_sim_time', default_value='true'),
-        OpaqueFunction(function=load_robot_params), 
+        OpaqueFunction(function=load_robot_params),
+        OpaqueFunction(function=launch_logging), 
         # OpaqueFunction(function=launch_global_planner),
         OpaqueFunction(function=launch_twist_input_nodes),
         OpaqueFunction(function=launch_local_planner),
         # OpaqueFunction(function=launch_body_force_estimator),
         # OpaqueFunction(function=launch_plan_publisher),
-        OpaqueFunction(function=launch_logging),
     ])
