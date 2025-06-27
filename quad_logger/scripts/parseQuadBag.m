@@ -35,10 +35,10 @@ if ~(exist(filepath,'file'))
 end
 
 % Load the bag
-bag = rosbag(filepath);
+bag = ros2bagreader(filepath);
 
 % Read the state estimate data
-stateEstimateData = readMessages(select(bag,'Topic',['/', namespace, 'state/estimate']),'DataFormat','struct');
+stateEstimateData = readMessages(bag,'Topic',['/', namespace, 'state/estimate'],'DataFormat','struct');
 stateEstimate = struct;
 if isempty(stateEstimateData)
     warning('No data on state estimate topic');

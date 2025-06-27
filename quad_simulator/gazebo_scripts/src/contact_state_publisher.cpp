@@ -117,23 +117,24 @@ void ContactStatePublisher::onContactToe(const ros_gz_interfaces::msg::Contacts:
 
     }
   }
-  geometry_msgs::msg::TransformStamped transform_stamped;
-  try {
-    transform_stamped = tf_buffer_.lookupTransform(
-        "map", toe_transform_names[toe_idx], tf2::TimePointZero);
+  // Not needed, Automatically published in the World Frame
+  // geometry_msgs::msg::TransformStamped transform_stamped;
+  // try {
+  //   transform_stamped = tf_buffer_.lookupTransform(
+  //       "map", toe_transform_names[toe_idx], tf2::TimePointZero);
 
-  } catch (tf2::TransformException &ex) {
-    RCLCPP_WARN_THROTTLE(node_->get_logger(), *node_->get_clock(), 1000, "%s",
-                         ex.what());
-    ready_to_publish_ = false;
-    return;
-  }
-  transform_stamped.transform.translation.x = 0;
-  transform_stamped.transform.translation.y = 0;
-  transform_stamped.transform.translation.z = 0;
+  // } catch (tf2::TransformException &ex) {
+  //   RCLCPP_WARN_THROTTLE(node_->get_logger(), *node_->get_clock(), 1000, "%s",
+  //                        ex.what());
+  //   ready_to_publish_ = false;
+  //   return;
+  // }
+  // transform_stamped.transform.translation.x = 0;
+  // transform_stamped.transform.translation.y = 0;
+  // transform_stamped.transform.translation.z = 0;
 
-  tf2::doTransform(grf_array_msg_.vectors[toe_idx],
-                   grf_array_msg_.vectors[toe_idx], transform_stamped);
+  // tf2::doTransform(grf_array_msg_.vectors[toe_idx],
+  //                  grf_array_msg_.vectors[toe_idx], transform_stamped);
   ready_to_publish_ = true;
 }
 

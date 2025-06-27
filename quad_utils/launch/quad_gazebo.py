@@ -124,13 +124,29 @@ def launch_visualization(context, *args, **kwargs):
         )
     ]
 
+
+def launch_plot_juggler(context, *args, **kwargs):
+    live_plot = LaunchConfiguration('live_plot').perform(context).lower() == 'true'
+
+    if not live_plot:
+        return []
+
+    return [
+        ExecuteProcess(
+            cmd=['plotjuggler'],
+            output='screen',
+            shell=False
+        )
+    ]
+
+
 def generate_launch_description():
     declared_args = [
         DeclareLaunchArgument('world', default_value='flat.sdf', description='SDF world file name to load into simulation'),
         DeclareLaunchArgument('gui', default_value='true', description='Whether to launch the Gazebo GUI'),
         DeclareLaunchArgument('paused', default_value='false', description='Whether to start the simulation in a paused state'),
         DeclareLaunchArgument('verbose', default_value='false', description='Launch the simulator in verbose mode'),
-        DeclareLaunchArgument('live_plot', default_value='false', description='Launch Plot Juggler'),
+        DeclareLaunchArgument('live_plot', default_value='true', description='Launch Plot Juggler'),
         DeclareLaunchArgument('dash', default_value='false', description='Launch RQT Dashboard'),
         DeclareLaunchArgument('logging', default_value='false', description='Enable/Disable ROS2 Logging' ),
         DeclareLaunchArgument('use_sim_time', default_value='true', description='Whether to use Computer Clock or Sim Clock'),
@@ -146,7 +162,8 @@ def generate_launch_description():
         OpaqueFunction(function=bridge_global_clock),
         OpaqueFunction(function=launch_robot_mapping),
         OpaqueFunction(function=launch_robot_group),
-        OpaqueFunction(function=launch_visualization)
+        OpaqueFunction(function=launch_visualization),
+        OpaqueFunction(function=launch_plot_juggler)
     ])
 
 
