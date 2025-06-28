@@ -226,16 +226,16 @@ Stephen Brawner (brawner@gmail.com)
     type="revolute">
     <origin
       xyz="0 0.0955 0"
-      rpy="0 0 0" />
+      rpy="0 1.57079632679 0" />
     <parent
       link="hip0" />
     <child
       link="upper0" />
     <axis
-      xyz="0 1 0" />
+      xyz="0 -1 0" />
     <limit
-      lower="-1.5708"
-      upper="3.4907"
+      lower="-2.6179938779914944"
+      upper="2.6179938779914944"
       effort="23.7"
       velocity="30.1" />
   </joint>
@@ -293,7 +293,7 @@ Stephen Brawner (brawner@gmail.com)
     type="revolute">
     <origin
       xyz="0 0 -0.213"
-      rpy="0 0 0" />
+      rpy="0 -3.14159265359 0" />
     <parent
       link="upper0" />
     <child
@@ -301,8 +301,8 @@ Stephen Brawner (brawner@gmail.com)
     <axis
       xyz="0 1 0" />
     <limit
-      lower="-2.7227"
-      upper="-0.83776"
+      lower="0.445058959258554"
+      upper="2.2252947962927703"
       effort="45.43"
       velocity="15.70" />
   </joint>
@@ -521,16 +521,16 @@ Stephen Brawner (brawner@gmail.com)
     type="revolute">
     <origin
       xyz="0 -0.0955 0"
-      rpy="0 0 0" />
+      rpy="0 1.57079632679 0" />
     <parent
       link="hip2" />
     <child
       link="upper2" />
     <axis
-      xyz="0 1 0" />
+      xyz="0 -1 0" />
     <limit
-      lower="-1.5708"
-      upper="3.4907"
+      lower="-2.6179938779914944"
+      upper="2.6179938779914944"
       effort="23.7"
       velocity="30.1" />
   </joint>
@@ -588,7 +588,7 @@ Stephen Brawner (brawner@gmail.com)
     type="revolute">
     <origin
       xyz="0 0 -0.213"
-      rpy="0 0 0" />
+      rpy="0 -3.14159265359 0" />
     <parent
       link="upper2" />
     <child
@@ -596,8 +596,8 @@ Stephen Brawner (brawner@gmail.com)
     <axis
       xyz="0 1 0" />
     <limit
-      lower="-2.7227"
-      upper="-0.83776"
+      lower="0.445058959258554"
+      upper="2.2252947962927703"
       effort="45.43"
       velocity="15.70" />
   </joint>
@@ -816,16 +816,16 @@ Stephen Brawner (brawner@gmail.com)
     type="revolute">
     <origin
       xyz="0 0.0955 0"
-      rpy="0 0 0" />
+      rpy="0 1.57079632679 0" />
     <parent
       link="hip1" />
     <child
       link="upper1" />
     <axis
-      xyz="0 1 0" />
+      xyz="0 -1 0" />
     <limit
-      lower="-0.5236"
-      upper="4.5379"
+      lower="-2.6179938779914944"
+      upper="2.6179938779914944"
       effort="23.7"
       velocity="30.1" />
   </joint>
@@ -883,7 +883,7 @@ Stephen Brawner (brawner@gmail.com)
     type="revolute">
     <origin
       xyz="0 0 -0.213"
-      rpy="0 0 0" />
+      rpy="0 -3.14159265359 0" />
     <parent
       link="upper1" />
     <child
@@ -891,8 +891,8 @@ Stephen Brawner (brawner@gmail.com)
     <axis
       xyz="0 1 0" />
     <limit
-      lower="-2.7227"
-      upper="-0.83776"
+      lower="0.445058959258554"
+      upper="2.2252947962927703"
       effort="45.43"
       velocity="15.70" />
   </joint>
@@ -1111,16 +1111,16 @@ Stephen Brawner (brawner@gmail.com)
     type="revolute">
     <origin
       xyz="0 -0.0955 0"
-      rpy="0 0 0" />
+      rpy="0 1.57079632679 0" />
     <parent
       link="hip3" />
     <child
       link="upper3" />
     <axis
-      xyz="0 1 0" />
+      xyz="0 -1 0" />
     <limit
-      lower="-0.5236"
-      upper="4.5379"
+      lower="-2.6179938779914944"
+      upper="2.6179938779914944"
       effort="23.7"
       velocity="30.1" />
   </joint>
@@ -1178,7 +1178,7 @@ Stephen Brawner (brawner@gmail.com)
     type="revolute">
     <origin
       xyz="0 0 -0.213"
-      rpy="0 0 0" />
+      rpy="0 -3.14159265359 0" />
     <parent
       link="upper3" />
     <child
@@ -1186,8 +1186,8 @@ Stephen Brawner (brawner@gmail.com)
     <axis
       xyz="0 1 0" />
     <limit
-      lower="-2.7227"
-      upper="-0.83776"
+      lower="0.445058959258554"
+      upper="2.2252947962927703"
       effort="45.43"
       velocity="15.70" />
   </joint>

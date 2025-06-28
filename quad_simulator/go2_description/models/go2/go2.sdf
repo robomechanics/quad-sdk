@@ -110,14 +110,14 @@
       </visual>
     </link>
     <joint name='0' type='revolute'>
-      <pose relative_to='hip0'>0 0.095500000000000002 0 0 0 0</pose>
+      <pose relative_to='hip0'>0 0.095500000000000002 0 0 1.5708 0</pose>
       <parent>hip0</parent>
       <child>upper0</child>
       <axis>
-        <xyz>0 1 0</xyz>
+        <xyz>0 -1 0</xyz>
         <limit>
-          <lower>-1.5708</lower>
-          <upper>3.4906999999999999</upper>
+          <lower>-2.61799</lower>
+          <upper>2.61799</upper>
           <effort>23.699999999999999</effort>
           <velocity>30.100000000000001</velocity>
         </limit>
@@ -126,7 +126,6 @@
           <spring_stiffness>0</spring_stiffness>
         </dynamics>
       </axis>
-      <angle>-0.9</angle>
     </joint>
     <link name='upper0'>
       <pose relative_to='0'>0 0 0 0 0 0</pose>
@@ -165,14 +164,14 @@
       </visual>
     </link>
     <joint name='1' type='revolute'>
-      <pose relative_to='upper0'>0 0 -0.21299999999999999 0 0 0</pose>
+      <pose relative_to='upper0'>0 0 -0.21299999999999999 -3.14159 0 -3.14159</pose>
       <parent>upper0</parent>
       <child>lower0</child>
       <axis>
         <xyz>0 1 0</xyz>
         <limit>
-          <lower>-2.7227000000000001</lower>
-          <upper>-0.83775999999999995</upper>
+          <lower>0.445059</lower>
+          <upper>2.22529</upper>
           <effort>45.43</effort>
           <velocity>15.699999999999999</velocity>
         </limit>
@@ -181,7 +180,6 @@
           <spring_stiffness>0</spring_stiffness>
         </dynamics>
       </axis>
-      <angle>1.8</angle>
     </joint>
     <link name='lower0'>
       <pose relative_to='1'>0 0 0 0 0 0</pose>
@@ -315,6 +313,20 @@
             <radius>0.022</radius>
           </sphere>
         </geometry>
+        <surface>
+          <contact>
+            <ode>
+              <kp>1e+06</kp>
+              <kd>1</kd>
+            </ode>
+          </contact>
+          <friction>
+            <ode>
+              <mu>0.6</mu>
+              <mu2>0.6</mu2>
+            </ode>
+          </friction>
+        </surface>
       </collision>
       <sensor name="toe0_contact" type="contact">
         <alwaysOn>true</alwaysOn>
@@ -386,14 +398,14 @@
       </visual>
     </link>
     <joint name='4' type='revolute'>
-      <pose relative_to='hip2'>0 -0.095500000000000002 0 0 0 0</pose>
+      <pose relative_to='hip2'>0 -0.095500000000000002 0 0 1.5708 0</pose>
       <parent>hip2</parent>
       <child>upper2</child>
       <axis>
-        <xyz>0 1 0</xyz>
+        <xyz>0 -1 0</xyz>
         <limit>
-          <lower>-1.5708</lower>
-          <upper>3.4906999999999999</upper>
+          <lower>-2.61799</lower>
+          <upper>2.61799</upper>
           <effort>23.699999999999999</effort>
           <velocity>30.100000000000001</velocity>
         </limit>
@@ -402,7 +414,6 @@
           <spring_stiffness>0</spring_stiffness>
         </dynamics>
       </axis>
-      <angle>-0.9</angle>
     </joint>
     <link name='upper2'>
       <pose relative_to='4'>0 0 0 0 0 0</pose>
@@ -441,14 +452,14 @@
       </visual>
     </link>
     <joint name='5' type='revolute'>
-      <pose relative_to='upper2'>0 0 -0.21299999999999999 0 0 0</pose>
+      <pose relative_to='upper2'>0 0 -0.21299999999999999 -3.14159 0 -3.14159</pose>
       <parent>upper2</parent>
       <child>lower2</child>
       <axis>
         <xyz>0 1 0</xyz>
         <limit>
-          <lower>-2.7227000000000001</lower>
-          <upper>-0.83775999999999995</upper>
+          <lower>0.445059</lower>
+          <upper>2.22529</upper>
           <effort>45.43</effort>
           <velocity>15.699999999999999</velocity>
         </limit>
@@ -457,7 +468,6 @@
           <spring_stiffness>0</spring_stiffness>
         </dynamics>
       </axis>
-      <angle>1.8</angle>
     </joint>
     <link name='lower2'>
       <pose relative_to='5'>0 0 0 0 0 0</pose>
@@ -536,7 +546,7 @@
       </visual>
     </link>
     <joint name='jtoe2' type='fixed'>
-      <pose relative_to='lower2'>0 0 -0.213 0 0 0</pose>
+      <pose relative_to='lower2'>0 0 -0.213 0 -0 0</pose>
       <parent>lower2</parent>
       <child>toe2</child>
       <axis>
@@ -560,8 +570,9 @@
       </physics>
     </joint>
     <link name="toe2">
-      <pose relative_to='jtoe2'>0 0 0 0 0 0</pose> 
+      <pose relative_to='jtoe2'>0 0 0 0 -0 0</pose> 
       <inertial>
+       <pose>0 0 0 0 -0 0</pose>
         <mass>0.04</mass>
         <inertia>
           <ixx>9.6e-06</ixx>
@@ -591,11 +602,25 @@
             <radius>0.022</radius>
           </sphere>
         </geometry>
+        <surface>
+          <contact>
+            <ode>
+              <kp>1e+06</kp>
+              <kd>1</kd>
+            </ode>
+          </contact>
+          <friction>
+            <ode>
+              <mu>0.6</mu>
+              <mu2>0.6</mu2>
+            </ode>
+          </friction>
+        </surface>
       </collision>
       <sensor name="toe2_contact" type="contact">
         <alwaysOn>true</alwaysOn>
         <updateRate>500</updateRate>
-        <topic>/gazebo/toe2_contact_state</topic>
+        <topic>gazebo/toe2_contact_state</topic>
         <frameName>world</frameName>
         <contact>
           <collision>toe2_collision</collision>
@@ -662,14 +687,14 @@
       </visual>
     </link>
     <joint name='2' type='revolute'>
-      <pose relative_to='hip1'>0 0.095500000000000002 0 0 0 0</pose>
+      <pose relative_to='hip1'>0 0.095500000000000002 0 0 1.5708 0</pose>
       <parent>hip1</parent>
       <child>upper1</child>
       <axis>
-        <xyz>0 1 0</xyz>
+        <xyz>0 -1 0</xyz>
         <limit>
-          <lower>-0.52359999999999995</lower>
-          <upper>4.5378999999999996</upper>
+          <lower>-2.61799</lower>
+          <upper>2.61799</upper>
           <effort>23.699999999999999</effort>
           <velocity>30.100000000000001</velocity>
         </limit>
@@ -678,7 +703,6 @@
           <spring_stiffness>0</spring_stiffness>
         </dynamics>
       </axis>
-      <angle>-0.9</angle>
     </joint>
     <link name='upper1'>
       <pose relative_to='2'>0 0 0 0 0 0</pose>
@@ -717,14 +741,14 @@
       </visual>
     </link>
     <joint name='3' type='revolute'>
-      <pose relative_to='upper1'>0 0 -0.21299999999999999 0 0 0</pose>
+      <pose relative_to='upper1'>0 0 -0.21299999999999999 -3.14159 0 -3.14159</pose>
       <parent>upper1</parent>
       <child>lower1</child>
       <axis>
         <xyz>0 1 0</xyz>
         <limit>
-          <lower>-2.7227000000000001</lower>
-          <upper>-0.83775999999999995</upper>
+          <lower>0.445059</lower>
+          <upper>2.22529</upper>
           <effort>45.43</effort>
           <velocity>15.699999999999999</velocity>
         </limit>
@@ -733,7 +757,6 @@
           <spring_stiffness>0</spring_stiffness>
         </dynamics>
       </axis>
-      <angle>1.8</angle>
     </joint>
     <link name='lower1'>
       <pose relative_to='3'>0 0 0 0 0 0</pose>
@@ -867,11 +890,25 @@
             <radius>0.022</radius>
           </sphere>
         </geometry>
+        <surface>
+          <contact>
+            <ode>
+              <kp>1e+06</kp>
+              <kd>1</kd>
+            </ode>
+          </contact>
+          <friction>
+            <ode>
+              <mu>0.6</mu>
+              <mu2>0.6</mu2>
+            </ode>
+          </friction>
+        </surface>
       </collision>
       <sensor name="toe1_contact" type="contact">
         <alwaysOn>true</alwaysOn>
         <updateRate>500</updateRate>
-        <topic>/gazebo/toe1_contact_state</topic>
+        <topic>gazebo/toe1_contact_state</topic>
         <frameName>world</frameName>
         <contact>
           <collision>toe1_collision</collision>
@@ -938,14 +975,14 @@
       </visual>
     </link>
     <joint name='6' type='revolute'>
-      <pose relative_to='hip3'>0 -0.095500000000000002 0 0 0 0</pose>
+      <pose relative_to='hip3'>0 -0.095500000000000002 0 0 1.5708 0</pose>
       <parent>hip3</parent>
       <child>upper3</child>
       <axis>
-        <xyz>0 1 0</xyz>
+        <xyz>0 -1 0</xyz>
         <limit>
-          <lower>-0.52359999999999995</lower>
-          <upper>4.5378999999999996</upper>
+          <lower>-2.61799</lower>
+          <upper>2.61799</upper>
           <effort>23.699999999999999</effort>
           <velocity>30.100000000000001</velocity>
         </limit>
@@ -954,7 +991,6 @@
           <spring_stiffness>0</spring_stiffness>
         </dynamics>
       </axis>
-      <angle>-0.9</angle>
     </joint>
     <link name='upper3'>
       <pose relative_to='6'>0 0 0 0 0 0</pose>
@@ -993,14 +1029,14 @@
       </visual>
     </link>
     <joint name='7' type='revolute'>
-      <pose relative_to='upper3'>0 0 -0.21299999999999999 0 0 0</pose>
+      <pose relative_to='upper3'>0 0 -0.21299999999999999 -3.14159 0 -3.14159</pose>
       <parent>upper3</parent>
       <child>lower3</child>
       <axis>
         <xyz>0 1 0</xyz>
         <limit>
-          <lower>-2.7227000000000001</lower>
-          <upper>-0.83775999999999995</upper>
+          <lower>0.445059</lower>
+          <upper>2.22529</upper>
           <effort>45.43</effort>
           <velocity>15.699999999999999</velocity>
         </limit>
@@ -1009,7 +1045,6 @@
           <spring_stiffness>0</spring_stiffness>
         </dynamics>
       </axis>
-      <angle>1.8</angle>
     </joint>
     <link name='lower3'>
       <pose relative_to='7'>0 0 0 0 0 0</pose>
@@ -1143,11 +1178,25 @@
             <radius>0.022</radius>
           </sphere>
         </geometry>
+        <surface>
+          <contact>
+            <ode>
+              <kp>1e+06</kp>
+              <kd>1</kd>
+            </ode>
+          </contact>
+          <friction>
+            <ode>
+              <mu>0.6</mu>
+              <mu2>0.6</mu2>
+            </ode>
+          </friction>
+        </surface>
       </collision>
       <sensor name="toe3_contact" type="contact">
         <alwaysOn>true</alwaysOn>
         <updateRate>500</updateRate>
-        <topic>/gazebo/toe3_contact_state</topic>
+        <topic>gazebo/toe3_contact_state</topic>
         <frameName>world</frameName>
         <contact>
           <collision>toe3_collision</collision>

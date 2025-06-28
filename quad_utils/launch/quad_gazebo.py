@@ -146,13 +146,13 @@ def generate_launch_description():
         DeclareLaunchArgument('gui', default_value='true', description='Whether to launch the Gazebo GUI'),
         DeclareLaunchArgument('paused', default_value='false', description='Whether to start the simulation in a paused state'),
         DeclareLaunchArgument('verbose', default_value='false', description='Launch the simulator in verbose mode'),
-        DeclareLaunchArgument('live_plot', default_value='true', description='Launch Plot Juggler'),
+        DeclareLaunchArgument('live_plot', default_value='false', description='Launch Plot Juggler'),
         DeclareLaunchArgument('dash', default_value='false', description='Launch RQT Dashboard'),
         DeclareLaunchArgument('logging', default_value='false', description='Enable/Disable ROS2 Logging' ),
         DeclareLaunchArgument('use_sim_time', default_value='true', description='Whether to use Computer Clock or Sim Clock'),
         DeclareLaunchArgument(
             'robot_configs',
-            default_value='[{"name": "robot_1", "type": "spirit", "controller": "inverse_dynamics"}]',
+            default_value='[{"name": "robot_1", "type": "go2", "controller": "inverse_dynamics"}]',
             description='A JSON List of robot configurations: MUST specifiy name, type, and controller'
         ),
     ]
