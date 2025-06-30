@@ -1,6 +1,7 @@
+<?xml version='1.0'?>
 <sdf version='1.11'>
-  <model name='go2w_description'>
-    <link name='base'>
+  <model name='go2w'>
+    <link name='body'>
       <inertial>
         <pose>0.021189390726563631 0 -0.0053716721074678611 0 0 0</pose>
         <mass>6.923</mass>
@@ -13,7 +14,7 @@
           <izz>0.1071627184969941</izz>
         </inertia>
       </inertial>
-      <collision name='base_collision'>
+      <collision name='body_collision'>
         <pose>0 0 0 0 0 0</pose>
         <geometry>
           <box>
@@ -21,7 +22,7 @@
           </box>
         </geometry>
       </collision>
-      <collision name='base_fixed_joint_lump__Head_upper_collision_1'>
+      <collision name='body_fixed_joint_lump__Head_upper_collision_1'>
         <pose>0.28499999999999998 0 0.01 0 0 0</pose>
         <geometry>
           <cylinder>
@@ -30,7 +31,7 @@
           </cylinder>
         </geometry>
       </collision>
-      <collision name='base_fixed_joint_lump__Head_lower_collision_2'>
+      <collision name='body_fixed_joint_lump__Head_lower_collision_2'>
         <pose>0.29299999999999998 0 -0.059999999999999998 0 0 0</pose>
         <geometry>
           <sphere>
@@ -38,12 +39,12 @@
           </sphere>
         </geometry>
       </collision>
-      <visual name='base_visual'>
+      <visual name='body_visual'>
         <pose>0 0 0 0 0 0</pose>
         <geometry>
           <mesh>
             <scale>1 1 1</scale>
-            <uri>model://go2w_description/dae/base.dae</uri>
+            <uri>model://go2w/dae/body.dae</uri>
           </mesh>
         </geometry>
         <material>
@@ -52,10 +53,10 @@
         </material>
       </visual>
     </link>
-    <joint name='FL_hip_joint' type='revolute'>
-      <pose relative_to='base'>0.19339999999999999 0.0465 0 0 0 0</pose>
-      <parent>base</parent>
-      <child>FL_hip</child>
+    <joint name='8' type='revolute'>
+      <pose relative_to='body'>0.19339999999999999 0.0465 0 0 0 0</pose>
+      <parent>body</parent>
+      <child>hip0</child>
       <axis>
         <xyz>1 0 0</xyz>
         <limit>
@@ -70,8 +71,8 @@
         </dynamics>
       </axis>
     </joint>
-    <link name='FL_hip'>
-      <pose relative_to='FL_hip_joint'>0 0 0 0 0 0</pose>
+    <link name='hip0'>
+      <pose relative_to='8'>0 0 0 0 0 0</pose>
       <inertial>
         <pose>-0.0054000000000000003 0.0019400000000000001 -0.000105 0 0 0</pose>
         <mass>0.67800000000000005</mass>
@@ -84,7 +85,7 @@
           <izz>0.00059599999999999996</izz>
         </inertia>
       </inertial>
-      <collision name='FL_hip_collision'>
+      <collision name='hip0_collision'>
         <pose>0 0.080000000000000002 0 1.5707963267948959 0 0</pose>
         <geometry>
           <cylinder>
@@ -93,12 +94,12 @@
           </cylinder>
         </geometry>
       </collision>
-      <visual name='FL_hip_visual'>
+      <visual name='hip0_visual'>
         <pose>0 0 0 0 0 0</pose>
         <geometry>
           <mesh>
             <scale>1 1 1</scale>
-            <uri>model://go2w_description/dae/hip.dae</uri>
+            <uri>model://go2w/dae/hip.dae</uri>
           </mesh>
         </geometry>
         <material>
@@ -107,15 +108,15 @@
         </material>
       </visual>
     </link>
-    <joint name='FL_thigh_joint' type='revolute'>
-      <pose relative_to='FL_hip'>0 0.095500000000000002 0 0 0 0</pose>
-      <parent>FL_hip</parent>
-      <child>FL_thigh</child>
+    <joint name='0' type='revolute'>
+      <pose relative_to='hip0'>0 0.095500000000000002 0 0 1.5708 0</pose>
+      <parent>hip0</parent>
+      <child>upper0</child>
       <axis>
-        <xyz>0 1 0</xyz>
+        <xyz>0 -1 0</xyz>
         <limit>
-          <lower>-1.570796326794897</lower>
-          <upper>3.4906999999999999</upper>
+          <lower>-2.61799</lower>
+          <upper>2.61799</upper>
           <effort>23.699999999999999</effort>
           <velocity>30.100000000000001</velocity>
         </limit>
@@ -125,8 +126,8 @@
         </dynamics>
       </axis>
     </joint>
-    <link name='FL_thigh'>
-      <pose relative_to='FL_thigh_joint'>0 0 0 0 0 0</pose>
+    <link name='upper0'>
+      <pose relative_to='0'>0 0 0 0 0 0</pose>
       <inertial>
         <pose>-0.0037399999999999998 -0.0223 -0.0327 0 0 0</pose>
         <mass>1.1519999999999999</mass>
@@ -139,7 +140,7 @@
           <izz>0.0010300000000000001</izz>
         </inertia>
       </inertial>
-      <collision name='FL_thigh_collision'>
+      <collision name='upper0_collision'>
         <pose>0 0 -0.1065 0 1.5707963267948966 0</pose>
         <geometry>
           <box>
@@ -147,12 +148,12 @@
           </box>
         </geometry>
       </collision>
-      <visual name='FL_thigh_visual'>
+      <visual name='upper0_visual'>
         <pose>0 0 0 0 0 0</pose>
         <geometry>
           <mesh>
             <scale>1 1 1</scale>
-            <uri>model://go2w_description/dae/thigh.dae</uri>
+            <uri>model://go2/dae/thigh.dae</uri>
           </mesh>
         </geometry>
         <material>
@@ -161,15 +162,15 @@
         </material>
       </visual>
     </link>
-    <joint name='FL_calf_joint' type='revolute'>
-      <pose relative_to='FL_thigh'>0 0 -0.21299999999999999 0 0 0</pose>
-      <parent>FL_thigh</parent>
-      <child>FL_calf</child>
+    <joint name='1' type='revolute'>
+      <pose relative_to='upper0'>0 0 -0.21299999999999999 -3.14159 0 -3.14159</pose>
+      <parent>upper0</parent>
+      <child>lower0</child>
       <axis>
         <xyz>0 1 0</xyz>
         <limit>
-          <lower>-2.7227000000000001</lower>
-          <upper>-0.83775999999999995</upper>
+          <lower>0.445059</lower>
+          <upper>2.22529</upper>
           <effort>35.549999999999997</effort>
           <velocity>20.07</velocity>
         </limit>
@@ -179,8 +180,8 @@
         </dynamics>
       </axis>
     </joint>
-    <link name='FL_calf'>
-      <pose relative_to='FL_calf_joint'>0 0 0 0 0 0</pose>
+    <link name='lower0'>
+      <pose relative_to='1'>0 0 0 0 0 0</pose>
       <inertial>
         <pose>0.0010548999999999999 0.0078873125000000002 -0.20495550000000001 0 0 0</pose>
         <mass>0.80000000000000004</mass>
@@ -193,7 +194,7 @@
           <izz>0.001051613067863875</izz>
         </inertia>
       </inertial>
-      <collision name='FL_calf_collision'>
+      <collision name='lower0_collision'>
         <pose>0.0080000000000000002 0 -0.059999999999999998 0 -0.20999999999999999 0</pose>
         <geometry>
           <cylinder>
@@ -202,7 +203,7 @@
           </cylinder>
         </geometry>
       </collision>
-      <collision name='FL_calflower_collision_1'>
+      <collision name='lower0_lower_collision_1'>
         <pose>0.02 0 -0.14799999999999999 0 0.050000000000000003 0</pose>
         <geometry>
           <cylinder>
@@ -211,7 +212,7 @@
           </cylinder>
         </geometry>
       </collision>
-      <collision name='FL_calflower1_collision_2'>
+      <collision name='lower0_lower1_collision_2'>
         <pose>0.0080133306252232039 0 -0.18745021872309189 0 0.53000000000000014 0</pose>
         <geometry>
           <cylinder>
@@ -220,7 +221,7 @@
           </cylinder>
         </geometry>
       </collision>
-      <collision name='FL_calf_fixed_joint_lump__FL_foot_motor_collision_3'>
+      <collision name='lower0_fixed_joint_lump__FL_foot_motor_collision_3'>
         <pose>0 0.01 -0.22639999999999999 1.5707963267948959 0 0</pose>
         <geometry>
           <cylinder>
@@ -229,12 +230,12 @@
           </cylinder>
         </geometry>
       </collision>
-      <visual name='FL_calf_visual'>
+      <visual name='lower0_visual'>
         <pose>0 0 0 0 0 0</pose>
         <geometry>
           <mesh>
             <scale>1 1 1</scale>
-            <uri>model://go2w_description/dae/calf.stl</uri>
+            <uri>model://go2w/dae/calf.stl</uri>
           </mesh>
         </geometry>
         <material>
@@ -243,10 +244,10 @@
         </material>
       </visual>
     </link>
-    <joint name='FL_foot_joint' type='revolute'>
-      <pose relative_to='FL_calf'>0 0 -0.22639999999999999 0 0 0</pose>
-      <parent>FL_calf</parent>
-      <child>FL_foot</child>
+    <joint name='jtoe0' type='revolute'>
+      <pose relative_to='lower0'>0 0 -0.22639999999999999 0 0 0</pose>
+      <parent>lower0</parent>
+      <child>toe0</child>
       <axis>
         <xyz>0 1 0</xyz>
         <limit>
@@ -261,8 +262,8 @@
         </dynamics>
       </axis>
     </joint>
-    <link name='FL_foot'>
-      <pose relative_to='FL_foot_joint'>0 0 0 0 0 0</pose>
+    <link name='toe0'>
+      <pose relative_to='jtoe0'>0 0 0 0 0 0</pose>
       <inertial>
         <pose>0 0.059999999999999998 0 0 0 0</pose>
         <mass>0.52000000000000002</mass>
@@ -275,21 +276,21 @@
           <izz>0.00069999999999999999</izz>
         </inertia>
       </inertial>
-      <collision name='FL_foot_collision'>
+      <collision name='toe0_collision'>
         <pose>0 0 0 1.5707963267948959 0 0</pose>
         <geometry>
           <mesh>
             <scale>1 1 1</scale>
-            <uri>model://go2w_description/dae/left_wheel.dae</uri>
+            <uri>model://go2w/dae/left_wheel.dae</uri>
           </mesh>
         </geometry>
       </collision>
-      <visual name='FL_foot_visual'>
+      <visual name='toe0_visual'>
         <pose>0 0 0 0 0 0</pose>
         <geometry>
           <mesh>
             <scale>1 1 1</scale>
-            <uri>model://go2w_description/dae/left_wheel.dae</uri>
+            <uri>model://go2w/dae/left_wheel.dae</uri>
           </mesh>
         </geometry>
         <material>
@@ -297,11 +298,24 @@
           <ambient>1 1 1 1</ambient>
         </material>
       </visual>
+      <sensor name="toe0_contact" type="contact">
+        <alwaysOn>true</alwaysOn>
+        <updateRate>500</updateRate>
+        <topic>/gazebo/toe0_contact_state</topic>
+        <frameName>world</frameName>
+        <contact>
+          <collision>toe0_collision</collision>
+        </contact>
+        <plugin filename="libgz-sim8-contact-system.so" name="gz::sim::systems::Contact"> </plugin>
+      </sensor>
+      <gravity>1</gravity>
+      <velocity_decay/>
+      <self_collide>0</self_collide>
     </link>
-    <joint name='FR_hip_joint' type='revolute'>
-      <pose relative_to='base'>0.19339999999999999 -0.0465 0 0 0 0</pose>
-      <parent>base</parent>
-      <child>FR_hip</child>
+    <joint name='10' type='revolute'>
+      <pose relative_to='body'>0.19339999999999999 -0.0465 0 0 0 0</pose>
+      <parent>body</parent>
+      <child>hip2</child>
       <axis>
         <xyz>1 0 0</xyz>
         <limit>
@@ -316,8 +330,8 @@
         </dynamics>
       </axis>
     </joint>
-    <link name='FR_hip'>
-      <pose relative_to='FR_hip_joint'>0 0 0 0 0 0</pose>
+    <link name='hip2'>
+      <pose relative_to='10'>0 0 0 0 0 0</pose>
       <inertial>
         <pose>-0.0054000000000000003 -0.0019400000000000001 -0.000105 0 0 0</pose>
         <mass>0.67800000000000005</mass>
@@ -330,7 +344,7 @@
           <izz>0.00059599999999999996</izz>
         </inertia>
       </inertial>
-      <collision name='FR_hip_collision'>
+      <collision name='hip2_collision'>
         <pose>0 -0.080000000000000002 0 1.5707963267948959 0 0</pose>
         <geometry>
           <cylinder>
@@ -339,12 +353,12 @@
           </cylinder>
         </geometry>
       </collision>
-      <visual name='FR_hip_visual'>
+      <visual name='hip2_visual'>
         <pose>0 0 0 3.1415000000000002 0 0</pose>
         <geometry>
           <mesh>
             <scale>1 1 1</scale>
-            <uri>model://go2w_description/dae/hip.dae</uri>
+            <uri>model://go2w/dae/hip.dae</uri>
           </mesh>
         </geometry>
         <material>
@@ -353,15 +367,15 @@
         </material>
       </visual>
     </link>
-    <joint name='FR_thigh_joint' type='revolute'>
-      <pose relative_to='FR_hip'>0 -0.095500000000000002 0 0 0 0</pose>
-      <parent>FR_hip</parent>
-      <child>FR_thigh</child>
+    <joint name='4' type='revolute'>
+      <pose relative_to='hip2'>0 -0.095500000000000002 0 0 1.5708 0</pose>
+      <parent>hip2</parent>
+      <child>upper2</child>
       <axis>
-        <xyz>0 1 0</xyz>
+        <xyz>0 -1 0</xyz>
         <limit>
-          <lower>-1.570796326794897</lower>
-          <upper>3.4906999999999999</upper>
+          <lower>-2.61799</lower>
+          <upper>2.61799</upper>
           <effort>23.699999999999999</effort>
           <velocity>30.100000000000001</velocity>
         </limit>
@@ -371,8 +385,8 @@
         </dynamics>
       </axis>
     </joint>
-    <link name='FR_thigh'>
-      <pose relative_to='FR_thigh_joint'>0 0 0 0 0 0</pose>
+    <link name='upper2'>
+      <pose relative_to='4'>0 0 0 0 0 0</pose>
       <inertial>
         <pose>-0.0037399999999999998 0.0223 -0.0327 0 0 0</pose>
         <mass>1.1519999999999999</mass>
@@ -385,7 +399,7 @@
           <izz>0.0010300000000000001</izz>
         </inertia>
       </inertial>
-      <collision name='FR_thigh_collision'>
+      <collision name='upper2_collision'>
         <pose>0 0 -0.1065 0 1.5707963267948966 0</pose>
         <geometry>
           <box>
@@ -393,12 +407,12 @@
           </box>
         </geometry>
       </collision>
-      <visual name='FR_thigh_visual'>
+      <visual name='upper2_visual'>
         <pose>0 0 0 0 0 0</pose>
         <geometry>
           <mesh>
             <scale>1 1 1</scale>
-            <uri>model://go2w_description/dae/thigh_mirror.dae</uri>
+            <uri>model://go2w/dae/thigh_mirror.dae</uri>
           </mesh>
         </geometry>
         <material>
@@ -407,15 +421,15 @@
         </material>
       </visual>
     </link>
-    <joint name='FR_calf_joint' type='revolute'>
-      <pose relative_to='FR_thigh'>0 0 -0.21299999999999999 0 0 0</pose>
-      <parent>FR_thigh</parent>
-      <child>FR_calf</child>
+    <joint name='5' type='revolute'>
+      <pose relative_to='upper2'>0 0 -0.21299999999999999 -3.14159 0 -3.14159</pose>
+      <parent>upper2</parent>
+      <child>lower2</child>
       <axis>
         <xyz>0 1 0</xyz>
         <limit>
-          <lower>-2.7227000000000001</lower>
-          <upper>-0.83775999999999995</upper>
+          <lower>0.445059</lower>
+          <upper>2.22529</upper>
           <effort>35.549999999999997</effort>
           <velocity>20.07</velocity>
         </limit>
@@ -425,8 +439,8 @@
         </dynamics>
       </axis>
     </joint>
-    <link name='FR_calf'>
-      <pose relative_to='FR_calf_joint'>0 0 0 0 0 0</pose>
+    <link name='lower2'>
+      <pose relative_to='5'>0 0 0 0 0 0</pose>
       <inertial>
         <pose>0.0010548999999999999 -0.0078873125000000002 -0.20495550000000001 0 0 0</pose>
         <mass>0.80000000000000004</mass>
@@ -439,7 +453,7 @@
           <izz>0.001051613067863875</izz>
         </inertia>
       </inertial>
-      <collision name='FR_calf_collision'>
+      <collision name='lower2_collision'>
         <pose>0.01 0 -0.059999999999999998 0 -0.20000000000000004 0</pose>
         <geometry>
           <cylinder>
@@ -448,7 +462,7 @@
           </cylinder>
         </geometry>
       </collision>
-      <collision name='FR_calflower_collision_1'>
+      <collision name='lower2_lower_collision_1'>
         <pose>0.02 0 -0.14799999999999999 0 0.050000000000000003 0</pose>
         <geometry>
           <cylinder>
@@ -457,7 +471,7 @@
           </cylinder>
         </geometry>
       </collision>
-      <collision name='FR_calflower1_collision_2'>
+      <collision name='lower2_ower1_collision_2'>
         <pose>0.0080133306252232039 0 -0.18745021872309189 0 0.53000000000000014 0</pose>
         <geometry>
           <cylinder>
@@ -466,7 +480,7 @@
           </cylinder>
         </geometry>
       </collision>
-      <collision name='FR_calf_fixed_joint_lump__FR_foot_motor_collision_3'>
+      <collision name='lower2_fixed_joint_lump__FR_foot_motor_collision_3'>
         <pose>0 -0.01 -0.22639999999999999 1.5707963267948959 0 0</pose>
         <geometry>
           <cylinder>
@@ -475,12 +489,12 @@
           </cylinder>
         </geometry>
       </collision>
-      <visual name='FR_calf_visual'>
+      <visual name='lower2_visual'>
         <pose>0 0 0 0 0 0</pose>
         <geometry>
           <mesh>
             <scale>1 1 1</scale>
-            <uri>model://go2w_description/dae/calf_mirror.stl</uri>
+            <uri>model://go2w/dae/calf_mirror.stl</uri>
           </mesh>
         </geometry>
         <material>
@@ -489,10 +503,10 @@
         </material>
       </visual>
     </link>
-    <joint name='FR_foot_joint' type='revolute'>
-      <pose relative_to='FR_calf'>0 0 -0.22639999999999999 0 0 0</pose>
-      <parent>FR_calf</parent>
-      <child>FR_foot</child>
+    <joint name='jtoe2' type='revolute'>
+      <pose relative_to='lower2'>0 0 -0.22639999999999999 0 0 0</pose>
+      <parent>lower2</parent>
+      <child>toe2</child>
       <axis>
         <xyz>0 1 0</xyz>
         <limit>
@@ -507,8 +521,8 @@
         </dynamics>
       </axis>
     </joint>
-    <link name='FR_foot'>
-      <pose relative_to='FR_foot_joint'>0 0 0 0 0 0</pose>
+    <link name='toe2'>
+      <pose relative_to='jtoe2'>0 0 0 0 0 0</pose>
       <inertial>
         <pose>0 -0.059999999999999998 0 0 0 0</pose>
         <mass>0.52000000000000002</mass>
@@ -521,21 +535,21 @@
           <izz>0.00069999999999999999</izz>
         </inertia>
       </inertial>
-      <collision name='FR_foot_collision'>
+      <collision name='toe2_collision'>
         <pose>0 0 0 1.5707963267948959 0 0</pose>
         <geometry>
           <mesh>
             <scale>1 1 1</scale>
-            <uri>model://go2w_description/dae/right_wheel.dae</uri>
+            <uri>model://go2w/dae/right_wheel.dae</uri>
           </mesh>
         </geometry>
       </collision>
-      <visual name='FR_foot_visual'>
+      <visual name='toe2_visual'>
         <pose>0 0 0 0 0 0</pose>
         <geometry>
           <mesh>
             <scale>1 1 1</scale>
-            <uri>model://go2w_description/dae/right_wheel.dae</uri>
+            <uri>model://go2w/dae/right_wheel.dae</uri>
           </mesh>
         </geometry>
         <material>
@@ -543,11 +557,24 @@
           <ambient>1 1 1 1</ambient>
         </material>
       </visual>
+      <sensor name="toe2_contact" type="contact">
+        <alwaysOn>true</alwaysOn>
+        <updateRate>500</updateRate>
+        <topic>gazebo/toe2_contact_state</topic>
+        <frameName>world</frameName>
+        <contact>
+          <collision>toe2_collision</collision>
+        </contact>
+        <plugin filename="libgz-sim8-contact-system.so" name="gz::sim::systems::Contact"> </plugin>
+      </sensor>
+      <gravity>1</gravity>
+      <velocity_decay/>
+      <self_collide>0</self_collide>
     </link>
-    <joint name='RL_hip_joint' type='revolute'>
-      <pose relative_to='base'>-0.19339999999999999 0.0465 0 0 0 0</pose>
-      <parent>base</parent>
-      <child>RL_hip</child>
+    <joint name='9' type='revolute'>
+      <pose relative_to='body'>-0.19339999999999999 0.0465 0 0 0 0</pose>
+      <parent>body</parent>
+      <child>hip1</child>
       <axis>
         <xyz>1 0 0</xyz>
         <limit>
@@ -562,8 +589,8 @@
         </dynamics>
       </axis>
     </joint>
-    <link name='RL_hip'>
-      <pose relative_to='RL_hip_joint'>0 0 0 0 0 0</pose>
+    <link name='hip1'>
+      <pose relative_to='9'>0 0 0 0 0 0</pose>
       <inertial>
         <pose>0.0054000000000000003 0.0019400000000000001 -0.000105 0 0 0</pose>
         <mass>0.67800000000000005</mass>
@@ -576,7 +603,7 @@
           <izz>0.00059599999999999996</izz>
         </inertia>
       </inertial>
-      <collision name='RL_hip_collision'>
+      <collision name='hip1_collision'>
         <pose>0 0.080000000000000002 0 1.5707963267948959 0 0</pose>
         <geometry>
           <cylinder>
@@ -585,12 +612,12 @@
           </cylinder>
         </geometry>
       </collision>
-      <visual name='RL_hip_visual'>
+      <visual name='hip1_visual'>
         <pose>0 0 0 3.1415926535897931 9.265358979305727e-05 3.1415926535897931</pose>
         <geometry>
           <mesh>
             <scale>1 1 1</scale>
-            <uri>model://go2w_description/dae/hip.dae</uri>
+            <uri>model://go2w/dae/hip.dae</uri>
           </mesh>
         </geometry>
         <material>
@@ -599,15 +626,15 @@
         </material>
       </visual>
     </link>
-    <joint name='RL_thigh_joint' type='revolute'>
-      <pose relative_to='RL_hip'>0 0.095500000000000002 0 0 0 0</pose>
-      <parent>RL_hip</parent>
-      <child>RL_thigh</child>
+    <joint name='2' type='revolute'>
+      <pose relative_to='hip1'>0 0.095500000000000002 0 0 1.5708 0</pose>
+      <parent>hip1</parent>
+      <child>upper1</child>
       <axis>
-        <xyz>0 1 0</xyz>
+        <xyz>0 -1 0</xyz>
         <limit>
-          <lower>-0.52359999999999995</lower>
-          <upper>4.5378999999999996</upper>
+          <lower>-2.61799</lower>
+          <upper>2.61799</upper>
           <effort>23.699999999999999</effort>
           <velocity>30.100000000000001</velocity>
         </limit>
@@ -617,8 +644,8 @@
         </dynamics>
       </axis>
     </joint>
-    <link name='RL_thigh'>
-      <pose relative_to='RL_thigh_joint'>0 0 0 0 0 0</pose>
+    <link name='upper1'>
+      <pose relative_to='2'>0 0 0 0 0 0</pose>
       <inertial>
         <pose>-0.0037399999999999998 -0.0223 -0.0327 0 0 0</pose>
         <mass>1.1519999999999999</mass>
@@ -631,7 +658,7 @@
           <izz>0.0010300000000000001</izz>
         </inertia>
       </inertial>
-      <collision name='RL_thigh_collision'>
+      <collision name='upper1_collision'>
         <pose>0 0 -0.1065 0 1.5707963267948966 0</pose>
         <geometry>
           <box>
@@ -639,12 +666,12 @@
           </box>
         </geometry>
       </collision>
-      <visual name='RL_thigh_visual'>
+      <visual name='upper1_visual'>
         <pose>0 0 0 0 0 0</pose>
         <geometry>
           <mesh>
             <scale>1 1 1</scale>
-            <uri>model://go2w_description/dae/thigh.dae</uri>
+            <uri>model://go2w/dae/thigh.dae</uri>
           </mesh>
         </geometry>
         <material>
@@ -653,15 +680,15 @@
         </material>
       </visual>
     </link>
-    <joint name='RL_calf_joint' type='revolute'>
-      <pose relative_to='RL_thigh'>0 0 -0.21299999999999999 0 0 0</pose>
-      <parent>RL_thigh</parent>
-      <child>RL_calf</child>
+    <joint name='3' type='revolute'>
+      <pose relative_to='upper1'>0 0 -0.21299999999999999 -3.14159 0 -3.14159</pose>
+      <parent>upper1</parent>
+      <child>lower1</child>
       <axis>
         <xyz>0 1 0</xyz>
         <limit>
-          <lower>-2.7227000000000001</lower>
-          <upper>-0.83775999999999995</upper>
+          <lower>0.445059</lower>
+          <upper>2.22529</upper>
           <effort>35.549999999999997</effort>
           <velocity>20.07</velocity>
         </limit>
@@ -671,8 +698,8 @@
         </dynamics>
       </axis>
     </joint>
-    <link name='RL_calf'>
-      <pose relative_to='RL_calf_joint'>0 0 0 0 0 0</pose>
+    <link name='lower1'>
+      <pose relative_to='3'>0 0 0 0 0 0</pose>
       <inertial>
         <pose>0.0010548999999999999 0.0078873125000000002 -0.20495550000000001 0 0 0</pose>
         <mass>0.80000000000000004</mass>
@@ -685,7 +712,7 @@
           <izz>0.001051613067863875</izz>
         </inertia>
       </inertial>
-      <collision name='RL_calf_collision'>
+      <collision name='lower1_collision'>
         <pose>0.01 0 -0.059999999999999998 0 -0.20000000000000004 0</pose>
         <geometry>
           <cylinder>
@@ -694,7 +721,7 @@
           </cylinder>
         </geometry>
       </collision>
-      <collision name='RL_calflower_collision_1'>
+      <collision name='lower1_lower_collision_1'>
         <pose>0.02 0 -0.14799999999999999 0 0.050000000000000003 0</pose>
         <geometry>
           <cylinder>
@@ -703,7 +730,7 @@
           </cylinder>
         </geometry>
       </collision>
-      <collision name='RL_calflower1_collision_2'>
+      <collision name='lower1_lower1_collision_2'>
         <pose>0.0080133306252232039 0 -0.18745021872309189 0 0.53000000000000014 0</pose>
         <geometry>
           <cylinder>
@@ -712,7 +739,7 @@
           </cylinder>
         </geometry>
       </collision>
-      <collision name='RL_calf_fixed_joint_lump__RL_foot_motor_collision_3'>
+      <collision name='lower1_fixed_joint_lump__RL_foot_motor_collision_3'>
         <pose>0 0.01 -0.22639999999999999 1.5707963267948959 0 0</pose>
         <geometry>
           <cylinder>
@@ -721,12 +748,12 @@
           </cylinder>
         </geometry>
       </collision>
-      <visual name='RL_calf_visual'>
+      <visual name='lower1_visual'>
         <pose>0 0 0 0 0 0</pose>
         <geometry>
           <mesh>
             <scale>1 1 1</scale>
-            <uri>model://go2w_description/dae/calf.stl</uri>
+            <uri>model://go2w/dae/calf.stl</uri>
           </mesh>
         </geometry>
         <material>
@@ -735,10 +762,10 @@
         </material>
       </visual>
     </link>
-    <joint name='RL_foot_joint' type='revolute'>
-      <pose relative_to='RL_calf'>0 0 -0.22639999999999999 0 0 0</pose>
-      <parent>RL_calf</parent>
-      <child>RL_foot</child>
+    <joint name='jtoe1' type='revolute'>
+      <pose relative_to='lower1'>0 0 -0.22639999999999999 0 0 0</pose>
+      <parent>lower1</parent>
+      <child>toe1</child>
       <axis>
         <xyz>0 1 0</xyz>
         <limit>
@@ -753,8 +780,8 @@
         </dynamics>
       </axis>
     </joint>
-    <link name='RL_foot'>
-      <pose relative_to='RL_foot_joint'>0 0 0 0 0 0</pose>
+    <link name='toe1'>
+      <pose relative_to='jtoe1'>0 0 0 0 0 0</pose>
       <inertial>
         <pose>0 0.059999999999999998 0 0 0 0</pose>
         <mass>0.52000000000000002</mass>
@@ -767,21 +794,21 @@
           <izz>0.00069999999999999999</izz>
         </inertia>
       </inertial>
-      <collision name='RL_foot_collision'>
+      <collision name='toe1_collision'>
         <pose>0 0 0 1.5707963267948959 0 0</pose>
         <geometry>
           <mesh>
             <scale>1 1 1</scale>
-            <uri>model://go2w_description/dae/left_wheel.dae</uri>
+            <uri>model://go2w/dae/left_wheel.dae</uri>
           </mesh>
         </geometry>
       </collision>
-      <visual name='RL_foot_visual'>
+      <visual name='toe1_visual'>
         <pose>0 0 0 0 0 0</pose>
         <geometry>
           <mesh>
             <scale>1 1 1</scale>
-            <uri>model://go2w_description/dae/left_wheel.dae</uri>
+            <uri>model://go2w/dae/left_wheel.dae</uri>
           </mesh>
         </geometry>
         <material>
@@ -789,11 +816,24 @@
           <ambient>1 1 1 1</ambient>
         </material>
       </visual>
+      <sensor name="toe1_contact" type="contact">
+        <alwaysOn>true</alwaysOn>
+        <updateRate>500</updateRate>
+        <topic>gazebo/toe1_contact_state</topic>
+        <frameName>world</frameName>
+        <contact>
+          <collision>toe1_collision</collision>
+        </contact>
+        <plugin filename="libgz-sim8-contact-system.so" name="gz::sim::systems::Contact"> </plugin>
+      </sensor>
+      <gravity>1</gravity>
+      <velocity_decay/>
+      <self_collide>0</self_collide>
     </link>
-    <joint name='RR_hip_joint' type='revolute'>
-      <pose relative_to='base'>-0.19339999999999999 -0.0465 0 0 0 0</pose>
-      <parent>base</parent>
-      <child>RR_hip</child>
+    <joint name='11' type='revolute'>
+      <pose relative_to='body'>-0.19339999999999999 -0.0465 0 0 0 0</pose>
+      <parent>body</parent>
+      <child>hip3</child>
       <axis>
         <xyz>1 0 0</xyz>
         <limit>
@@ -808,8 +848,8 @@
         </dynamics>
       </axis>
     </joint>
-    <link name='RR_hip'>
-      <pose relative_to='RR_hip_joint'>0 0 0 0 0 0</pose>
+    <link name='hip3'>
+      <pose relative_to='11'>0 0 0 0 0 0</pose>
       <inertial>
         <pose>0.0054000000000000003 -0.0019400000000000001 -0.000105 0 0 0</pose>
         <mass>0.67800000000000005</mass>
@@ -822,7 +862,7 @@
           <izz>0.00059599999999999996</izz>
         </inertia>
       </inertial>
-      <collision name='RR_hip_collision'>
+      <collision name='hip3_collision'>
         <pose>0 -0.080000000000000002 0 1.5707963267948959 0 0</pose>
         <geometry>
           <cylinder>
@@ -831,12 +871,12 @@
           </cylinder>
         </geometry>
       </collision>
-      <visual name='RR_hip_visual'>
+      <visual name='hip3_visual'>
         <pose>0 0 0 -9.2653589793057257e-05 9.2653589793057284e-05 3.1415926535897931</pose>
         <geometry>
           <mesh>
             <scale>1 1 1</scale>
-            <uri>model://go2w_description/dae/hip.dae</uri>
+            <uri>model://go2w/dae/hip.dae</uri>
           </mesh>
         </geometry>
         <material>
@@ -845,15 +885,15 @@
         </material>
       </visual>
     </link>
-    <joint name='RR_thigh_joint' type='revolute'>
-      <pose relative_to='RR_hip'>0 -0.095500000000000002 0 0 0 0</pose>
-      <parent>RR_hip</parent>
-      <child>RR_thigh</child>
+    <joint name='6' type='revolute'>
+      <pose relative_to='hip3'>0 -0.095500000000000002 0 0 1.5708 0</pose>
+      <parent>hip3</parent>
+      <child>upper3</child>
       <axis>
-        <xyz>0 1 0</xyz>
+        <xyz>0 -1 0</xyz>
         <limit>
-          <lower>-0.52359999999999995</lower>
-          <upper>4.5378999999999996</upper>
+          <lower>-2.61799</lower>
+          <upper>2.61799</upper>
           <effort>23.699999999999999</effort>
           <velocity>30.100000000000001</velocity>
         </limit>
@@ -863,8 +903,8 @@
         </dynamics>
       </axis>
     </joint>
-    <link name='RR_thigh'>
-      <pose relative_to='RR_thigh_joint'>0 0 0 0 0 0</pose>
+    <link name='upper3'>
+      <pose relative_to='6'>0 0 0 0 0 0</pose>
       <inertial>
         <pose>-0.0037399999999999998 0.0223 -0.0327 0 0 0</pose>
         <mass>1.1519999999999999</mass>
@@ -877,7 +917,7 @@
           <izz>0.0010300000000000001</izz>
         </inertia>
       </inertial>
-      <collision name='RR_thigh_collision'>
+      <collision name='upper3_collision'>
         <pose>0 0 -0.1065 0 1.5707963267948966 0</pose>
         <geometry>
           <box>
@@ -885,12 +925,12 @@
           </box>
         </geometry>
       </collision>
-      <visual name='RR_thigh_visual'>
+      <visual name='upper3_visual'>
         <pose>0 0 0 0 0 0</pose>
         <geometry>
           <mesh>
             <scale>1 1 1</scale>
-            <uri>model://go2w_description/dae/thigh_mirror.dae</uri>
+            <uri>model://go2w/dae/thigh_mirror.dae</uri>
           </mesh>
         </geometry>
         <material>
@@ -899,15 +939,15 @@
         </material>
       </visual>
     </link>
-    <joint name='RR_calf_joint' type='revolute'>
-      <pose relative_to='RR_thigh'>0 0 -0.21299999999999999 0 0 0</pose>
-      <parent>RR_thigh</parent>
-      <child>RR_calf</child>
+    <joint name='7' type='revolute'>
+      <pose relative_to='upper3'>0 0 -0.21299999999999999 -3.14159 0 -3.14159</pose>
+      <parent>upper3</parent>
+      <child>lower3</child>
       <axis>
         <xyz>0 1 0</xyz>
         <limit>
-          <lower>-2.7227000000000001</lower>
-          <upper>-0.83775999999999995</upper>
+          <lower>0.445059</lower>
+          <upper>2.22529</upper>
           <effort>35.549999999999997</effort>
           <velocity>20.07</velocity>
         </limit>
@@ -917,8 +957,8 @@
         </dynamics>
       </axis>
     </joint>
-    <link name='RR_calf'>
-      <pose relative_to='RR_calf_joint'>0 0 0 0 0 0</pose>
+    <link name='lower3'>
+      <pose relative_to='7'>0 0 0 0 0 0</pose>
       <inertial>
         <pose>0.0010548999999999999 -0.0078873125000000002 -0.20495550000000001 0 0 0</pose>
         <mass>0.80000000000000004</mass>
@@ -931,7 +971,7 @@
           <izz>0.001051613067863875</izz>
         </inertia>
       </inertial>
-      <collision name='RR_calf_collision'>
+      <collision name='lower3_collision'>
         <pose>0.01 0 -0.059999999999999998 0 -0.20000000000000004 0</pose>
         <geometry>
           <cylinder>
@@ -940,7 +980,7 @@
           </cylinder>
         </geometry>
       </collision>
-      <collision name='RR_calflower_collision_1'>
+      <collision name='lower3_lower_collision_1'>
         <pose>0.02 0 -0.14799999999999999 0 0.050000000000000003 0</pose>
         <geometry>
           <cylinder>
@@ -949,7 +989,7 @@
           </cylinder>
         </geometry>
       </collision>
-      <collision name='RR_calflower1_collision_2'>
+      <collision name='lower3_lower1_collision_2'>
         <pose>0.0080133306252232039 0 -0.18745021872309189 0 0.53000000000000014 0</pose>
         <geometry>
           <cylinder>
@@ -958,7 +998,7 @@
           </cylinder>
         </geometry>
       </collision>
-      <collision name='RR_calf_fixed_joint_lump__RR_foot_motor_collision_3'>
+      <collision name='lower3_fixed_joint_lump__RR_foot_motor_collision_3'>
         <pose>0 -0.01 -0.22639999999999999 1.5707963267948959 0 0</pose>
         <geometry>
           <cylinder>
@@ -967,12 +1007,12 @@
           </cylinder>
         </geometry>
       </collision>
-      <visual name='RR_calf_visual'>
+      <visual name='lower3_visual'>
         <pose>0 0 0 0 0 0</pose>
         <geometry>
           <mesh>
             <scale>1 1 1</scale>
-            <uri>model://go2w_description/dae/calf_mirror.stl</uri>
+            <uri>model://go2w/dae/calf_mirror.stl</uri>
           </mesh>
         </geometry>
         <material>
@@ -981,10 +1021,10 @@
         </material>
       </visual>
     </link>
-    <joint name='RR_foot_joint' type='revolute'>
-      <pose relative_to='RR_calf'>0 0 -0.22639999999999999 0 0 0</pose>
-      <parent>RR_calf</parent>
-      <child>RR_foot</child>
+    <joint name='jtoe3' type='revolute'>
+      <pose relative_to='lower3'>0 0 -0.22639999999999999 0 0 0</pose>
+      <parent>lower3</parent>
+      <child>toe3</child>
       <axis>
         <xyz>0 1 0</xyz>
         <limit>
@@ -999,8 +1039,8 @@
         </dynamics>
       </axis>
     </joint>
-    <link name='RR_foot'>
-      <pose relative_to='RR_foot_joint'>0 0 0 0 0 0</pose>
+    <link name='toe3'>
+      <pose relative_to='jtoe3'>0 0 0 0 0 0</pose>
       <inertial>
         <pose>0 -0.059999999999999998 0 0 0 0</pose>
         <mass>0.52000000000000002</mass>
@@ -1013,21 +1053,21 @@
           <izz>0.00069999999999999999</izz>
         </inertia>
       </inertial>
-      <collision name='RR_foot_collision'>
+      <collision name='toe3_collision'>
         <pose>0 0 0 1.5707963267948959 0 0</pose>
         <geometry>
           <mesh>
             <scale>1 1 1</scale>
-            <uri>model://go2w_description/dae/right_wheel.dae</uri>
+            <uri>model://go2w/dae/right_wheel.dae</uri>
           </mesh>
         </geometry>
       </collision>
-      <visual name='RR_foot_visual'>
+      <visual name='toe3_visual'>
         <pose>0 0 0 0 0 0</pose>
         <geometry>
           <mesh>
             <scale>1 1 1</scale>
-            <uri>model://go2w_description/dae/right_wheel.dae</uri>
+            <uri>model://go2w/dae/right_wheel.dae</uri>
           </mesh>
         </geometry>
         <material>
@@ -1035,6 +1075,19 @@
           <ambient>1 1 1 1</ambient>
         </material>
       </visual>
+      <sensor name="toe3_contact" type="contact">
+        <alwaysOn>true</alwaysOn>
+        <updateRate>500</updateRate>
+        <topic>gazebo/toe3_contact_state</topic>
+        <frameName>world</frameName>
+        <contact>
+          <collision>toe3_collision</collision>
+        </contact>
+        <plugin filename="libgz-sim8-contact-system.so" name="gz::sim::systems::Contact"> </plugin>
+      </sensor>
+      <gravity>1</gravity>
+      <velocity_decay/>
+      <self_collide>0</self_collide>
     </link>
     <frame name='Head_lower_joint' attached_to='Head_upper'>
       <pose>0.0080000000000000002 0 -0.070000000000000007 0 0 0</pose>
@@ -1042,95 +1095,126 @@
     <frame name='Head_lower' attached_to='Head_lower_joint'>
       <pose>0 0 0 0 0 0</pose>
     </frame>
-    <frame name='Head_upper_joint' attached_to='base'>
+    <frame name='Head_upper_joint' attached_to='body'>
       <pose>0.28499999999999998 0 0.01 0 0 0</pose>
     </frame>
     <frame name='Head_upper' attached_to='Head_upper_joint'>
       <pose>0 0 0 0 0 0</pose>
     </frame>
-    <frame name='imu_joint' attached_to='base'>
+    <frame name='imu_frame' attached_to='body'>
       <pose>-0.025569999999999999 0 0.042320000000000003 0 0 0</pose>
     </frame>
-    <frame name='imu' attached_to='imu_joint'>
+    <frame name='imu_body' attached_to='imu_frame'>
       <pose>0 0 0 0 0 0</pose>
     </frame>
-    <frame name='radar_joint' attached_to='base'>
+    <frame name='radar_joint' attached_to='body'>
       <pose>0.28944999999999999 0 -0.046824999999999999 3.1415926535897931 0.26339265358979325 3.1415926535897931</pose>
     </frame>
     <frame name='radar' attached_to='radar_joint'>
       <pose>0 0 0 0 0 0</pose>
     </frame>
-    <frame name='FL_calflower1_joint' attached_to='FL_calflower'>
+    <frame name='lower0_lower1_joint' attached_to='lower0_lower'>
       <pose>-0.01 0 -0.040000000000000001 0 0.4800000000000002 0</pose>
     </frame>
-    <frame name='FL_calflower1' attached_to='FL_calflower1_joint'>
+    <frame name='lower0_lower1' attached_to='lower0_lower1_joint'>
       <pose>0 0 0 0 0 0</pose>
     </frame>
-    <frame name='FL_calflower_joint' attached_to='FL_calf'>
+    <frame name='lower0_lower_joint' attached_to='lower0'>
       <pose>0.02 0 -0.14799999999999999 0 0.050000000000000003 0</pose>
     </frame>
-    <frame name='FL_calflower' attached_to='FL_calflower_joint'>
+    <frame name='lower0_lower' attached_to='lower0_lower_joint'>
       <pose>0 0 0 0 0 0</pose>
     </frame>
-    <frame name='FL_foot_motor_joint' attached_to='FL_calf'>
+    <frame name='toe0_motor_joint' attached_to='lower0'>
       <pose>0 0.01 -0.22639999999999999 0 0 0</pose>
     </frame>
-    <frame name='FL_foot_motor' attached_to='FL_foot_motor_joint'>
+    <frame name='toe0_motor' attached_to='toe0_motor_joint'>
       <pose>0 0 0 0 0 0</pose>
     </frame>
-    <frame name='FR_calflower1_joint' attached_to='FR_calflower'>
+    <frame name='lower2_lower1_joint' attached_to='lower2_lower'>
       <pose>-0.01 0 -0.040000000000000001 0 0.4800000000000002 0</pose>
     </frame>
-    <frame name='FR_calflower1' attached_to='FR_calflower1_joint'>
+    <frame name='lower2_lower1' attached_to='lower2_lower1_joint'>
       <pose>0 0 0 0 0 0</pose>
     </frame>
-    <frame name='FR_calflower_joint' attached_to='FR_calf'>
+    <frame name='lower2_lower_joint' attached_to='lower2'>
       <pose>0.02 0 -0.14799999999999999 0 0.050000000000000003 0</pose>
     </frame>
-    <frame name='FR_calflower' attached_to='FR_calflower_joint'>
+    <frame name='lower2_lower' attached_to='lower2_lower_joint'>
       <pose>0 0 0 0 0 0</pose>
     </frame>
-    <frame name='FR_foot_motor_joint' attached_to='FR_calf'>
+    <frame name='toe2_motor_joint' attached_to='lower2'>
       <pose>0 -0.01 -0.22639999999999999 0 0 0</pose>
     </frame>
-    <frame name='FR_foot_motor' attached_to='FR_foot_motor_joint'>
+    <frame name='toe2_motor' attached_to='toe2_motor_joint'>
       <pose>0 0 0 0 0 0</pose>
     </frame>
-    <frame name='RL_calflower1_joint' attached_to='RL_calflower'>
+    <frame name='lower1_lower1_joint' attached_to='lower1_lower'>
       <pose>-0.01 0 -0.040000000000000001 0 0.4800000000000002 0</pose>
     </frame>
-    <frame name='RL_calflower1' attached_to='RL_calflower1_joint'>
+    <frame name='lower1_lower1' attached_to='lower1_lower1_joint'>
       <pose>0 0 0 0 0 0</pose>
     </frame>
-    <frame name='RL_calflower_joint' attached_to='RL_calf'>
+    <frame name='lower1_lower_joint' attached_to='lower1'>
       <pose>0.02 0 -0.14799999999999999 0 0.050000000000000003 0</pose>
     </frame>
-    <frame name='RL_calflower' attached_to='RL_calflower_joint'>
+    <frame name='lower1_lower' attached_to='lower1_lower_joint'>
       <pose>0 0 0 0 0 0</pose>
     </frame>
-    <frame name='RL_foot_motor_joint' attached_to='RL_calf'>
+    <frame name='toe1_motor_joint' attached_to='lower1'>
       <pose>0 0.01 -0.22639999999999999 0 0 0</pose>
     </frame>
-    <frame name='RL_foot_motor' attached_to='RL_foot_motor_joint'>
+    <frame name='toe1_motor' attached_to='toe1_motor_joint'>
       <pose>0 0 0 0 0 0</pose>
     </frame>
-    <frame name='RR_calflower1_joint' attached_to='RR_calflower'>
+    <frame name='lower3_lower1_joint' attached_to='lower3_lower'>
       <pose>-0.01 0 -0.040000000000000001 0 0.4800000000000002 0</pose>
     </frame>
-    <frame name='RR_calflower1' attached_to='RR_calflower1_joint'>
+    <frame name='lower3_lower1' attached_to='lower3_lower1_joint'>
       <pose>0 0 0 0 0 0</pose>
     </frame>
-    <frame name='RR_calflower_joint' attached_to='RR_calf'>
+    <frame name='lower3_lower_joint' attached_to='lower3'>
       <pose>0.02 0 -0.14799999999999999 0 0.050000000000000003 0</pose>
     </frame>
-    <frame name='RR_calflower' attached_to='RR_calflower_joint'>
+    <frame name='lower3_lower' attached_to='lower3_lower_joint'>
       <pose>0 0 0 0 0 0</pose>
     </frame>
-    <frame name='RR_foot_motor_joint' attached_to='RR_calf'>
+    <frame name='toe3_motor_joint' attached_to='lower3'>
       <pose>0 -0.01 -0.22639999999999999 0 0 0</pose>
     </frame>
-    <frame name='RR_foot_motor' attached_to='RR_foot_motor_joint'>
+    <frame name='toe3_motor' attached_to='toe3_motor_joint'>
       <pose>0 0 0 0 0 0</pose>
     </frame>
+    <include>
+      <uri>model://imu</uri>
+      <name>imu</name>
+      <pose>0 0 0 0 0 0 </pose>
+    </include>
+
+    <joint name="imu_joint" type="fixed">
+      <child>imu::link</child>
+      <parent>body</parent>
+    </joint>
+
+    <!-- Setup ros control -->
+      <plugin 
+          filename="libgz_ros2_control-system.so"
+          name="gz_ros2_control::GazeboSimROS2ControlPlugin">
+          <controlPeriod>0.002</controlPeriod>
+          <parameters>/home/rml/ros2_ws/install/gazebo_scripts/share/gazebo_scripts/config/quad_wheel_control.yaml</parameters>
+              <ros>
+                <namespace>robot_1</namespace>
+            </ros>
+      </plugin>
+
+    <!-- Publish ground truth state data -->
+    <plugin filename="libground_truth_estimator.so" name="ground_truth_estimator">
+      <updateRateHZ>500.0</updateRateHZ>
+      <ground_truth_state_topic>state/ground_truth</ground_truth_state_topic>
+      <ground_truth_body_frame_topic>state/ground_truth_body_frame</ground_truth_body_frame_topic>
+      <ros>
+        <parameter name="use_sim_time">true</parameter>
+      </ros>
+    </plugin>
   </model>
 </sdf>
