@@ -14,32 +14,32 @@ import xacro
 def load_robot_params(context, *args, **kwargs):
     # Load Robot URDF and Robot Centric Parameters
     robot_type = LaunchConfiguration('robot_type').perform(context)
-    
+    namespace = LaunchConfiguration('namespace').perform(context)
     # Find URDF, SDF, and YAML file for the Corresponding Robot
     if robot_type == 'spirit' or robot_type == 'spirit_rotors':
         desc_pkg = 'spirit_description'
         urdf_file = 'spirit.urdf.xacro'
-        sdf_file = 'spirit_rotors.sdf' if robot_type == 'spirit_rotors' else 'spirit.sdf'
+        sdf_file = 'spirit_rotors.sdf.xacro' if robot_type == 'spirit_rotors' else 'spirit.sdf.xacro'
         config_file = 'spirit.yaml'
     elif robot_type == 'a1':
         desc_pkg = 'a1_description'
         urdf_file = 'a1.urdf.xacro'
-        sdf_file = 'a1.sdf'
+        sdf_file = 'a1.sdf.xacro'
         config_file = 'a1.yaml'
     elif robot_type == 'go2':
         desc_pkg = 'go2_description'
         urdf_file = 'go2.urdf.xacro'
-        sdf_file = 'go2.sdf'
+        sdf_file = 'go2.sdf.xacro'
         config_file = 'go2.yaml'
     elif robot_type == 'go2w':
         desc_pkg = 'go2w_description'
         urdf_file = 'go2w.urdf.xacro'
-        sdf_file = 'go2w.sdf'
+        sdf_file = 'go2w.sdf.xacro'
         config_file = 'go2w.yaml'
     elif robot_type == 'b2':
         desc_pkg = 'b2_description'
         urdf_file = 'b2.urdf.xacro'
-        sdf_file = 'b2.sdf'
+        sdf_file = 'b2.sdf.xacro'
         config_file = 'b2.yaml'
     else:
         raise RuntimeError(f"[robot_bringup] Unsupported robot type: {robot_type}")
@@ -53,8 +53,7 @@ def load_robot_params(context, *args, **kwargs):
     # with open(os.path.join(desc_path, 'models',robot_type,'urdf', urdf_file), 'r') as f:
     #     urdf = f.read()
     urdf = xacro.process_file(urdf_path).toxml()
-    with open(os.path.join(desc_path, 'models',robot_type, sdf_file), 'r') as f:
-        sdf = f.read()
+    sdf = xacro.process_file(sdf_path, mappings={"namespace": namespace}).toxml()
 
     return [
         SetLaunchConfiguration('robot_urdf', urdf),
@@ -94,7 +93,7 @@ def spawn_sdf_model(context, *args, **kwargs):
         output='screen',
         arguments=[
             '-name', namespace,
-            '-file', sdf_path,
+            '-string', sdf,
             '-x', init_pose.split()[1],
             '-y', init_pose.split()[3],
             '-z', init_pose.split()[5],
