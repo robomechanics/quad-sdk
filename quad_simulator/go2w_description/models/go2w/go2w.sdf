@@ -1101,7 +1101,7 @@
     <frame name='Head_upper' attached_to='Head_upper_joint'>
       <pose>0 0 0 0 0 0</pose>
     </frame>
-    <frame name='imu_frame' attached_to='body'>
+    <!-- <frame name='imu_frame' attached_to='body'>
       <pose>-0.025569999999999999 0 0.042320000000000003 0 0 0</pose>
     </frame>
     <frame name='imu_body' attached_to='imu_frame'>
@@ -1184,7 +1184,7 @@
     </frame>
     <frame name='toe3_motor' attached_to='toe3_motor_joint'>
       <pose>0 0 0 0 0 0</pose>
-    </frame>
+    </frame> -->
     <include>
       <uri>model://imu</uri>
       <name>imu</name>
