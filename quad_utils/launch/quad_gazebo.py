@@ -83,6 +83,7 @@ def launch_robot_group(context, *args, **kwargs):
         robot_ns = config["name"]
         robot_type = config["type"]
         controller = config["controller"]
+        init_pose = config["init_pose"]
 
         robot_launch_file = PathJoinSubstitution([
             FindPackageShare('quad_utils'), # May Need Changing, Maybe a Launch File that Contains Quad_Spawn
@@ -98,6 +99,7 @@ def launch_robot_group(context, *args, **kwargs):
                     'robot_type': TextSubstitution(text=robot_type),
                     'namespace': TextSubstitution(text=robot_ns),
                     'controller': TextSubstitution(text=controller),
+                    'init_pose' : TextSubstitution(text=init_pose),
                     'world': LaunchConfiguration('world'),
                     'use_sim_time': LaunchConfiguration('use_sim_time')
                 }.items()
@@ -152,7 +154,7 @@ def generate_launch_description():
         DeclareLaunchArgument('use_sim_time', default_value='true', description='Whether to use Computer Clock or Sim Clock'),
         DeclareLaunchArgument(
             'robot_configs',
-            default_value='[{"name": "robot_1", "type": "go2", "controller": "inverse_dynamics"}]',
+            default_value='[{"name": "robot_1", "type": "go2", "controller": "inverse_dynamics", "init_pose" : "-x 0.0 -y 0.0 -z 15"}]',
             description='A JSON List of robot configurations: MUST specifiy name, type, and controller'
         ),
     ]
@@ -168,8 +170,4 @@ def generate_launch_description():
 
 
 # Example Usage, for Running Multiple Robots
-# ros2 launch quad_utils quad_gazebo_multi.py \
-#     robot_configs:='[
-#         {"name": "robot_1", "type": "spirit", "controller": "inverse_dynamics"},
-#         {"name": "robot_2", "type": "go1", "controller": "inverse_dynamics"},
-#     ]'
+# ros2 launch quad_utils quad_gazebo.py robot_configs:='[{"name": "robot_1", "type": "spirit", "controller": "inverse_dynamics",  "init_pose": "-x 0.0 -y 0.0 -z 15"}, {"name": "robot_2", "type": "go2", "controller": "inverse_dynamics",  "init_pose": "-x 2.0 -y 0.0 -z 15"}]'
