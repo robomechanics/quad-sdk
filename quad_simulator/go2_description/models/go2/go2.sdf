@@ -213,7 +213,7 @@
           </cylinder>
         </geometry>
       </collision>
-      <collision name='lower_lower1_collision_2'>
+      <collision name='lower0_lower1_collision_2'>
         <pose>0.0080133306252232039 0 -0.18745021872309189 0 0.53000000000000014 0</pose>
         <geometry>
           <cylinder>

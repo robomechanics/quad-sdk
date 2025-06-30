@@ -31,6 +31,11 @@ def load_robot_params(context, *args, **kwargs):
         urdf_file = 'go2.urdf.xacro'
         sdf_file = 'go2.sdf'
         config_file = 'go2.yaml'
+    elif robot_type == 'go2w':
+        desc_pkg = 'go2w_description'
+        urdf_file = 'go2w.urdf.xacro'
+        sdf_file = 'go2w.sdf'
+        config_file = 'go2w.yaml'
     else:
         raise RuntimeError(f"[robot_bringup] Unsupported robot type: {robot_type}")
 
