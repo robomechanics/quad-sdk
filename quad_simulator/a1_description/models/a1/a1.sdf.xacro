@@ -1,6 +1,8 @@
 <?xml version='1.0'?>
 <sdf version='1.6' xmlns:xacro="http://www.ros.org/wiki/xacro">
   <xacro:arg name="namespace" default="robot_1" />
+  <xacro:arg name="controller_config_path" default="/path/quad_control.yaml" />
+  
   <model name='a1'>
     <link name='body'>
       <pose frame=''>0 0 0 0 -0 0</pose>
@@ -1345,7 +1347,7 @@
           filename="libgz_ros2_control-system.so"
           name="gz_ros2_control::GazeboSimROS2ControlPlugin">
           <controlPeriod>0.002</controlPeriod>
-          <parameters>/home/rml/ros2_ws/install/gazebo_scripts/share/gazebo_scripts/config/quad_control.yaml</parameters>
+          <parameters>$(arg controller_config_path)</parameters>
               <ros>
                 <namespace>$(arg namespace)</namespace>
             </ros>
