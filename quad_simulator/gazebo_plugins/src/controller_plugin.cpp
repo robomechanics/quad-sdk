@@ -120,6 +120,14 @@ controller_interface::CallbackReturn QuadController::on_configure(const rclcpp_l
                                         << "' (namespace: " << node_->get_namespace() << ")");
         return controller_interface::CallbackReturn::ERROR;
     }
+    RCLCPP_INFO(node_->get_logger(), "Torque Limits for each joint:");
+    for (size_t i = 0; i < joint_names_.size(); ++i) {
+        if (i < torque_lims_.size()) {
+            RCLCPP_INFO(node_->get_logger(), "  %s: %.3f Nm", joint_names_[i].c_str(), torque_lims_[i]);
+        } else {
+            RCLCPP_WARN(node_->get_logger(), "  %s: No torque limit specified!", joint_names_[i].c_str());
+        }
+    }
 
     n_joints_ = joint_names_.size();
     if (n_joints_ == 0){

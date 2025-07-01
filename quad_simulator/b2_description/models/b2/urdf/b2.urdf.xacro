@@ -384,8 +384,8 @@
     <limit
       lower="-2.8012"
       upper="2.8012"
-      effort="200"
-      velocity="23" />
+      effort="200.0"
+      velocity="23.0" />
   </joint>
   <link name="upper0_rotor">
     <!-- <visual>
@@ -677,8 +677,8 @@
     <limit
       lower="-2.8012"
       upper="2.8012"
-      effort="200"
-      velocity="23" />
+      effort="200.0"
+      velocity="23.0" />
   </joint>
   <link name="upper2_rotor">
     <!-- <visual>
@@ -971,8 +971,8 @@
     <limit
       lower="-2.8012"
       upper="2.8012"
-      effort="200"
-      velocity="23" />
+      effort="200.0"
+      velocity="23.0" />
   </joint>
   <link name="upper1_rotor">
     <!-- <visual>
@@ -1264,8 +1264,8 @@
     <limit
       lower="-2.8012"
       upper="2.8012"
-      effort="200"
-      velocity="23" />
+      effort="200.0"
+      velocity="23.0" />
   </joint>
   <link name="upper3_rotor">
     <!-- <visual>
