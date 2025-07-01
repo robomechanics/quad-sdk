@@ -1,4 +1,4 @@
-#include "global_body_planner/rrt.h"
+#include "global_body_planner/rrt.hpp"
 
 #include <ctime>
 // constructor

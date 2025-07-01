@@ -154,7 +154,7 @@ def generate_launch_description():
         DeclareLaunchArgument('use_sim_time', default_value='true', description='Whether to use Computer Clock or Sim Clock'),
         DeclareLaunchArgument(
             'robot_configs',
-            default_value='[{"name": "robot_1", "type": "go2", "controller": "inverse_dynamics", "init_pose" : "-x 0.0 -y 0.0 -z 2"}]',
+            default_value='[{"name": "robot_1", "type": "b2", "controller": "inverse_dynamics", "init_pose" : "-x 0.0 -y 0.0 -z 2"}]',
             description='A JSON List of robot configurations: MUST specifiy name, type, and controller'
         ),
     ]

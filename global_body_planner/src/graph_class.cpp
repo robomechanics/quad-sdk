@@ -1,4 +1,4 @@
-#include "global_body_planner/graph_class.h"
+#include "global_body_planner/graph_class.hpp"
 
 #include <math.h>
 

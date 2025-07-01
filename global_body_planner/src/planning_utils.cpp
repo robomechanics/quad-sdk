@@ -1,4 +1,4 @@
-#include "global_body_planner/planning_utils.h"
+#include "global_body_planner/planning_utils.hpp"
 namespace planning_utils {
 
 State fullStateToState(const FullState &full_state) {
@@ -34,7 +34,7 @@ FullState stateToFullState(const State &state, double roll, double pitch,
 
 void eigenToFullState(const Eigen::VectorXd &s_eig, FullState &s) {
   if (s_eig.size() != 12) {
-    ROS_ERROR("Eigen::VectorXd is incorrect size");
+    RCLCPP_ERROR("Eigen::VectorXd is incorrect size");
   }
   s.pos = s_eig.segment(0, 3);
   s.ang = s_eig.segment(3, 3);
@@ -1084,19 +1084,19 @@ bool isValidStateActionPair(const State &s_in, const Action &a,
 void publishStateActionPair(const State &s, const Action &a,
                             const State &s_goal,
                             const PlannerConfig &planner_config,
-                            visualization_msgs::MarkerArray &tree_viz_msg,
-                            ros::Publisher &tree_pub) {
+                            visualization_msgs::msg::MarkerArray &tree_viz_msg,
+                            rclcpp::Publisher::SharedPtr &tree_pub) {
   // Confirm ros is ok
-  if (!ros::ok()) return;
+  if (!rclcpp::ok()) return;
 
   // Create the marker object for the new state action pair
   visualization_msgs::Marker state_action_line;
-  state_action_line.header.stamp = ros::Time::now();
+  state_action_line.header.stamp = node_->now();
   state_action_line.header.frame_id = "map";
-  state_action_line.action = visualization_msgs::Marker::ADD;
+  state_action_line.action = visualization_msgs::msg::Marker::ADD;
   state_action_line.pose.orientation.w = 1;
   state_action_line.id = tree_viz_msg.markers.size();
-  state_action_line.type = visualization_msgs::Marker::LINE_STRIP;
+  state_action_line.type = visualization_msgs::msg::Marker::LINE_STRIP;
   state_action_line.scale.x = 0.06;
 
   // Interpolate the state action pair
@@ -1146,7 +1146,7 @@ void publishStateActionPair(const State &s, const Action &a,
       color.g = 25.0 / 255.0;
       color.b = 46.0 / 255.0;
     } else {
-      ROS_WARN_THROTTLE(1, "Invalid primitive ID received in planning utils");
+      RCLCPP_WARN_THROTTLE(node_->get_logger(), 1, "Invalid primitive ID received in planning utils");
     }
 
     // Add the point and the color
@@ -1159,7 +1159,7 @@ void publishStateActionPair(const State &s, const Action &a,
 
   // Create the marker object for the goal marker of this particular action
   visualization_msgs::Marker goal_marker;
-  goal_marker.header.stamp = ros::Time::now();
+  goal_marker.header.stamp =node_->now();
   goal_marker.header.frame_id = "map";
   goal_marker.action = visualization_msgs::Marker::ADD;
   goal_marker.id = 0;

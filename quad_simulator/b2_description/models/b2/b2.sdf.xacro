@@ -172,8 +172,8 @@
         <limit>
           <lower>-2.8012</lower>
           <upper>2.8012</upper>
-          <effort>200</effort>
-          <velocity>23</velocity>
+          <effort>200.0</effort>
+          <velocity>23.0</velocity>
         </limit>
         <dynamics>
           <spring_reference>0</spring_reference>
@@ -339,15 +339,16 @@
     <link name="toe0">
       <pose relative_to='jtoe0'>0 0 0 0 0 0</pose> 
       <inertial>
-        <pose xyz="-0.006511 0 -0.010144" rpy="0 0 0" />
+        <pose> -0.006511 0 -0.010144 0 0 0</pose>
         <mass>0.126</mass>
-        <inertia
-          ixx="3.8E-05"
-          ixy="0"
-          ixz="1.1E-05"
-          iyy="4.1E-05"
-          iyz="0"
-          izz="4.2E-05" />
+        <inertia>
+          <ixx>3.8e-05</ixx>
+          <ixy>1e-6</ixy>
+          <ixz>1.1e-05</ixz>
+          <iyy>4.1e-05</iyy>
+          <iyz>1e-6</iyz>
+          <izz>4.2e-05</izz>
+        </inertia>
       </inertial>
       <visual name="toe0_visual">
         <pose>0 0 0 0 0 0</pose>
@@ -470,8 +471,8 @@
         <limit>
           <lower>-2.8012</lower>
           <upper>2.8012</upper>
-          <effort>200</effort>
-          <velocity>23</velocity>
+          <effort>200.0</effort>
+          <velocity>23.0</velocity>
         </limit>
         <dynamics>
           <spring_reference>0</spring_reference>
@@ -638,15 +639,16 @@
     <link name="toe2">
       <pose relative_to='jtoe2'>0 0 0 0 0 0</pose> 
       <inertial>
-        <pose xyz="-0.006511 0 -0.010144" rpy="0 0 0" />
+        <pose> -0.006511 0 -0.010144 0 0 0</pose>
         <mass>0.126</mass>
-        <inertia
-          ixx="3.8E-05"
-          ixy="0"
-          ixz="1.1E-05"
-          iyy="4.1E-05"
-          iyz="0"
-          izz="4.2E-05" />
+        <inertia>
+          <ixx>3.8e-05</ixx>
+          <ixy>1e-6</ixy>
+          <ixz>1.1e-05</ixz>
+          <iyy>4.1e-05</iyy>
+          <iyz>1e-6</iyz>
+          <izz>4.2e-05</izz>
+        </inertia>
       </inertial>
       <visual name="toe2_visual">
         <pose>0 0 0 0 0 0</pose>
@@ -769,8 +771,8 @@
         <limit>
           <lower>-2.8012</lower>
           <upper>2.8012</upper>
-          <effort>200</effort>
-          <velocity>23</velocity>
+          <effort>200.0</effort>
+          <velocity>23.0</velocity>
         </limit>
         <dynamics>
           <spring_reference>0</spring_reference>
@@ -936,15 +938,16 @@
     <link name="toe1">
       <pose relative_to='jtoe1'>0 0 0 0 0 0</pose> 
       <inertial>
-        <pose xyz="-0.006511 0 -0.010144" rpy="0 0 0" />
+        <pose> -0.006511 0 -0.010144 0 0 0</pose>
         <mass>0.126</mass>
-        <inertia
-          ixx="3.8E-05"
-          ixy="0"
-          ixz="1.1E-05"
-          iyy="4.1E-05"
-          iyz="0"
-          izz="4.2E-05" />
+        <inertia>
+          <ixx>3.8e-05</ixx>
+          <ixy>1e-6</ixy>
+          <ixz>1.1e-05</ixz>
+          <iyy>4.1e-05</iyy>
+          <iyz>1e-6</iyz>
+          <izz>4.2e-05</izz>
+        </inertia>
       </inertial>
       <visual name="toe1_visual">
         <pose>0 0 0 0 0 0</pose>
@@ -1067,8 +1070,8 @@
         <limit>
           <lower>-2.8012</lower>
           <upper>2.8012</upper>
-          <effort>200</effort>
-          <velocity>23</velocity>
+          <effort>200.0</effort>
+          <velocity>23.0</velocity>
         </limit>
         <dynamics>
           <spring_reference>0</spring_reference>
@@ -1234,15 +1237,16 @@
     <link name="toe3">
       <pose relative_to='jtoe3'>0 0 0 0 0 0</pose> 
       <inertial>
-        <pose xyz="-0.006511 0 -0.010144" rpy="0 0 0" />
+        <pose> -0.006511 0 -0.010144 0 0 0</pose>
         <mass>0.126</mass>
-        <inertia
-          ixx="3.8E-05"
-          ixy="0"
-          ixz="1.1E-05"
-          iyy="4.1E-05"
-          iyz="0"
-          izz="4.2E-05" />
+        <inertia>
+          <ixx>3.8e-05</ixx>
+          <ixy>1e-6</ixy>
+          <ixz>1.1e-05</ixz>
+          <iyy>4.1e-05</iyy>
+          <iyz>1e-6</iyz>
+          <izz>4.2e-05</izz>
+        </inertia>
       </inertial>
       <visual name="toe3_visual">
         <pose>0 0 0 0 0 0</pose>
