@@ -3,9 +3,9 @@
      Commit Version: 1.6.0-4-g7f85cfe  Build Version: 1.6.7995.38578
      For more information, please see http://wiki.ros.org/sw_urdf_exporter -->
 <robot
-  name="b2_description">
+  name="b2">
   <link
-    name="base_link">
+    name="body">
     <inertial>
       <origin
         xyz="0.000458 0.005261 0.000665"
@@ -26,7 +26,7 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="package://b2_description/meshes/base_link.dae" />
+          filename="package://b2_description/models/b2/meshes/body.dae" />
       </geometry>
       <material
         name="">
@@ -66,7 +66,7 @@
       <geometry>
         <cylinder length="0.16" radius="0.076" />
         <!-- <mesh
-          filename="package://b2_description/meshes/lidar_link.STL" /> -->
+          filename="package://b2_description/models/b2/meshes/lidar_link.STL" /> -->
       </geometry>
     </collision>
   </link>
@@ -77,7 +77,7 @@
       xyz="0.34218 0 0.17851"
       rpy="0 0 0" />
     <parent
-      link="base_link" />
+      link="body" />
     <child
       link="lidar_link" />
     <axis
@@ -107,7 +107,7 @@
       xyz="0.41251 0.024997 0.04765"
       rpy="-2.3562 0 -1.5708" />
     <parent
-      link="base_link" />
+      link="body" />
     <child
       link="f_dc_link" />
     <axis
@@ -137,7 +137,7 @@
       xyz="-0.4081 -0.025 0.024861"
       rpy="-2.3557 0 1.5708" />
     <parent
-      link="base_link" />
+      link="body" />
     <child
       link="r_dc_link" />
     <axis
@@ -167,7 +167,7 @@
       xyz="0 -0.02341 0.04927"
       rpy="0 0 0" />
     <parent
-      link="base_link" />
+      link="body" />
     <child
       link="imu_link" />
     <axis
@@ -205,7 +205,7 @@
       xyz="0 0 0"
       rpy="0 0 0" />
     <parent
-      link="base_link" />
+      link="body" />
     <child
       link="head_Link" />
     <axis
@@ -243,14 +243,14 @@
       xyz="0 0 0"
       rpy="0 0 0" />
     <parent
-      link="base_link" />
+      link="body" />
     <child
       link="tail_link" />
     <axis
       xyz="0 0 0" />
   </joint>
   <link
-    name="FL_hip">
+    name="hip0">
     <inertial>
       <origin
         xyz="-0.003841 -0.009068 0"
@@ -271,7 +271,7 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="package://b2_description/meshes/FL_hip.dae" />
+          filename="package://b2_description/models/b2/meshes/FL_hip.dae" />
       </geometry>
       <material
         name="">
@@ -289,15 +289,15 @@
     </collision>
   </link>
   <joint
-    name="FL_hip_joint"
+    name="8"
     type="revolute">
     <origin
       xyz="0.3285 0.072 0"
       rpy="0 0 0" />
     <parent
-      link="base_link" />
+      link="body" />
     <child
-      link="FL_hip" />
+      link="hip0" />
     <axis
       xyz="1 0 0" />
     <limit
@@ -306,7 +306,7 @@
       effort="200"
       velocity="23" />
   </joint>
-  <link name="FL_hip_rotor">
+  <link name="hip0_rotor">
     <!-- <visual>
       <origin rpy="0 1.5707963267948966 0" xyz="0 0 0"/>
       <geometry>
@@ -325,13 +325,13 @@
       <inertia ixx="0.000144463" ixy="0.0" ixz="0.0" iyy="0.000144463" iyz="0.0" izz="0.000263053"/>
     </inertial>
   </link>
-  <joint name="FL_hip_rotor_joint" type="fixed">
+  <joint name="hip0_rotor_joint" type="fixed">
     <origin rpy="0 0 0" xyz="0.20205 0.072 0"/>
-    <parent link="base_link"/>
-    <child link="FL_hip_rotor"/>
+    <parent link="body"/>
+    <child link="hip0_rotor"/>
   </joint>
   <link
-    name="FL_thigh">
+    name="upper0">
     <inertial>
       <origin
         xyz="-0.006279 -0.032049 -0.057835"
@@ -352,7 +352,7 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="package://b2_description/meshes/FL_thigh.dae" />
+          filename="package://b2_description/models/b2/meshes/FL_thigh.dae" />
       </geometry>
       <material
         name="">
@@ -370,24 +370,24 @@
     </collision>
   </link>
   <joint
-    name="FL_thigh_joint"
+    name="0"
     type="revolute">
     <origin
       xyz="0 0.11973 0"
-      rpy="0 0 0" />
+      rpy="0 1.57079632679 0" />
     <parent
-      link="FL_hip" />
+      link="hip0" />
     <child
-      link="FL_thigh" />
+      link="upper0" />
     <axis
-      xyz="0 1 0" />
+      xyz="0 -1 0" />
     <limit
-      lower="-0.94"
-      upper="4.69"
+      lower="-2.8012"
+      upper="2.8012"
       effort="200"
       velocity="23" />
   </joint>
-  <link name="FL_thigh_rotor">
+  <link name="upper0_rotor">
     <!-- <visual>
       <origin rpy="1.5707963267948966 0 0" xyz="0 0 0"/>
       <geometry>
@@ -406,13 +406,13 @@
       <inertia ixx="0.000144463" ixy="0.0" ixz="0.0" iyy="0.000144463" iyz="0.0" izz="0.000263053"/>
     </inertial>
   </link>
-  <joint name="FL_thigh_rotor_joint" type="fixed">
+  <joint name="upper0_rotor_joint" type="fixed">
     <origin rpy="0 0 0" xyz="0 -0.00798 0"/>
-    <parent link="FL_hip"/>
-    <child link="FL_thigh_rotor"/>
+    <parent link="hip0"/>
+    <child link="upper0_rotor"/>
   </joint>
   <link
-    name="FL_calf">
+    name="lower0">
     <inertial>
       <origin
         xyz="0.012422 0 -0.12499"
@@ -433,7 +433,7 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="package://b2_description/meshes/FL_calf.dae" />
+          filename="package://b2_description/models/b2/meshes/FL_calf.dae" />
       </geometry>
       <material
         name="">
@@ -467,24 +467,24 @@
     </collision>
   </link>
   <joint
-    name="FL_calf_joint"
+    name="1"
     type="revolute">
     <origin
       xyz="0 -8.6984E-05 -0.35"
-      rpy="0 0 0" />
+      rpy="0 -3.14159265359 0" />
     <parent
-      link="FL_thigh" />
+      link="upper0" />
     <child
-      link="FL_calf" />
+      link="lower0" />
     <axis
       xyz="0 1 0" />
     <limit
-      lower="-2.82"
-      upper="-0.43"
+      lower="0.32159265359"
+      upper="2.71159265359"
       effort="320"
       velocity="14" />
   </joint>
-  <link name="FL_calf_rotor">
+  <link name="lower0_rotor">
     <!-- <visual>
       <origin rpy="1.5707963267948966 0 0" xyz="0 0 0"/>
       <geometry>
@@ -503,13 +503,13 @@
       <inertia ixx="0.000144463" ixy="0.0" ixz="0.0" iyy="0.000144463" iyz="0.0" izz="0.000263053"/>
     </inertial>
   </link>
-  <joint name="FL_calf_rotor_joint" type="fixed">
+  <joint name="lower0_rotor_joint" type="fixed">
     <origin rpy="0 0 0" xyz="0 -0.05788 0"/>
-    <parent link="FL_thigh"/>
-    <child link="FL_calf_rotor"/>
+    <parent link="upper0"/>
+    <child link="lower0_rotor"/>
   </joint>
   <link
-    name="FL_foot">
+    name="toe0">
     <inertial>
       <origin
         xyz="-0.006511 0 -0.010144"
@@ -534,18 +534,18 @@
     </collision>
   </link>
   <joint
-    name="FL_foot_joint"
+    name="jtoe0"
     type="fixed">
     <origin
       xyz="0 0 -0.35"
       rpy="0 0 0" />
     <parent
-      link="FL_calf" />
+      link="lower0" />
     <child
-      link="FL_foot" />
+      link="toe0" />
   </joint>
   <link
-    name="FR_hip">
+    name="hip2">
     <inertial>
       <origin
         xyz="-0.009305 0.010228 0.000264"
@@ -566,7 +566,7 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="package://b2_description/meshes/FR_hip.dae" />
+          filename="package://b2_description/models/b2/meshes/FR_hip.dae" />
       </geometry>
       <material
         name="">
@@ -584,15 +584,15 @@
     </collision>
   </link>
   <joint
-    name="FR_hip_joint"
+    name="10"
     type="revolute">
     <origin
       xyz="0.3285 -0.072 0"
       rpy="0 0 0" />
     <parent
-      link="base_link" />
+      link="body" />
     <child
-      link="FR_hip" />
+      link="hip2" />
     <axis
       xyz="1 0 0" />
     <limit
@@ -601,7 +601,7 @@
       effort="200"
       velocity="23" />
   </joint>
-  <link name="FR_hip_rotor">
+  <link name="hip2_rotor">
     <!-- <visual>
       <origin rpy="0 1.5707963267948966 0" xyz="0 0 0"/>
       <geometry>
@@ -620,13 +620,13 @@
       <inertia ixx="0.000144463" ixy="0.0" ixz="0.0" iyy="0.000144463" iyz="0.0" izz="0.000263053"/>
     </inertial>
   </link>
-  <joint name="FR_hip_rotor_joint" type="fixed">
+  <joint name="hip2_rotor_joint" type="fixed">
     <origin rpy="0 0 0" xyz="0.20205 -0.072 0"/>
-    <parent link="base_link"/>
-    <child link="FR_hip_rotor"/>
+    <parent link="body"/>
+    <child link="hip2_rotor"/>
   </joint>
   <link
-    name="FR_thigh">
+    name="upper2">
     <inertial>
       <origin
         xyz="-0.006279 0.032049 -0.057835"
@@ -647,7 +647,7 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="package://b2_description/meshes/FR_thigh.dae" />
+          filename="package://b2_description/models/b2/meshes/FR_thigh.dae" />
       </geometry>
       <material
         name="">
@@ -663,24 +663,24 @@
     </collision>
   </link>
   <joint
-    name="FR_thigh_joint"
+    name="4"
     type="revolute">
     <origin
       xyz="0 -0.11973 0"
-      rpy="0 0 0" />
+      rpy="0 1.57079632679 0" />
     <parent
-      link="FR_hip" />
+      link="hip2" />
     <child
-      link="FR_thigh" />
+      link="upper2" />
     <axis
-      xyz="0 1 0" />
+      xyz="0 -1 0" />
     <limit
-      lower="-0.94"
-      upper="4.69"
+      lower="-2.8012"
+      upper="2.8012"
       effort="200"
       velocity="23" />
   </joint>
-  <link name="FR_thigh_rotor">
+  <link name="upper2_rotor">
     <!-- <visual>
       <origin rpy="1.5707963267948966 0 0" xyz="0 0 0"/>
       <geometry>
@@ -699,13 +699,13 @@
       <inertia ixx="0.000144463" ixy="0.0" ixz="0.0" iyy="0.000144463" iyz="0.0" izz="0.000263053"/>
     </inertial>
   </link>
-  <joint name="FR_thigh_rotor_joint" type="fixed">
+  <joint name="upper2_rotor_joint" type="fixed">
     <origin rpy="0 0 0" xyz="0 0.00798 0"/>
-    <parent link="FR_hip"/>
-    <child link="FR_thigh_rotor"/>
+    <parent link="hip2"/>
+    <child link="upper2_rotor"/>
   </joint>
   <link
-    name="FR_calf">
+    name="lower2">
     <inertial>
       <origin
         xyz="0.012422 0 -0.12499"
@@ -726,7 +726,7 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="package://b2_description/meshes/FR_calf.dae" />
+          filename="package://b2_description/models/b2/meshes/FR_calf.dae" />
       </geometry>
       <material
         name="">
@@ -760,24 +760,24 @@
     </collision>
   </link>
   <joint
-    name="FR_calf_joint"
+    name="5"
     type="revolute">
     <origin
       xyz="0 8.6986E-05 -0.35"
-      rpy="0 0 0" />
+      rpy="0 -3.14159265359 0" />
     <parent
-      link="FR_thigh" />
+      link="upper2" />
     <child
-      link="FR_calf" />
+      link="lower2" />
     <axis
       xyz="0 1 0" />
     <limit
-      lower="-2.82"
-      upper="-0.43"
+      lower="0.32159265359"
+      upper="2.71159265359"
       effort="320"
       velocity="14" />
   </joint>
-  <link name="FR_calf_rotor">
+  <link name="lower2_rotor">
     <!-- <visual>
       <origin rpy="1.5707963267948966 0 0" xyz="0 0 0"/>
       <geometry>
@@ -797,13 +797,13 @@
       <inertia ixx="0.000144463" ixy="0.0" ixz="0.0" iyy="0.000144463" iyz="0.0" izz="0.000263053"/>
     </inertial>
   </link>
-  <joint name="FR_calf_rotor_joint" type="fixed">
+  <joint name="lower2_rotor_joint" type="fixed">
     <origin rpy="0 0 0" xyz="0 0.05788 0"/>
-    <parent link="FR_thigh"/>
-    <child link="FR_calf_rotor"/>
+    <parent link="upper2"/>
+    <child link="lower2_rotor"/>
   </joint>
   <link
-    name="FR_foot">
+    name="toe2">
     <inertial>
       <origin
         xyz="-0.006511 0 -0.010144"
@@ -828,18 +828,18 @@
     </collision>
   </link>
   <joint
-    name="FR_foot_joint"
+    name="jtoe2"
     type="fixed">
     <origin
       xyz="0 0 -0.35"
       rpy="0 0 0" />
     <parent
-      link="FR_calf" />
+      link="lower2" />
     <child
-      link="FR_foot" />
+      link="toe2" />
   </joint>
   <link
-    name="RL_hip">
+    name="hip1">
     <inertial>
       <origin
         xyz="0.009305 -0.010228 0.000264"
@@ -860,7 +860,7 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="package://b2_description/meshes/RL_hip.dae" />
+          filename="package://b2_description/models/b2/meshes/RL_hip.dae" />
       </geometry>
       <material
         name="">
@@ -878,15 +878,15 @@
     </collision>
   </link>
   <joint
-    name="RL_hip_joint"
+    name="9"
     type="revolute">
     <origin
       xyz="-0.3285 0.072 0"
       rpy="0 0 0" />
     <parent
-      link="base_link" />
+      link="body" />
     <child
-      link="RL_hip" />
+      link="hip1" />
     <axis
       xyz="1 0 0" />
     <limit
@@ -895,7 +895,7 @@
       effort="200"
       velocity="23" />
   </joint>
-  <link name="RL_hip_rotor">
+  <link name="hip1_rotor">
     <!-- <visual>
       <origin rpy="0 1.5707963267948966 0" xyz="0 0 0"/>
       <geometry>
@@ -914,13 +914,13 @@
       <inertia ixx="0.000144463" ixy="0.0" ixz="0.0" iyy="0.000144463" iyz="0.0" izz="0.000263053"/>
     </inertial>
   </link>
-  <joint name="RL_hip_rotor_joint" type="fixed">
+  <joint name="hip1_rotor_joint" type="fixed">
     <origin rpy="0 0 0" xyz="-0.20205 0.072 0"/>
-    <parent link="base_link"/>
-    <child link="RL_hip_rotor"/>
+    <parent link="body"/>
+    <child link="hip1_rotor"/>
   </joint>
   <link
-    name="RL_thigh">
+    name="upper1">
     <inertial>
       <origin
         xyz="-0.006279 -0.032049 -0.057835"
@@ -941,7 +941,7 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="package://b2_description/meshes/RL_thigh.dae" />
+          filename="package://b2_description/models/b2/meshes/RL_thigh.dae" />
       </geometry>
       <material
         name="">
@@ -957,24 +957,24 @@
     </collision>
   </link>
   <joint
-    name="RL_thigh_joint"
+    name="2"
     type="revolute">
     <origin
       xyz="0 0.11973 0"
-      rpy="0 0 0" />
+      rpy="0 1.57079632679 0" />
     <parent
-      link="RL_hip" />
+      link="hip1" />
     <child
-      link="RL_thigh" />
+      link="upper1" />
     <axis
-      xyz="0 1 0" />
+      xyz="0 -1 0" />
     <limit
-      lower="-0.94"
-      upper="4.69"
+      lower="-2.8012"
+      upper="2.8012"
       effort="200"
       velocity="23" />
   </joint>
-  <link name="RL_thigh_rotor">
+  <link name="upper1_rotor">
     <!-- <visual>
       <origin rpy="1.5707963267948966 0 0" xyz="0 0 0"/>
       <geometry>
@@ -993,13 +993,13 @@
       <inertia ixx="0.000144463" ixy="0.0" ixz="0.0" iyy="0.000144463" iyz="0.0" izz="0.000263053"/>
     </inertial>
   </link>
-  <joint name="RL_thigh_rotor_joint" type="fixed">
+  <joint name="upper1_rotor_joint" type="fixed">
     <origin rpy="0 0 0" xyz="0 -0.00798 0"/>
-    <parent link="RL_hip"/>
-    <child link="RL_thigh_rotor"/>
+    <parent link="hip1"/>
+    <child link="upper1_rotor"/>
   </joint>
   <link
-    name="RL_calf">
+    name="lower1">
     <inertial>
       <origin
         xyz="0.012422 0 -0.12499"
@@ -1020,7 +1020,7 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="package://b2_description/meshes/RL_calf.dae" />
+          filename="package://b2_description/models/b2/meshes/RL_calf.dae" />
       </geometry>
       <material
         name="">
@@ -1054,24 +1054,24 @@
     </collision>
   </link>
   <joint
-    name="RL_calf_joint"
+    name="3"
     type="revolute">
     <origin
       xyz="0 -8.6984E-05 -0.35"
-      rpy="0 0 0" />
+      rpy="0 -3.14159265359 0" />
     <parent
-      link="RL_thigh" />
+      link="upper1" />
     <child
-      link="RL_calf" />
+      link="lower1" />
     <axis
       xyz="0 1 0" />
     <limit
-      lower="-2.82"
-      upper="-0.43"
+      lower="0.32159265359"
+      upper="2.71159265359"
       effort="320"
       velocity="14" />
   </joint>
-  <link name="RL_calf_rotor">
+  <link name="lower1_rotor">
     <!-- <visual>
       <origin rpy="1.5707963267948966 0 0" xyz="0 0 0"/>
       <geometry>
@@ -1090,13 +1090,13 @@
       <inertia ixx="0.000144463" ixy="0.0" ixz="0.0" iyy="0.000144463" iyz="0.0" izz="0.000263053"/>
     </inertial>
   </link>
-  <joint name="RL_calf_rotor_joint" type="fixed">
+  <joint name="lower1_rotor_joint" type="fixed">
     <origin rpy="0 0 0" xyz="0 -0.05788 0"/>
-    <parent link="RL_thigh"/>
-    <child link="RL_calf_rotor"/>
+    <parent link="upper1"/>
+    <child link="lower1_rotor"/>
   </joint>
   <link
-    name="RL_foot">
+    name="toe1">
     <inertial>
       <origin
         xyz="-0.006511 0 -0.010144"
@@ -1121,18 +1121,18 @@
     </collision>
   </link>
   <joint
-    name="RL_foot_joint"
+    name="jtoe1"
     type="fixed">
     <origin
       xyz="0 0 -0.35"
       rpy="0 0 0" />
     <parent
-      link="RL_calf" />
+      link="lower1" />
     <child
-      link="RL_foot" />
+      link="toe1" />
   </joint>
   <link
-    name="RR_hip">
+    name="hip3">
     <inertial>
       <origin
         xyz="0.003841 0.009068 0"
@@ -1153,7 +1153,7 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="package://b2_description/meshes/RR_hip.dae" />
+          filename="package://b2_description/models/b2/meshes/RR_hip.dae" />
       </geometry>
       <material
         name="">
@@ -1171,15 +1171,15 @@
     </collision>
   </link>
   <joint
-    name="RR_hip_joint"
+    name="11"
     type="revolute">
     <origin
       xyz="-0.3285 -0.072 0"
       rpy="0 0 0" />
     <parent
-      link="base_link" />
+      link="body" />
     <child
-      link="RR_hip" />
+      link="hip3" />
     <axis
       xyz="1 0 0" />
     <limit
@@ -1188,7 +1188,7 @@
       effort="200"
       velocity="23" />
   </joint>
-  <link name="RR_hip_rotor">
+  <link name="hip3_rotor">
     <!-- <visual>
       <origin rpy="0 1.5707963267948966 0" xyz="0 0 0"/>
       <geometry>
@@ -1207,13 +1207,13 @@
       <inertia ixx="0.000144463" ixy="0.0" ixz="0.0" iyy="0.000144463" iyz="0.0" izz="0.000263053"/>
     </inertial>
   </link>
-  <joint name="RR_hip_rotor_joint" type="fixed">
+  <joint name="hip3_rotor_joint" type="fixed">
     <origin rpy="0 0 0" xyz="-0.20205 -0.072 0"/>
-    <parent link="base_link"/>
-    <child link="RR_hip_rotor"/>
+    <parent link="body"/>
+    <child link="hip3_rotor"/>
   </joint>
   <link
-    name="RR_thigh">
+    name="upper3">
     <inertial>
       <origin
         xyz="-0.006279 0.032049 -0.057835"
@@ -1234,7 +1234,7 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="package://b2_description/meshes/RR_thigh.dae" />
+          filename="package://b2_description/models/b2/meshes/RR_thigh.dae" />
       </geometry>
       <material
         name="">
@@ -1250,24 +1250,24 @@
     </collision>
   </link>
   <joint
-    name="RR_thigh_joint"
+    name="6"
     type="revolute">
     <origin
       xyz="0 -0.11973 0"
-      rpy="0 0 0" />
+      rpy="0 1.57079632679 0" />
     <parent
-      link="RR_hip" />
+      link="hip3" />
     <child
-      link="RR_thigh" />
+      link="upper3" />
     <axis
-      xyz="0 1 0" />
+      xyz="0 -1 0" />
     <limit
-      lower="-0.94"
-      upper="4.69"
+      lower="-2.8012"
+      upper="2.8012"
       effort="200"
       velocity="23" />
   </joint>
-  <link name="RR_thigh_rotor">
+  <link name="upper3_rotor">
     <!-- <visual>
       <origin rpy="1.5707963267948966 0 0" xyz="0 0 0"/>
       <geometry>
@@ -1286,13 +1286,13 @@
       <inertia ixx="0.000144463" ixy="0.0" ixz="0.0" iyy="0.000144463" iyz="0.0" izz="0.000263053"/>
     </inertial>
   </link>
-  <joint name="RR_thigh_rotor_joint" type="fixed">
+  <joint name="upper3_rotor_joint" type="fixed">
     <origin rpy="0 0 0" xyz="0 0.00798 0"/>
-    <parent link="RR_hip"/>
-    <child link="RR_thigh_rotor"/>
+    <parent link="hip3"/>
+    <child link="upper3_rotor"/>
   </joint>
   <link
-    name="RR_calf">
+    name="lower3">
     <inertial>
       <origin
         xyz="0.012422 0 -0.12499"
@@ -1313,7 +1313,7 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="package://b2_description/meshes/RR_calf.dae" />
+          filename="package://b2_description/models/b2/meshes/RR_calf.dae" />
       </geometry>
       <material
         name="">
@@ -1347,24 +1347,24 @@
     </collision>
   </link>
   <joint
-    name="RR_calf_joint"
+    name="7"
     type="revolute">
     <origin
       xyz="0 8.6986E-05 -0.35"
-      rpy="0 0 0" />
+      rpy="0 -3.14159265359 0" />
     <parent
-      link="RR_thigh" />
+      link="upper3" />
     <child
-      link="RR_calf" />
+      link="lower3" />
     <axis
       xyz="0 1 0" />
     <limit
-      lower="-2.82"
-      upper="-0.43"
+      lower="0.32159265359"
+      upper="2.71159265359"
       effort="320"
       velocity="14" />
   </joint>
-  <link name="RR_calf_rotor">
+  <link name="lower3_rotor">
     <!-- <visual>
       <origin rpy="1.5707963267948966 0 0" xyz="0 0 0"/>
       <geometry>
@@ -1383,13 +1383,13 @@
       <inertia ixx="0.000144463" ixy="0.0" ixz="0.0" iyy="0.000144463" iyz="0.0" izz="0.000263053"/>
     </inertial>
   </link>
-  <joint name="RR_calf_rotor_joint" type="fixed">
+  <joint name="lower3_rotor_joint" type="fixed">
     <origin rpy="0 0 0" xyz="0 0.05788 0"/>
-    <parent link="RR_thigh"/>
-    <child link="RR_calf_rotor"/>
+    <parent link="upper3"/>
+    <child link="lower3_rotor"/>
   </joint>
   <link
-    name="RR_foot">
+    name="toe3">
     <inertial>
       <origin
         xyz="-0.006511 0 -0.010144"
@@ -1414,15 +1414,15 @@
     </collision>
   </link>
   <joint
-    name="RR_foot_joint"
+    name="jtoe3"
     type="fixed">
     <origin
       xyz="0 -8.6984E-05 -0.35"
       rpy="0 0 0" />
     <parent
-      link="RR_calf" />
+      link="lower3" />
     <child
-      link="RR_foot" />
+      link="toe3" />
   </joint>
   <link
     name="f_oc_link">
@@ -1446,7 +1446,7 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="package://b2_description/meshes/f_oc_link.STL" />
+          filename="package://b2_description/models/b2/meshes/f_oc_link.STL" />
       </geometry>
       <material
         name="">
@@ -1460,7 +1460,7 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="package://b2_description/meshes/f_oc_link.STL" />
+          filename="package://b2_description/models/b2/meshes/f_oc_link.STL" />
       </geometry>
     </collision> -->
   </link>
@@ -1471,7 +1471,7 @@
       xyz="0.39079 0 -0.013433"
       rpy="-1.5708 0 -1.5708" />
     <parent
-      link="base_link" />
+      link="body" />
     <child
       link="f_oc_link" />
     <axis
@@ -1499,7 +1499,7 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="package://b2_description/meshes/r_oc_link.STL" />
+          filename="package://b2_description/models/b2/meshes/r_oc_link.STL" />
       </geometry>
       <material
         name="">
@@ -1513,7 +1513,7 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="package://b2_description/meshes/r_oc_link.STL" />
+          filename="package://b2_description/models/b2/meshes/r_oc_link.STL" />
       </geometry>
     </collision> -->
   </link>
@@ -1524,10 +1524,75 @@
       xyz="-0.38451 0 -0.023249"
       rpy="-1.5708 0 1.5708" />
     <parent
-      link="base_link" />
+      link="body" />
     <child
       link="r_oc_link" />
     <axis
       xyz="0 0 0" />
   </joint>
+  <ros2_control name="GazeboSimSystem" type="system">
+    <hardware>
+      <plugin>gz_ros2_control/GazeboSimSystem</plugin>
+    </hardware>
+    <joint name="0">
+      <command_interface name="effort" />
+      <state_interface name="velocity" />
+      <state_interface name="position" />
+    </joint>
+    <joint name="1">
+      <command_interface name="effort" />
+      <state_interface name="velocity" />
+      <state_interface name="position" />
+    </joint>
+    <joint name="2">
+      <command_interface name="effort" />
+      <state_interface name="velocity" />
+      <state_interface name="position" />
+    </joint>
+    <joint name="3">
+      <command_interface name="effort" />
+      <state_interface name="velocity" />
+      <state_interface name="position" />
+    </joint>
+    <joint name="4">
+      <command_interface name="effort" />
+      <state_interface name="velocity" />
+      <state_interface name="position" />
+    </joint>
+    <joint name="5">
+      <command_interface name="effort" />
+      <state_interface name="velocity" />
+      <state_interface name="position" />
+    </joint>
+    <joint name="6">
+      <command_interface name="effort" />
+      <state_interface name="velocity" />
+      <state_interface name="position" />
+    </joint>
+    <joint name="7">
+      <command_interface name="effort" />
+      <state_interface name="velocity" />
+      <state_interface name="position" />
+    </joint>
+    <joint name="8">
+      <command_interface name="effort" />
+      <state_interface name="velocity" />
+      <state_interface name="position" />
+    </joint>
+    <joint name="9">
+      <command_interface name="effort" />
+      <state_interface name="velocity" />
+      <state_interface name="position" />
+    </joint>
+    <joint name="10">
+      <command_interface name="effort" />
+      <state_interface name="velocity" />
+      <state_interface name="position" />
+    </joint>
+    <joint name="11">
+      <command_interface name="effort" />
+      <state_interface name="velocity" />
+      <state_interface name="position" />
+    </joint>
+  </ros2_control>
 </robot>
