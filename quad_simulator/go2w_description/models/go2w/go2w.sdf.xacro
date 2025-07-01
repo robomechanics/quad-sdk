@@ -1,6 +1,7 @@
 <?xml version='1.0'?>
 <sdf version='1.11' xmlns:xacro="http://www.ros.org/wiki/xacro">
   <xacro:arg name="namespace" default="robot_1" />
+  <xacro:arg name="controller_config_path" default="/path/quad_control.yaml" />
   <model name='go2w'>
     <link name='body'>
       <inertial>
@@ -1202,7 +1203,7 @@
           filename="libgz_ros2_control-system.so"
           name="gz_ros2_control::GazeboSimROS2ControlPlugin">
           <controlPeriod>0.002</controlPeriod>
-          <parameters>/home/rml/ros2_ws/install/gazebo_scripts/share/gazebo_scripts/config/quad_wheel_control.yaml</parameters>
+          <parameters>${controller_config_path}</parameters>
               <ros>
                 <namespace>${namespace}</namespace>
             </ros>
