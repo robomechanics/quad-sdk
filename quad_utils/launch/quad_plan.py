@@ -59,7 +59,7 @@ def generate_launch_description():
         DeclareLaunchArgument('use_sim_time', default_value='true', description='Use Simulation Clock or Computer Clock'),
         DeclareLaunchArgument(
             'robot_configs',
-            default_value='[{"name": "robot_1", "type": "go2", "reference": "gbpl", "twist_input": "joy"}]',
+            default_value='[{"name": "robot_1", "type": "spirit", "reference": "gbpl", "twist_input": "joy"}]',
             description='A JSON List of robot configurations: MUST specifiy name, type, and controller'
         ),
         OpaqueFunction(function=launch_robot_group)

@@ -67,11 +67,13 @@ def launch_global_planner(context, *args, **kwargs):
 
     leaping = LaunchConfiguration('leaping').perform(context)
     local_planner_pkg = FindPackageShare('local_planner')
-    global_planner_pkg = FindPackageShare('global_planner')
+    global_planner_pkg = FindPackageShare('global_body_planner')
+    quad_utils_pkg = FindPackageShare('quad_utils')
 
     local_planner_param_file = PathJoinSubstitution([local_planner_pkg, 'config', 'local_planner.yaml'])
-    global_planner_param_file = PathJoinSubstitution([global_planner_pkg, 'config', 'global_planner.yaml'])
-    global_planner_topics_file = PathJoinSubstitution([global_planner_pkg, 'config', 'global_planner_topics.yaml'])
+    global_planner_param_file = PathJoinSubstitution([global_planner_pkg, 'config', 'global_body_planner.yaml'])
+    global_planner_topics_file = PathJoinSubstitution([global_planner_pkg, 'config', 'global_body_planner_topics.yaml'])
+    robot_specific_param_file = os.path.join(quad_utils_pkg.perform(context), 'config', LaunchConfiguration('robot_type').perform(context) + '.yaml')
 
     return [
         Node(
@@ -86,7 +88,9 @@ def launch_global_planner(context, *args, **kwargs):
             parameters=[local_planner_param_file, 
                         global_planner_topics_file, 
                         global_planner_param_file, 
-                        {'enable_leaping': leaping == 'true'}],
+                        robot_specific_param_file,
+                        {'enable_leaping': leaping == 'true',
+                         'use_sim_time' : LaunchConfiguration('use_sim_time')}],
         )
     ]
 
