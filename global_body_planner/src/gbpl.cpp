@@ -1,11 +1,11 @@
-#include "global_body_planner/gbpl.h"
+#include "global_body_planner/gbpl.hpp"
 
 using namespace planning_utils;
 
 GBPL::GBPL() {}
 
 int GBPL::connect(PlannerClass &T, State s, const PlannerConfig &planner_config,
-                  int direction, ros::Publisher &tree_pub) {
+                  int direction, rclcpp::Publisher<visualization_msgs::msg::MarkerArray>::SharedPtr &tree_pub) {
   // Find nearest neighbor
   flipDirection(s);
   int s_near_index = T.getNearestNeighbor(s);
@@ -159,7 +159,7 @@ void GBPL::extractClosestPath(PlannerClass &Ta, const State &s_goal,
 int GBPL::findPlan(const PlannerConfig &planner_config, State s_start,
                    State s_goal, std::vector<State> &state_sequence,
                    std::vector<Action> &action_sequence,
-                   ros::Publisher &tree_pub) {
+                   rclcpp::Publisher<visualization_msgs::msg::MarkerArray>::SharedPtr &tree_pub) {
   // Perform validity checking on start and goal states
   if (!isValidState(s_start, planner_config, LEAP_STANCE)) {
     return INVALID_START_STATE;
@@ -195,7 +195,7 @@ int GBPL::findPlan(const PlannerConfig &planner_config, State s_start,
       std::max(poseDistance(s_start, s_goal) / planning_rate_estimate,
                anytime_horizon_init);
 
-  while (ros::ok()) {
+  while (rclcpp::ok()) {
     auto t_current = std::chrono::steady_clock::now();
     std::chrono::duration<double> total_elapsed =
         t_current - t_start_total_solve;

@@ -1,0 +1,10 @@
+/**/global_body_planner:
+  ros__parameters:
+    topics:
+      start_state: start_state
+      goal_state: goal_state
+      terrain_map: terrain_map
+      global_plan: global_plan
+      global_plan_discrete: global_plan_discrete
+      global_plan_tree: global_plan_tree
+    map_frame: map

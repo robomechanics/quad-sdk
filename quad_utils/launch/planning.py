@@ -61,24 +61,34 @@ def load_robot_params(context, *args, **kwargs):
         SetLaunchConfiguration('robot_sdf_path', sdf_path)
     ]
 
-# def launch_global_planner(context, *args, **kwargs):
-#     if LaunchConfiguration('reference').perform(context) != 'gbpl':
-#         return []
+def launch_global_planner(context, *args, **kwargs):
+    if LaunchConfiguration('reference').perform(context) != 'gbpl':
+        return []
 
-#     leaping = LaunchConfiguration('leaping').perform(context)
-#     return [
-#         Node(
-#             package='global_body_planner',
-#             executable='global_body_planner_node',
-#             name='global_body_planner',
-#             output='screen',
-#             remappings=[
-#                 ('start_state', 'state/ground_truth'),
-#                 ('goal_state', 'clicked_point')
-#             ],
-#             parameters=[{'enable_leaping': leaping == 'true'}],
-#         )
-#     ]
+    leaping = LaunchConfiguration('leaping').perform(context)
+    local_planner_pkg = FindPackageShare('local_planner')
+    global_planner_pkg = FindPackageShare('global_planner')
+
+    local_planner_param_file = PathJoinSubstitution([local_planner_pkg, 'config', 'local_planner.yaml'])
+    global_planner_param_file = PathJoinSubstitution([global_planner_pkg, 'config', 'global_planner.yaml'])
+    global_planner_topics_file = PathJoinSubstitution([global_planner_pkg, 'config', 'global_planner_topics.yaml'])
+
+    return [
+        Node(
+            package='global_body_planner',
+            executable='global_body_planner_node',
+            name='global_body_planner',
+            output='screen',
+            remappings=[
+                ('start_state', 'state/ground_truth'),
+                ('goal_state', 'clicked_point')
+            ],
+            parameters=[local_planner_param_file, 
+                        global_planner_topics_file, 
+                        global_planner_param_file, 
+                        {'enable_leaping': leaping == 'true'}],
+        )
+    ]
 
 
 def launch_twist_input_nodes(context, *args, **kwargs):
@@ -198,7 +208,7 @@ def generate_launch_description():
         DeclareLaunchArgument('use_sim_time', default_value='true'),
         OpaqueFunction(function=load_robot_params),
         OpaqueFunction(function=launch_logging), 
-        # OpaqueFunction(function=launch_global_planner),
+        OpaqueFunction(function=launch_global_planner),
         OpaqueFunction(function=launch_twist_input_nodes),
         OpaqueFunction(function=launch_local_planner),
         # OpaqueFunction(function=launch_body_force_estimator),

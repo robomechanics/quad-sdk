@@ -34,7 +34,7 @@ FullState stateToFullState(const State &state, double roll, double pitch,
 
 void eigenToFullState(const Eigen::VectorXd &s_eig, FullState &s) {
   if (s_eig.size() != 12) {
-    RCLCPP_ERROR("Eigen::VectorXd is incorrect size");
+    std::cerr << "Eigen::VectorXd is incorrect size" << std::endl;
   }
   s.pos = s_eig.segment(0, 3);
   s.ang = s_eig.segment(3, 3);
@@ -53,7 +53,7 @@ Eigen::VectorXd fullStateToEigen(const FullState &s) {
 
 void vectorToFullState(const std::vector<double> &v, FullState &s) {
   if (v.size() != 12) {
-    ROS_ERROR("std::vector<double> is incorrect size");
+    std::cerr << "Error: std::vector<double> is incorrect size" << std::endl;
   }
   s.pos[0] = v[0];
   s.pos[1] = v[1];
@@ -1085,13 +1085,13 @@ void publishStateActionPair(const State &s, const Action &a,
                             const State &s_goal,
                             const PlannerConfig &planner_config,
                             visualization_msgs::msg::MarkerArray &tree_viz_msg,
-                            rclcpp::Publisher::SharedPtr &tree_pub) {
+                            rclcpp::Publisher<visualization_msgs::msg::MarkerArray>::SharedPtr &tree_pub, rclcpp::Node::SharedPtr &node) {
   // Confirm ros is ok
   if (!rclcpp::ok()) return;
 
   // Create the marker object for the new state action pair
-  visualization_msgs::Marker state_action_line;
-  state_action_line.header.stamp = node_->now();
+  visualization_msgs::msg::Marker state_action_line;
+  state_action_line.header.stamp = node->now();
   state_action_line.header.frame_id = "map";
   state_action_line.action = visualization_msgs::msg::Marker::ADD;
   state_action_line.pose.orientation.w = 1;
@@ -1121,13 +1121,13 @@ void publishStateActionPair(const State &s, const Action &a,
   int length = interp_state_action.size();
   for (int i = 0; i < length; i++) {
     // Load in the pose data from the interpolated path
-    geometry_msgs::Point point;
+    geometry_msgs::msg::Point point;
     point.x = interp_state_action.at(i).pos.x();
     point.y = interp_state_action.at(i).pos.y();
     point.z = interp_state_action.at(i).pos.z();
 
     // Set the color of the line strip according to the motion primitive
-    std_msgs::ColorRGBA color;
+    std_msgs::msg::ColorRGBA color;
     color.a = 1;
     if (interp_primitive_id[i] == FLIGHT) {
       color.r = 0 / 255.0;
@@ -1146,7 +1146,7 @@ void publishStateActionPair(const State &s, const Action &a,
       color.g = 25.0 / 255.0;
       color.b = 46.0 / 255.0;
     } else {
-      RCLCPP_WARN_THROTTLE(node_->get_logger(), 1, "Invalid primitive ID received in planning utils");
+      std::cerr << "Error: Invalid primitive ID received in planning utils" << std::endl;
     }
 
     // Add the point and the color
@@ -1158,21 +1158,21 @@ void publishStateActionPair(const State &s, const Action &a,
   tree_viz_msg.markers.push_back(state_action_line);
 
   // Create the marker object for the goal marker of this particular action
-  visualization_msgs::Marker goal_marker;
-  goal_marker.header.stamp =node_->now();
+  visualization_msgs::msg::Marker goal_marker;
+  goal_marker.header.stamp = node->now();
   goal_marker.header.frame_id = "map";
-  goal_marker.action = visualization_msgs::Marker::ADD;
+  goal_marker.action = visualization_msgs::msg::Marker::ADD;
   goal_marker.id = 0;
-  goal_marker.type = visualization_msgs::Marker::ARROW;
+  goal_marker.type = visualization_msgs::msg::Marker::ARROW;
 
   // Define the point for the arrow base
-  geometry_msgs::Point goal_marker_base;
+  geometry_msgs::msg::Point goal_marker_base;
   goal_marker_base.x = s_goal.pos[0];
   goal_marker_base.y = s_goal.pos[1];
   goal_marker_base.z = s_goal.pos[2];
 
   // Define the point for the arrow tip and set the scaling accordingly
-  geometry_msgs::Point goal_marker_tip;
+  geometry_msgs::msg::Point goal_marker_tip;
   double scale = 0.5;
   double vel_magnitude = getSpeed(s_goal);
   goal_marker.scale.x = 0.05 * scale * vel_magnitude;
@@ -1191,7 +1191,7 @@ void publishStateActionPair(const State &s, const Action &a,
   tree_viz_msg.markers.front() = goal_marker;
 
   // Publish the tree and wait so that RViz has time to process it
-  tree_pub.publish(tree_viz_msg);
+  tree_pub->publish(tree_viz_msg);
   double freq = 5.0;  // Hz
   usleep(1000000.0 / freq);
 }

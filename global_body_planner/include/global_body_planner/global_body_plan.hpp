@@ -106,7 +106,7 @@ class GlobalBodyPlan {
    * @brief Get the timestamp at which this plan was computed
    * @return Timestamp at which the plan returned
    */
-  inline ros::Time getComputedTimestamp() const { return computed_timestamp_; }
+  inline rclcpp::Time getComputedTimestamp() const { return computed_timestamp_; }
 
   /**
    * @brief Set the timestamp at which this plan was published

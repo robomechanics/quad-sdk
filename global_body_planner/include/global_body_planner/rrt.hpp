@@ -3,7 +3,7 @@
 
 #include <chrono>
 
-#include "global_body_planner/planner_class.h"
+#include "global_body_planner/planner_class.hpp"
 
 #define TRAPPED 0
 #define ADVANCED 1
@@ -67,7 +67,7 @@ class RRT {
    */
   virtual int extend(PlannerClass &T, const State &s,
                      const PlannerConfig &planner_config, int direction,
-                     ros::Publisher &tree_pub);
+                     rclcpp::Publisher<visualization_msgs::msg::MarkerArray>::SharedPtr &tree_pub);
 
   /**
    * @brief Get the path from the root vertex to the specified one
@@ -111,7 +111,7 @@ class RRT {
    */
   bool newConfig(State s, State s_near, StateActionResult &result,
                  const PlannerConfig &planner_config, int direction,
-                 ros::Publisher &tree_pub);
+                 rclcpp::Publisher<visualization_msgs::msg::MarkerArray>::SharedPtr &tree_pub);
 
   /**
    * @brief Get the states along the specified path of vertex indices
@@ -159,7 +159,7 @@ class RRT {
   double dist_to_goal_;
 
   /// Message for tree visualization
-  visualization_msgs::MarkerArray tree_viz_msg_;
+  visualization_msgs::msg::MarkerArray tree_viz_msg_;
 };
 
 #endif

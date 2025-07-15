@@ -16,6 +16,7 @@
 
 #include "global_body_planner/gbpl.hpp"
 #include "global_body_planner/global_body_plan.hpp"
+#include "rclcpp/wait_for_message.hpp"
 
 using namespace planning_utils;
 

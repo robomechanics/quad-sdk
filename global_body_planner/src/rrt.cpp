@@ -10,7 +10,7 @@ using namespace planning_utils;
 
 bool RRT::newConfig(State s, State s_near, StateActionResult &result,
                     const PlannerConfig &planner_config, int direction,
-                    ros::Publisher &tree_pub) {
+                    rclcpp::Publisher<visualization_msgs::msg::MarkerArray>::SharedPtr &tree_pub) {
   double best_so_far = stateDistance(s_near, s);
 
   // Try connecting directly
@@ -163,7 +163,7 @@ int RRT::attemptConnect(const State &s_existing, const State &s,
 
 int RRT::extend(PlannerClass &T, const State &s,
                 const PlannerConfig &planner_config, int direction,
-                ros::Publisher &tree_pub) {
+                rclcpp::Publisher<visualization_msgs::msg::MarkerArray>::SharedPtr &tree_pub) {
   int s_near_index = T.getNearestNeighbor(s);
   State s_near = T.getVertex(s_near_index);
   StateActionResult result;
