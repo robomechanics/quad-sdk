@@ -1,4 +1,4 @@
-global_body_planner:
+/**/global_body_planner:
   ros__parameters:
     update_rate: 20                         # Update rate of the ROS node (in Hz)
     num_calls: 1                            # Number of times to call the planner

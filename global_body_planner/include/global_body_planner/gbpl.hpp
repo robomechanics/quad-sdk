@@ -32,7 +32,7 @@ class GBPL : public RRT {
    * @param[in] tree_pub Publisher for broadcasting the tree visual
    */
   int connect(PlannerClass &T, State s, const PlannerConfig &planner_config,
-              int direction, rclcpp::Publisher::SharedPtr &tree_pub);
+              int direction, rclcpp::Publisher<visualization_msgs::msg::MarkerArray>::SharedPtr &tree_pub);
 
   /**
    * @brief Get the actions along the specified path of vertex indices (assumes
@@ -95,7 +95,7 @@ class GBPL : public RRT {
    */
   int findPlan(const PlannerConfig &planner_config, State s_start, State s_goal,
                std::vector<State> &state_sequence,
-               std::vector<Action> &action_sequence, rclcpp::Publisher::SharedPtr &tree_pub);
+               std::vector<Action> &action_sequence, rclcpp::Publisher<visualization_msgs::msg::MarkerArray>::SharedPtr &tree_pub);
 
  protected:
   /// Time horizon (in seconds) the planner is allowed to search until restarted

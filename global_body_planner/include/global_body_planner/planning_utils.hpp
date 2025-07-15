@@ -2,6 +2,7 @@
 #define PLANNING_UTILS_H
 
 #include <math.h>
+#include <rbdl/rbdl.h>
 #include <quad_utils/fast_terrain_map.hpp>
 #include <quad_utils/math_utils.hpp>
 #include <quad_utils/ros_utils.hpp>
@@ -841,8 +842,8 @@ bool isValidStateActionPair(const State &s, const Action &a,
 void publishStateActionPair(const State &s, const Action &a,
                             const State &s_goal,
                             const PlannerConfig &planner_config,
-                            visualization_msgs::MarkerArray &tree_viz_msg,
-                            ros::Publisher &tree_pub);
+                            visualization_msgs::msg::MarkerArray &tree_viz_msg,
+                            rclcpp::Publisher<visualization_msgs::msg::MarkerArray>::SharedPtr &tree_pub, rclcpp::Node::SharedPtr &node);
 }  // namespace planning_utils
 
 #endif

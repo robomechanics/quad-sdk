@@ -1,4 +1,4 @@
-#include "global_body_planner/global_body_plan.h"
+#include "global_body_planner/global_body_plan.hpp"
 
 GlobalBodyPlan::GlobalBodyPlan() {
   length_plan_.push_back(0);
@@ -74,22 +74,22 @@ void GlobalBodyPlan::loadPlanData(int plan_status, FullState &start_state,
 void GlobalBodyPlan::addStateAndGRFToMsg(double t, int plan_index,
                                          const FullState &body_state,
                                          const GRF &grf, int primitive_id,
-                                         quad_msgs::RobotPlan &msg) {
+                                         quad_msgs::msg::RobotPlan &msg) {
   // Represent each state as an Odometry message
-  quad_msgs::RobotState state;
+  quad_msgs::msg::RobotState state;
   quad_utils::updateStateHeaders(state,
-                                 msg.global_plan_timestamp + ros::Duration(t),
+                                 rclcpp::Time(msg.global_plan_timestamp) + rclcpp::Duration::from_seconds(t),
                                  msg.header.frame_id, plan_index);
 
   // Load the data into the message
   state.body = quad_utils::eigenToBodyStateMsg(fullStateToEigen(body_state));
 
-  quad_msgs::GRFArray grf_msg;
-  geometry_msgs::Vector3 vector_msg;
+  quad_msgs::msg::GRFArray grf_msg;
+  geometry_msgs::msg::Vector3 vector_msg;
   vector_msg.x = grf[0];
   vector_msg.y = grf[1];
   vector_msg.z = grf[2];
-  geometry_msgs::Point point_msg;
+  geometry_msgs::msg::Point point_msg;
   quad_utils::Eigen3ToPointMsg(body_state.pos, point_msg);
 
   grf_msg.header = state.header;
@@ -106,8 +106,8 @@ void GlobalBodyPlan::addStateAndGRFToMsg(double t, int plan_index,
 }
 
 void GlobalBodyPlan::convertToMsg(
-    quad_msgs::RobotPlan &robot_plan_msg,
-    quad_msgs::RobotPlan &discrete_robot_plan_msg) {
+    quad_msgs::msg::RobotPlan &robot_plan_msg,
+    quad_msgs::msg::RobotPlan &discrete_robot_plan_msg) {
   if (getSize() <= 0) return;
 
   // Loop through the interpolated body plan and add to message

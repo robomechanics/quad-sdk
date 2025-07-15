@@ -35,7 +35,7 @@ LocalPlanner::LocalPlanner(rclcpp::Node::SharedPtr node)
         std::bind(&LocalPlanner::robotPlanCallback, this, std::placeholders::_1));
     robot_state_sub_ = node_->create_subscription<quad_msgs::msg::RobotState>(robot_state_topic, 10, 
         std::bind(&LocalPlanner::robotStateCallback, this, std::placeholders::_1));
-    cmd_vel_sub_ = node->create_subscription<geometry_msgs::msg::Twist>(cmd_vel_topic, 10, 
+    cmd_vel_sub_ = node_->create_subscription<geometry_msgs::msg::Twist>(cmd_vel_topic, 10, 
         std::bind(&LocalPlanner::cmdVelCallback, this, std::placeholders::_1));
 
     local_plan_pub_ = node_->create_publisher<quad_msgs::msg::RobotPlan>(local_plan_topic, 10);

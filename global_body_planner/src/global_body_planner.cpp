@@ -2,7 +2,7 @@
 
 using namespace planning_utils;
 
-GlobalBodyPlanner::GlobalBodyPlanner(rclcpp::Node node): node_(node) {
+GlobalBodyPlanner::GlobalBodyPlanner(rclcpp::Node::SharedPtr node): node_(node) {
 
   // Load rosparams from parameter server
   std::string body_plan_topic, discrete_body_plan_topic, body_plan_tree_topic,
@@ -34,22 +34,22 @@ GlobalBodyPlanner::GlobalBodyPlanner(rclcpp::Node node): node_(node) {
                            goal_state_vec);
 
   // Setup pubs and subs
-  terrain_map_sub_ = node_.subscribe(
-      terrain_map_topic_, 1, &GlobalBodyPlanner::terrainMapCallback, this);
-  robot_state_sub_ = node_.subscribe(
-      robot_state_topic_, 1, &GlobalBodyPlanner::robotStateCallback, this);
-  goal_state_sub_ = node_.subscribe(goal_state_topic, 1,
-                                  &GlobalBodyPlanner::goalStateCallback, this);
-  body_plan_pub_ = node_.advertise<quad_msgs::RobotPlan>(body_plan_topic, 1);
+  terrain_map_sub_ = node_->create_subscription<grid_map_msgs::msg::GridMap>(terrain_map_topic_, rclcpp::QoS(rclcpp::KeepLast(1)).transient_local(), 
+    std::bind(&GlobalBodyPlanner::terrainMapCallback, this, std::placeholders::_1));
+  robot_state_sub_ = node_->create_subscription<quad_msgs::msg::RobotState>(robot_state_topic_, 10, 
+    std::bind(&GlobalBodyPlanner::robotStateCallback, this, std::placeholders::_1));
+  goal_state_sub_ = node_->create_subscription<geometry_msgs::msg::PointStamped>(goal_state_topic, 10, 
+    std::bind(&GlobalBodyPlanner::goalStateCallback, this, std::placeholders::_1));
+  body_plan_pub_ = node_->create_publisher<quad_msgs::msg::RobotPlan>(body_plan_topic, 10);
   discrete_body_plan_pub_ =
-      node_.advertise<quad_msgs::RobotPlan>(discrete_body_plan_topic, 1);
+      node_->create_publisher<quad_msgs::msg::RobotPlan>(discrete_body_plan_topic, 10);
   tree_pub_ =
-      node_.advertise<visualization_msgs::MarkerArray>(body_plan_tree_topic, 1);
+      node_->create_publisher<visualization_msgs::msg::MarkerArray>(body_plan_tree_topic, 10);
 
   // Load planner config
   bool enable_leaping;
-  planner_config_.loadParamsFromServer(nh);
-  node_.param<bool>("global_body_planner.enable_leaping", enable_leaping, true);
+  planner_config_.loadParamsFromServer(node_);
+  enable_leaping = node_->declare_parameter<bool>("global_body_planner.enable_leaping", true);
   if (!enable_leaping) {
     planner_config_.enable_leaping = false;
     planner_config_.num_leap_samples = 0;
@@ -67,7 +67,7 @@ GlobalBodyPlanner::GlobalBodyPlanner(rclcpp::Node node): node_(node) {
 }
 
 void GlobalBodyPlanner::terrainMapCallback(
-    const grid_map_msgs::GridMap::ConstPtr& msg) {
+    const grid_map_msgs::msg::GridMap::SharedPtr msg) {
   // Get the map in its native form
   grid_map::GridMap map;
   grid_map::GridMapRosConverter::fromMessage(*msg, map);
@@ -94,7 +94,7 @@ void GlobalBodyPlanner::triggerReset() {
 }
 
 void GlobalBodyPlanner::goalStateCallback(
-    const geometry_msgs::PointStamped::ConstPtr& msg) {
+    const geometry_msgs::msg::PointStamped::SharedPtr msg) {
   // If same as previous goal state, ignore
   if (goal_state_msg_ != NULL) {
     if (goal_state_msg_->header.stamp == msg->header.stamp) {
@@ -119,7 +119,7 @@ void GlobalBodyPlanner::goalStateCallback(
   // If the old plan has been executed, allow full replanning, otherwise
   // immediately update plan
   if (current_plan_.getDuration() <=
-      (node_>now() - current_plan_.getPublishedTimestamp()).toSec()) {
+      (node_->now() - current_plan_.getPublishedTimestamp()).seconds()) {
     triggerReset();
   }
 }
@@ -129,30 +129,30 @@ void GlobalBodyPlanner::setStartState() {
   if (!current_plan_.isEmpty() && !publish_after_reset_delay_) {
     int current_index;
     double first_element_duration;
-    quad_utils::getPlanIndex(current_plan_.getPublishedTimestamp(), dt_,
+    quad_utils::getPlanIndex(node_, current_plan_.getPublishedTimestamp(), dt_,
                              current_index, first_element_duration);
     current_index = std::min(current_index, current_plan_.getSize() - 1);
     FullState current_state_in_plan_ =
         current_plan_.getStateFromIndex(current_index);
     if (poseDistance(robot_state_, current_state_in_plan_) >
         pos_error_threshold_) {
-      RCLCPP_WARN_THROTTLE(node_->get_logger(), 0.5, "Too far from nominal plan, resetting");
+      RCLCPP_WARN_THROTTLE(node_->get_logger(), *node_->get_clock(), 1000, "Too far from nominal plan, resetting");
       triggerReset();
     }
   }
 
   if (planner_status_ == RESET) {
-    RCLCPP_INFO_THROTTLE(node_->get_logger(), 2, "In reset mode");
+    RCLCPP_INFO_THROTTLE(node_->get_logger(), *node_->get_clock(), 2000, "In reset mode");
     start_state_ = robot_state_;
     replan_start_time_ = 0;
     start_index_ = 0;
     publish_after_reset_delay_ = true;
 
   } else if (planner_status_ == REFINE) {
-    RCLCPP_INFO_THROTTLE(node_->get_logger(), 2, "GBP in refine mode");
+    RCLCPP_INFO_THROTTLE(node_->get_logger(), *node_->get_clock(), 2000, "GBP in refine mode");
 
     start_index_ =
-        std::floor((node_->now() + rclcpp::Duration(max_planning_time_) -
+        std::floor((node_->now() + rclcpp::Duration::from_seconds(max_planning_time_) -
                     current_plan_.getPublishedTimestamp())
                        .seconds() /
                    dt_);
@@ -180,7 +180,7 @@ void GlobalBodyPlanner::setGoalState() {}
 
 bool GlobalBodyPlanner::callPlanner() {
   if (!replanning_allowed_ && !publish_after_reset_delay_) {
-    newest_plan_.setComputedTimestamp(ros::Time::now());
+    newest_plan_.setComputedTimestamp(node_->now());
     return false;
   }
 
@@ -223,13 +223,13 @@ bool GlobalBodyPlanner::callPlanner() {
 
     if (plan_status != VALID && plan_status != VALID_PARTIAL) {
       if (plan_status == INVALID_START_STATE) {
-        RCLCPP_WARN_THROTTLE(node_->get_logger(), 1, "Invalid start state, exiting");
+        RCLCPP_WARN_THROTTLE(node_->get_logger(), *node_->get_clock(), 1000, "Invalid start state, exiting");
       } else if (plan_status == INVALID_GOAL_STATE) {
-        RCLCPP_WARN_THROTTLE(node_->get_logger(), 1, "Invalid goal state, exiting");
+        RCLCPP_WARN_THROTTLE(node_->get_logger(), *node_->get_clock(), 1000, "Invalid goal state, exiting");
       } else if (plan_status == INVALID_START_GOAL_EQUAL) {
-        RCLCPP_WARN_THROTTLE(node_->get_logger(), 1, "Start is sufficiently close to goal, exiting");
+        RCLCPP_WARN_THROTTLE(node_->get_logger(), *node_->get_clock(), 1000, "Start is sufficiently close to goal, exiting");
       } else if (plan_status == UNSOLVED) {
-        RCLCPP_WARN_THROTTLE(node_->get_logger(), 1,
+        RCLCPP_WARN_THROTTLE(node_->get_logger(), *node_->get_clock(), 1000,
                           "Planner was unable to make any progress, start "
                           "state likely trapped");
       }
@@ -310,19 +310,51 @@ bool GlobalBodyPlanner::callPlanner() {
 
 void GlobalBodyPlanner::waitForData() {
   // Spin until terrain map message has been received and processed
-  boost::shared_ptr<grid_map_msgs::msg::GridMap const> shared_map;
-  while ((shared_map == nullptr) && rclcpp::ok()) {
-    shared_map = ros::topic::waitForMessage<grid_map_msgs::GridMap>(
-        terrain_map_topic_, nh_);
-    ros::spinOnce();
-  }
+  grid_map_msgs::msg::GridMap map_msg;
+  bool got_map = false;
 
-  boost::shared_ptr<quad_msgs::msg::RobotState const> shared_robot_state;
-  while ((shared_robot_state == nullptr) && rclcpp::ok()) {
-    shared_robot_state = ros::topic::waitForMessage<quad_msgs::msg::RobotState>(
-        robot_state_topic_, nh_);
+  while (!got_map && rclcpp::ok()) {
+    got_map = rclcpp::wait_for_message(
+        map_msg,
+        node_,
+        terrain_map_topic_,
+        std::chrono::seconds(3));
     rclcpp::spin_some(node_);
   }
+
+  quad_msgs::msg::RobotState state_msg;
+  bool got_state = false;
+
+  while (!got_state && rclcpp::ok()) {
+    got_state = rclcpp::wait_for_message(
+        state_msg,
+        node_,
+        robot_state_topic_,
+        std::chrono::seconds(3));
+    rclcpp::spin_some(node_);
+  }
+  // std::shared_ptr<grid_map_msgs::msg::GridMap const> shared_map;
+  // while ((shared_map == nullptr) && rclcpp::ok()) {
+  //   shared_map = rclcpp::wait_for_message<grid_map_msgs::msg::GridMap>(
+  //       node_->get_node_base_interface(),
+  //       node_->get_node_topics_interface(),
+  //       terrain_map_topic_,
+  //       rclcpp::QoS(10),
+  //       std::chrono::seconds(3));
+  //   rclcpp::spin_some(node_);
+  // }
+
+  // std::shared_ptr<quad_msgs::msg::RobotState const> shared_robot_state;
+  // while ((shared_robot_state == nullptr) && rclcpp::ok()) {
+  //   shared_robot_state = rclcpp::wait_for_message<quad_msgs::msg::RobotState>(
+  //       node_->get_node_base_interface(),
+  //       node_->get_node_topics_interface(),
+  //       robot_state_topic_,
+  //       rclcpp::QoS(10),
+  //       std::chrono::seconds(3)
+  //   );
+  //   rclcpp::spin_some(node_);
+  // }
   RCLCPP_INFO(node_->get_logger(), "GBP has state and map information");
   reset_time_ = node_->now();
 }
@@ -335,7 +367,7 @@ void GlobalBodyPlanner::getInitialPlan() {
 
   // Repeatedly call the planner until the startup delay has elapsed
   while (rclcpp::ok() && ((node_->now() - start_time) <
-                       rclcpp::Duration(reset_publish_delay_))) {
+                       rclcpp::Duration::from_seconds(reset_publish_delay_))) {
     success = callPlanner();
   }
 }
@@ -382,8 +414,8 @@ void GlobalBodyPlanner::publishCurrentPlan() {
     current_plan_.convertToMsg(robot_plan_msg, discrete_robot_plan_msg);
 
     // Publish both messages
-    body_plan_pub_.publish(robot_plan_msg);
-    discrete_body_plan_pub_.publish(discrete_robot_plan_msg);
+    body_plan_pub_->publish(robot_plan_msg);
+    discrete_body_plan_pub_->publish(discrete_robot_plan_msg);
 
     RCLCPP_WARN(node_->get_logger(), "New plan published, stamp = %f",
              rclcpp::Time(robot_plan_msg.global_plan_timestamp).seconds());
