@@ -80,6 +80,7 @@ void GlobalBodyPlanner::terrainMapCallback(
   goal_state_.pos[2] =
       planner_config_.h_nom + planner_config_.terrain.getGroundHeight(
                                   goal_state_.pos[0], goal_state_.pos[1]);
+  map_recieved_ = true;
 }
 
 void GlobalBodyPlanner::robotStateCallback(
@@ -311,14 +312,7 @@ bool GlobalBodyPlanner::callPlanner() {
 void GlobalBodyPlanner::waitForData() {
   // Spin until terrain map message has been received and processed
   grid_map_msgs::msg::GridMap map_msg;
-  bool got_map = false;
-
-  while (!got_map && rclcpp::ok()) {
-    got_map = rclcpp::wait_for_message(
-        map_msg,
-        node_,
-        terrain_map_topic_,
-        std::chrono::seconds(3));
+  while(!map_recieved_ && rclcpp::ok()){
     rclcpp::spin_some(node_);
   }
 
@@ -333,28 +327,6 @@ void GlobalBodyPlanner::waitForData() {
         std::chrono::seconds(3));
     rclcpp::spin_some(node_);
   }
-  // std::shared_ptr<grid_map_msgs::msg::GridMap const> shared_map;
-  // while ((shared_map == nullptr) && rclcpp::ok()) {
-  //   shared_map = rclcpp::wait_for_message<grid_map_msgs::msg::GridMap>(
-  //       node_->get_node_base_interface(),
-  //       node_->get_node_topics_interface(),
-  //       terrain_map_topic_,
-  //       rclcpp::QoS(10),
-  //       std::chrono::seconds(3));
-  //   rclcpp::spin_some(node_);
-  // }
-
-  // std::shared_ptr<quad_msgs::msg::RobotState const> shared_robot_state;
-  // while ((shared_robot_state == nullptr) && rclcpp::ok()) {
-  //   shared_robot_state = rclcpp::wait_for_message<quad_msgs::msg::RobotState>(
-  //       node_->get_node_base_interface(),
-  //       node_->get_node_topics_interface(),
-  //       robot_state_topic_,
-  //       rclcpp::QoS(10),
-  //       std::chrono::seconds(3)
-  //   );
-  //   rclcpp::spin_some(node_);
-  // }
   RCLCPP_INFO(node_->get_logger(), "GBP has state and map information");
   reset_time_ = node_->now();
 }
@@ -432,7 +404,6 @@ void GlobalBodyPlanner::spin() {
   while (rclcpp::ok()) {
     // Process callbacks
     rclcpp::spin_some(node_);
-
     // Set the start and goal states
     setStartState();
     setGoalState();

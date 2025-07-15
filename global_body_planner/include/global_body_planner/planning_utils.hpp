@@ -124,7 +124,7 @@ struct PlannerConfig {
     quad_utils::loadROSParam(node, "global_body_planner.grf_min", grf_min);
     quad_utils::loadROSParam(node, "global_body_planner.grf_max", grf_max);
     quad_utils::loadROSParam(node,
-                             "/global_body_planner.traversability_threshold",
+                             "global_body_planner.traversability_threshold",
                              traversability_threshold);
 
     // Load global parameters

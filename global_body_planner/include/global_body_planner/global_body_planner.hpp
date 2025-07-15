@@ -228,6 +228,8 @@ class GlobalBodyPlanner {
   /// Timestep for interpolation
   double dt_;
 
+  bool map_recieved_ = false;
+
   /// ID for status of planner
   int planner_status_;
 

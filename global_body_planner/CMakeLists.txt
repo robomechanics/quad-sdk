@@ -62,11 +62,15 @@ target_include_directories(${PROJECT_NAME}_node
 )
 
 install(
-  TARGETS ${PROJECT_NAME} ${PROJECT_NAME}_node
+  TARGETS ${PROJECT_NAME}_node
+  DESTINATION lib/${PROJECT_NAME}
+)
+
+install(
+  TARGETS ${PROJECT_NAME}
   EXPORT export_${PROJECT_NAME}
   ARCHIVE DESTINATION lib
   LIBRARY DESTINATION lib
-  RUNTIME DESTINATION bin
 )
 
 install(
