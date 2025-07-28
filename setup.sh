@@ -7,7 +7,8 @@ echo
 sudo apt install -y doxygen libeigen3-dev python3-pip
 sudo apt install -y python3-colcon-common-extensions
 sudo apt install -y python3-rosdep
-sudo apt install python3-colcon-clean
+sudo apt install -y python3-colcon-clean
+sudo apt install -y ros-jazzy-ament-cmake
 pip3 install cpplint
 
 # Install all dependencies from package setup files
