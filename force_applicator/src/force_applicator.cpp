@@ -116,10 +116,16 @@ void ForceApplicator::updateMarker(){
 
 
     // Modify this to compute the Orientation of the Force Applied
-    last_robot_marker_msg_.pose.orientation.x = 0.0; 
-    last_robot_marker_msg_.pose.orientation.y = 0.0;
-    last_robot_marker_msg_.pose.orientation.z = 0.0;
-    last_robot_marker_msg_.pose.orientation.w = 1.0;
+    if (force_magnitude_ > 0.0) {
+        tf2::Quaternion q;
+        q.setRPY(0, 0, std::atan2(force_y_, force_x_));
+        q.normalize();
+        last_robot_marker_msg_.pose.orientation = tf2::toMsg(q);
+    } 
+    else {
+        last_robot_marker_msg_.pose.orientation = geometry_msgs::msg::Quaternion{};
+        last_robot_marker_msg_.pose.orientation.w = 1.0;  // identity
+    }
 
     force_marker_pub_->publish(last_robot_marker_msg_);
 }
@@ -139,6 +145,8 @@ void ForceApplicator::applyForce(){
       fx = force_x_; fy = force_y_; fz = force_z_;
       tx = torque_x_; ty = torque_y_; tz = torque_z_;
     }
+
+    force_magnitude_ = Eigen::Vector3d(fx, fy, fz).norm();
 
     // Build and Publish ROS Entity Wrench
     ros_gz_interfaces::msg::EntityWrench ew;
