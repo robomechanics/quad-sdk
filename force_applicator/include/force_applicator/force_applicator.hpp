@@ -100,6 +100,8 @@ class ForceApplicator {
   
   double force_x_, force_y_, force_z_;
 
+  double force_magnitude_;
+
   double torque_x_, torque_y_, torque_z_;
 
   double dt_;
