@@ -1,5 +1,6 @@
-body_force_estimator:
+/**/body_force_estimator:
   ros__parameters:
-    update_rate: 250
-    K_O: 25 # 50
-    cancel_friction: 1
+    body_force_estimator:
+      update_rate: 250.0
+      K_O: 25.0 # 50
+      cancel_friction: 1

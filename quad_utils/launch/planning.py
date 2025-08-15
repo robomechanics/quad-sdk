@@ -163,15 +163,24 @@ def launch_local_planner(context, *args, **kwargs):
         )
     ]
 
-# def launch_body_force_estimator(context, *args, **kwargs):
-#     return [
-#         Node(
-#             package='body_force_estimator',
-#             executable='body_force_estimator_node',
-#             name='body_force_estimator',
-#             output='screen'
-#         )
-#     ]
+def launch_body_force_estimator(context, *args, **kwargs):
+    body_force_estimator_pkg = FindPackageShare('body_force_estimator') 
+    body_force_estimator_param_file = PathJoinSubstitution([body_force_estimator_pkg, 'config', 'body_force_estimator.yaml'])
+    body_force_estimator_topics_file = PathJoinSubstitution([body_force_estimator_pkg, 'config', 'body_force_estimator_topics.yaml'])
+
+    return [
+        Node(
+            package='body_force_estimator',
+            executable='body_force_estimator_node',
+            name='body_force_estimator',
+            output='screen',
+            parameters=[body_force_estimator_param_file, 
+                    body_force_estimator_topics_file,
+            {
+            'use_sim_time' : LaunchConfiguration('use_sim_time')
+            }]
+        )
+    ]
 
 
 # def launch_plan_publisher(context, *args, **kwargs):
@@ -215,6 +224,6 @@ def generate_launch_description():
         OpaqueFunction(function=launch_global_planner),
         OpaqueFunction(function=launch_twist_input_nodes),
         OpaqueFunction(function=launch_local_planner),
-        # OpaqueFunction(function=launch_body_force_estimator),
+        OpaqueFunction(function=launch_body_force_estimator),
         # OpaqueFunction(function=launch_plan_publisher),
     ])

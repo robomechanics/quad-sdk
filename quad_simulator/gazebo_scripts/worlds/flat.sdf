@@ -50,6 +50,10 @@
       filename="libgz-sim8-forcetorque-system.so"
       name="gz::sim::systems::ForceTorque"/>
 
+    <plugin
+      filename="libgz-sim-apply-link-wrench-system.so"
+      name="gz::sim::systems::ApplyLinkWrench"/>
+
     <light name="sun" type="directional">
       <cast_shadows>true</cast_shadows>
       <pose>0 0 10 0 0 0</pose>
