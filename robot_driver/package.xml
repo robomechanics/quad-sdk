@@ -3,7 +3,7 @@
 <package format="3">
   <name>robot_driver</name>
   <version>0.0.0</version>
-  <description>TODO: Package description</description>
+  <description>The Robot Driver Package</description>
   <maintainer email="ologandavid@gmail.com">rml</maintainer>
   <license>MIT</license>
 

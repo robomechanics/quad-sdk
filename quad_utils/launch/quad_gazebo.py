@@ -37,6 +37,25 @@ def launch_ignition_world(context, *args, **kwargs):
         ])
     ]
 
+def launch_obstacles(context, *args, **kwargs):
+    obstacle_launch_path = PathJoinSubstitution([
+        FindPackageShare('quad_utils'),
+        'launch',
+        'spawn_obstacles.py'
+        ])
+    return[
+        GroupAction([
+            PushRosNamespace('remote'),
+            IncludeLaunchDescription(
+                PythonLaunchDescriptionSource(obstacle_launch_path),
+                launch_arguments={
+                    'scenario' : LaunchConfiguration('scenario'),
+                    'obstacles':LaunchConfiguration('obstacles')
+                }.items()
+            )
+        ])
+    ]
+
 def bridge_global_clock(context, *args, **kwargs):
     return [
         Node(
@@ -155,12 +174,16 @@ def generate_launch_description():
         DeclareLaunchArgument(
             'robot_configs',
             default_value='[{"name": "robot_1", "type": "spirit", "controller": "inverse_dynamics", "init_pose" : "-x 0.0 -y 0.0 -z 2"}]',
-            description='A JSON List of robot configurations: MUST specifiy name, type, and controller'
+            description='A JSON List of robot configurations: MUST specifiy name, type, controller, and spawn pose'
         ),
+        DeclareLaunchArgument('scenario', default_value="None", description='Custom Obstacle Scenario to Spawn e.g. Underbrush, Procedural Underbrush)'),
+        DeclareLaunchArgument('obstacles', default_value='[]',
+            description= 'A JSON List of obstacles to spawn (e.g {"name": "box", "init_pose" : "-x 3.0 -y 0.0 -z 2"})')
     ]
 
     return LaunchDescription(declared_args + [
         OpaqueFunction(function=launch_ignition_world),
+        OpaqueFunction(function=launch_obstacles),
         OpaqueFunction(function=bridge_global_clock),
         OpaqueFunction(function=launch_robot_mapping),
         OpaqueFunction(function=launch_robot_group),
