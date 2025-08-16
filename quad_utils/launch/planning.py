@@ -142,6 +142,9 @@ def launch_local_planner(context, *args, **kwargs):
     local_planner_topics_file = PathJoinSubstitution([local_planner_pkg, 'config', 'local_planner_topics.yaml'])
     robot_specific_param_file = os.path.join(quad_utils_pkg.perform(context), 'config', LaunchConfiguration('robot_type').perform(context) + '.yaml')
 
+    if LaunchConfiguration('controller_mode').perform(context) == 'learned':
+        return []
+
     return [
         Node(
             package='local_planner',
@@ -214,6 +217,7 @@ def generate_launch_description():
         DeclareLaunchArgument('reference', default_value='twist'),
         DeclareLaunchArgument('logging', default_value='true'),
         DeclareLaunchArgument('twist_input', default_value='none'),
+        DeclareLaunchArgument('controller_mode', default_value='mpc'),
         DeclareLaunchArgument('namespace', default_value='robot_1'),
         DeclareLaunchArgument('robot_type', default_value='spirit'),
         DeclareLaunchArgument('leaping', default_value='true'),

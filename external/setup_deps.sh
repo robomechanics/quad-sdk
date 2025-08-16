@@ -41,3 +41,11 @@ cd ../..
 
 #Setup and Build for TeleopTwist
 sudo apt install -y ros-jazzy-teleop-twist-joy
+
+#Setup and Build for Unitree SDK2
+cd unitree_sdk2
+quiet_mkdir build
+cd build
+cmake .. -DCMAKE_INSTALL_PREFIX=/opt/unitree_robotics
+sudo make install
+cd ../..

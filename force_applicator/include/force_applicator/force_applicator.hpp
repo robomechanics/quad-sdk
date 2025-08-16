@@ -97,8 +97,12 @@ class ForceApplicator {
   visualization_msgs::msg::Marker last_robot_marker_msg_;
 
   Eigen::Vector3d last_robot_pose_;
-  
+
+  // Yaml File Force Magnitudes
   double force_x_, force_y_, force_z_;
+
+  //Applied Force Components
+  double fx, fy, fz;
 
   double force_magnitude_;
 

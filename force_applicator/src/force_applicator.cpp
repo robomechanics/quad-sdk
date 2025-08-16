@@ -112,13 +112,13 @@ void ForceApplicator::updateMarker(){
     last_robot_marker_msg_.color.g = 0.0;
     last_robot_marker_msg_.color.b = 0.0;
     last_robot_marker_msg_.color.a = 1.0;
-    last_robot_marker_msg_.lifetime = rclcpp::Duration::from_seconds(0.1);
+    last_robot_marker_msg_.lifetime = rclcpp::Duration::from_seconds(0.75);
 
 
     // Modify this to compute the Orientation of the Force Applied
     if (force_magnitude_ > 0.0) {
         tf2::Quaternion q;
-        q.setRPY(0, 0, std::atan2(force_y_, force_x_));
+        q.setRPY(0, 0, std::atan2(fy, fx));
         q.normalize();
         last_robot_marker_msg_.pose.orientation = tf2::toMsg(q);
     } 
@@ -132,7 +132,6 @@ void ForceApplicator::updateMarker(){
 
 void ForceApplicator::applyForce(){
     // Determine force vector
-    double fx, fy, fz;
     double tx, ty, tz;
     if (force_mode_ == "random") {
       std::uniform_real_distribution<double> f_mag_distribution(force_mag_min_, force_mag_max_);

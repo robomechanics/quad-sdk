@@ -60,7 +60,7 @@ def generate_launch_description():
         DeclareLaunchArgument('namespace', default_value = 'robot_1', description='Robot namespace'),
         DeclareLaunchArgument("mode", default_value = "periodic", 
             description = "Method for applying forces: 'periodic' to apply at set time intervals, or 'distance' to apply based on distance traveled." ),
-        DeclareLaunchArgument("force_mode", default_value = "yaml", 
+        DeclareLaunchArgument("force_mode", default_value = "random", 
             description = "Source for force magnitudes: 'yaml' to load predefined wrenches from a YAML file, or 'random' to sample from a distribution."),
         DeclareLaunchArgument("link", default_value = "robot_1::body",
             description = "Name of the robot link on which to apply the force."),
