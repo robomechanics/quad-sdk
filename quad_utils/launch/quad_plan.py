@@ -22,6 +22,7 @@ def launch_robot_group(context, *args, **kwargs):
     for config in robot_configs:
         robot_ns = config["name"]
         robot_type = config["type"]
+        robot_controller = config["controller_mode"]
         reference = config["reference"]
         twist_input = config["twist_input"]
 
@@ -43,6 +44,7 @@ def launch_robot_group(context, *args, **kwargs):
                 launch_arguments={
                     'robot_type': TextSubstitution(text=robot_type),
                     'namespace': TextSubstitution(text=robot_ns),
+                    'controller_mode' : TextSubstitution(text=robot_controller),
                     'reference': TextSubstitution(text=reference),
                     'twist_input': TextSubstitution(text=twist_input),
                     'logging' : LaunchConfiguration('logging'),
@@ -73,11 +75,11 @@ def generate_launch_description():
         DeclareLaunchArgument('leaping', default_value='true', description='Enable Leaping in the Global Planner'),
         DeclareLaunchArgument('ac', default_value='false', description='Enable Adaptive Complexity Planner (Spirit ONLY)'),
         DeclareLaunchArgument('use_sim_time', default_value='true', description='Use Simulation Clock or Computer Clock'),
-        DeclareLaunchArgument('force_app',, default_value='false', description='Launch Force Applicator Alongside Planning'),
+        DeclareLaunchArgument('force_app', default_value='false', description='Launch Force Applicator Alongside Planning'),
         DeclareLaunchArgument(
             'robot_configs',
-            default_value='[{"name": "robot_1", "type": "spirit", "reference": "gbpl", "twist_input": "joy"}]',
-            description='A JSON List of robot configurations: MUST specifiy name, type, and controller'
+            default_value='[{"name": "robot_1", "type": "go2", "controller_mode" : "learned", "reference": "gbpl", "twist_input": "joy"}]',
+            description='A JSON List of robot configurations: MUST specifiy name, type, and controller_mode, reference'
         ),
         OpaqueFunction(function=launch_robot_group)
     ])

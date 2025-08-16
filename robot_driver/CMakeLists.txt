@@ -27,6 +27,7 @@ find_package(std_msgs REQUIRED)
 find_package(tf2 REQUIRED)
 find_package(tf2_eigen REQUIRED)
 find_package(geometry_msgs REQUIRED)
+# find_package(unitree_sdk2 REQUIRED)
 
 # uncomment the following section in order to fill in
 # further dependencies manually.
