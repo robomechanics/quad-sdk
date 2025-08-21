@@ -19,3 +19,4 @@
         single_joint_command: control/single_joint_command
         restart_flag: control/restart_flag
       mocap: mocap_node/quad/pose
+      cmd_vel: cmd_vel

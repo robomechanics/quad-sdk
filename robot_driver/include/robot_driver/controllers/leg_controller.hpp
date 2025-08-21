@@ -66,6 +66,24 @@ class LegController {
                     const std::vector<double> &swing_kd_cart);
 
   /**
+   * @brief Set the desired stance and swing proportional and derivative gains
+   * @param[in] stance_kp Stance phase proportional gains
+   * @param[in] stance_kd Stance phase derivative gains
+   * @param[in] swing_kp Swing phase proportional gains
+   * @param[in] swing_kd Swing phase derivative gains
+   * @param[in] swing_kp_cart Cartesian Swing phase proportional gains
+   * @param[in] swing_kd_cart Cartesian Swing phase derivative gains
+   * @param[in] model_path Absolute Path to ONNX Model Weights
+   */
+  virtual void init(const std::vector<double> &stance_kp,
+                    const std::vector<double> &stance_kd,
+                    const std::vector<double> &swing_kp,
+                    const std::vector<double> &swing_kd,
+                    const std::vector<double> &swing_kp_cart,
+                    const std::vector<double> &swing_kd_cart,
+                    const std::string &model_path);
+
+  /**
    * @brief Compute the leg command array message for a given current state and
    * reference plan
    * @param[in] local_plan_msg Message of the local referance plan
@@ -117,6 +135,10 @@ class LegController {
 
   /// Bool for whether to override the state machine
   bool override_state_machine_;
+
+  // Absolute Path to ONNX Policy Weights
+  std::string model_path_;
+
 };
 
 #endif  // LEG_CONTROLLER_H

@@ -49,3 +49,5 @@ cd build
 cmake .. -DCMAKE_INSTALL_PREFIX=/opt/unitree_robotics
 sudo make install
 cd ../..
+
+#Setup and Build for ONNX Runtime

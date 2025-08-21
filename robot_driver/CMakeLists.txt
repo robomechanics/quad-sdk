@@ -29,6 +29,16 @@ find_package(tf2_eigen REQUIRED)
 find_package(geometry_msgs REQUIRED)
 # find_package(unitree_sdk2 REQUIRED)
 
+find_library(ONNXRUNTIME_LIB
+  NAMES onnxruntime
+  PATHS /usr/local/lib /usr/local/lib64
+  REQUIRED)
+
+# Optional (GPU provider). Will link if present.
+find_library(ONNXRUNTIME_CUDA_PROVIDER
+  NAMES onnxruntime_providers_cuda
+  PATHS /usr/local/lib /usr/local/lib64)
+
 # uncomment the following section in order to fill in
 # further dependencies manually.
 # find_package(<dependency> REQUIRED)
@@ -56,6 +66,7 @@ add_library(robot_driver SHARED
   src/controllers/inertia_estimation_controller.cpp
   src/controllers/grf_pid_controller.cpp
   src/controllers/joint_controller.cpp
+  src/controllers/learned_policy.cpp
   src/estimators/state_estimator.cpp
   src/estimators/comp_filter_estimator.cpp
   src/estimators/ekf_estimator.cpp
@@ -63,18 +74,25 @@ add_library(robot_driver SHARED
   src/hardware_interfaces/spirit_interface.cpp
 )
 
-target_link_libraries(robot_driver ${GRMBLINK})
 target_include_directories(robot_driver PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
   $<INSTALL_INTERFACE:include>
 )
-target_link_libraries(robot_driver
-  ${rclcpp_LIBRARIES}
-  ${std_msgs_LIBRARIES}
-  ${quad_msgs_LIBRARIES}
-  ${quad_utils_LIBRARIES}
-  Eigen3::Eigen
-)
+
+target_include_directories(robot_driver PUBLIC /usr/local/include/onnxruntime)
+
+# target_link_libraries(robot_driver
+#   ${rclcpp_LIBRARIES}
+#   ${std_msgs_LIBRARIES}
+#   ${quad_msgs_LIBRARIES}
+#   ${quad_utils_LIBRARIES}
+#   Eigen3::Eigen
+# )
+target_link_libraries(robot_driver ${GRMBLINK})
+target_link_libraries(robot_driver ${ONNXRUNTIME_LIB})
+if(ONNXRUNTIME_CUDA_PROVIDER)
+  target_link_libraries(robot_driver ${ONNXRUNTIME_CUDA_PROVIDER})
+endif()
 
 ament_target_dependencies(robot_driver
   rclcpp

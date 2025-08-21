@@ -1,0 +1,192 @@
+#include "robot_driver/controllers/learned_policy.hpp"
+
+LearnedPolicy::LearnedPolicy(rclcpp::Node::SharedPtr node, std::string& robot_ns): LegController(node, robot_ns){ }
+
+void LearnedPolicy::init(const std::vector<double> &stance_kp,
+                        const std::vector<double> &stance_kd,
+                        const std::vector<double> &swing_kp,
+                        const std::vector<double> &swing_kd,
+                        const std::vector<double> &swing_kp_cart,
+                        const std::vector<double> &swing_kd_cart,
+                        const std::string &model_path){
+  // Initalize the Path to the Model Onnx File
+  model_path_ = model_path;
+  loadONNXModel();
+  nominal_stance_pose_ << 0.0, 0.0, 0.0, 0.0, 
+                           0.6, 0.6, 0.6, 0.6,
+                            1.6, 1.6, 1.6, 1.6; // For Go2 Change this to a Param Later On
+
+  RCLCPP_INFO(node_->get_logger(), "Loaded Learned Policy at %s", model_path_.c_str());
+}
+
+void LearnedPolicy::loadONNXModel(){
+    /// Try loading and Initalizing an Onnx Runtime Session
+    try{
+      so_.SetGraphOptimizationLevel(GraphOptimizationLevel::ORT_ENABLE_ALL);
+      // For GPU
+      // OrtSessionOptionsAppendExecutionProvider_CUDA(session_options_, 0);
+
+      if (!std::filesystem::exists(model_path_)) {
+        RCLCPP_ERROR(node_->get_logger(), "ONNX file not found: %s", model_path_.c_str());
+        return;
+      }
+
+      session_ = std::make_unique<Ort::Session>(env_, model_path_.c_str(), so_);
+      RCLCPP_INFO(node_->get_logger(), "Session created for %s", model_path_.c_str());
+    }
+    catch(const std::exception& e){
+      RCLCPP_ERROR(node_->get_logger(), "Failed to create ONNX Session: %s", e.what());
+      session_.reset();
+      return;
+    }
+    /// Debugging Step to Visualize the Network Input and Output Shapes
+    try{
+      auto in_shape  = session_->GetInputTypeInfo(0).GetTensorTypeAndShapeInfo().GetShape();
+      auto out_shape = session_->GetOutputTypeInfo(0).GetTensorTypeAndShapeInfo().GetShape();
+      if (in_shape.size() >= 2)
+      RCLCPP_INFO(node_->get_logger(), "input: shape [%lld,%lld]",
+                  (long long)in_shape[0], (long long)in_shape[1]);
+      else{
+        RCLCPP_INFO(node_->get_logger(), "input: shape [?]");
+      }
+      if (out_shape.size() >= 2)
+        RCLCPP_INFO(node_->get_logger(), "output: shape [%lld,%lld]",
+                    (long long)out_shape[0], (long long)out_shape[1]);
+      else{
+        RCLCPP_INFO(node_->get_logger(), "output: shape [?]");
+      }
+    } catch (const Ort::Exception& e) {
+      RCLCPP_WARN(node_->get_logger(), "I/O introspection failed: %s", e.what());
+      // Session is still valid; you can proceed to Run() if you know your I/O contract.
+    } catch (const std::exception& e) {
+      RCLCPP_WARN(node_->get_logger(), "I/O introspection failed (std): %s", e.what());
+    }
+}
+
+void LearnedPolicy::computeObservations(const quad_msgs::msg::RobotState &robot_state_msg){
+  // May Require Changes if your Policy has Different Inputs
+  
+  // Define vectors for joint positions and velocities
+  Eigen::VectorXd joint_positions(3 * num_feet_),
+      joint_velocities(3 * num_feet_), foot_positions(3 * num_feet_),
+      foot_velocities(3 * num_feet_), body_state(12);
+
+  quad_utils::vectorToEigen(robot_state_msg.joints.position, joint_positions);
+  quad_utils::vectorToEigen(robot_state_msg.joints.velocity,
+                            joint_velocities);
+  body_state = quad_utils::bodyStateMsgToEigen(robot_state_msg.body);
+
+  Eigen::Vector3d base_lin_vel, base_ang_vel, base_orientation, vel_cmd;
+  base_lin_vel << body_state(6), body_state(7), body_state(8) ;
+  base_ang_vel << body_state(9), body_state(10), body_state(11);
+  base_orientation << body_state(3), body_state(4), body_state(5);
+  vel_cmd << cmd_vel_msg_(0), cmd_vel_msg_(1), cmd_vel_msg_(5); 
+
+  // Compute the Projected Gravity in the Body Frame
+  const Eigen::Matrix3d R_bw =
+    (Eigen::AngleAxisd(body_state(5), Eigen::Vector3d::UnitZ()) *
+      Eigen::AngleAxisd(body_state(4), Eigen::Vector3d::UnitY()) *
+      Eigen::AngleAxisd(body_state(3), Eigen::Vector3d::UnitX())).toRotationMatrix();
+  const Eigen::Vector3d g_world(0.0, 0.0, -9.81);  // Change to  (0,0,-1.0) for Unit Proj Gravity
+  const Eigen::Vector3d proj_gravity = R_bw.transpose() * g_world;
+
+  // Compute Prev Action
+  prev_action_ = (joint_positions - nominal_stance_pose_) / scale_factor_;
+  
+  obs_.resize(48);
+  obs_ << base_lin_vel, base_ang_vel, proj_gravity, vel_cmd, joint_positions, joint_velocities, prev_action_;
+}
+
+void LearnedPolicy::runInference(){
+  // Run Inference and Update Previous Action
+  if (!session_){
+    RCLCPP_INFO(node_->get_logger(), "ONNX Session Not Ready");
+    return;
+  }
+
+  Eigen::VectorXf obs_f = obs_.cast<float>();
+  const int64_t input_shape[2] = {1, static_cast<int64_t>(obs_f.size())};
+
+  // Create an ONNX Runtime Tensor that points to CPU Buffer
+  Ort::Value input_tensor = Ort::Value::CreateTensor<float>(
+    mem_info_, obs_f.data(), obs_f.size(), input_shape, 2);
+  
+  Ort::AllocatorWithDefaultOptions alloc;
+  auto in_name_alloc  = session_->GetInputNameAllocated(0, alloc);
+  auto out_name_alloc = session_->GetOutputNameAllocated(0, alloc);
+  const char* in_names[]  = { in_name_alloc.get() };
+  const char* out_names[] = { out_name_alloc.get() };
+  
+  auto outs = session_->Run(Ort::RunOptions{nullptr}, in_names, &input_tensor, 1, out_names, 1);
+
+  if (outs.size() != 1 || !outs[0].IsTensor()) {
+    RCLCPP_ERROR(node_->get_logger(), "Unexpected ONNX output");
+    return;
+  }
+
+  auto out_info  = outs[0].GetTensorTypeAndShapeInfo();
+  auto out_shape = out_info.GetShape();
+
+  int64_t out_elems = 1;
+  for (auto d : out_shape) out_elems *= (d < 0 ? 1 : d); 
+
+  float* y = outs[0].GetTensorMutableData<float>();
+  raw_actions_.resize(out_elems);
+  for (int64_t i = 0; i < out_elems; ++i) raw_actions_(i) = static_cast<double>(y[i]);
+
+  // Apply Scaling to Raw Action Offsets and Add Them to Nominal Stance
+  Eigen::VectorXd unordered_actions_ = raw_actions_ * scale_factor_ + nominal_stance_pose_;
+
+  // Reorder Actions to Match the Quad-SDK Joint Convention 
+  // Quad SDK Convention FL(8, 0, 1), RL(9, 2, 3), FR(10, 4, 5), RR(11, 6, 7)
+  // Isaac Lab Convention (FL abad 0, FR hip 1, RL hip 2, RR hip 3), (FL thigh 4, FR thigh 5, RL thigh 6, RR thigh 7), (FL calf 8, FR calf 9, RL calf 10, RR calf 11)
+  actions_ << unordered_actions_(0), unordered_actions_(4), unordered_actions_(8),
+              unordered_actions_(1), unordered_actions_(5), unordered_actions_(9),
+              unordered_actions_(2), unordered_actions_(6), unordered_actions_(10),
+              unordered_actions_(3), unordered_actions_(7), unordered_actions_(11);
+  // Print out Action Commands as a Debugging Step
+  // std::cout << "Outputted Actions"  << actions_ << std::endl;
+}
+
+bool LearnedPolicy::computeLegCommandArray(
+    const quad_msgs::msg::RobotState &robot_state_msg,
+    quad_msgs::msg::LegCommandArray &leg_command_array_msg,
+    quad_msgs::msg::GRFArray &grf_array_msg){
+      // (Retraining Policy with Adjusted URDF) Apply Observation and Action Offsets to work with the URDF
+      // Fuck Translating Observations and Actions that Shit Sucks
+      // Generate Leg Command Messages from Inferenced Actions and Clip them based on Joint Positional Limits
+      if ((node_->now() - last_cmd_vel_msg_time_).seconds() >= 0.1){
+        return false;
+      } 
+      else{
+      leg_command_array_msg.leg_commands.resize(num_feet_);
+      computeObservations(robot_state_msg);
+      runInference();
+
+      for (int i = 0; i < num_feet_; ++i){
+        auto& leg = leg_command_array_msg.leg_commands.at(i);
+        leg.motor_commands.resize(3);
+
+        for (int j = 0; j < 3; ++j){
+          const int idx = 3 * i + j;
+          auto& cmd = leg.motor_commands.at(j);
+
+          // Set Positional Setpoints 
+          cmd.pos_setpoint = actions_(idx);
+          cmd.vel_setpoint = 0.0;
+          cmd.torque_ff = 0.0;
+
+          // Gain Switching Unecessary Here, Always use Stance Kp, Kd
+          cmd.kp = stance_kp_.at(j);
+          cmd.kd = stance_kd_.at(j);
+
+        }
+      }
+      return true;
+      }
+    }
+
+void LearnedPolicy::updateCmdVelMsg(Eigen::VectorXd msg, rclcpp::Time &t_now){
+  cmd_vel_msg_ = msg;
+  last_cmd_vel_msg_time_ = t_now;
+}

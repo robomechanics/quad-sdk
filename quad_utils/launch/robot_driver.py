@@ -14,6 +14,8 @@ def generate_launch_description():
     mocap = DeclareLaunchArgument('mocap', default_value='false')
     logging = DeclareLaunchArgument('logging', default_value='false')
     controller = DeclareLaunchArgument('controller', default_value='inverse_dynamics')
+    model_path = DeclareLaunchArgument('model_path', default_value='./policies/models/***')
+    provider = DeclareLaunchArgument('provider', default_value = "tensorrt")
     estimator = DeclareLaunchArgument('estimator', default_value="comp_filter")
     is_hardware = DeclareLaunchArgument('is_hardware', default_value='true')
     namespace = DeclareLaunchArgument('namespace', default_value='robot_1')
@@ -57,6 +59,8 @@ def generate_launch_description():
             'namespace': LaunchConfiguration('namespace'),
             'robot_type': LaunchConfiguration('robot_type'),
             'estimator_id' : LaunchConfiguration('estimator'),
+            'model_path' : LaunchConfiguration('model_path'),
+            'provider' : LaunchConfiguration('provider'),
             'robot_description': ParameterValue(LaunchConfiguration('robot_description'), value_type=str),
             'use_sim_time' : LaunchConfiguration('use_sim_time')
         }]
@@ -67,6 +71,8 @@ def generate_launch_description():
         mocap,
         logging,
         controller,
+        model_path, 
+        provider,
         estimator,
         is_hardware,
         namespace,

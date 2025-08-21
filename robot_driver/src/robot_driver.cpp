@@ -6,7 +6,7 @@ RobotDriver::RobotDriver(std::shared_ptr<rclcpp::Node> node, int argc, char **ar
     robot_state_topic, trajectory_state_topic, local_plan_topic, 
     leg_command_array_topic, control_mode_topic, remote_heartbeat_topic, 
     robot_heartbeat_topic, single_joint_cmd_topic, mocap_topic, 
-    control_restart_flag_topic, body_force_estimate_topic;
+    control_restart_flag_topic, body_force_estimate_topic, cmd_vel_topic;
 
     quad_utils::loadROSParam(node_, "namespace", robot_ns);
     quad_utils::loadROSParam(node_, "robot_description", robot_description);
@@ -33,6 +33,7 @@ RobotDriver::RobotDriver(std::shared_ptr<rclcpp::Node> node, int argc, char **ar
     quad_utils::loadROSParam(node_, "topics.control.restart_flag",
                             control_restart_flag_topic);
     quad_utils::loadROSParam(node_, "topics.mocap", mocap_topic);
+    quad_utils::loadROSParam(node_, "topics.cmd_vel", cmd_vel_topic);
     quad_utils::loadROSParamDefault(node_, "is_hardware", is_hardware_,
                                     true);
     quad_utils::loadROSParamDefault(node_, "controller",
@@ -68,6 +69,8 @@ RobotDriver::RobotDriver(std::shared_ptr<rclcpp::Node> node, int argc, char **ar
     quad_utils::loadROSParam(node_, "robot_driver.sit_joint_angles",
                             sit_joint_angles_);
     quad_utils::loadROSParam(node_, "robot_driver.torque_limit", torque_limits_);
+    quad_utils::loadROSParam(node_, "robot_driver.model_path", model_path_);
+
 
     // Setup pubs and subs
     local_plan_sub_ = node_->create_subscription<quad_msgs::msg::RobotPlan>(local_plan_topic, 
@@ -89,6 +92,9 @@ RobotDriver::RobotDriver(std::shared_ptr<rclcpp::Node> node, int argc, char **ar
     control_restart_flag_sub_ = node_->create_subscription<std_msgs::msg::Bool>(control_restart_flag_topic, 1, 
         std::bind(&RobotDriver::controlRestartFlagCallback, this, std::placeholders::_1));
 
+    cmd_vel_sub_ = node_->create_subscription<geometry_msgs::msg::Twist>(cmd_vel_topic, 10, 
+        std::bind(&RobotDriver::cmdVelCallback, this, std::placeholders::_1));
+
     grf_pub_ = node_->create_publisher<quad_msgs::msg::GRFArray>(grf_topic, 1);
     leg_command_array_pub_ = node_->create_publisher<quad_msgs::msg::LegCommandArray>(leg_command_array_topic, 1);
     robot_heartbeat_pub_ = node_->create_publisher<std_msgs::msg::Header>(robot_heartbeat_topic, 1);
@@ -97,7 +103,6 @@ RobotDriver::RobotDriver(std::shared_ptr<rclcpp::Node> node, int argc, char **ar
     // Set up pubs and subs dependent on robot layer
     if (is_hardware_){
         RCLCPP_INFO(node_->get_logger(), "Loading Hardware Robot Driver");
-
         mocap_sub_ = node_->create_subscription<geometry_msgs::msg::PoseStamped>(mocap_topic, 1000, 
             std::bind(&RobotDriver::mocapCallback, this, std::placeholders::_1));
         robot_state_pub_ = node_->create_publisher<quad_msgs::msg::RobotState>(robot_state_topic, 1);
@@ -124,7 +129,6 @@ RobotDriver::RobotDriver(std::shared_ptr<rclcpp::Node> node, int argc, char **ar
         }
     }
 
-    // Initialize leg controller object
     initLegController();
 
     // Start sitting
@@ -145,6 +149,7 @@ RobotDriver::RobotDriver(std::shared_ptr<rclcpp::Node> node, int argc, char **ar
 
     // Initialize state estimator object
     initStateEstimator();
+
 }
 
 void RobotDriver::initStateEstimator() {
@@ -189,17 +194,23 @@ void RobotDriver::initLegController() {
     c->setUnderbrushParams(retract_vel, tau_push, tau_contact_start,
                            tau_contact_end, min_switch, t_down, t_up);
     } else if (controller_id_ == "inertia_estimation") {
-        leg_controller_ = std::make_shared<InertiaEstimationController>(node_, robot_ns);
+    leg_controller_ = std::make_shared<InertiaEstimationController>(node_, robot_ns);
+    } else if (controller_id_ == "learned"){
+    leg_controller_ = std::make_shared<LearnedPolicy>(node_, robot_ns);
     } 
     else {
         RCLCPP_ERROR(node_->get_logger(), "Invalid controller id %s, returning nullptr", controller_id_.c_str());
         leg_controller_ = nullptr;
     }
-    if (leg_controller_ != nullptr) {
+    if (leg_controller_ != nullptr && controller_id_ != "learned") {
         leg_controller_->init(stance_kp_, stance_kd_, swing_kp_, swing_kd_,
                             swing_kp_cart_, swing_kd_cart_);
+    } else{
+        leg_controller_->init(stance_kp_, stance_kd_, swing_kp_, swing_kd_,
+                            swing_kp_cart_, swing_kd_cart_, model_path_);
     }
 }
+
 
 void RobotDriver::initStateControlStructs() {
   vel_estimate_.setZero();
@@ -314,6 +325,25 @@ void RobotDriver::remoteHeartbeatCallback(
   double t_latency =
       remote_heartbeat_received_time_ - remote_heartbeat_sent_time;
 
+}
+
+void RobotDriver::cmdVelCallback(const geometry_msgs::msg::Twist::SharedPtr msg){
+    // Ignore non-planar components of desired twist
+    cmd_vel_[0] = (1 - cmd_vel_filter_const_) * cmd_vel_[0] +
+                  cmd_vel_filter_const_ * cmd_vel_scale_ * msg->linear.x;
+    cmd_vel_[1] = (1 - cmd_vel_filter_const_) * cmd_vel_[1] +
+                  cmd_vel_filter_const_ * cmd_vel_scale_ * msg->linear.y;
+    cmd_vel_[2] = 0;
+    cmd_vel_[3] = 0;
+    cmd_vel_[4] = 0;
+    cmd_vel_[5] = (1 - cmd_vel_filter_const_) * cmd_vel_[5] +
+                  cmd_vel_filter_const_ * cmd_vel_scale_ * msg->angular.z;
+
+    // Record when this was last reached for safety
+    if (auto c = std::dynamic_pointer_cast<LearnedPolicy>(leg_controller_)) {
+      last_cmd_vel_msg_time_ = node_->now();
+      c->updateCmdVelMsg(cmd_vel_, last_cmd_vel_msg_time_);
+    }
 }
 
 void RobotDriver::checkMessagesForSafety() {
@@ -615,12 +645,10 @@ void RobotDriver::spin() {
     // Compute the leg command and publish if valid
     bool is_valid = updateControl();
     publishControl(is_valid);
-    //  RCLCPP_INFO(node_->get_logger(), "Publishes Control");
 
     // // // Publish state and heartbeat
     publishState();
     publishHeartbeat();
-    //  RCLCPP_INFO(node_->get_logger(), "Publishes State");
 
     // Enforce update rate
     r.sleep();
