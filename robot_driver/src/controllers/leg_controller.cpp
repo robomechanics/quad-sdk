@@ -41,3 +41,19 @@ void LegController::init(const std::vector<double> &stance_kp,
   swing_kp_cart_ = swing_kp_cart;
   swing_kd_cart_ = swing_kd_cart;
 }
+
+void LegController::init(const std::vector<double> &stance_kp,
+                         const std::vector<double> &stance_kd,
+                         const std::vector<double> &swing_kp,
+                         const std::vector<double> &swing_kd,
+                         const std::vector<double> &swing_kp_cart,
+                         const std::vector<double> &swing_kd_cart,
+                         const std::string &model_path) {
+  stance_kp_ = stance_kp;
+  stance_kd_ = stance_kd;
+  swing_kp_ = swing_kp;
+  swing_kd_ = swing_kd;
+  swing_kp_cart_ = swing_kp_cart;
+  swing_kd_cart_ = swing_kd_cart;
+  model_path_ = model_path;
+}

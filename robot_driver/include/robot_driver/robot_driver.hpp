@@ -17,6 +17,7 @@
 #include <std_msgs/msg/bool.hpp>
 #include <std_msgs/msg/u_int8.h>
 #include "nav_msgs/msg/path.hpp"
+#include <tf2_geometry_msgs/tf2_geometry_msgs.hpp>
 
 #include <cmath>
 #include <eigen3/Eigen/Eigen>
@@ -27,6 +28,7 @@
 #include "robot_driver/controllers/inertia_estimation_controller.hpp"
 #include "robot_driver/controllers/joint_controller.hpp"
 #include "robot_driver/controllers/leg_controller.hpp"
+#include "robot_driver/controllers/learned_policy.hpp"
 #include "robot_driver/estimators/comp_filter_estimator.hpp"
 #include "robot_driver/estimators/ekf_estimator.hpp"
 #include "robot_driver/estimators/state_estimator.hpp"
@@ -128,6 +130,8 @@ class RobotDriver {
    */
   void remoteHeartbeatCallback(const std_msgs::msg::Header::SharedPtr msg);
 
+
+  void cmdVelCallback(const geometry_msgs::msg::Twist::SharedPtr msg);
   /**
    * @brief Check to make sure required messages are fresh
    */
@@ -189,6 +193,9 @@ class RobotDriver {
 
   /// ROS subscriber for single joint command
   rclcpp::Subscription<geometry_msgs::msg::Vector3>::SharedPtr single_joint_cmd_sub_;
+
+  /// ROS Subscriber for twist velocity commands (for learned policies)
+  rclcpp::Subscription<geometry_msgs::msg::Twist>::SharedPtr cmd_vel_sub_;
 
   /// ROS publisher for robot heartbeat
   rclcpp::Publisher<std_msgs::msg::Header>::SharedPtr robot_heartbeat_pub_;
@@ -349,11 +356,17 @@ class RobotDriver {
   /// Define sitting joint angles
   std::vector<double> sit_joint_angles_;
 
+  /// Define path to Learned Policy ONNX File
+  std::string model_path_;
+
   /// QuadKD class
   std::shared_ptr<quad_utils::QuadKD> quadKD_;
 
   /// Leg Controller template class
   std::shared_ptr<LegController> leg_controller_;
+
+  /// Leg Controller template class
+  std::shared_ptr<LearnedPolicy> leg_policy_;
 
   /// State Estimator template class
   std::shared_ptr<StateEstimator> state_estimator_;
@@ -379,6 +392,15 @@ class RobotDriver {
   /// Best estimate of imu velocity
   Eigen::Vector3d imu_vel_estimate_;
 
+  /// Twist Input
+  Eigen::VectorXd cmd_vel_;
+
+  /// Commanded Velocity Filter Constant
+  double cmd_vel_filter_const_;
+
+  /// Scale for twist cmd_vel
+  double cmd_vel_scale_;
+
   /// Velocity filter time constant
   double filter_time_constant_;
 
@@ -400,6 +422,9 @@ class RobotDriver {
 
   /// Time of last publishing
   rclcpp::Time t_pub_;
+
+  /// Time of the most recent cmd vel data
+  rclcpp::Time last_cmd_vel_msg_time_;
 
   /// Required for some hardware interfaces
   int argc_;
