@@ -78,7 +78,7 @@ def generate_launch_description():
         DeclareLaunchArgument('force_app', default_value='false', description='Launch Force Applicator Alongside Planning'),
         DeclareLaunchArgument(
             'robot_configs',
-            default_value='[{"name": "robot_1", "type": "go2", "controller_mode" : "learned", "reference": "twist", "twist_input": "joy"}]',
+            default_value='[{"name": "robot_1", "type": "spirit", "controller_mode" : "inverse_dynamics", "reference": "twist", "twist_input": "joy"}]',
             description='A JSON List of robot configurations: MUST specifiy name, type, and controller_mode, reference'
         ),
         OpaqueFunction(function=launch_robot_group)

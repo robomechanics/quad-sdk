@@ -1,0 +1,13 @@
+/**/cmd_vel_publisher:
+  ros__parameters:
+    cmd_vel_publisher:
+      update_rate: 20.0
+      mode: timer            # "single" | "timer" | "off"
+      resample_sec: 3.0
+      bounds:
+        x_min: -1.0
+        x_max:  1.0
+        y_min: -0.4
+        y_max:  0.4
+        yaw_min: -1.0
+        yaw_max:  1.0
