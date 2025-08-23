@@ -70,6 +70,8 @@ RobotDriver::RobotDriver(std::shared_ptr<rclcpp::Node> node, int argc, char **ar
                             sit_joint_angles_);
     quad_utils::loadROSParam(node_, "robot_driver.torque_limit", torque_limits_);
     quad_utils::loadROSParam(node_, "robot_driver.model_path", model_path_);
+    quad_utils::loadROSParam(node_, "robot_driver.cmd_vel_filter_const", cmd_vel_filter_const_);
+    quad_utils::loadROSParam(node_, "robot_driver.cmd_vel_scale", cmd_vel_scale_);
 
 
     // Setup pubs and subs
@@ -225,6 +227,7 @@ void RobotDriver::initStateControlStructs() {
   grf_array_msg_.contact_states.resize(4);
   grf_array_msg_.header.frame_id = "map";
   user_tx_data_.resize(1);
+  cmd_vel_.setZero(6);
 }
 
 void RobotDriver::controlModeCallback(const std_msgs::msg::UInt8::SharedPtr msg) {
@@ -328,22 +331,21 @@ void RobotDriver::remoteHeartbeatCallback(
 }
 
 void RobotDriver::cmdVelCallback(const geometry_msgs::msg::Twist::SharedPtr msg){
-    // Ignore non-planar components of desired twist
-    cmd_vel_[0] = (1 - cmd_vel_filter_const_) * cmd_vel_[0] +
-                  cmd_vel_filter_const_ * cmd_vel_scale_ * msg->linear.x;
-    cmd_vel_[1] = (1 - cmd_vel_filter_const_) * cmd_vel_[1] +
-                  cmd_vel_filter_const_ * cmd_vel_scale_ * msg->linear.y;
-    cmd_vel_[2] = 0;
-    cmd_vel_[3] = 0;
-    cmd_vel_[4] = 0;
-    cmd_vel_[5] = (1 - cmd_vel_filter_const_) * cmd_vel_[5] +
-                  cmd_vel_filter_const_ * cmd_vel_scale_ * msg->angular.z;
-
-    // Record when this was last reached for safety
-    if (auto c = std::dynamic_pointer_cast<LearnedPolicy>(leg_controller_)) {
-      last_cmd_vel_msg_time_ = node_->now();
-      c->updateCmdVelMsg(cmd_vel_, last_cmd_vel_msg_time_);
-    }
+  // Ignore non-planar components of desired twist
+  cmd_vel_[0] = (1 - cmd_vel_filter_const_) * cmd_vel_[0] +
+                cmd_vel_filter_const_ * cmd_vel_scale_ * msg->linear.x;
+  cmd_vel_[1] = (1 - cmd_vel_filter_const_) * cmd_vel_[1] +
+                cmd_vel_filter_const_ * cmd_vel_scale_ * msg->linear.y;
+  cmd_vel_[2] = 0;
+  cmd_vel_[3] = 0;
+  cmd_vel_[4] = 0;
+  cmd_vel_[5] = (1 - cmd_vel_filter_const_) * cmd_vel_[5] +
+                cmd_vel_filter_const_ * cmd_vel_scale_ * msg->angular.z;
+  // Record when this was last reached for safety
+  if (auto c = std::dynamic_pointer_cast<LearnedPolicy>(leg_controller_)) {
+    last_cmd_vel_msg_time_ = node_->now();
+    c->updateCmdVelMsg(cmd_vel_, last_cmd_vel_msg_time_);
+  }
 }
 
 void RobotDriver::checkMessagesForSafety() {
@@ -542,6 +544,7 @@ bool RobotDriver::updateControl() {
 
       // Add soft joint limit for knees
       if (j == knee_idx && joint_positions(joint_idx) > knee_soft_ub) {
+        RCLCPP_INFO(node_->get_logger(), "Triggering Soft Knee Joint Limit");
         leg_command_array_msg_.leg_commands.at(i)
             .motor_commands.at(j)
             .torque_ff = std::max(
@@ -649,6 +652,7 @@ void RobotDriver::spin() {
     // // // Publish state and heartbeat
     publishState();
     publishHeartbeat();
+
 
     // Enforce update rate
     r.sleep();

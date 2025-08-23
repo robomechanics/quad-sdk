@@ -1,7 +1,7 @@
 /**/robot_driver:
   ros__parameters:
     robot_driver:
-      update_rate: 500.0
+      update_rate: 500.0 
       publish_rate: 500.0
       mocap_rate: 360.0 # This must match the mocap frame rate or velocity estimates will be mis-scaled
       mocap_dropout_threshold: 0.027 # s
@@ -23,6 +23,8 @@
       high_pass_d: [0.0009996017974875904]
 
       model_path: /home/rml/ros2_ws/src/quad-sdk/robot_driver/include/robot_driver/models/policy.onnx
+      cmd_vel_filter_const: 0.10
+      cmd_vel_scale: 1.0
 
     underbrush_swing:
       retract_vel: 15.0 # 15 # rad/s retraction speed at proximal link
