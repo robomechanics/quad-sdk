@@ -69,15 +69,6 @@ class LearnedPolicy : public LegController {
 
  protected:
 
-//   /// Shared Pointer to Launch Node
-//   rclcpp::Node::SharedPtr node_;
-
-//   std::string robot_ns_;
-  
-//   const int num_feet_ = 4;
-
-//   std::string model_path_;
-
   /// Onnx Runtime Env Object
   Ort::Env env_{ORT_LOGGING_LEVEL_WARNING, "ros2-onnx"};
 
@@ -107,6 +98,10 @@ class LearnedPolicy : public LegController {
   double scale_factor_ = 0.25; // Grabbed Directly From IsaacLab Repo
 
   Eigen::VectorXd nominal_stance_pose_{Eigen::VectorXd::Zero(12)};
+
+  Eigen::VectorXd temp_actions_{Eigen::VectorXd::Zero(12)};
+
+  bool initialized_ = true;
 
 };
 #endif //LEARNED_POLICY_H

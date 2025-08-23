@@ -10,11 +10,18 @@ void LearnedPolicy::init(const std::vector<double> &stance_kp,
                         const std::vector<double> &swing_kd_cart,
                         const std::string &model_path){
   // Initalize the Path to the Model Onnx File
+  stance_kp_ = stance_kp;
+  stance_kd_ = stance_kd;
+  swing_kp_ = swing_kp;
+  swing_kd_ = swing_kd;
+  swing_kp_cart_ = swing_kp_cart;
+  swing_kd_cart_ = swing_kd_cart;
   model_path_ = model_path;
   loadONNXModel();
   nominal_stance_pose_ << 0.0, 0.0, 0.0, 0.0, 
-                           0.6, 0.6, 0.6, 0.6,
-                            1.6, 1.6, 1.6, 1.6; // For Go2 Change this to a Param Later On
+                           0.8, 0.8, 0.8, 0.8,
+                            -1.5, -1.5, -1.5, -1.5; // For Go2 Change this to a Param Later On, IsaacLab
+  last_cmd_vel_msg_time_ = node_->now();
 
   RCLCPP_INFO(node_->get_logger(), "Loaded Learned Policy at %s", model_path_.c_str());
 }
@@ -68,12 +75,12 @@ void LearnedPolicy::computeObservations(const quad_msgs::msg::RobotState &robot_
   
   // Define vectors for joint positions and velocities
   Eigen::VectorXd joint_positions(3 * num_feet_),
-      joint_velocities(3 * num_feet_), foot_positions(3 * num_feet_),
-      foot_velocities(3 * num_feet_), body_state(12);
+      joint_velocities(3 * num_feet_), raw_joint_positions(3 * num_feet_),
+      raw_joint_velocities(3 * num_feet_), body_state(12);
 
-  quad_utils::vectorToEigen(robot_state_msg.joints.position, joint_positions);
+  quad_utils::vectorToEigen(robot_state_msg.joints.position, raw_joint_positions);
   quad_utils::vectorToEigen(robot_state_msg.joints.velocity,
-                            joint_velocities);
+                            raw_joint_velocities);
   body_state = quad_utils::bodyStateMsgToEigen(robot_state_msg.body);
 
   Eigen::Vector3d base_lin_vel, base_ang_vel, base_orientation, vel_cmd;
@@ -81,20 +88,61 @@ void LearnedPolicy::computeObservations(const quad_msgs::msg::RobotState &robot_
   base_ang_vel << body_state(9), body_state(10), body_state(11);
   base_orientation << body_state(3), body_state(4), body_state(5);
   vel_cmd << cmd_vel_msg_(0), cmd_vel_msg_(1), cmd_vel_msg_(5); 
+  // vel_cmd << 0.5, 0.0, 0.0; // Debug with a Fixed Forward velocity
+
+  // Clip the Commanded Velocity within Trained Bounds
+  const Eigen::Vector3d vmin(-1.0, -0.4, -1.0);
+  const Eigen::Vector3d vmax( 1.0,  0.4,  1.0);
+  vel_cmd = vel_cmd.cwiseMin(vmax).cwiseMax(vmin);
 
   // Compute the Projected Gravity in the Body Frame
   const Eigen::Matrix3d R_bw =
     (Eigen::AngleAxisd(body_state(5), Eigen::Vector3d::UnitZ()) *
       Eigen::AngleAxisd(body_state(4), Eigen::Vector3d::UnitY()) *
       Eigen::AngleAxisd(body_state(3), Eigen::Vector3d::UnitX())).toRotationMatrix();
-  const Eigen::Vector3d g_world(0.0, 0.0, -9.81);  // Change to  (0,0,-1.0) for Unit Proj Gravity
-  const Eigen::Vector3d proj_gravity = R_bw.transpose() * g_world;
+  const Eigen::Vector3d g_world(0.0, 0.0, -1.0);  // Change to  (0,0,-1.0) for Unit Proj Gravity
+  const Eigen::Vector3d proj_gravity1 = R_bw.transpose() * g_world;
+
+  Eigen::Quaterniond quat(robot_state_msg.body.pose.orientation.w,
+                          robot_state_msg.body.pose.orientation.x,
+                          robot_state_msg.body.pose.orientation.y,
+                          robot_state_msg.body.pose.orientation.z);
+  const Eigen::Vector3d proj_gravity = quat.conjugate() * g_world;
+
+  // Reorder Raw Joint Positions and Raw Joint Velocities in Quad-SDK Notation to match Isaac Notation, See Below: 
+  // QuadSDK Order FL(hip 0, thigh 1, knee 2), RL (hip 3, thigh 4, knee 5), FR(hip 6, thigh 7, knee 8), RR(hip 9, thigh 10, knee 11) 
+  // IsaacLab Order FL, FR, RL, RR (hips, thighs, knees)
+
+  Eigen::VectorXd temp_joint_positions(3 * num_feet_),
+      temp_joint_velocities(3 * num_feet_);
+
+  joint_positions << raw_joint_positions(0), raw_joint_positions(6), raw_joint_positions(3), raw_joint_positions(9),
+                      raw_joint_positions(1), raw_joint_positions(7), raw_joint_positions(4), raw_joint_positions(10), 
+                      raw_joint_positions(2), raw_joint_positions(8), raw_joint_positions(5), raw_joint_positions(11);
+
+  joint_velocities << raw_joint_velocities(0), raw_joint_velocities(6), raw_joint_velocities(3), raw_joint_velocities(9), 
+                      raw_joint_velocities(1), raw_joint_velocities(7), raw_joint_velocities(4), raw_joint_velocities(10), 
+                      raw_joint_velocities(2), raw_joint_velocities(8), raw_joint_velocities(5), raw_joint_velocities(11);
+
+  // Apply Scaling Factors, Make Joint Positions Relative to Base Stance Pose
+  joint_positions -= nominal_stance_pose_;
+  base_ang_vel *= 0.2;
+  joint_velocities *= 0.05;
 
   // Compute Prev Action
-  prev_action_ = (joint_positions - nominal_stance_pose_) / scale_factor_;
+  if (initialized_){
+    prev_action_ = (joint_positions - nominal_stance_pose_) / scale_factor_;
+    initialized_ = false;
+  }
+  else{
+    prev_action_ = raw_actions_;
+  }
   
-  obs_.resize(48);
-  obs_ << base_lin_vel, base_ang_vel, proj_gravity, vel_cmd, joint_positions, joint_velocities, prev_action_;
+  // obs_.resize(48);
+  // obs_ << base_lin_vel, base_ang_vel, proj_gravity, vel_cmd, joint_positions, joint_velocities, prev_action_;
+
+  obs_.resize(45);
+  obs_ << base_ang_vel, proj_gravity, vel_cmd, joint_positions, joint_velocities, prev_action_;
 }
 
 void LearnedPolicy::runInference(){
@@ -139,13 +187,17 @@ void LearnedPolicy::runInference(){
 
   // Reorder Actions to Match the Quad-SDK Joint Convention 
   // Quad SDK Convention FL(8, 0, 1), RL(9, 2, 3), FR(10, 4, 5), RR(11, 6, 7)
-  // Isaac Lab Convention (FL abad 0, FR hip 1, RL hip 2, RR hip 3), (FL thigh 4, FR thigh 5, RL thigh 6, RR thigh 7), (FL calf 8, FR calf 9, RL calf 10, RR calf 11)
+  
+  // Isaac Lab Action Output Convention 
+  // (FL hip 0, FR hip 1, RL hip 2, RR hip 3), (FL thigh 4, FR thigh 5, RL thigh 6, RR thigh 7), (FL calf 8, FR calf 9, RL calf 10, RR calf 11)
   actions_ << unordered_actions_(0), unordered_actions_(4), unordered_actions_(8),
-              unordered_actions_(1), unordered_actions_(5), unordered_actions_(9),
               unordered_actions_(2), unordered_actions_(6), unordered_actions_(10),
+              unordered_actions_(1), unordered_actions_(5), unordered_actions_(9),
               unordered_actions_(3), unordered_actions_(7), unordered_actions_(11);
+
   // Print out Action Commands as a Debugging Step
-  // std::cout << "Outputted Actions"  << actions_ << std::endl;
+  temp_actions_ << 0.0, 0.8, -1.5, 0.0, 0.8, -1.5, 0.0, 0.8, -1.5, 0.0, 0.8, -1.5;
+  // std::cout << "Outputted Actions"  << unordered_actions_ - nominal_stance_pose_ << std::endl;
 }
 
 bool LearnedPolicy::computeLegCommandArray(
@@ -155,10 +207,11 @@ bool LearnedPolicy::computeLegCommandArray(
       // (Retraining Policy with Adjusted URDF) Apply Observation and Action Offsets to work with the URDF
       // Fuck Translating Observations and Actions that Shit Sucks
       // Generate Leg Command Messages from Inferenced Actions and Clip them based on Joint Positional Limits
-      if ((node_->now() - last_cmd_vel_msg_time_).seconds() >= 0.1){
-        return false;
-      } 
-      else{
+
+    if ((node_->now() - last_cmd_vel_msg_time_).seconds() >= 0.1){
+      return false;
+    } 
+    else{
       leg_command_array_msg.leg_commands.resize(num_feet_);
       computeObservations(robot_state_msg);
       runInference();
@@ -170,21 +223,20 @@ bool LearnedPolicy::computeLegCommandArray(
         for (int j = 0; j < 3; ++j){
           const int idx = 3 * i + j;
           auto& cmd = leg.motor_commands.at(j);
-
+          
           // Set Positional Setpoints 
-          cmd.pos_setpoint = actions_(idx);
+          cmd.pos_setpoint =  actions_(idx);
           cmd.vel_setpoint = 0.0;
           cmd.torque_ff = 0.0;
 
           // Gain Switching Unecessary Here, Always use Stance Kp, Kd
           cmd.kp = stance_kp_.at(j);
           cmd.kd = stance_kd_.at(j);
-
         }
       }
       return true;
-      }
     }
+}
 
 void LearnedPolicy::updateCmdVelMsg(Eigen::VectorXd msg, rclcpp::Time &t_now){
   cmd_vel_msg_ = msg;
