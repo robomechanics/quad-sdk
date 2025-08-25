@@ -1,0 +1,21 @@
+// generated from rosidl_adapter/resource/msg.idl.em
+// with input from quad_msgs/msg/MultiFootPlanContinuous.msg
+// generated code does not contain a copyright notice
+
+#include "quad_msgs/msg/MultiFootState.idl"
+#include "std_msgs/msg/Header.idl"
+
+module quad_msgs {
+  module msg {
+    @verbatim (language="comment", text=
+      "This is a message to hold a continuous foot plan for multiple robot feet" "\n"
+      "" "\n"
+      "The plan is defined as a vector of MultiFootState messages" "\n"
+      "Accurate timing information to localize the plans is stored in the header")
+    struct MultiFootPlanContinuous {
+      std_msgs::msg::Header header;
+
+      sequence<quad_msgs::msg::MultiFootState> states;
+    };
+  };
+};

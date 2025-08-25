@@ -28,7 +28,7 @@ end
 
 %% Set parameters
 
-bSave = true;                       % Save the figures/videos
+bSave = false;                       % Save the figures/videos
 bAnimate = false;                   % Animate the trajectory (no translation)
 bTitles = true;                     % Turn on figure titles
 bPlotLocalPlanInfo = true;          % Turn on to plot local plan information
@@ -88,7 +88,7 @@ end
 %% Animate and save
 
 if bAnimate
-    robot_path = '../../quad_simulator/spirit_description/urdf/spirit.urdf';
+    robot_path = '../../quad_simulator/spirit_description/models/spirit/urdf/spirit.urdf';
     robot = importrobot(robot_path);
     videosDir = fullfile(logDir,'videos/');
     animateData(robot,stateGroundTruth, fullfile(videosDir, trialName), bSave);

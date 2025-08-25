@@ -20,7 +20,7 @@ if ~exist(videosDir, 'dir')
 end
 
 % Copy the bag
-copyfile(['../bags/', trialName, '.bag'],logDir)
+copyfile(['../bags/', trialName, '.mcap'],logDir)
 
 % Save the figures
 for i = 1:length(figArray)
