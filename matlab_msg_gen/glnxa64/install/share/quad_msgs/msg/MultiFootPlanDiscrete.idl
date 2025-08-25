@@ -1,0 +1,22 @@
+// generated from rosidl_adapter/resource/msg.idl.em
+// with input from quad_msgs/msg/MultiFootPlanDiscrete.msg
+// generated code does not contain a copyright notice
+
+#include "quad_msgs/msg/FootPlanDiscrete.idl"
+#include "std_msgs/msg/Header.idl"
+
+module quad_msgs {
+  module msg {
+    @verbatim (language="comment", text=
+      "This is a message to hold a discrete foot plan for multiple robot feet" "\n"
+      "" "\n"
+      "The plans of each foot are stored in a vector of FootPlanDiscrete messages" "\n"
+      "(0 = front left, 1 = back left, 2 = front right, 3 = back right)." "\n"
+      "Accurate timing information to localize the plans is stored in the header")
+    struct MultiFootPlanDiscrete {
+      std_msgs::msg::Header header;
+
+      sequence<quad_msgs::msg::FootPlanDiscrete> feet;
+    };
+  };
+};

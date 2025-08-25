@@ -1,0 +1,26 @@
+// generated from rosidl_adapter/resource/msg.idl.em
+// with input from quad_msgs/msg/BodyState.msg
+// generated code does not contain a copyright notice
+
+#include "geometry_msgs/msg/Pose.idl"
+#include "geometry_msgs/msg/Twist.idl"
+#include "std_msgs/msg/Header.idl"
+
+module quad_msgs {
+  module msg {
+    @verbatim (language="comment", text=
+      "This is a message to hold a robot body state" "\n"
+      "" "\n"
+      "The body state is defined as an pose and twist messages" "\n"
+      "Accurate timing information is stored in the header")
+    struct BodyState {
+      std_msgs::msg::Header header;
+
+      uint32 traj_index;
+
+      geometry_msgs::msg::Pose pose;
+
+      geometry_msgs::msg::Twist twist;
+    };
+  };
+};

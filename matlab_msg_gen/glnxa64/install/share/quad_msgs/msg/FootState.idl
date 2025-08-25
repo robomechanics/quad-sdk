@@ -1,0 +1,29 @@
+// generated from rosidl_adapter/resource/msg.idl.em
+// with input from quad_msgs/msg/FootState.msg
+// generated code does not contain a copyright notice
+
+#include "geometry_msgs/msg/Vector3.idl"
+#include "std_msgs/msg/Header.idl"
+
+module quad_msgs {
+  module msg {
+    @verbatim (language="comment", text=
+      "This is a message to hold the state of a single foot of a legged robot" "\n"
+      "" "\n"
+      "The states of each foot are stored in a vector of FootState messages" "\n"
+      "Accurate timing information is stored in the header")
+    struct FootState {
+      std_msgs::msg::Header header;
+
+      uint32 traj_index;
+
+      geometry_msgs::msg::Vector3 position;
+
+      geometry_msgs::msg::Vector3 velocity;
+
+      geometry_msgs::msg::Vector3 acceleration;
+
+      boolean contact;
+    };
+  };
+};

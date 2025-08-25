@@ -1,0 +1,24 @@
+// generated from rosidl_adapter/resource/msg.idl.em
+// with input from quad_msgs/msg/MultiFootState.msg
+// generated code does not contain a copyright notice
+
+#include "quad_msgs/msg/FootState.idl"
+#include "std_msgs/msg/Header.idl"
+
+module quad_msgs {
+  module msg {
+    @verbatim (language="comment", text=
+      "This is a message to hold the state of all feet of a legged robot" "\n"
+      "" "\n"
+      "The states of each foot are stored in a vector of FootState messages" "\n"
+      "(0 = front left, 1 = back left, 2 = front right, 3 = back right)." "\n"
+      "Accurate timing information is stored in the header")
+    struct MultiFootState {
+      std_msgs::msg::Header header;
+
+      uint32 traj_index;
+
+      sequence<quad_msgs::msg::FootState> feet;
+    };
+  };
+};

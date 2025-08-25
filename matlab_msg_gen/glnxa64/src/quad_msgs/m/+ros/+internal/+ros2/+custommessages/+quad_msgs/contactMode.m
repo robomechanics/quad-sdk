@@ -1,0 +1,35 @@
+function [data, info] = contactMode
+%ContactMode gives an empty data for quad_msgs/ContactMode
+% Copyright 2019-2021 The MathWorks, Inc.
+data = struct();
+data.MessageType = 'quad_msgs/ContactMode';
+[data.header, info.header] = ros.internal.ros2.messages.std_msgs.header;
+info.header.MLdataType = 'struct';
+[data.leg_contacts, info.leg_contacts] = ros.internal.ros2.custommessages.quad_msgs.legContactMode;
+info.leg_contacts.MLdataType = 'struct';
+info.leg_contacts.MaxLen = NaN;
+info.leg_contacts.MinLen = 0;
+info.MessageType = 'quad_msgs/ContactMode';
+info.constant = 0;
+info.default = 0;
+info.maxstrlen = NaN;
+info.MaxLen = 1;
+info.MinLen = 1;
+info.MatPath = cell(1,17);
+info.MatPath{1} = 'header';
+info.MatPath{2} = 'header.stamp';
+info.MatPath{3} = 'header.stamp.sec';
+info.MatPath{4} = 'header.stamp.nanosec';
+info.MatPath{5} = 'header.frame_id';
+info.MatPath{6} = 'leg_contacts';
+info.MatPath{7} = 'leg_contacts.header';
+info.MatPath{8} = 'leg_contacts.header.stamp';
+info.MatPath{9} = 'leg_contacts.header.stamp.sec';
+info.MatPath{10} = 'leg_contacts.header.stamp.nanosec';
+info.MatPath{11} = 'leg_contacts.header.frame_id';
+info.MatPath{12} = 'leg_contacts.contact_prob';
+info.MatPath{13} = 'leg_contacts.contact_state';
+info.MatPath{14} = 'leg_contacts.contact_forces';
+info.MatPath{15} = 'leg_contacts.contact_forces.x';
+info.MatPath{16} = 'leg_contacts.contact_forces.y';
+info.MatPath{17} = 'leg_contacts.contact_forces.z';
