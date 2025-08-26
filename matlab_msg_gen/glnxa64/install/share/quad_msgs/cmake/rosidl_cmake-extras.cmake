@@ -1,4 +1,0 @@
-# generated from rosidl_cmake/cmake/rosidl_cmake-extras.cmake.in
-
-set(quad_msgs_IDL_FILES "msg/BodyForceEstimate.idl;msg/BodyPlan.idl;msg/BodyState.idl;msg/ContactMode.idl;msg/FootPlanDiscrete.idl;msg/FootState.idl;msg/GRFArray.idl;msg/LegCommand.idl;msg/LegCommandArray.idl;msg/LegContactMode.idl;msg/LocalPlan.idl;msg/MotorCommand.idl;msg/MultiFootPlanContinuous.idl;msg/MultiFootPlanDiscrete.idl;msg/MultiFootState.idl;msg/RobotPlan.idl;msg/RobotPlanDiagnostics.idl;msg/RobotState.idl")
-set(quad_msgs_INTERFACE_FILES "msg/BodyForceEstimate.msg;msg/BodyPlan.msg;msg/BodyState.msg;msg/ContactMode.msg;msg/FootPlanDiscrete.msg;msg/FootState.msg;msg/GRFArray.msg;msg/LegCommand.msg;msg/LegCommandArray.msg;msg/LegContactMode.msg;msg/LocalPlan.msg;msg/MotorCommand.msg;msg/MultiFootPlanContinuous.msg;msg/MultiFootPlanDiscrete.msg;msg/MultiFootState.msg;msg/RobotPlan.msg;msg/RobotPlanDiagnostics.msg;msg/RobotState.msg")
