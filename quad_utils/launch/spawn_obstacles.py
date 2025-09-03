@@ -24,6 +24,7 @@ def spawn_obstacle(name: str, init_pose: str, sdf):
 def parse_obstacles(context):
     compliant_cord_sdf = PathJoinSubstitution([FindPackageShare('underbrush_description'), 'models', 'underbrush_description', 'compliant_cord.sdf'])
     compliant_beam_sdf = PathJoinSubstitution([FindPackageShare('underbrush_description'), 'models', 'underbrush_description','compliant_beam_horizontal.sdf'])
+    splitbelt_sdf = PathJoinSubstitution([FindPackageShare('splitbelt_description'), 'sdf','splitbelt_treadmill.sdf'])
     box = PathJoinSubstitution([FindPackageShare('objects_description'), 'models', 'box','sdf', 'box.sdf'])
 
     scenario_config = LaunchConfiguration('scenario').perform(context)
@@ -41,7 +42,11 @@ def parse_obstacles(context):
             spawn_obstacle('underbrush3', "-x 1.36 -y -0.50 -z 0.15", compliant_cord_sdf),
         ])
     # Add Custom Scenario Configurations Here
-
+    if scenario_config == 'splitbelt':
+        print("Handling Splitbelt Scenario")
+        nodes.extend([
+            spawn_obstacle('splitbelt',  "-x 0.0 -y 0.0 -z 0.0", compliant_cord_sdf),
+        ])
     # Add Obstacle Configurations to Launch Order
     try:
         obstacle_configs = json.loads(obstacles_config_raw)

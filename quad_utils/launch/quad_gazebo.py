@@ -187,8 +187,8 @@ def generate_launch_description():
         OpaqueFunction(function=bridge_global_clock),
         OpaqueFunction(function=launch_robot_mapping),
         OpaqueFunction(function=launch_robot_group),
-        OpaqueFunction(function=launch_visualization),
-        OpaqueFunction(function=launch_plot_juggler)
+        # OpaqueFunction(function=launch_visualization),
+        # OpaqueFunction(function=launch_plot_juggler)
     ])
 
 
