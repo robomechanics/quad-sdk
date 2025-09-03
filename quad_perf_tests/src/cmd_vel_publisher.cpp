@@ -3,7 +3,7 @@
 CmdVelPublisher::CmdVelPublisher(rclcpp::Node::SharedPtr node) : node_(node){
   std::string cmd_vel_topic;
 
-  quad_utils::loadROSParam(node_, "namespace", robot_ns_);
+  // quad_utils::loadROSParam(node_, "namespace", robot_ns_);
   quad_utils::loadROSParam(node_, "topics.cmd_vel", cmd_vel_topic);
   quad_utils::loadROSParam(node_, "cmd_vel_publisher.update_rate", update_rate_);
 
@@ -15,13 +15,15 @@ CmdVelPublisher::CmdVelPublisher(rclcpp::Node::SharedPtr node) : node_(node){
   quad_utils::loadROSParam(node_, "cmd_vel_publisher.bounds.y_max", y_max_);
   quad_utils::loadROSParam(node_, "cmd_vel_publisher.bounds.yaw_min", yaw_min_);
   quad_utils::loadROSParam(node_, "cmd_vel_publisher.bounds.yaw_max", yaw_max_);
+  quad_utils::loadROSParam(node_, "cmd_vel_publisher.seed", seed_);
+  quad_utils::loadROSParam(node_, "cmd_vel_publisher.test_duration", test_duration_);
 
   cmd_vel_pub_ = node_->create_publisher<geometry_msgs::msg::Twist>(cmd_vel_topic, 10);
 
-  rng_ = std::mt19937(rd_());
-  dist_x_ = std::uniform_real_distribution<double>(x_min_, x_max_);
-  dist_y_ = std::uniform_real_distribution<double>(y_min_, y_max_);
-  dist_yaw_ = std::uniform_real_distribution<double>(yaw_min_, yaw_max_);
+  rng_ = std::mt19937(seed_);
+  dist_x_ = std::normal_distribution<double>(0.0, (x_max_ - x_min_)/3.0);
+  dist_y_ = std::normal_distribution<double>(0.0, (y_max_- y_min_)/3.0);
+  dist_yaw_ = std::normal_distribution<double>(0.0, (yaw_max_- yaw_min_)/3.0);
 
   // Intialize cmd message to zero command
   last_cmd_vel_msg_ = geometry_msgs::msg::Twist{};
@@ -56,6 +58,14 @@ void CmdVelPublisher::publishCmdVel(){
   else if(mode_ == "single"){
     if (!has_sample_) {
       sampleNewCmd();  // sample once, then persist
+    }
+    if ((now - last_cmd_vel_msg_time_).seconds() > test_duration_){
+        last_cmd_vel_msg_.linear.x = 0.0;
+        last_cmd_vel_msg_.linear.y = 0.0;
+        last_cmd_vel_msg_.linear.z = 0.0;
+        last_cmd_vel_msg_.angular.x = 0.0;
+        last_cmd_vel_msg_.angular.y = 0.0;
+        last_cmd_vel_msg_.angular.z = 0.0;
     }
     cmd_vel_pub_->publish(last_cmd_vel_msg_);
     return;

@@ -1,9 +1,3 @@
-#!/usr/bin/env python
-
-# Command the robot to walk along a straight line parallel to the x-axis with
-# zero yaw
-
-import rclpy
 #!/usr/bin/env python3
 
 import math
@@ -11,7 +5,10 @@ import rclpy
 from rclpy.node import Node
 from geometry_msgs.msg import Twist
 from quad_msgs.msg import RobotState
-from tf_transformations import euler_from_quaternion  # ROS 2 version: install python3-tf-transformations
+from scipy.spatial.transform import Rotation as R
+
+# Command the robot to walk along a straight line parallel to the x-axis with
+# zero yaw
 
 class PathFollowingNode(Node):
     def __init__(self):
@@ -63,7 +60,7 @@ class PathFollowingNode(Node):
 
         cmd = Twist()
         q = self.last_state_msg_.body.pose.orientation
-        euler = euler_from_quaternion([q.x, q.y, q.z, q.w])
+        euler = R.from_quat([q.x, q.y, q.z, q.w]).as_euler('xyz', degrees=False)
 
         # x velocity error integral
         speed_error = self.last_state_msg_.body.twist.linear.x - self.speed

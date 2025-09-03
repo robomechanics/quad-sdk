@@ -25,6 +25,7 @@ ForceApplicator::ForceApplicator(rclcpp::Node::SharedPtr node) : node_(node){
     quad_utils::loadROSParam(node_, "force_applicator.random.torque_mag_max", torque_mag_max_);
     quad_utils::loadROSParam(node_, "force_applicator.periodic.period", period_);
     quad_utils::loadROSParam(node_, "force_applicator.distance.distance_threshold", distance_threshold_);
+    quad_utils::loadROSParam(node_, "force_applicator.seed", seed_);
 
     // Load in ROS topics
     quad_utils::loadROSParam(node_, "force_applicator.topics.state.ground_truth", robot_state_topic);
@@ -50,7 +51,7 @@ ForceApplicator::ForceApplicator(rclcpp::Node::SharedPtr node) : node_(node){
                 wrench_topic_persist_.c_str(), wrench_topic_clear_.c_str());
 
     // Seed the random number generator
-    rng_.seed(std::random_device{}());
+    rng_.seed(seed_);
 }
 
 void ForceApplicator::robotStateCallback(const quad_msgs::msg::RobotState::SharedPtr msg){
@@ -87,6 +88,15 @@ bool ForceApplicator::shouldTrigger(){
         }
         return false;
     }
+    else if (mode_ == "single"){
+        if (single_){
+            return false;
+        }
+        else{
+            single_ = true;
+            return true;
+        }
+    }
     return false;
 }
 
@@ -98,9 +108,9 @@ void ForceApplicator::updateMarker(){
     last_robot_marker_msg_.id = 0;
     last_robot_marker_msg_.type = visualization_msgs::msg::Marker::ARROW;
     last_robot_marker_msg_.action = visualization_msgs::msg::Marker::ADD;
-    last_robot_marker_msg_.pose.position.x = 0.25;
-    last_robot_marker_msg_.pose.position.y = -0.4;
-    last_robot_marker_msg_.pose.position.z = 0;
+    last_robot_marker_msg_.pose.position.x = 0.0;
+    last_robot_marker_msg_.pose.position.y = -0.0;
+    last_robot_marker_msg_.pose.position.z = 0.5;
     last_robot_marker_msg_.pose.orientation.w = 1.0;
 
     last_robot_marker_msg_.scale.x = 0.2;  // force_magnitude_*0.1;  // Arrow length
@@ -135,8 +145,23 @@ void ForceApplicator::applyForce(){
     double tx, ty, tz;
     if (force_mode_ == "random") {
       std::uniform_real_distribution<double> f_mag_distribution(force_mag_min_, force_mag_max_);
+      double mag = f_mag_distribution(rng_);
+
+      std::uniform_real_distribution<double> unif(0.0, 1.0);
+      double theta = 2.0 * M_PI * unif(rng_);           // azimuth [0, 2pi]
+      double phi   = std::acos(2.0 * unif(rng_) - 1.0); // polar angle [0, pi]
+    //   phi = M_PI/2.0 + (M_PI/2.0) * unif(rng_); // remap to [π/2, π]
+
+      Eigen::Vector3d dir;
+      dir.x() = std::sin(phi) * std::cos(theta);
+      dir.y() = std::sin(phi) * std::sin(theta);
+      dir.z() = std::cos(phi);
+
+      // Scale to magnitude
+      Eigen::Vector3d f = mag * dir;
+      fx = f.x(); fy = f.y(); fz = f.z();
+      fz = -std::abs(fz);
       std::uniform_real_distribution<double> t_mag_distribution(torque_mag_min_, torque_mag_max_);
-      fx = f_mag_distribution(rng_); fy = f_mag_distribution(rng_); fz = f_mag_distribution(rng_);
       tx = t_mag_distribution(rng_); ty = t_mag_distribution(rng_); tz = t_mag_distribution(rng_);
     } 
     else if (force_mode_ == "yaml") {
@@ -146,6 +171,8 @@ void ForceApplicator::applyForce(){
     }
 
     force_magnitude_ = Eigen::Vector3d(fx, fy, fz).norm();
+
+    std::cout << "Applying Force of Magnitude" << fx << ',' << fy << ',' << fz << std::endl; 
 
     // Build and Publish ROS Entity Wrench
     ros_gz_interfaces::msg::EntityWrench ew;

@@ -35,6 +35,7 @@ if ~(exist(filepath,'file'))
 end
 
 % Load the bag
+disp(filepath)
 bag = ros2bagreader(filepath);
 
 % Read the state estimate data
@@ -100,6 +101,41 @@ else
             [m.feet.feet(i).position.x, m.feet.feet(i).position.y, m.feet.feet(i).position.z], stateGroundTruthData, 'UniformOutput', 0));
         stateGroundTruth.footVelocity{i} = cell2mat(cellfun(@(m) ...
             [m.feet.feet(i).velocity.x, m.feet.feet(i).velocity.y, m.feet.feet(i).velocity.z], stateGroundTruthData, 'UniformOutput', 0));
+    end
+end
+
+% Read the Ground Truth Body Frame Data
+stateGroundTruthBodyFrameData = readMessages(select(bag,'Topic',['/', namespace, 'state/ground_truth_body_frame']));
+stateGroundTruthBodyFrame = struct;
+if isempty(stateGroundTruthBodyFrameData)
+    warning('No data on ground truth state topic');
+else
+    
+    stateGroundTruthBodyFrame.time = cell2mat(cellfun(@(m) double(m.header.stamp.sec) + double(m.header.stamp.nanosec)*1E-9, stateGroundTruthBodyFrameData, 'UniformOutput', 0));
+    % disp("First 10 message times (s):")
+    % disp(stateGroundTruth.time(1:min(10,end)))
+    stateGroundTruthBodyFrame.position = cell2mat(cellfun(@(m) ...
+        [m.body.pose.position.x, m.body.pose.position.y, m.body.pose.position.z], stateGroundTruthBodyFrameData, 'UniformOutput', 0));
+    stateGroundTruthBodyFrame.velocity = cell2mat(cellfun(@(m) ...
+        [m.body.twist.linear.x, m.body.twist.linear.y, m.body.twist.linear.z], stateGroundTruthBodyFrameData, 'UniformOutput', 0));
+    
+    stateGroundTruthBodyFrame.orientationRPY = cell2mat(cellfun(@(m) ...
+        fliplr(quat2eul([m.body.pose.orientation.w, m.body.pose.orientation.x, m.body.pose.orientation.y, m.body.pose.orientation.z])), stateGroundTruthBodyFrameData, 'UniformOutput', 0));
+    stateGroundTruthBodyFrame.orientationQuat = cell2mat(cellfun(@(m) ...
+        [m.body.pose.orientation.w, m.body.pose.orientation.x, m.body.pose.orientation.y, m.body.pose.orientation.z], stateGroundTruthBodyFrameData, 'UniformOutput', 0));
+    stateGroundTruthBodyFrame.angularVelocity = cell2mat(cellfun(@(m) ...
+        [m.body.twist.angular.x, m.body.twist.angular.y, m.body.twist.angular.z], stateGroundTruthBodyFrameData, 'UniformOutput', 0));
+    
+    stateGroundTruthBodyFrame.jointPosition = cell2mat(cellfun(@(m) m.joints.position.', stateGroundTruthBodyFrameData, 'UniformOutput', 0));
+    stateGroundTruthBodyFrame.jointVelocity = cell2mat(cellfun(@(m) m.joints.velocity.', stateGroundTruthBodyFrameData, 'UniformOutput', 0));
+    stateGroundTruthBodyFrame.jointEffort = cell2mat(cellfun(@(m) m.joints.effort.', stateGroundTruthBodyFrameData, 'UniformOutput', 0));
+    
+    num_feet = size(stateGroundTruthBodyFrameData{1}.feet.feet, 1);
+    for i = 1:num_feet
+        stateGroundTruthBodyFrame.footPosition{i} = cell2mat(cellfun(@(m) ...
+            [m.feet.feet(i).position.x, m.feet.feet(i).position.y, m.feet.feet(i).position.z], stateGroundTruthBodyFrameData, 'UniformOutput', 0));
+        stateGroundTruthBodyFrame.footVelocity{i} = cell2mat(cellfun(@(m) ...
+            [m.feet.feet(i).velocity.x, m.feet.feet(i).velocity.y, m.feet.feet(i).velocity.z], stateGroundTruthBodyFrameData, 'UniformOutput', 0));
     end
 end
 
@@ -203,6 +239,20 @@ else
     end
 end
 
+% Read the cmd vel data
+cmdVelData = readMessages(select(bag, 'Topic',['/', namespace, 'cmd_vel_stamped']));
+cmdVels = struct;
+if isempty(cmdVelData)
+    warning('No data on cmd vel topic');
+else
+    cmdVels.time = cell2mat(cellfun(@(m) double(m.header.stamp.sec) + double(m.header.stamp.nanosec)*1E-9, cmdVelData, 'UniformOutput', 0));
+    cmdVels.velocity = cell2mat(cellfun(@(m) ...
+        [m.twist.linear.x, m.twist.linear.y, m.twist.linear.z], cmdVelData, 'UniformOutput', 0));
+    cmdVels.angularVelocity= cell2mat(cellfun(@(m) ...
+        [m.twist.angular.x, m.twist.angular.y, m.twist.angular.z], cmdVelData, 'UniformOutput', 0));
+end
+
+
 % Read the local plan data
 % localPlanData = readMessages(select(bag,'Topic',['/', namespace, 'local_plan']),'DataFormat','struct');
 % localPlan = struct;
@@ -239,6 +289,13 @@ else
     data.stateGroundTruth = [];
 end
 
+if ~isempty(fieldnames(stateGroundTruthBodyFrame))
+    stateGroundTruthBodyFrame.time = stateGroundTruthBodyFrame.time - startTime;
+    data.stateGroundTruthBodyFrame = stateGroundTruthBodyFrame;
+else
+    data.stateGroundTruthBodyFrame = [];
+end
+
 if ~isempty(fieldnames(stateTrajectory))
     stateTrajectory.time = stateTrajectory.time - startTime;
     data.stateTrajectory = stateTrajectory;
@@ -256,6 +313,13 @@ end
 if ~isempty(fieldnames(stateGRFs))
     stateGRFs.time = stateGRFs.time - startTime;
     data.stateGRFs = stateGRFs;
+else
+    data.stateGRFs = [];
+end
+
+if ~isempty(fieldnames(cmdVels))
+    cmdVels.time = cmdVels.time - startTime;
+    data.cmdVels = cmdVels;
 else
     data.stateGRFs = [];
 end

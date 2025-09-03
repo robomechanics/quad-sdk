@@ -6,7 +6,7 @@ RobotDriver::RobotDriver(std::shared_ptr<rclcpp::Node> node, int argc, char **ar
     robot_state_topic, trajectory_state_topic, local_plan_topic, 
     leg_command_array_topic, control_mode_topic, remote_heartbeat_topic, 
     robot_heartbeat_topic, single_joint_cmd_topic, mocap_topic, 
-    control_restart_flag_topic, body_force_estimate_topic, cmd_vel_topic;
+    control_restart_flag_topic, body_force_estimate_topic, cmd_vel_topic, cmd_vel_stamped_topic, state_estimate_topic;
 
     quad_utils::loadROSParam(node_, "namespace", robot_ns);
     quad_utils::loadROSParam(node_, "robot_description", robot_description);
@@ -34,6 +34,8 @@ RobotDriver::RobotDriver(std::shared_ptr<rclcpp::Node> node, int argc, char **ar
                             control_restart_flag_topic);
     quad_utils::loadROSParam(node_, "topics.mocap", mocap_topic);
     quad_utils::loadROSParam(node_, "topics.cmd_vel", cmd_vel_topic);
+    quad_utils::loadROSParam(node_, "topics.cmd_vel_stamped", cmd_vel_stamped_topic);
+    quad_utils::loadROSParam(node_, "topics.state.estimate", state_estimate_topic);
     quad_utils::loadROSParamDefault(node_, "is_hardware", is_hardware_,
                                     true);
     quad_utils::loadROSParamDefault(node_, "controller",
@@ -101,6 +103,8 @@ RobotDriver::RobotDriver(std::shared_ptr<rclcpp::Node> node, int argc, char **ar
     leg_command_array_pub_ = node_->create_publisher<quad_msgs::msg::LegCommandArray>(leg_command_array_topic, 1);
     robot_heartbeat_pub_ = node_->create_publisher<std_msgs::msg::Header>(robot_heartbeat_topic, 1);
     trajectry_robot_state_pub_ =node_->create_publisher<quad_msgs::msg::RobotState>(trajectory_state_topic, 1);
+    cmd_vel_stamped_pub_ = node_->create_publisher<geometry_msgs::msg::TwistStamped>(cmd_vel_stamped_topic, 1);
+    state_estimate_pub_ = node_->create_publisher<quad_msgs::msg::RobotState>(state_estimate_topic, 1);
 
     // Set up pubs and subs dependent on robot layer
     if (is_hardware_){
@@ -341,6 +345,7 @@ void RobotDriver::cmdVelCallback(const geometry_msgs::msg::Twist::SharedPtr msg)
   cmd_vel_[4] = 0;
   cmd_vel_[5] = (1 - cmd_vel_filter_const_) * cmd_vel_[5] +
                 cmd_vel_filter_const_ * cmd_vel_scale_ * msg->angular.z;
+  last_cmd_vel_msg_ = *msg;
   // Record when this was last reached for safety
   if (auto c = std::dynamic_pointer_cast<LearnedPolicy>(leg_controller_)) {
     last_cmd_vel_msg_time_ = node_->now();
@@ -607,6 +612,14 @@ void RobotDriver::publishControl(bool is_valid) {
   grf_array_msg_.header.stamp = leg_command_array_msg_.header.stamp;
   grf_pub_->publish(grf_array_msg_);
   // }
+  geometry_msgs::msg::TwistStamped msg;
+  msg.header.stamp = node_->now();
+  msg.twist = last_cmd_vel_msg_;
+  cmd_vel_stamped_pub_->publish(msg);
+  last_state_estimate_msg_ = last_robot_state_msg_;
+  last_state_estimate_msg_.header.stamp = node_->now();
+  state_estimate_pub_->publish(last_state_estimate_msg_);
+
 
   // Send command to the robot
   if (is_hardware_ && is_valid) {

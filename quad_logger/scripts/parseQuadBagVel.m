@@ -1,4 +1,4 @@
-function [data, varargout] = parseQuadBag(varargin)
+function [data] = parseQuadBagVel(filePath, namespace)
 % parseQuadBag parse a quad data log file
 %   DATA = parseQuadBag uses the default 'quad_log_current' file name to
 %   yield a data structure containing select topic data. If this bag does
@@ -8,34 +8,11 @@ function [data, varargout] = parseQuadBag(varargin)
 %   file name, looking in '../bags/'.
 
 % Default empty namespace
-namespace = '';
-
-% Default to quad_log_current
-if nargin >= 2
-    if ~isempty(varargin{2})
-        namespace = [varargin{2}, '/'];
-    end
-end
-
-if nargin == 0
-    trialName = 'quad_log_current';
-else
-    trialName = varargin{1};
-end
-
-% Specify the path
-filepath = ['../bags/', trialName,'.bag'];
-if ~(exist(filepath,'file'))
-    disp([filepath, ' does not exist, using UI to specify path']);
-    [fileName,pathname] = uigetfile('.mcap', 'Select a Bag');
-    
-    suffix = '.mcap';
-    trialName = fileName(1:(end-length(suffix)));
-    filepath = fullfile(pathname, fileName);
-end
+if nargin < 2, namespace = 'robot_1/'; else, namespace = [namespace, '/']; end
 
 % Load the bag
-bag = ros2bagreader(filepath);
+disp(filePath);
+bag = ros2bagreader(filePath);
 
 % Read the state estimate data
 % stateEstimateData = readMessages(bag,'Topic',['/', namespace, 'state/estimate'],'DataFormat','struct');
@@ -94,12 +71,47 @@ else
     stateGroundTruth.jointVelocity = cell2mat(cellfun(@(m) m.joints.velocity.', stateGroundTruthData, 'UniformOutput', 0));
     stateGroundTruth.jointEffort = cell2mat(cellfun(@(m) m.joints.effort.', stateGroundTruthData, 'UniformOutput', 0));
     
-    num_feet = size(stateGroundTruthData{1}.feet.feet, 2);
+    num_feet = size(stateGroundTruthData{1}.feet.feet, 1);
     for i = 1:num_feet
         stateGroundTruth.footPosition{i} = cell2mat(cellfun(@(m) ...
             [m.feet.feet(i).position.x, m.feet.feet(i).position.y, m.feet.feet(i).position.z], stateGroundTruthData, 'UniformOutput', 0));
         stateGroundTruth.footVelocity{i} = cell2mat(cellfun(@(m) ...
             [m.feet.feet(i).velocity.x, m.feet.feet(i).velocity.y, m.feet.feet(i).velocity.z], stateGroundTruthData, 'UniformOutput', 0));
+    end
+end
+
+% Read the Ground Truth Body Frame Data
+stateGroundTruthBodyFrameData = readMessages(select(bag,'Topic',['/', namespace, 'state/ground_truth_body_frame']));
+stateGroundTruthBodyFrame = struct;
+if isempty(stateGroundTruthBodyFrameData)
+    warning('No data on ground truth state topic');
+else
+    
+    stateGroundTruthBodyFrame.time = cell2mat(cellfun(@(m) double(m.header.stamp.sec) + double(m.header.stamp.nanosec)*1E-9, stateGroundTruthBodyFrameData, 'UniformOutput', 0));
+    % disp("First 10 message times (s):")
+    % disp(stateGroundTruth.time(1:min(10,end)))
+    stateGroundTruthBodyFrame.position = cell2mat(cellfun(@(m) ...
+        [m.body.pose.position.x, m.body.pose.position.y, m.body.pose.position.z], stateGroundTruthBodyFrameData, 'UniformOutput', 0));
+    stateGroundTruthBodyFrame.velocity = cell2mat(cellfun(@(m) ...
+        [m.body.twist.linear.x, m.body.twist.linear.y, m.body.twist.linear.z], stateGroundTruthBodyFrameData, 'UniformOutput', 0));
+    
+    stateGroundTruthBodyFrame.orientationRPY = cell2mat(cellfun(@(m) ...
+        fliplr(quat2eul([m.body.pose.orientation.w, m.body.pose.orientation.x, m.body.pose.orientation.y, m.body.pose.orientation.z])), stateGroundTruthBodyFrameData, 'UniformOutput', 0));
+    stateGroundTruthBodyFrame.orientationQuat = cell2mat(cellfun(@(m) ...
+        [m.body.pose.orientation.w, m.body.pose.orientation.x, m.body.pose.orientation.y, m.body.pose.orientation.z], stateGroundTruthBodyFrameData, 'UniformOutput', 0));
+    stateGroundTruthBodyFrame.angularVelocity = cell2mat(cellfun(@(m) ...
+        [m.body.twist.angular.x, m.body.twist.angular.y, m.body.twist.angular.z], stateGroundTruthBodyFrameData, 'UniformOutput', 0));
+    
+    stateGroundTruthBodyFrame.jointPosition = cell2mat(cellfun(@(m) m.joints.position.', stateGroundTruthBodyFrameData, 'UniformOutput', 0));
+    stateGroundTruthBodyFrame.jointVelocity = cell2mat(cellfun(@(m) m.joints.velocity.', stateGroundTruthBodyFrameData, 'UniformOutput', 0));
+    stateGroundTruthBodyFrame.jointEffort = cell2mat(cellfun(@(m) m.joints.effort.', stateGroundTruthBodyFrameData, 'UniformOutput', 0));
+    
+    num_feet = size(stateGroundTruthBodyFrameData{1}.feet.feet, 1);
+    for i = 1:num_feet
+        stateGroundTruthBodyFrame.footPosition{i} = cell2mat(cellfun(@(m) ...
+            [m.feet.feet(i).position.x, m.feet.feet(i).position.y, m.feet.feet(i).position.z], stateGroundTruthBodyFrameData, 'UniformOutput', 0));
+        stateGroundTruthBodyFrame.footVelocity{i} = cell2mat(cellfun(@(m) ...
+            [m.feet.feet(i).velocity.x, m.feet.feet(i).velocity.y, m.feet.feet(i).velocity.z], stateGroundTruthBodyFrameData, 'UniformOutput', 0));
     end
 end
 
@@ -133,7 +145,7 @@ else
     stateTrajectory.jointVelocity = nan(size(stateTrajectory.jointVelocity));
     stateTrajectory.jointEffort = nan(size(stateTrajectory.jointEffort));
     
-    num_feet = size(stateTrajectoryData{1}.feet.feet, 2);
+    num_feet = size(stateTrajectoryData{1}.feet.feet, 1);
     for i = 1:num_feet
         stateTrajectory.footPosition{i} = cell2mat(cellfun(@(m) ...
             [m.feet.feet(i).position.x, m.feet.feet(i).position.y, m.feet.feet(i).position.z], stateTrajectoryData, 'UniformOutput', 0));
@@ -144,7 +156,6 @@ else
         stateTrajectory.footVelocity{i} = nan(size(stateTrajectory.footVelocity{i}));
     end
 end
-disp("Makes it Here 2")
 % Read the control GRFs data
 % controlGRFsData = readMessages(select(bag,'Topic',['/', namespace, 'control/grfs']),'DataFormat','struct');
 % controlGRFs = struct;
@@ -204,22 +215,36 @@ else
     end
 end
 
+% Read the cmd vel data
+cmdVelData = readMessages(select(bag, 'Topic',['/', namespace, 'cmd_vel_stamped']));
+cmdVels = struct;
+if isempty(cmdVelData)
+    warning('No data on cmd vel topic');
+else
+    cmdVels.time = cell2mat(cellfun(@(m) double(m.header.stamp.sec) + double(m.header.stamp.nanosec)*1E-9, cmdVelData, 'UniformOutput', 0));
+    cmdVels.velocity = cell2mat(cellfun(@(m) ...
+        [m.twist.linear.x, m.twist.linear.y, m.twist.linear.z], cmdVelData, 'UniformOutput', 0));
+    cmdVels.angularVelocity= cell2mat(cellfun(@(m) ...
+        [m.twist.angular.x, m.twist.angular.y, m.twist.angular.z], cmdVelData, 'UniformOutput', 0));
+end
+
+
 % Read the local plan data
 % localPlanData = readMessages(select(bag,'Topic',['/', namespace, 'local_plan']),'DataFormat','struct');
 % localPlan = struct;
-localPlanData = readMessages(select(bag,'Topic',['/', namespace, 'local_plan']));
-localPlan = struct;
-if isempty(localPlanData)
-    warning('No data on local plan topic');
-else
-    localPlan.time = cell2mat(cellfun(@(m) double(m.statetimestamp.sec) + double(m.statetimestamp.nanosec)*1E-9, localPlanData, 'UniformOutput', 0));
-    localPlan.elementTimes = cellfun(@(m) double(m.Diagnostics.ElementTimes'), localPlanData, 'UniformOutput', 0);
-    localPlan.solveTime = cell2mat(cellfun(@(m) m.Diagnostics.ComputeTime, localPlanData, 'UniformOutput', 0));
-    localPlan.cost = cell2mat(cellfun(@(m) m.Diagnostics.Cost, localPlanData, 'UniformOutput', 0));
-    localPlan.iterations = cell2mat(cellfun(@(m) m.Diagnostics.Iterations, localPlanData, 'UniformOutput', 0));
-    localPlan.horizonLength = cell2mat(cellfun(@(m) m.Diagnostics.HorizonLength, localPlanData, 'UniformOutput', 0));
-    localPlan.complexitySchedule = cellfun(@(m) double(m.Diagnostics.ComplexitySchedule'), localPlanData, 'UniformOutput', 0);
-end
+% localPlanData = readMessages(select(bag,'Topic',['/', namespace, 'local_plan']));
+% localPlan = struct;
+% if isempty(localPlanData)
+%     warning('No data on local plan topic');
+% else
+%     localPlan.time = cell2mat(cellfun(@(m) double(m.state_timestamp.sec) + double(m.state_timestamp.nanosec)*1E-9, localPlanData, 'UniformOutput', 0));
+%     localPlan.elementTimes = cellfun(@(m) double(m.diagnostics.element_times'), localPlanData, 'UniformOutput', 0);
+%     localPlan.solveTime = cell2mat(cellfun(@(m) m.diagnostics.compute_time, localPlanData, 'UniformOutput', 0));
+%     localPlan.cost = cell2mat(cellfun(@(m) m.diagnostics.cost, localPlanData, 'UniformOutput', 0));
+%     localPlan.iterations = cell2mat(cellfun(@(m) m.diagnostics.iterations, localPlanData, 'UniformOutput', 0));
+%     localPlan.horizonLength = cell2mat(cellfun(@(m) m.diagnostics.horizon_length, localPlanData, 'UniformOutput', 0));
+%     localPlan.complexitySchedule = cellfun(@(m) double(m.diagnostics.complexity_schedule'), localPlanData, 'UniformOutput', 0);
+% end
 
 % Localize time to the first message
 startTime = stateGroundTruth.time(1);
@@ -238,6 +263,13 @@ if ~isempty(fieldnames(stateGroundTruth))
     data.stateGroundTruth = stateGroundTruth;
 else
     data.stateGroundTruth = [];
+end
+
+if ~isempty(fieldnames(stateGroundTruthBodyFrame))
+    stateGroundTruthBodyFrame.time = stateGroundTruthBodyFrame.time - startTime;
+    data.stateGroundTruthBodyFrame = stateGroundTruthBodyFrame;
+else
+    data.stateGroundTruthBodyFrame = [];
 end
 
 if ~isempty(fieldnames(stateTrajectory))
@@ -261,18 +293,21 @@ else
     data.stateGRFs = [];
 end
 
-if ~isempty(fieldnames(localPlan))
-    localPlan.time = localPlan.time - startTime;
-    for i = 1:length(localPlan.elementTimes)
-        shiftedElementTimes = localPlan.elementTimes{i} + localPlan.time(i);
-        localPlan.elementTimes{i} = shiftedElementTimes;
-    end
-    data.localPlan = localPlan;
+if ~isempty(fieldnames(cmdVels))
+    cmdVels.time = cmdVels.time - startTime;
+    data.cmdVels = cmdVels;
 else
-    data.localPlan = [];
+    data.stateGRFs = [];
 end
 
-% If prompted, return the name of the filename
-if (nargout>1)
-    varargout{1} = trialName;
-end
+% if ~isempty(fieldnames(localPlan))
+%     localPlan.time = localPlan.time - startTime;
+%     for i = 1:length(localPlan.elementTimes)
+%         shiftedElementTimes = localPlan.elementTimes{i} + localPlan.time(i);
+%         localPlan.elementTimes{i} = shiftedElementTimes;
+%     end
+%     data.localPlan = localPlan;
+% else
+%     data.localPlan = [];
+% end
+
