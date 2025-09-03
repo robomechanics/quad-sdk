@@ -23,6 +23,7 @@ def launch_bag_recording(context, *args, **kwargs):
         f"{topic_prefix}/state/imu",
         f"{topic_prefix}/state/trajectory",
         f"{topic_prefix}/state/ground_truth",
+        f"{topic_prefix}/state/ground_truth_body_frame",
         f"{topic_prefix}/state/estimate",
         f"{topic_prefix}/state/grfs",
         f"{topic_prefix}/mocap_node/quad/pose",
@@ -35,7 +36,8 @@ def launch_bag_recording(context, *args, **kwargs):
         f"{topic_prefix}/foot_plan_discrete",
         f"{topic_prefix}/body_force/joint_torques",
         f"{topic_prefix}/body_force/toe_forces",
-        "/terrain_map"
+        f"{topic_prefix}/cmd_vel_stamped",
+        "/terrain_map",
     ]
 
     topic_list_2 = [
@@ -43,6 +45,7 @@ def launch_bag_recording(context, *args, **kwargs):
         f"{topic_prefix}/state/imu",
         f"{topic_prefix}/state/trajectory",
         f"{topic_prefix}/state/ground_truth",
+        f"{topic_prefix}/state/ground_truth_body_frame",
         f"{topic_prefix}/state/estimate",
         f"{topic_prefix}/state/grfs",
         f"{topic_prefix}/mocap_node/quad/pose",
@@ -55,6 +58,7 @@ def launch_bag_recording(context, *args, **kwargs):
         f"{topic_prefix}/foot_plan_discrete",
         f"{topic_prefix}/body_force/joint_torques",
         f"{topic_prefix}/body_force/toe_forces",
+        f"{topic_prefix}/cmd_vel_stamped",
         "/terrain_map"
     ]
 

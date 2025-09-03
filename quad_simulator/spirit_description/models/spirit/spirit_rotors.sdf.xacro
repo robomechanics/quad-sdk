@@ -1,32 +1,8 @@
 <?xml version='1.0'?>
 
-<!-- 
-MIT License (modified)
-
-Copyright (c) 2020 The Trustees of the University of Pennsylvania
-Authors:
-Vasileios Vasilopoulos <vvasilo@seas.upenn.edu>
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this **file** (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE. 
--->
-
-<sdf version='1.6'>
+<sdf version='1.6' xmlns:xacro="http://www.ros.org/wiki/xacro">
+  <xacro:arg name="namespace" default="robot_1" />
+  <xacro:arg name="controller_config_path" default="/path/quad_control.yaml" />
   <model name='spirit'>
     <link name='body'>
       <pose frame=''>0 0 0 0 -0 0</pose>
@@ -62,14 +38,13 @@ SOFTWARE.
         <pose frame=''>0.03 0 0 0 -0 0</pose>
         <geometry>
           <mesh>
-            <uri>model:///meshes/Spirit40_Body_Mesh_transformed.stl</uri>
+            <uri>model://spirit/meshes/Spirit40_Body_Mesh_transformed.stl</uri>
          </mesh>
         </geometry>
         <material>
-          <script>
-            <name>Gazebo/DarkGrey</name>
-            <uri>file://media/materials/scripts/gazebo.material</uri>
-          </script>
+          <ambient>0.10 0.10 0.10 1</ambient>
+          <diffuse>0.15 0.15 0.15 1</diffuse>
+          <specular>0.03 0.03 0.03 1</specular>
         </material>
       </visual>
       <gravity>1</gravity>
@@ -111,14 +86,13 @@ SOFTWARE.
         <pose frame=''>0 0 0 0 -0 0</pose>
         <geometry>
           <mesh>
-            <uri>model:///meshes/Spirit40_Hip_Module_transformed.stl</uri>
+            <uri>model://spirit/meshes/Spirit40_Hip_Module_transformed.stl</uri>
          </mesh>
         </geometry>
         <material>
-          <script>
-            <name>Gazebo/DarkGrey</name>
-            <uri>file://media/materials/scripts/gazebo.material</uri>
-          </script>
+          <ambient>0.10 0.10 0.10 1</ambient>
+          <diffuse>0.15 0.15 0.15 1</diffuse>
+          <specular>0.03 0.03 0.03 1</specular>
         </material>
       </visual>
       <gravity>1</gravity>
@@ -180,14 +154,13 @@ SOFTWARE.
         <pose frame=''>0 -0.022 0 0 -0 0</pose>
         <geometry>
           <mesh>
-            <uri>model:///meshes/Spirit40_Upper_leg_transformed.stl</uri>
+            <uri>model://spirit/meshes/Spirit40_Upper_leg_transformed.stl</uri>
          </mesh>
         </geometry>
         <material>
-          <script>
-            <name>Gazebo/DarkGrey</name>
-            <uri>file://media/materials/scripts/gazebo.material</uri>
-          </script>
+          <ambient>0.10 0.10 0.10 1</ambient>
+          <diffuse>0.15 0.15 0.15 1</diffuse>
+          <specular>0.03 0.03 0.03 1</specular>
         </material>
       </visual>
       <gravity>1</gravity>
@@ -250,14 +223,13 @@ SOFTWARE.
         <pose frame=''>0 0 0 0 0 0</pose>
         <geometry>
           <mesh>
-            <uri>model:///meshes/Spirit40_Lower_Leg_transformed.stl</uri>
+            <uri>model://spirit/meshes/Spirit40_Lower_Leg_transformed.stl</uri>
          </mesh>
         </geometry>
         <material>
-          <script>
-            <name>Gazebo/DarkGrey</name>
-            <uri>file://media/materials/scripts/gazebo.material</uri>
-          </script>
+          <ambient>0.10 0.10 0.10 1</ambient>
+          <diffuse>0.15 0.15 0.15 1</diffuse>
+          <specular>0.03 0.03 0.03 1</specular>
         </material>
       </visual>
       <velocity_decay/>
@@ -321,14 +293,13 @@ SOFTWARE.
         <pose frame=''>0 0 0 0 -0 0</pose>
         <geometry>
           <mesh>
-            <uri>model:///meshes/Spirit40_Hip_Module_transformed.stl</uri>
+            <uri>model://spirit/meshes/Spirit40_Hip_Module_transformed.stl</uri>
          </mesh>
         </geometry>
         <material>
-          <script>
-            <name>Gazebo/DarkGrey</name>
-            <uri>file://media/materials/scripts/gazebo.material</uri>
-          </script>
+          <ambient>0.10 0.10 0.10 1</ambient>
+          <diffuse>0.15 0.15 0.15 1</diffuse>
+          <specular>0.03 0.03 0.03 1</specular>
         </material>
       </visual>
       <gravity>1</gravity>
@@ -390,14 +361,13 @@ SOFTWARE.
         <pose frame=''>0 -0.022 0 0 -0 0</pose>
         <geometry>
           <mesh>
-            <uri>model:///meshes/Spirit40_Upper_leg_transformed.stl</uri>
+            <uri>model://spirit/meshes/Spirit40_Upper_leg_transformed.stl</uri>
          </mesh>
         </geometry>
         <material>
-          <script>
-            <name>Gazebo/DarkGrey</name>
-            <uri>file://media/materials/scripts/gazebo.material</uri>
-          </script>
+          <ambient>0.10 0.10 0.10 1</ambient>
+          <diffuse>0.15 0.15 0.15 1</diffuse>
+          <specular>0.03 0.03 0.03 1</specular>
         </material>
       </visual>
       <gravity>1</gravity>
@@ -460,14 +430,13 @@ SOFTWARE.
         <pose frame=''>0 0 0 0 0 0</pose>
         <geometry>
           <mesh>
-            <uri>model:///meshes/Spirit40_Lower_Leg_transformed.stl</uri>
+            <uri>model://spirit/meshes/Spirit40_Lower_Leg_transformed.stl</uri>
          </mesh>
         </geometry>
         <material>
-          <script>
-            <name>Gazebo/DarkGrey</name>
-            <uri>file://media/materials/scripts/gazebo.material</uri>
-          </script>
+          <ambient>0.10 0.10 0.10 1</ambient>
+          <diffuse>0.15 0.15 0.15 1</diffuse>
+          <specular>0.03 0.03 0.03 1</specular>
         </material>
       </visual>
       <velocity_decay/>
@@ -532,14 +501,13 @@ SOFTWARE.
         <pose frame=''>0 0 0 -3.142 0 0</pose>
         <geometry>
           <mesh>
-            <uri>model:///meshes/Spirit40_Hip_Module_transformed.stl</uri>
+            <uri>model://spirit/meshes/Spirit40_Hip_Module_transformed.stl</uri>
          </mesh>
         </geometry>
         <material>
-          <script>
-            <name>Gazebo/DarkGrey</name>
-            <uri>file://media/materials/scripts/gazebo.material</uri>
-          </script>
+          <ambient>0.10 0.10 0.10 1</ambient>
+          <diffuse>0.15 0.15 0.15 1</diffuse>
+          <specular>0.03 0.03 0.03 1</specular>
         </material>
       </visual>
       <gravity>1</gravity>
@@ -601,14 +569,13 @@ SOFTWARE.
         <pose frame=''>0 0.022 0 -3.142 -0 0</pose>
         <geometry>
           <mesh>
-            <uri>model:///meshes/Spirit40_Upper_leg_transformed.stl</uri>
+            <uri>model://spirit/meshes/Spirit40_Upper_leg_transformed.stl</uri>
          </mesh>
         </geometry>
         <material>
-          <script>
-            <name>Gazebo/DarkGrey</name>
-            <uri>file://media/materials/scripts/gazebo.material</uri>
-          </script>
+          <ambient>0.10 0.10 0.10 1</ambient>
+          <diffuse>0.15 0.15 0.15 1</diffuse>
+          <specular>0.03 0.03 0.03 1</specular>
         </material>
       </visual>
       <gravity>1</gravity>
@@ -671,14 +638,13 @@ SOFTWARE.
         <pose frame=''>0 0 0 0 0 0</pose>
         <geometry>
           <mesh>
-            <uri>model:///meshes/Spirit40_Lower_Leg_transformed.stl</uri>
+            <uri>model://spirit/meshes/Spirit40_Lower_Leg_transformed.stl</uri>
          </mesh>
         </geometry>
         <material>
-          <script>
-            <name>Gazebo/DarkGrey</name>
-            <uri>file://media/materials/scripts/gazebo.material</uri>
-          </script>
+          <ambient>0.10 0.10 0.10 1</ambient>
+          <diffuse>0.15 0.15 0.15 1</diffuse>
+          <specular>0.03 0.03 0.03 1</specular>
         </material>
       </visual>
       <velocity_decay/>
@@ -742,14 +708,13 @@ SOFTWARE.
         <pose frame=''>0 0 0 -3.142 -0 0</pose>
         <geometry>
           <mesh>
-            <uri>model:///meshes/Spirit40_Hip_Module_transformed.stl</uri>
+            <uri>model://spirit/meshes/Spirit40_Hip_Module_transformed.stl</uri>
          </mesh>
         </geometry>
         <material>
-          <script>
-            <name>Gazebo/DarkGrey</name>
-            <uri>file://media/materials/scripts/gazebo.material</uri>
-          </script>
+          <ambient>0.10 0.10 0.10 1</ambient>
+          <diffuse>0.15 0.15 0.15 1</diffuse>
+          <specular>0.03 0.03 0.03 1</specular>
         </material>
       </visual>
       <gravity>1</gravity>
@@ -811,14 +776,13 @@ SOFTWARE.
         <pose frame=''>0 0.022 0 -3.142 -0 0</pose>
         <geometry>
           <mesh>
-            <uri>model:///meshes/Spirit40_Upper_leg_transformed.stl</uri>
+            <uri>model://spirit/meshes/Spirit40_Upper_leg_transformed.stl</uri>
          </mesh>
         </geometry>
         <material>
-          <script>
-            <name>Gazebo/DarkGrey</name>
-            <uri>file://media/materials/scripts/gazebo.material</uri>
-          </script>
+          <ambient>0.10 0.10 0.10 1</ambient>
+          <diffuse>0.15 0.15 0.15 1</diffuse>
+          <specular>0.03 0.03 0.03 1</specular>
         </material>
       </visual>
       <gravity>1</gravity>
@@ -881,14 +845,13 @@ SOFTWARE.
         <pose frame=''>0 0 0 0 0 0</pose>
         <geometry>
           <mesh>
-            <uri>model:///meshes/Spirit40_Lower_Leg_transformed.stl</uri>
+            <uri>model://spirit/meshes/Spirit40_Lower_Leg_transformed.stl</uri>
          </mesh>
         </geometry>
         <material>
-          <script>
-            <name>Gazebo/DarkGrey</name>
-            <uri>file://media/materials/scripts/gazebo.material</uri>
-          </script>
+          <ambient>0.10 0.10 0.10 1</ambient>
+          <diffuse>0.15 0.15 0.15 1</diffuse>
+          <specular>0.03 0.03 0.03 1</specular>
         </material>
       </visual>
       <velocity_decay/>
@@ -968,16 +931,13 @@ SOFTWARE.
         </surface>
       </collision>
       <sensor name="toe0_contact" type="contact">
-        <plugin name="toe0_plugin" filename="libgazebo_ros_bumper.so">
-          <alwaysOn>true</alwaysOn>
-          <updateRate>500</updateRate>
-          <bumperTopicName>gazebo/toe0_contact_state</bumperTopicName>
-          <frameName>world</frameName>
-        </plugin>
+        <alwaysOn>true</alwaysOn>
+        <updateRate>500</updateRate>
+        <frameName>world</frameName>
+        <topic>gazebo/toe0_contact_state</topic>
         <contact>
           <collision>toe0_collision</collision>
         </contact>
-        <update_rate>500</update_rate>
       </sensor>
       <visual name='toe0_visual'>
         <pose frame=''>0 0 0 0 -0 0</pose>
@@ -987,10 +947,9 @@ SOFTWARE.
           </sphere>
         </geometry>
         <material>
-          <script>
-            <name>Gazebo/Black</name>
-            <uri>file://media/materials/scripts/gazebo.material</uri>
-          </script>
+          <ambient>0.0 0.0 0.0 1</ambient>
+          <diffuse>0.01 0.01 0.01 1</diffuse>
+          <specular>0.02 0.02 0.02 1</specular>
         </material>
       </visual>
       <gravity>1</gravity>
@@ -1052,16 +1011,14 @@ SOFTWARE.
         </surface>
       </collision>
       <sensor name="toe1_contact" type="contact">
-        <plugin name="toe1_plugin" filename="libgazebo_ros_bumper.so">
-          <alwaysOn>true</alwaysOn>
-          <updateRate>500</updateRate>
-          <bumperTopicName>gazebo/toe1_contact_state</bumperTopicName>
-          <frameName>world</frameName>
-        </plugin>
+        <alwaysOn>true</alwaysOn>
+        <updateRate>500</updateRate>
+        <topic>/gazebo/toe1_contact_state</topic>
+        <frameName>world</frameName>
         <contact>
           <collision>toe1_collision</collision>
         </contact>
-        <update_rate>500</update_rate>
+        <plugin filename="libgz-sim8-contact-system.so" name="gz::sim::systems::Contact"> </plugin>
       </sensor>
       <visual name='toe1_visual'>
         <pose frame=''>0 0 0 0 -0 0</pose>
@@ -1071,10 +1028,9 @@ SOFTWARE.
           </sphere>
         </geometry>
         <material>
-          <script>
-            <name>Gazebo/Black</name>
-            <uri>file://media/materials/scripts/gazebo.material</uri>
-          </script>
+          <ambient>0.0 0.0 0.0 1</ambient>
+          <diffuse>0.01 0.01 0.01 1</diffuse>
+          <specular>0.02 0.02 0.02 1</specular>
         </material>
       </visual>
       <gravity>1</gravity>
@@ -1136,16 +1092,13 @@ SOFTWARE.
         </surface>
       </collision>
       <sensor name="toe2_contact" type="contact">
-        <plugin name="toe2_plugin" filename="libgazebo_ros_bumper.so">
-          <alwaysOn>true</alwaysOn>
-          <updateRate>500</updateRate>
-          <bumperTopicName>gazebo/toe2_contact_state</bumperTopicName>
-          <frameName>world</frameName>
-        </plugin>
+        <alwaysOn>true</alwaysOn>
+        <updateRate>500</updateRate>
+        <topic>gazebo/toe2_contact_state</topic>
+        <frameName>world</frameName>
         <contact>
           <collision>toe2_collision</collision>
         </contact>
-        <update_rate>500</update_rate>
       </sensor>
       <visual name='toe2_visual'>
         <pose frame=''>0 0 0 0 -0 0</pose>
@@ -1155,10 +1108,9 @@ SOFTWARE.
           </sphere>
         </geometry>
         <material>
-          <script>
-            <name>Gazebo/Black</name>
-            <uri>file://media/materials/scripts/gazebo.material</uri>
-          </script>
+          <ambient>0.0 0.0 0.0 1</ambient>
+          <diffuse>0.01 0.01 0.01 1</diffuse>
+          <specular>0.02 0.02 0.02 1</specular>
         </material>
       </visual>
       <gravity>1</gravity>
@@ -1220,16 +1172,13 @@ SOFTWARE.
         </surface>
       </collision>
       <sensor name="toe3_contact" type="contact">
-        <plugin name="toe3_plugin" filename="libgazebo_ros_bumper.so">
-          <alwaysOn>true</alwaysOn>
-          <updateRate>500</updateRate>
-          <bumperTopicName>gazebo/toe3_contact_state</bumperTopicName>
-          <frameName>world</frameName>
-        </plugin>
+        <alwaysOn>true</alwaysOn>
+        <updateRate>500</updateRate>
+        <topic>gazebo/toe3_contact_state</topic>
+        <frameName>world</frameName>
         <contact>
           <collision>toe3_collision</collision>
         </contact>
-        <update_rate>500</update_rate>
       </sensor>
       <visual name='toe3_visual'>
         <pose frame=''>0 0 0 0 -0 0</pose>
@@ -1239,10 +1188,9 @@ SOFTWARE.
           </sphere>
         </geometry>
         <material>
-          <script>
-            <name>Gazebo/Black</name>
-            <uri>file://media/materials/scripts/gazebo.material</uri>
-          </script>
+          <ambient>0.0 0.0 0.0 1</ambient>
+          <diffuse>0.01 0.01 0.01 1</diffuse>
+          <specular>0.02 0.02 0.02 1</specular>
         </material>
       </visual>
       <gravity>1</gravity>
@@ -1758,19 +1706,34 @@ SOFTWARE.
     <!-- Publish imu sensor readings -->
     <include>
       <uri>model://imu</uri>
+      <name>imu</name>
       <pose>0 0 0 0 0 0 </pose>
     </include>
+
     <joint name="imu_joint" type="fixed">
       <child>imu::link</child>
       <parent>body</parent>
     </joint>
+
     <!-- Setup ros control -->
-    <plugin name='gazebo_ros_control' filename='libgazebo_ros_control.so'>
-      <controlPeriod>0.002</controlPeriod>
-    </plugin>
+      <plugin 
+          filename="libgz_ros2_control-system.so"
+          name="gz_ros2_control::GazeboSimROS2ControlPlugin">
+          <controlPeriod>0.002</controlPeriod>
+          <parameters>$(arg controller_config_path)</parameters>
+              <ros>
+                <namespace>$(arg namespace)</namespace>
+            </ros>
+      </plugin>
+
     <!-- Publish ground truth state data -->
     <plugin filename="libground_truth_estimator.so" name="ground_truth_estimator">
       <updateRateHZ>500.0</updateRateHZ>
+      <ground_truth_state_topic>state/ground_truth</ground_truth_state_topic>
+      <ground_truth_body_frame_topic>state/ground_truth_body_frame</ground_truth_body_frame_topic>
+      <ros>
+        <parameter name="use_sim_time">true</parameter>
+      </ros>
     </plugin>
   </model>
 </sdf>

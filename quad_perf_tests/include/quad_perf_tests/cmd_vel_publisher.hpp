@@ -68,14 +68,18 @@ class CmdVelPublisher{
   /// Initialize Random Structs
   std::random_device rd_;
   std::mt19937 rng_;
-  std::uniform_real_distribution<double> dist_x_;
-  std::uniform_real_distribution<double> dist_y_;
-  std::uniform_real_distribution<double> dist_yaw_;
+  std::normal_distribution<double> dist_x_;
+  std::normal_distribution<double> dist_y_;
+  std::normal_distribution<double> dist_yaw_;
 
   // Bounds on Twist Commands
   double x_min_, x_max_;
   double y_min_, y_max_;
   double yaw_min_, yaw_max_;
+
+  int seed_;
+
+  double test_duration_;
 
 };
 #endif  // CMD_VEL_PUBLIDHER

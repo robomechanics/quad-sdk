@@ -8,3 +8,4 @@ external/ipopt/*
 *.csv
 external/unitree_sdk2/
 robot_driver/include/robot_driver/models/
+matlab_msg_gen/

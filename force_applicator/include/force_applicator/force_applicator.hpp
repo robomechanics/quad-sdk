@@ -123,8 +123,12 @@ class ForceApplicator {
   double distance_threshold_;
 
   bool have_pose_ = false;
+  
+  bool single_ = false;
 
   double update_rate_;
+
+  int seed_;
 };
 
 #endif  // APPLY_FORCE_H

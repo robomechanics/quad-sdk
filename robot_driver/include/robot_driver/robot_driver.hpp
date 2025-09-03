@@ -18,6 +18,7 @@
 #include <std_msgs/msg/u_int8.h>
 #include "nav_msgs/msg/path.hpp"
 #include <tf2_geometry_msgs/tf2_geometry_msgs.hpp>
+#include "geometry_msgs/msg/twist_stamped.hpp"
 
 #include <cmath>
 #include <eigen3/Eigen/Eigen>
@@ -197,6 +198,12 @@ class RobotDriver {
   /// ROS Subscriber for twist velocity commands (for learned policies)
   rclcpp::Subscription<geometry_msgs::msg::Twist>::SharedPtr cmd_vel_sub_;
 
+  /// ROS publisher for time stamped twist velocity commands
+  rclcpp::Publisher<geometry_msgs::msg::TwistStamped>::SharedPtr cmd_vel_stamped_pub_;
+
+  /// ROS publisher for state estimate messages
+  rclcpp::Publisher<quad_msgs::msg::RobotState>::SharedPtr state_estimate_pub_;
+
   /// ROS publisher for robot heartbeat
   rclcpp::Publisher<std_msgs::msg::Header>::SharedPtr robot_heartbeat_pub_;
 
@@ -277,6 +284,8 @@ class RobotDriver {
 
   /// Most recent state estimate
   quad_msgs::msg::RobotState last_robot_state_msg_;
+
+  quad_msgs::msg::RobotState last_state_estimate_msg_;
 
   /// Most recent local plan
   quad_msgs::msg::GRFArray::SharedPtr last_grf_array_msg_;
@@ -425,6 +434,12 @@ class RobotDriver {
 
   /// Time of the most recent cmd vel data
   rclcpp::Time last_cmd_vel_msg_time_;
+
+  /// Seed Value for Random Distribution
+  double seed_;
+
+  /// Last cmd_vel_msg
+  geometry_msgs::msg::Twist last_cmd_vel_msg_;
 
   /// Required for some hardware interfaces
   int argc_;

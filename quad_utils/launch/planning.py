@@ -214,6 +214,19 @@ def launch_logging(context, *args, **kwargs):
         )
     ]
 
+def launch_tests(context, *args, **kwargs):
+    if LaunchConfiguration('twist_input').perform(context) != 'test':
+        return []
+    namespace = LaunchConfiguration('namespace').perform(context)
+    return [
+        IncludeLaunchDescription(
+            PythonLaunchDescriptionSource(PathJoinSubstitution([
+                FindPackageShare('quad_utils'), 'launch', 'testing.py'
+            ])),
+            launch_arguments={'namespace': TextSubstitution(text=namespace), 'use_sim_time': LaunchConfiguration('use_sim_time')}.items()
+        )
+    ]
+
 def generate_launch_description():
     return LaunchDescription([
         DeclareLaunchArgument('reference', default_value='twist'),
@@ -231,5 +244,6 @@ def generate_launch_description():
         OpaqueFunction(function=launch_twist_input_nodes),
         OpaqueFunction(function=launch_local_planner),
         OpaqueFunction(function=launch_body_force_estimator),
+        # OpaqueFunction(function=launch_tests)
         # OpaqueFunction(function=launch_plan_publisher),
     ])

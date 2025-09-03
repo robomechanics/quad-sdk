@@ -14,12 +14,13 @@
         dt: 0.5 # Duration of Applied Wrench (s)
         update_rate: 100.0
       random:
-        force_mag_min: 0.0  #Per Axis Force Manitude
-        force_mag_max: 10.0
+        force_mag_min: 60.0  #Per Axis Force Manitude
+        force_mag_max: 80.0
         torque_mag_min: 0.0 
         torque_mag_max: 0.0 
       periodic:
-        period: 2.0
+        period: 5.0
       distance:
         distance_threshold: 1.0
+      seed: 10
 

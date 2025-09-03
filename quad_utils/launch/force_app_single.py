@@ -39,6 +39,7 @@ def launch_force_applicator(context, *args, **kwargs):
                 package="force_applicator",
                 executable="force_applicator_node",
                 name="force_applicator",
+                namespace=LaunchConfiguration('namespace'),
                 output="screen",
                 parameters=[force_applicator_param_file,
                             force_applicator_topics_file, 
@@ -56,15 +57,15 @@ def launch_force_applicator(context, *args, **kwargs):
 def generate_launch_description():
     return LaunchDescription([
         DeclareLaunchArgument("world", default_value="flat.sdf", description = "SDF world file to load into simulation"),
-        DeclareLaunchArgument('robot_type', default_value = 'spirit', description='Robot type'),
+        DeclareLaunchArgument('robot_type', default_value = 'go2', description='Robot type'),
         DeclareLaunchArgument('namespace', default_value = 'robot_1', description='Robot namespace'),
-        DeclareLaunchArgument("mode", default_value = "single", 
+        DeclareLaunchArgument("mode", default_value = 'periodic', 
             description = "Method for applying forces: 'single' to apply once, periodic' to apply at set time intervals, or 'distance' to apply based on distance traveled." ),
         DeclareLaunchArgument("force_mode", default_value = "random", 
             description = "Source for force magnitudes: 'yaml' to load predefined wrenches from a YAML file, or 'random' to sample from a distribution."),
         DeclareLaunchArgument("link", default_value = "robot_1::body",
             description = "Name of the robot link on which to apply the force."),
         DeclareLaunchArgument("use_sim_time", default_value = "True"),
-        OpaqueFunction(function=launch_force_harmonic_bridge),
-        # OpaqueFunction(function=launch_force_applicator),
+        # OpaqueFunction(function=launch_force_harmonic_bridge),
+        OpaqueFunction(function=launch_force_applicator),
     ])

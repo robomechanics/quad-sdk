@@ -14,13 +14,13 @@ figuresDir = fullfile(logDir,'figures/');
 if ~exist(figuresDir, 'dir')
     mkdir(figuresDir);
 end
-videosDir = fullfile(logDir,'videos/');
-if ~exist(videosDir, 'dir')
-    mkdir(videosDir);
-end
+% videosDir = fullfile(logDir,'videos/');
+% if ~exist(videosDir, 'dir')
+%     mkdir(videosDir);
+% end
 
 % Copy the bag
-copyfile(['../bags/', trialName, '.mcap'],logDir)
+% copyfile(['../bags/', trialName, '.mcap'],logDir)
 
 % Save the figures
 for i = 1:length(figArray)
