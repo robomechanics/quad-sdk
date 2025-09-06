@@ -1,2 +1,0 @@
-Invoking command in '/home/ws/build/b2_description': /usr/bin/cmake /home/ws/quad_simulator/b2_description -DCMAKE_INSTALL_PREFIX=/home/ws/install/b2_description
-Invoked command in '/home/ws/build/b2_description' returned '1': /usr/bin/cmake /home/ws/quad_simulator/b2_description -DCMAKE_INSTALL_PREFIX=/home/ws/install/b2_description

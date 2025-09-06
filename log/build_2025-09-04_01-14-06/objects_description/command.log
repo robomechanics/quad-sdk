@@ -1,2 +1,0 @@
-Invoking command in '/home/ws/build/objects_description': /usr/bin/cmake /home/ws/quad_simulator/other/objects_description -DCMAKE_INSTALL_PREFIX=/home/ws/install/objects_description
-Invoked command in '/home/ws/build/objects_description' returned '1': /usr/bin/cmake /home/ws/quad_simulator/other/objects_description -DCMAKE_INSTALL_PREFIX=/home/ws/install/objects_description
