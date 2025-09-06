@@ -1,2 +1,0 @@
-Invoking command in '/home/ws/build/mocap_optitrack': /usr/bin/cmake /home/ws/external/mocap_optitrack -DCMAKE_INSTALL_PREFIX=/home/ws/install/mocap_optitrack
-Invoked command in '/home/ws/build/mocap_optitrack' returned '1': /usr/bin/cmake /home/ws/external/mocap_optitrack -DCMAKE_INSTALL_PREFIX=/home/ws/install/mocap_optitrack

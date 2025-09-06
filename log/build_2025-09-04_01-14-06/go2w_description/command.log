@@ -1,2 +1,0 @@
-Invoking command in '/home/ws/build/go2w_description': /usr/bin/cmake /home/ws/quad_simulator/go2w_description -DCMAKE_INSTALL_PREFIX=/home/ws/install/go2w_description
-Invoked command in '/home/ws/build/go2w_description' returned '1': /usr/bin/cmake /home/ws/quad_simulator/go2w_description -DCMAKE_INSTALL_PREFIX=/home/ws/install/go2w_description

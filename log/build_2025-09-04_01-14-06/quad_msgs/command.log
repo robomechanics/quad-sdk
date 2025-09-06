@@ -1,2 +1,0 @@
-Invoking command in '/home/ws/build/quad_msgs': /usr/bin/cmake /home/ws/quad_msgs -DCMAKE_INSTALL_PREFIX=/home/ws/install/quad_msgs
-Invoked command in '/home/ws/build/quad_msgs' returned '1': /usr/bin/cmake /home/ws/quad_msgs -DCMAKE_INSTALL_PREFIX=/home/ws/install/quad_msgs
