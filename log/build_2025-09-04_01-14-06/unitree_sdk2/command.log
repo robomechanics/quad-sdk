@@ -1,0 +1,1 @@
+Invoking command in '/home/ws/build/unitree_sdk2': /usr/bin/cmake /home/ws/external/unitree_sdk2 -DCMAKE_INSTALL_PREFIX=/home/ws/install/unitree_sdk2

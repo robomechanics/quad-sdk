@@ -1,0 +1,1 @@
+Invoking command in '/home/ws/build/underbrush_description': /usr/bin/cmake /home/ws/quad_simulator/underbrush_description -DCMAKE_INSTALL_PREFIX=/home/ws/install/underbrush_description

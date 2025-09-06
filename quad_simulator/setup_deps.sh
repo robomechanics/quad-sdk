@@ -44,19 +44,5 @@ sudo apt install -y \
     ros-jazzy-robot-state-publisher \
     ros-jazzy-imu-tools \
     ros-jazzy-ros-gz \
-    ros-jazzy-ros-gz-sim
-   #  ros-jazzy-ros-gz \
-
-#Notes:
-#ros-jazzy-gazebo-ros-pkgs Integration with Gazebo Classic
-#ros-jazzy-ros-gz Integration with Ignition Gazebo
-
-# sudo apt install -y ros-melodic-controller-manager
-# sudo apt install -y ros-melodic-joint-state-controller
-# sudo apt install -y ros-melodic-gazebo-ros-pkgs
-# sudo apt install -y ros-melodic-ros-control
-# sudo apt install -y ros-melodic-gazebo-ros-control
-# sudo apt install -y ros-melodic-effort-controllers
-# sudo apt install -y ros-melodic-robot-state-publisher
-# sudo apt install -y ros-melodic-imu-tools
-# sudo apt install -y ros-melodic-message-to-tf
+    ros-jazzy-ros-gz-sim \
+    ros-jazzy-gz-ros2-control

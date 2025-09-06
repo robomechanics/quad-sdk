@@ -1,0 +1,5 @@
+gmake[2]: *** [CMakeFiles/rbdl.dir/build.make:174: CMakeFiles/rbdl.dir/src/Dynamics.cc.o] Interrupt
+gmake[2]: *** [CMakeFiles/rbdl.dir/build.make:230: CMakeFiles/rbdl.dir/src/Kinematics.cc.o] Interrupt
+gmake[2]: *** [CMakeFiles/rbdl.dir/build.make:132: CMakeFiles/rbdl.dir/src/Constraints.cc.o] Interrupt
+gmake[1]: *** [CMakeFiles/Makefile2:83: CMakeFiles/rbdl.dir/all] Interrupt
+gmake: *** [Makefile:156: all] Interrupt

@@ -1,0 +1,27 @@
+[0.091s] Invoking command in '/home/ws/build/unitree_sdk2': /usr/bin/cmake /home/ws/external/unitree_sdk2 -DCMAKE_INSTALL_PREFIX=/home/ws/install/unitree_sdk2
+[0.116s] -- The C compiler identification is GNU 13.3.0
+[0.142s] -- The CXX compiler identification is GNU 13.3.0
+[0.148s] -- Detecting C compiler ABI info
+[0.185s] -- Detecting C compiler ABI info - done
+[0.190s] -- Check for working C compiler: /usr/bin/cc - skipped
+[0.190s] -- Detecting C compile features
+[0.190s] -- Detecting C compile features - done
+[0.193s] -- Detecting CXX compiler ABI info
+[0.239s] -- Detecting CXX compiler ABI info - done
+[0.243s] -- Check for working CXX compiler: /usr/bin/c++ - skipped
+[0.243s] -- Detecting CXX compile features
+[0.243s] -- Detecting CXX compile features - done
+[0.244s] -- Setting build type to 'Release' as none was specified.
+[0.245s] -- Current system architecture: x86_64
+[0.245s] -- Performing Test CMAKE_HAVE_LIBC_PTHREAD
+[0.284s] -- Performing Test CMAKE_HAVE_LIBC_PTHREAD - Success
+[0.284s] -- Found Threads: TRUE  
+[0.285s] -- Importing: /home/ws/external/unitree_sdk2/thirdparty/lib/x86_64/libddsc.so
+[0.285s] -- Importing: /home/ws/external/unitree_sdk2/thirdparty/lib/x86_64/libddscxx.so
+[0.285s] -- Unitree SDK library found at: /home/ws/external/unitree_sdk2/lib/x86_64/libunitree_sdk2.a
+[0.285s] -- Importing: /home/ws/external/unitree_sdk2/lib/x86_64/libunitree_sdk2.a
+[0.290s] -- Found Boost: /usr/lib/x86_64-linux-gnu/cmake/Boost-1.83.0/BoostConfig.cmake (found version "1.83.0") found components: program_options 
+[0.291s] -- Found yaml-cpp version 0.8.0
+[0.293s] -- Configuring done (0.2s)
+[0.312s] -- Generating done (0.0s)
+[0.316s] -- Build files have been written to: /home/ws/build/unitree_sdk2

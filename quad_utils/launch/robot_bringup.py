@@ -28,10 +28,10 @@ def load_robot_params(context, *args, **kwargs):
         config_file = 'a1.yaml'
     elif robot_type == 'go2':
         desc_pkg = 'go2_description'
-        urdf_file = 'go2_learned.urdf.xacro'
-        sdf_file = 'go2_learned.sdf.xacro'
-        # urdf_file = 'go2.urdf.xacro'
-        # sdf_file = 'go2.sdf.xacro'
+        # urdf_file = 'go2_learned.urdf.xacro'
+        # sdf_file = 'go2_learned.sdf.xacro'
+        urdf_file = 'go2.urdf.xacro'
+        sdf_file = 'go2.sdf.xacro'
         config_file = 'go2.yaml'
     elif robot_type == 'go2w':
         desc_pkg = 'go2w_description'
@@ -101,11 +101,13 @@ def spawn_sdf_model(context, *args, **kwargs):
             '-x', init_pose.split()[1],
             '-y', init_pose.split()[3],
             '-z', init_pose.split()[5],
-            '-allow_renaming', 'true'
+            '-allow_renaming', 'true',
+            '--ros-args', '--log-level', 'debug'
         ],
         additional_env={  
             'GZ_SIM_RESOURCE_PATH': (EnvironmentVariable('GZ_SIM_RESOURCE_PATH')),
-            'GZ_SIM_SYSTEM_PLUGIN_PATH': (EnvironmentVariable('GZ_SIM_SYSTEM_PLUGIN_PATH'))}
+            'GZ_SIM_SYSTEM_PLUGIN_PATH': (EnvironmentVariable('GZ_SIM_SYSTEM_PLUGIN_PATH')),
+            'GZ_SIM_VERBOSE': '1'}
             
     )
     return [spawn_node] 
@@ -383,10 +385,8 @@ def generate_launch_description():
         OpaqueFunction(function=load_robot_params),
         OpaqueFunction(function=launch_robot_urdf_node),
         OpaqueFunction(function=spawn_sdf_model),
-        # OpaqueFunction(function=spawn_sdf_model_with_driver), 
         OpaqueFunction(function=harmonic_ros_bridge),
         OpaqueFunction(function=access_terrain_map),
-        # OpaqueFunction(function=launch_controller_manager),
         OpaqueFunction(function=spawn_controller_broadcasters),
         OpaqueFunction(function=launch_robot_driver),
         OpaqueFunction(function=launch_contact_state_publisher),
