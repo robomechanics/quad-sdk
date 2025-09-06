@@ -1,42 +1,52 @@
 {
-    "name": "ROS 2 Development Container",
-    "privileged": true,
-    "remoteUser": "USERNAME",
-    "build": {
-        "dockerfile": "Dockerfile",
-        "args": {
-            "USERNAME": "USERNAME"
-        }
-    },
-    "workspaceFolder": "/home/ws",
-    "workspaceMount": "source=${localWorkspaceFolder},target=/home/ws/src,type=bind",
-    "customizations": {
-        "vscode": {
-            "extensions":[
-                "ms-vscode.cpptools",
-                "ms-vscode.cpptools-themes",
-                "twxs.cmake",
-                "donjayamanne.python-extension-pack",
-                "eamodio.gitlens",
-                "ms-iot.vscode-ros"
-            ]
-        }
-    },
-    "containerEnv": {
-        "DISPLAY": "unix:0",
-        "ROS_LOCALHOST_ONLY": "1",
-        "ROS_DOMAIN_ID": "42"
-    },
-    "runArgs": [
-        "--net=host",
-        "-e", "DISPLAY=${env:DISPLAY}"
-    ],
-    "mounts": [
-       "source=/tmp/.X11-unix,target=/tmp/.X11-unix,type=bind,consistency=cached",
-        "source=/dev/dri,target=/dev/dri,type=bind,consistency=cached",
-        "source=${localWorkspaceFolder}/../cache/ROS_DISTRO/build,target=/home/ws/build,type=bind",
-        "source=${localWorkspaceFolder}/../cache/ROS_DISTRO/install,target=/home/ws/install,type=bind",
-        "source=${localWorkspaceFolder}/../cache/ROS_DISTRO/log,target=/home/ws/log,type=bind"
-    ],
-    "postCreateCommand": "sudo rosdep update && sudo rosdep install --from-paths src --ignore-src -y && sudo chown -R USERNAME /home/ws/"
+  "name": "ROS 2 Development Container",
+  "privileged": true,
+  "remoteUser": "root",
+
+  "build": {
+    "dockerfile": "Dockerfile",
+    "args": { "USERNAME": "rml" }
+  },
+
+  "workspaceFolder": "/root/ros2_ws/src/",
+  "workspaceMount": "source=${localWorkspaceFolder}/..,target=/root/ros2_ws/src/,type=bind",
+
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-vscode.cpptools",
+        "ms-vscode.cpptools-themes",
+        "ms-vscode.cmake-tools",
+        "twxs.cmake",
+        "donjayamanne.python-extension-pack",
+        "eamodio.gitlens",
+        "ms-iot.vscode-ros"
+      ]
+    }
+  },
+
+  "containerEnv": {
+    "DISPLAY": "${localEnv:DISPLAY}",
+    "ROS_AUTOMATIC_DISCOVERY_RANGE": "LOCALHOST",
+    "ROS_DOMAIN_ID": "42",
+    "__GLX_VENDOR_LIBRARY_NAME": "nvidia"
+  },
+
+  "runArgs": [
+    "--gpus", "all",
+    "-e", "NVIDIA_VISIBLE_DEVICES=all",
+    "-e", "NVIDIA_DRIVER_CAPABILITIES=all",
+    "--net=host",
+    "--ipc=host",
+    "--shm-size=4g",
+    "-v", "/tmp/.X11-unix:/tmp/.X11-unix:ro",
+    "-v", "/dev/dri:/dev/dri",
+    "-e", "XDG_RUNTIME_DIR=/run/user/${localUserId}",
+    "-e", "WAYLAND_DISPLAY=${localEnv:WAYLAND_DISPLAY}",
+    "-v", "/run/user/${localUserId}:/run/user/${localUserId}",
+    "--entrypoint", "/bin/bash"             // <-- override your image ENTRYPOINT for VS Code bootstrap
+  ],
+
+  "overrideCommand": true,                  // let VS Code control the startup command
+  "postStartCommand": "bash -lc 'source /opt/ros/jazzy/setup.bash && echo \"source /opt/ros/jazzy/setup.bash\" >> ~/.bashrc'"
 }

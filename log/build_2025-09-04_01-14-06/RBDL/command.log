@@ -1,0 +1,3 @@
+Invoking command in '/home/ws/build/RBDL': /usr/bin/cmake /home/ws/external/rbdl-orb -DCMAKE_INSTALL_PREFIX=/home/ws/install/RBDL
+Invoked command in '/home/ws/build/RBDL' returned '0': /usr/bin/cmake /home/ws/external/rbdl-orb -DCMAKE_INSTALL_PREFIX=/home/ws/install/RBDL
+Invoking command in '/home/ws/build/RBDL': /usr/bin/cmake --build /home/ws/build/RBDL -- -j32 -l32

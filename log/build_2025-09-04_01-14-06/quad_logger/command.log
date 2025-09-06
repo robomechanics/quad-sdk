@@ -1,0 +1,2 @@
+Invoking command in '/home/ws/build/quad_logger': /usr/bin/cmake /home/ws/quad_logger -DCMAKE_INSTALL_PREFIX=/home/ws/install/quad_logger
+Invoked command in '/home/ws/build/quad_logger' returned '1': /usr/bin/cmake /home/ws/quad_logger -DCMAKE_INSTALL_PREFIX=/home/ws/install/quad_logger

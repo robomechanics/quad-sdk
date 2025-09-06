@@ -1397,15 +1397,15 @@
     </joint>
 
     <!-- Setup ros control -->
-      <plugin 
-          filename="libgz_ros2_control-system.so"
-          name="gz_ros2_control::GazeboSimROS2ControlPlugin">
-          <controlPeriod>0.002</controlPeriod>
-          <parameters>$(arg controller_config_path)</parameters>
-              <ros>
-                <namespace>$(arg namespace)</namespace>
-            </ros>
-      </plugin>
+    <plugin 
+        filename="libgz_ros2_control-system.so"
+        name="gz_ros2_control::GazeboSimROS2ControlPlugin">
+        <controlPeriod>0.002</controlPeriod>
+        <parameters>$(arg controller_config_path)</parameters>
+            <ros>
+              <namespace>$(arg namespace)</namespace>
+          </ros>
+    </plugin>
 
     <!-- Publish ground truth state data -->
     <plugin filename="libground_truth_estimator.so" name="ground_truth_estimator">
