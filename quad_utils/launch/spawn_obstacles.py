@@ -45,7 +45,7 @@ def parse_obstacles(context):
     if scenario_config == 'splitbelt':
         print("Handling Splitbelt Scenario")
         nodes.extend([
-            spawn_obstacle('splitbelt',  "-x 0.0 -y 0.0 -z 0.0", compliant_cord_sdf),
+            spawn_obstacle('splitbelt',  "-x 0.0 -y 0.0 -z 0.0", splitbelt_sdf),
         ])
     # Add Obstacle Configurations to Launch Order
     try:
