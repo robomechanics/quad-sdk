@@ -6,6 +6,5 @@ docs/
 external/ipopt/*
 !external/ipopt/.gitkeep
 *.csv
-external/unitree_sdk2/
 robot_driver/include/robot_driver/models/
 matlab_msg_gen/
