@@ -1,0 +1,17 @@
+# Logitech Extreme 3D Pro
+teleop_twist_joy_node:
+  ros__parameters:
+    axis_linear:  # Forward/Back
+      x: 1
+    scale_linear:
+      x: 0.7
+    scale_linear_turbo:
+      x: 1.5
+
+    axis_angular:  # Twist
+      yaw: 2
+    scale_angular:
+      yaw: 0.4
+
+    enable_button: 0  # Trigger
+    enable_turbo_button: 1  # Button 2 aka thumb button
