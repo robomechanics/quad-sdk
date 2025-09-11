@@ -12,4 +12,4 @@
         yaw_min: -1.0
         yaw_max:  1.0
       test_duration: 10.0
-      seed: 7
+      seed: 1

@@ -18,7 +18,7 @@ def launch_force_harmonic_bridge(context, *args, **kwargs):
         package='ros_gz_bridge',
         executable='parameter_bridge',
         name='wrench_bridge',
-        output='screen',
+        # output='screen',
         arguments=[
             f"{gz_wrench_persistent}@ros_gz_interfaces/msg/EntityWrench@gz.msgs.EntityWrench",
             f"{gz_wrench_clear}@ros_gz_interfaces/msg/Entity@gz.msgs.Entity",
@@ -39,7 +39,7 @@ def launch_force_applicator(context, *args, **kwargs):
                 package="force_applicator",
                 executable="force_applicator_node",
                 name="force_applicator",
-                output="screen",
+                # output="screen",
                 parameters=[force_applicator_param_file,
                             force_applicator_topics_file, 
                     {'use_sim_time' : LaunchConfiguration('use_sim_time'),

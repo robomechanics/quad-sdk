@@ -27,7 +27,7 @@ namespace mesh_to_grid_map {
 constexpr double kDefaultGridMapResolution = 0.2;
 static const std::string kDefaultLayerName = "elevation";
 constexpr bool kDefaultLatchGridMapPub = true;
-constexpr bool kDefaultVerbose = false;
+constexpr bool kDefaultVerbose = true;
 static const std::string kDefaultFrameIdMeshLoaded = "map";
 static const std::string kDefaultWorldName = "flat";
 

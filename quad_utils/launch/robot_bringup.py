@@ -81,7 +81,7 @@ def launch_robot_urdf_node(context, *args, **kwargs):
         executable='robot_state_publisher',
         name='robot_state_publisher',
         parameters=[{'robot_description': urdf}],
-        output='screen'
+        # output='screen'
     )
     return [set_qos_env, robot_state_urdf_node]
 
@@ -94,7 +94,7 @@ def spawn_sdf_model(context, *args, **kwargs):
     spawn_node = Node(
         package='ros_gz_sim',
         executable='create',
-        output='screen',
+        # output='screen',
         arguments=[
             '-name', namespace,
             '-string', sdf,
@@ -102,7 +102,7 @@ def spawn_sdf_model(context, *args, **kwargs):
             '-y', init_pose.split()[3],
             '-z', init_pose.split()[5],
             '-allow_renaming', 'true',
-            '--ros-args', '--log-level', 'debug'
+            # '--ros-args', '--log-level', 'debug'
         ],
         additional_env={  
             'GZ_SIM_RESOURCE_PATH': (EnvironmentVariable('GZ_SIM_RESOURCE_PATH')),
@@ -121,7 +121,7 @@ def spawn_controller_broadcasters(context, *args, **kwargs):
             'joint_state_broadcaster',
             '--controller-manager', f'/{namespace}/controller_manager',
         ],
-        output='screen'
+        # output='screen'
     ) 
 
     spawn_joint_controller = ExecuteProcess(
@@ -130,7 +130,7 @@ def spawn_controller_broadcasters(context, *args, **kwargs):
             'joint_controller',
             '--controller-manager', f'/{namespace}/controller_manager'
         ],
-        output='screen'
+        # output='screen'
     )
 
     # Optional delay to give controller_manager time to start
@@ -236,7 +236,7 @@ def access_terrain_map(context, *args, **kwargs):
             executable='relay',
             name='terrain_map_relay',
             arguments=['/mapping/terrain_map', 'terrain_map'],  # relative → becomes /robot_X/terrain_map
-            output='screen',
+            # output='screen',
             parameters=[{'use_sim_time': True}],
         )
     ]
@@ -338,7 +338,7 @@ def launch_contact_state_publisher(context, *args, **kwargs):
             executable='contact_state_publisher_node',
             # name='contact_state_publisher_node',
             # namespace=namespace,
-            output='screen',
+            # output='screen',
             parameters=[config_file,
                         {'namespace': namespace, 
                          'world': world_name, 

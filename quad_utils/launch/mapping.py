@@ -80,10 +80,10 @@ def generate_launch_description():
 
     # Launch the grid map filters demo node
     grid_map_filter_node = Node(
-        package='grid_map_demos',
-        executable='filters_demo',
+        package='quad_utils',
+        executable='grid_map_filters_demo',
         name='grid_map_filters',
-        output='screen',
+        # output='screen',
         parameters=[
             PathJoinSubstitution([
                 FindPackageShare('quad_utils'),

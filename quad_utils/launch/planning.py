@@ -82,7 +82,7 @@ def launch_global_planner(context, *args, **kwargs):
             package='global_body_planner',
             executable='global_body_planner_node',
             name='global_body_planner',
-            output='screen',
+            # output='screen',
             remappings=[
                 ('start_state', 'state/ground_truth'),
                 ('goal_state', 'clicked_point')
@@ -110,7 +110,7 @@ def launch_twist_input_nodes(context, *args, **kwargs):
                 package='teleop_twist_keyboard',
                 executable='teleop_twist_keyboard',
                 name='teleop_twist_keyboard',
-                output='screen',
+                # output='screen',
                 prefix='xterm -hold -e',
                 parameters=[{'use_sim_time': True}]
                 
@@ -152,7 +152,7 @@ def launch_local_planner(context, *args, **kwargs):
             package='local_planner',
             executable='local_planner_node',
             name='local_planner',
-            output='screen',
+            # output='screen',
             parameters=[local_planner_param_file,
                 nmpc_controller_param_file, 
                 local_planner_topics_file,
@@ -178,7 +178,7 @@ def launch_body_force_estimator(context, *args, **kwargs):
             package='body_force_estimator',
             executable='body_force_estimator_node',
             name='body_force_estimator',
-            output='screen',
+            # output='screen',
             parameters=[body_force_estimator_param_file, 
                     body_force_estimator_topics_file,
             {

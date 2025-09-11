@@ -80,7 +80,7 @@ colors = lines(2); % two distinct colors
 labels = {sprintf('MPC (%d runs)', n1), ...
           sprintf('Learned (%d runs)', n2)};
 
-subplot(3,1,1); hold on; grid on; box on;
+subplot(3,1,1); hold on;
 fill([t1; flipud(t1)], [mux1-sigx1; flipud(mux1+sigx1)], colors(1,:), ...
      'FaceAlpha',0.2,'EdgeColor','none');
 h1 = plot(t1, mux1, 'Color', colors(1,:), 'LineWidth',1.5);
@@ -91,7 +91,7 @@ ylabel('$V_{x,\mathrm{err}}$ \, (m/s)', 'Interpreter','latex');
 title('Average Velocity Tracking Errors', 'Interpreter','latex');
 legend([h1, h2], labels, 'Interpreter','none','Location','best');
 
-subplot(3,1,2); hold on; grid on; box on;
+subplot(3,1,2); hold on; 
 fill([t1; flipud(t1)], [muy1-sigy1; flipud(muy1+sigy1)], colors(1,:), ...
      'FaceAlpha',0.2,'EdgeColor','none');
 plot(t1, muy1, 'Color', colors(1,:), 'LineWidth',1.5);
@@ -100,7 +100,7 @@ fill([t2; flipud(t2)], [muy2-sigy2; flipud(muy2+sigy2)], colors(2,:), ...
 plot(t2, muy2, 'Color', colors(2,:), 'LineWidth',1.5);
 ylabel('$V_{y,\mathrm{err}}$ \,(m/s)', 'Interpreter','latex');
 
-subplot(3,1,3); hold on; grid on; box on;
+subplot(3,1,3); hold on;
 fill([t1; flipud(t1)], [muw1-sigw1; flipud(muw1+sigw1)], colors(1,:), ...
      'FaceAlpha',0.2,'EdgeColor','none');
 plot(t1, muw1, 'Color', colors(1,:), 'LineWidth',1.5);
@@ -115,7 +115,7 @@ colors = lines(2); % two distinct colors
 labels = {sprintf('MPC (%d runs)', n1), ...
           sprintf('Learned (%d runs)', n2)};
 
-hold on; grid on; box on;
+hold on;
 fill([t1; flipud(t1)], [mtau1-sigtau1; flipud(mtau1+sigtau1)], colors(1,:), ...
      'FaceAlpha',0.2,'EdgeColor','none');
 h1 = plot(t1, mtau1, 'Color', colors(1,:), 'LineWidth',1.5);

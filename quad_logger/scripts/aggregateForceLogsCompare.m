@@ -72,7 +72,7 @@ colors = lines(2); % two distinct colors
 labels = {sprintf('MPC (%d runs)', n1), ...
           sprintf('Learned (%d runs)', n2)};
 
-hold on; grid on; box on;
+hold on;
 fill([t1; flipud(t1)], [mtau1-sigtau1; flipud(mtau1+sigtau1)], colors(1,:), ...
      'FaceAlpha',0.2,'EdgeColor','none');
 h1 = plot(t1, mtau1, 'Color', colors(1,:), 'LineWidth',1.5);
@@ -92,7 +92,7 @@ legend([h1, h2], labels, 'Interpreter','none','Location','best');
 stance_pose = [0.0 0.0];  % x, y only
 
 figure('Name','Farthest XY Positions vs Stance','Color','w'); 
-hold on; grid on; box on;
+hold on;
 
 colors = lines(2); % reuse for consistency
 

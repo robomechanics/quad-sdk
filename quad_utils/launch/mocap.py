@@ -15,7 +15,7 @@ def generate_launch_description():
             package='mocap_optitrack',
             executable='mocap_node',
             name='mocap_node',
-            output='screen',
+            # output='screen',
             parameters=[config_path],
             # 'respawn' and 'required' are no longer standard args in ROS 2 launch
             # Use lifecycle or launch supervision for respawn-like behavior if needed
