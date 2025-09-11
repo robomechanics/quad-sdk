@@ -122,7 +122,7 @@ void ForceApplicator::updateMarker(){
     last_robot_marker_msg_.color.g = 0.0;
     last_robot_marker_msg_.color.b = 0.0;
     last_robot_marker_msg_.color.a = 1.0;
-    last_robot_marker_msg_.lifetime = rclcpp::Duration::from_seconds(0.75);
+    last_robot_marker_msg_.lifetime = rclcpp::Duration::from_seconds(2);
 
 
     // Modify this to compute the Orientation of the Force Applied

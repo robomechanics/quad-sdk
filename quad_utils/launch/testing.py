@@ -25,7 +25,7 @@ def generate_launch_description():
             executable='cmd_vel_publisher_node',
             name='cmd_vel_publisher',
             namespace=robot_ns,
-            output='screen',
+            # output='screen',
             parameters=[
                 cmd_vel_param_file,
                 cmd_vel_topics_file,

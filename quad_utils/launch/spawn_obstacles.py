@@ -29,7 +29,7 @@ def spawn_obstacle(name: str, init_pose: str, sdf, context):
         package='ros_gz_sim',
         executable='create',
         name=f'spawn_{name}',
-        output='screen',
+        # output='screen',
         arguments=create_args,
     )
 

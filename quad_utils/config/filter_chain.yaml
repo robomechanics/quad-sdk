@@ -3,6 +3,19 @@ mapping:
     ros__parameters:
       input_topic: /mapping/terrain_map_raw
       output_topic: /mapping/terrain_map
+      qos_overrides:
+        /mapping/terrain_map_raw:
+          subscription:
+            reliability: reliable
+            durability: transient_local
+            history: keep_last
+            depth: 1
+        /mapping/terrain_map:
+          publisher:
+            reliability: reliable
+            durability: transient_local
+            history: keep_last
+            depth: 1
 
       filters:
         filter1:

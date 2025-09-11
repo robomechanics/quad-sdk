@@ -89,7 +89,7 @@ def generate_launch_description():
         {'tf_prefix': namespace,
          'use_sim_time' : LaunchConfiguration('use_sim_time')}
     ],
-        output='screen'
+        # output='screen'
     )
 
     return LaunchDescription(declared_arguments + [

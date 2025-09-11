@@ -32,7 +32,7 @@ def generate_launch_description():
                         'plotjuggler_config.xml'
                     ])
                 ],
-                output='screen'
+                # output='screen'
             )
         ]
     )
@@ -53,7 +53,7 @@ def generate_launch_description():
                             'dashboard.perspective'
                         ])
                     ],
-                    output='screen'
+                    # output='screen'
                 )
             ]
         )
@@ -69,7 +69,7 @@ def generate_launch_description():
         package='rviz2',
         executable='rviz2',
         name='rviz2',
-        output='screen',
+        # output='screen',
         arguments=['-d', rviz_config_file]
     )
 

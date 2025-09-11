@@ -22,5 +22,5 @@
         period: 5.0
       distance:
         distance_threshold: 1.0
-      seed: 10
+      seed: 1
 

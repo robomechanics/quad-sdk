@@ -28,6 +28,10 @@ find_package(tf2 REQUIRED)
 find_package(tf2_geometry_msgs REQUIRED)
 find_package(Python3 REQUIRED)
 
+find_package(pluginlib REQUIRED)
+find_package(filters REQUIRED)
+find_package(tf2_ros REQUIRED)
+
 # We need to add the project source path to the CMake module path so that
 # the FindRBDL.cmake script can be found.
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
@@ -74,6 +78,10 @@ add_executable(rviz_interface_node
 #   src/trajectory_publisher_node.cpp
 #   src/trajectory_publisher.cpp
 #   )
+add_executable(grid_map_filters_demo
+  src/filters_demo.cpp
+  src/filters_demo_node.cpp
+)
 
 target_include_directories(rviz_interface_node PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
@@ -84,6 +92,12 @@ target_include_directories(rviz_interface_node PUBLIC
 #   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
 #   $<INSTALL_INTERFACE:include>
 # )
+
+target_include_directories(grid_map_filters_demo PUBLIC
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+  $<INSTALL_INTERFACE:include>
+)
+
   
 target_link_libraries(mesh_to_grid_map_node
   quad_utils
@@ -145,6 +159,20 @@ ament_target_dependencies(rviz_interface_node
 #   tf2_geometry_msgs
 #   visualization_msgs
 # )
+ament_target_dependencies(grid_map_filters_demo
+  rclcpp
+  grid_map_core
+  grid_map_ros
+  grid_map_msgs
+  pluginlib
+  filters
+)
+
+install(TARGETS
+  grid_map_filters_demo
+  DESTINATION lib/${PROJECT_NAME}
+)
+
 
 # Install Libraries and Executables
 install(TARGETS quad_utils
@@ -197,7 +225,7 @@ ament_export_libraries(quad_utils ${RBDL_LIBRARY} ${RBDL_URDFREADER_LIBRARY})
 ament_export_dependencies(
   rclcpp std_msgs nav_msgs nav2_msgs sensor_msgs geometry_msgs visualization_msgs
   grid_map_core grid_map_ros grid_map_pcl grid_map_msgs quad_msgs
-  pcl_msgs pcl_conversions Eigen3 tf2 tf2_geometry_msgs cv_bridge
+  pcl_msgs pcl_conversions Eigen3 tf2 tf2_geometry_msgs cv_bridge pluginlib filters
 )
 
 
