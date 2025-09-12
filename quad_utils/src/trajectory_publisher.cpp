@@ -8,8 +8,8 @@ TrajectoryPublisher::TrajectoryPublisher(rclcpp::Node::SharedPtr node) : node_(n
   // Add Robot_ns, and robot_description
   quad_utils::loadROSParam(node_, "namespace", robot_ns_);
   quad_utils::loadROSParam(node_, "robot_description", robot_description_);
-  quad_utils::loadROSParamDefault(node_, "topics.global_plan", body_plan_topic, std::string("body_plan"));
-  quad_utils::loadROSParamDefault(node_, "topics.state.trajectory", trajectory_state_topic, std::string("/state/trajectory"));
+  quad_utils::loadROSParamDefault(node_, "topics.global_plan", body_plan_topic, std::string("global_plan"));
+  quad_utils::loadROSParamDefault(node_, "topics.state.trajectory", trajectory_state_topic, std::string("state.trajectory"));
 
   quad_utils::loadROSParamDefault(node_, "map_frame", map_frame_, std::string("map"));
   quad_utils::loadROSParamDefault(node_, "trajectory_publisher.traj_source", traj_source_, std::string("topic"));
