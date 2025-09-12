@@ -183,7 +183,7 @@ void interpRobotState(quad_msgs::msg::RobotState state_1,
   interpMultiFootState(state_1.feet, state_2.feet, t_interp, interp_state.feet);
 }
 
-void interpRobotPlan(quad_msgs::msg::RobotPlan &msg, double t,
+void interpRobotPlan(quad_msgs::msg::RobotPlan msg, double t,
                      quad_msgs::msg::RobotState &interp_state,
                      int &interp_primitive_id,
                      quad_msgs::msg::GRFArray &interp_grf) {

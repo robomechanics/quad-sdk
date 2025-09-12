@@ -3,15 +3,16 @@ Panels:
     Help Height: 0
     Name: Displays
     Property Tree Widget:
-      Expanded: ~
+      Expanded:
+        - /Robot 1 Local Plan1/Topic1
+        - /Robot 1 Discrete Foot Plan1/Topic1
       Splitter Ratio: 0.5008665323257446
-    Tree Height: 799
+    Tree Height: 783
   - Class: rviz_common/Selection
     Name: Selection
   - Class: rviz_common/Tool Properties
     Expanded:
       - /2D Pose Estimate1
-      - /2D Nav Goal1
       - /Publish Point1
     Name: Tool Properties
     Splitter Ratio: 0.5886790156364441
@@ -25,10 +26,6 @@ Panels:
     Name: Time
     SyncMode: 0
     SyncSource: ""
-Preferences:
-  PromptSaveOnExit: true
-Toolbars:
-  toolButtonStyle: 2
 Visualization Manager:
   Class: ""
   Displays:
@@ -55,12 +52,11 @@ Visualization Manager:
       Min Color: 222; 184; 135
       Min Intensity: 0
       Name: GridMap
-      Reference Frame: map
       Show Grid Lines: true
       Topic:
         Depth: 1
         Durability Policy: Transient Local
-        Filter Size: 10
+        Filter size: 10
         History Policy: Keep Last
         Reliability Policy: Reliable
         Value: /mapping/terrain_map
@@ -69,68 +65,160 @@ Visualization Manager:
     - Alpha: 1
       Class: rviz_default_plugins/RobotModel
       Collision Enabled: false
+      Description File: ""
+      Description Source: Topic
+      Description Topic:
+        Depth: 5
+        Durability Policy: Volatile
+        History Policy: Keep Last
+        Reliability Policy: Reliable
+        Value: /robot_1/robot_description
       Enabled: true
       Links:
         All Links Enabled: true
         Expand Joint Details: false
         Expand Link Details: false
         Expand Tree: false
+        Head_lower:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        Head_upper:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
         Link Tree Style: Links in Alphabetic Order
         body:
           Alpha: 1
           Show Axes: false
           Show Trail: false
           Value: true
+        front_camera:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
         hip0:
           Alpha: 1
           Show Axes: false
           Show Trail: false
           Value: true
+        hip0_rotor:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
         hip1:
           Alpha: 1
           Show Axes: false
           Show Trail: false
           Value: true
+        hip1_rotor:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
         hip2:
           Alpha: 1
           Show Axes: false
           Show Trail: false
           Value: true
+        hip2_rotor:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
         hip3:
           Alpha: 1
           Show Axes: false
           Show Trail: false
           Value: true
+        hip3_rotor:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        imu:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
         lower0:
           Alpha: 1
           Show Axes: false
           Show Trail: false
           Value: true
+        lower0_lower:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        lower0_lower1:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        lower0_rotor:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
         lower1:
           Alpha: 1
           Show Axes: false
           Show Trail: false
           Value: true
+        lower1_lower:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        lower1_lower1:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        lower1_rotor:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
         lower2:
           Alpha: 1
           Show Axes: false
           Show Trail: false
           Value: true
+        lower2_lower:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        lower2_lower1:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        lower2_rotor:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
         lower3:
           Alpha: 1
           Show Axes: false
           Show Trail: false
           Value: true
-        text_left:
+        lower3_lower:
           Alpha: 1
           Show Axes: false
           Show Trail: false
           Value: true
-        text_right:
+        lower3_lower1:
           Alpha: 1
           Show Axes: false
           Show Trail: false
           Value: true
+        lower3_rotor:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        radar:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
         toe0:
           Alpha: 1
           Show Axes: false
@@ -156,23 +244,41 @@ Visualization Manager:
           Show Axes: false
           Show Trail: false
           Value: true
+        upper0_rotor:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
         upper1:
           Alpha: 1
           Show Axes: false
           Show Trail: false
           Value: true
+        upper1_rotor:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
         upper2:
           Alpha: 1
           Show Axes: false
           Show Trail: false
           Value: true
+        upper2_rotor:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
         upper3:
           Alpha: 1
           Show Axes: false
           Show Trail: false
           Value: true
+        upper3_rotor:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+      Mass Properties:
+        Inertia: false
+        Mass: false
       Name: Robot 1 Ground Truth State
-      Description Topic: /robot_1/robot_description
       TF Prefix: robot_1_ground_truth
       Update Interval: 0
       Value: true
@@ -180,6 +286,14 @@ Visualization Manager:
     - Alpha: 1
       Class: rviz_default_plugins/RobotModel
       Collision Enabled: false
+      Description File: ""
+      Description Source: Topic
+      Description Topic:
+        Depth: 5
+        Durability Policy: Volatile
+        History Policy: Keep Last
+        Reliability Policy: Reliable
+        Value: ""
       Enabled: false
       Links:
         All Links Enabled: true
@@ -187,8 +301,10 @@ Visualization Manager:
         Expand Link Details: false
         Expand Tree: false
         Link Tree Style: Links in Alphabetic Order
+      Mass Properties:
+        Inertia: false
+        Mass: false
       Name: Robot 2 Ground Truth State
-      Robot Description: robot_description
       TF Prefix: robot_2_ground_truth
       Update Interval: 0
       Value: false
@@ -196,6 +312,14 @@ Visualization Manager:
     - Alpha: 0.10000000149011612
       Class: rviz_default_plugins/RobotModel
       Collision Enabled: false
+      Description File: ""
+      Description Source: Topic
+      Description Topic:
+        Depth: 5
+        Durability Policy: Volatile
+        History Policy: Keep Last
+        Reliability Policy: Reliable
+        Value: ""
       Enabled: false
       Links:
         All Links Enabled: true
@@ -203,8 +327,10 @@ Visualization Manager:
         Expand Link Details: false
         Expand Tree: false
         Link Tree Style: Links in Alphabetic Order
+      Mass Properties:
+        Inertia: false
+        Mass: false
       Name: Robot 1 Trajectory State
-      Robot Description: robot_description
       TF Prefix: robot_1_trajectory
       Update Interval: 0
       Value: false
@@ -212,6 +338,14 @@ Visualization Manager:
     - Alpha: 1
       Class: rviz_default_plugins/RobotModel
       Collision Enabled: false
+      Description File: ""
+      Description Source: Topic
+      Description Topic:
+        Depth: 5
+        Durability Policy: Volatile
+        History Policy: Keep Last
+        Reliability Policy: Reliable
+        Value: ""
       Enabled: false
       Links:
         All Links Enabled: true
@@ -219,99 +353,152 @@ Visualization Manager:
         Expand Link Details: false
         Expand Tree: false
         Link Tree Style: Links in Alphabetic Order
+      Mass Properties:
+        Inertia: false
+        Mass: false
       Name: Robot 2 Trajectory State
-      Robot Description: robot_description
       TF Prefix: robot_2_trajectory
       Update Interval: 0
       Value: false
       Visual Enabled: true
     - Class: rviz_default_plugins/Marker
       Enabled: false
-      Marker Topic: /robot_1/visualization/state/ground_truth_trace
       Name: Robot 1 Ground Truth Trace
       Namespaces:
         {}
-      Queue Size: 100
+      Topic:
+        Depth: 5
+        Durability Policy: Volatile
+        Filter size: 10
+        History Policy: Keep Last
+        Reliability Policy: Reliable
+        Value: ""
       Value: false
     - Class: rviz_default_plugins/Marker
       Enabled: false
-      Marker Topic: /robot_2/visualization/state/ground_truth_trace
       Name: Robot 2 Ground Truth Trace
       Namespaces:
         {}
-      Queue Size: 100
+      Topic:
+        Depth: 5
+        Durability Policy: Volatile
+        Filter size: 10
+        History Policy: Keep Last
+        Reliability Policy: Reliable
+        Value: ""
       Value: false
     - Class: rviz_default_plugins/MarkerArray
       Enabled: true
-      Marker Topic: /robot_1/visualization/current_grf
       Name: Robot 1 Desired GRFs
       Namespaces:
-        "": true
-      Queue Size: 100
+        {}
+      Topic:
+        Depth: 5
+        Durability Policy: Volatile
+        History Policy: Keep Last
+        Reliability Policy: Reliable
+        Value: visualization_marker_array
       Value: true
     - Class: rviz_default_plugins/MarkerArray
       Enabled: true
-      Marker Topic: /robot_2/visualization/current_grf
       Name: Robot 2 Desired GRFs
       Namespaces:
-        "": true
-      Queue Size: 100
+        {}
+      Topic:
+        Depth: 5
+        Durability Policy: Volatile
+        History Policy: Keep Last
+        Reliability Policy: Reliable
+        Value: visualization_marker_array
       Value: true
     - Class: rviz_default_plugins/Marker
       Enabled: true
-      Marker Topic: /robot_1/visualization/global_plan
       Name: Robot 1 Global Plan
       Namespaces:
         {}
-      Queue Size: 100
+      Topic:
+        Depth: 5
+        Durability Policy: Volatile
+        Filter size: 10
+        History Policy: Keep Last
+        Reliability Policy: Reliable
+        Value: /robot_1/visualization/global_plan
       Value: true
     - Class: rviz_default_plugins/Marker
       Enabled: true
-      Marker Topic: /robot_2/visualization/global_plan
       Name: Robot 2 Global Plan
       Namespaces:
         {}
-      Queue Size: 100
+      Topic:
+        Depth: 5
+        Durability Policy: Volatile
+        Filter size: 10
+        History Policy: Keep Last
+        Reliability Policy: Reliable
+        Value: ""
       Value: true
     - Class: rviz_default_plugins/Marker
       Enabled: true
-      Marker Topic: /robot_1/visualization/local_plan
       Name: Robot 1 Local Plan
       Namespaces:
         {}
-      Queue Size: 100
+      Topic:
+        Depth: 5
+        Durability Policy: Volatile
+        Filter size: 10
+        History Policy: Keep Last
+        Reliability Policy: Reliable
+        Value: /robot_1/visualization/local_plan
       Value: true
     - Class: rviz_default_plugins/Marker
       Enabled: true
-      Marker Topic: /robot_2/visualization/local_plan
       Name: Robot 2 Local Plan
       Namespaces:
         {}
-      Queue Size: 100
+      Topic:
+        Depth: 5
+        Durability Policy: Volatile
+        Filter size: 10
+        History Policy: Keep Last
+        Reliability Policy: Reliable
+        Value: ""
       Value: true
     - Class: rviz_default_plugins/MarkerArray
       Enabled: true
-      Marker Topic: /robot_1/visualization/local_plan_grf
       Name: Robot 1 Local Plan GRF
       Namespaces:
         {}
-      Queue Size: 100
+      Topic:
+        Depth: 5
+        Durability Policy: Volatile
+        History Policy: Keep Last
+        Reliability Policy: Reliable
+        Value: visualization_marker_array
       Value: true
     - Class: rviz_default_plugins/MarkerArray
       Enabled: true
-      Marker Topic: /robot_2/visualization/local_plan_grf
       Name: Robot 2 Local Plan GRF
       Namespaces:
         {}
-      Queue Size: 100
+      Topic:
+        Depth: 5
+        Durability Policy: Volatile
+        History Policy: Keep Last
+        Reliability Policy: Reliable
+        Value: visualization_marker_array
       Value: true
     - Class: rviz_default_plugins/Marker
       Enabled: true
-      Marker Topic: /robot_1/visualization/foot_plan_discrete
       Name: Robot 1 Discrete Foot Plan
       Namespaces:
         {}
-      Queue Size: 100
+      Topic:
+        Depth: 5
+        Durability Policy: Volatile
+        Filter size: 10
+        History Policy: Keep Last
+        Reliability Policy: Reliable
+        Value: /robot_1/visualization/foot_plan_discrete
       Value: true
     - Alpha: 1
       Buffer Length: 1
@@ -333,8 +520,13 @@ Visualization Manager:
       Radius: 0.029999999329447746
       Shaft Diameter: 0.10000000149011612
       Shaft Length: 0.10000000149011612
-      Topic: /robot_1/visualization/foot_0_plan_continuous
-      Unreliable: false
+      Topic:
+        Depth: 5
+        Durability Policy: Volatile
+        Filter size: 10
+        History Policy: Keep Last
+        Reliability Policy: Reliable
+        Value: /robot_1/visualization/foot_0_plan_continuous
       Value: true
     - Alpha: 1
       Buffer Length: 1
@@ -356,8 +548,13 @@ Visualization Manager:
       Radius: 0.029999999329447746
       Shaft Diameter: 0.10000000149011612
       Shaft Length: 0.10000000149011612
-      Topic: /robot_1/visualization/foot_1_plan_continuous
-      Unreliable: false
+      Topic:
+        Depth: 5
+        Durability Policy: Volatile
+        Filter size: 10
+        History Policy: Keep Last
+        Reliability Policy: Reliable
+        Value: /robot_1/visualization/foot_1_plan_continuous
       Value: true
     - Alpha: 1
       Buffer Length: 1
@@ -379,8 +576,13 @@ Visualization Manager:
       Radius: 0.029999999329447746
       Shaft Diameter: 0.10000000149011612
       Shaft Length: 0.10000000149011612
-      Topic: /robot_1/visualization/foot_2_plan_continuous
-      Unreliable: false
+      Topic:
+        Depth: 5
+        Durability Policy: Volatile
+        Filter size: 10
+        History Policy: Keep Last
+        Reliability Policy: Reliable
+        Value: /robot_1/visualization/foot_2_plan_continuous
       Value: true
     - Alpha: 1
       Buffer Length: 1
@@ -402,16 +604,26 @@ Visualization Manager:
       Radius: 0.029999999329447746
       Shaft Diameter: 0.10000000149011612
       Shaft Length: 0.10000000149011612
-      Topic: /robot_1/visualization/foot_3_plan_continuous
-      Unreliable: false
+      Topic:
+        Depth: 5
+        Durability Policy: Volatile
+        Filter size: 10
+        History Policy: Keep Last
+        Reliability Policy: Reliable
+        Value: /robot_1/visualization/foot_3_plan_continuous
       Value: true
     - Class: rviz_default_plugins/Marker
       Enabled: true
-      Marker Topic: /robot_2/visualization/foot_plan_discrete
       Name: Robot 2 Discrete Foot Plan
       Namespaces:
         {}
-      Queue Size: 100
+      Topic:
+        Depth: 5
+        Durability Policy: Volatile
+        Filter size: 10
+        History Policy: Keep Last
+        Reliability Policy: Reliable
+        Value: ""
       Value: true
     - Alpha: 1
       Buffer Length: 1
@@ -433,8 +645,13 @@ Visualization Manager:
       Radius: 0.029999999329447746
       Shaft Diameter: 0.10000000149011612
       Shaft Length: 0.10000000149011612
-      Topic: /robot_2/visualization/foot_0_plan_continuous
-      Unreliable: false
+      Topic:
+        Depth: 5
+        Durability Policy: Volatile
+        Filter size: 10
+        History Policy: Keep Last
+        Reliability Policy: Reliable
+        Value: /robot_2/visualization/foot_0_plan_continuous
       Value: true
     - Alpha: 1
       Buffer Length: 1
@@ -456,8 +673,13 @@ Visualization Manager:
       Radius: 0.029999999329447746
       Shaft Diameter: 0.10000000149011612
       Shaft Length: 0.10000000149011612
-      Topic: /robot_2/visualization/foot_1_plan_continuous
-      Unreliable: false
+      Topic:
+        Depth: 5
+        Durability Policy: Volatile
+        Filter size: 10
+        History Policy: Keep Last
+        Reliability Policy: Reliable
+        Value: /robot_2/visualization/foot_1_plan_continuous
       Value: true
     - Alpha: 1
       Buffer Length: 1
@@ -479,8 +701,13 @@ Visualization Manager:
       Radius: 0.029999999329447746
       Shaft Diameter: 0.10000000149011612
       Shaft Length: 0.10000000149011612
-      Topic: /robot_2/visualization/foot_2_plan_continuous
-      Unreliable: false
+      Topic:
+        Depth: 5
+        Durability Policy: Volatile
+        Filter size: 10
+        History Policy: Keep Last
+        Reliability Policy: Reliable
+        Value: /robot_2/visualization/foot_2_plan_continuous
       Value: true
     - Alpha: 1
       Buffer Length: 1
@@ -502,21 +729,30 @@ Visualization Manager:
       Radius: 0.029999999329447746
       Shaft Diameter: 0.10000000149011612
       Shaft Length: 0.10000000149011612
-      Topic: /robot_2/visualization/foot_3_plan_continuous
-      Unreliable: false
+      Topic:
+        Depth: 5
+        Durability Policy: Volatile
+        Filter size: 10
+        History Policy: Keep Last
+        Reliability Policy: Reliable
+        Value: /robot_2/visualization/foot_3_plan_continuous
       Value: true
     - Class: rviz_default_plugins/Marker
       Enabled: false
-      Marker Topic: /grid_map_visualization/surface_normals
       Name: Surface Normals
       Namespaces:
         {}
-      Queue Size: 100
+      Topic:
+        Depth: 5
+        Durability Policy: Volatile
+        Filter size: 10
+        History Policy: Keep Last
+        Reliability Policy: Reliable
+        Value: ""
       Value: false
   Enabled: true
   Global Options:
     Background Color: 255; 255; 255
-    Default Light: true
     Fixed Frame: map
     Frame Rate: 30
   Name: root
@@ -527,22 +763,51 @@ Visualization Manager:
     - Class: rviz_default_plugins/Select
     - Class: rviz_default_plugins/FocusCamera
     - Class: rviz_default_plugins/Measure
+      Line color: 128; 128; 0
     - Class: rviz_default_plugins/SetInitialPose
-      Theta std deviation: 0.2617993950843811
-      Topic: /initialpose
-      X std deviation: 0.5
-      Y std deviation: 0.5
+      Covariance x: 0.25
+      Covariance y: 0.25
+      Covariance yaw: 0.06853891909122467
+      Topic:
+        Depth: 5
+        Durability Policy: Volatile
+        History Policy: Keep Last
+        Reliability Policy: Reliable
+        Value: /initialpose
     - Class: rviz_default_plugins/SetGoal
-      Topic: /move_base_simple/goal
+      Topic:
+        Depth: 5
+        Durability Policy: Volatile
+        History Policy: Keep Last
+        Reliability Policy: Reliable
+        Value: /move_base_simple/goal
     - Class: rviz_default_plugins/PublishPoint
       Single click: true
-      Topic: /robot_1/clicked_point
+      Topic:
+        Depth: 5
+        Durability Policy: Volatile
+        History Policy: Keep Last
+        Reliability Policy: Reliable
+        Value: /robot_1/clicked_point
     - Class: rviz_default_plugins/PublishPoint
       Single click: true
-      Topic: /robot_2/clicked_point
+      Topic:
+        Depth: 5
+        Durability Policy: Volatile
+        History Policy: Keep Last
+        Reliability Policy: Reliable
+        Value: /robot_2/clicked_point
     - Class: rviz_default_plugins/PublishPoint
       Single click: true
-      Topic: /robot_3/clicked_point
+      Topic:
+        Depth: 5
+        Durability Policy: Volatile
+        History Policy: Keep Last
+        Reliability Policy: Reliable
+        Value: /robot_3/clicked_point
+  Transformation:
+    Current:
+      Class: rviz_default_plugins/TF
   Value: true
   Views:
     Current:
@@ -569,11 +834,11 @@ Visualization Manager:
     Saved: ~
 Window Geometry:
   Displays:
-    collapsed: true
-  Height: 1052
-  Hide Left Dock: true
+    collapsed: false
+  Height: 1043
+  Hide Left Dock: false
   Hide Right Dock: true
-  QMainWindow State: 000000ff00000000fd00000004000000000000025a0000035cfc0200000008fb0000001200530065006c0065006300740069006f006e00000001e10000009b0000005c00fffffffb0000001e0054006f006f006c002000500072006f007000650072007400690065007302000001ed000001df00000185000000b0fb000000120056006900650077007300200054006f006f02000001df000002110000018500000122fb000000200054006f006f006c002000500072006f0070006500720074006900650073003203000002880000011d000002210000017afb000000100044006900730070006c006100790073000000003d0000035c000000c900fffffffb0000002000730065006c0065006300740069006f006e00200062007500660066006500720200000138000000aa0000023a00000294fb00000014005700690064006500530074006500720065006f02000000e6000000d2000003ee0000030bfb0000000c004b0069006e0065006300740200000186000001060000030c00000261000000010000010f0000040efc0200000003fb0000001e0054006f006f006c002000500072006f00700065007200740069006500730100000041000000780000000000000000fb0000000a0056006900650077007300000000280000040e000000a400fffffffb0000001200530065006c0065006300740069006f006e010000025a000000b200000000000000000000000200000490000000a9fc0100000001fb0000000a00560069006500770073030000004e00000080000002e100000197000000030000078000000060fc0100000002fb0000000800540069006d0065010000000000000780000002eb00fffffffb0000000800540069006d00650100000000000004500000000000000000000007800000035c00000004000000040000000800000008fc0000000100000002000000010000000a0054006f006f006c00730100000000ffffffff0000000000000000
+  QMainWindow State: 000000ff00000000fd00000004000000000000025a0000034ffc0200000008fb0000001200530065006c0065006300740069006f006e00000001e10000009b0000005d00fffffffb0000001e0054006f006f006c002000500072006f007000650072007400690065007302000001ed000001df00000185000000b0fb000000120056006900650077007300200054006f006f02000001df000002110000018500000122fb000000200054006f006f006c002000500072006f0070006500720074006900650073003203000002880000011d000002210000017afb000000100044006900730070006c006100790073010000003f0000034f000000cc00fffffffb0000002000730065006c0065006300740069006f006e00200062007500660066006500720200000138000000aa0000023a00000294fb00000014005700690064006500530074006500720065006f02000000e6000000d2000003ee0000030bfb0000000c004b0069006e0065006300740200000186000001060000030c00000261000000010000010f0000040efc0200000003fb0000001e0054006f006f006c002000500072006f00700065007200740069006500730100000041000000780000000000000000fb0000000a0056006900650077007300000000280000040e000000a900fffffffb0000001200530065006c0065006300740069006f006e010000025a000000b200000000000000000000000200000490000000a9fc0100000001fb0000000a00560069006500770073030000004e00000080000002e100000197000000030000078000000060fc0100000002fb0000000800540069006d00650100000000000007800000026f00fffffffb0000000800540069006d00650100000000000004500000000000000000000005200000034f00000004000000040000000800000008fc0000000100000002000000010000000a0054006f006f006c00730100000000ffffffff0000000000000000
   Selection:
     collapsed: false
   Time:
@@ -583,5 +848,5 @@ Window Geometry:
   Views:
     collapsed: true
   Width: 1920
-  X: 1920
+  X: 2560
   Y: 0

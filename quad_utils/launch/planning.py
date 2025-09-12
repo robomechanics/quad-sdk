@@ -188,15 +188,24 @@ def launch_body_force_estimator(context, *args, **kwargs):
     ]
 
 
-# def launch_plan_publisher(context, *args, **kwargs):
-#     return [
-#         Node(
-#             package='quad_utils',
-#             executable='trajectory_publisher_node',
-#             name='plan_publisher',
-#             output='screen'
-#         )
-#     ]
+def launch_plan_publisher(context, *args, **kwargs):
+    urdf = LaunchConfiguration('robot_urdf').perform(context)
+    quad_utils_package = FindPackageShare('quad_utils')
+    plan_publisher_param_file = PathJoinSubstitution([quad_utils_package, 'config', 'trajectory_publisher.yaml'])
+    return [
+        Node(
+            package='quad_utils',
+            executable='trajectory_publisher_node',
+            name='trajectory_publisher',
+            output='screen',
+            parameters=[plan_publisher_param_file,
+            {
+            'robot_description': ParameterValue(urdf, value_type=str),
+            'use_sim_time' : LaunchConfiguration('use_sim_time'), 
+            'namespace' : LaunchConfiguration('namespace')
+            }]
+        )
+    ]
 
 
 def launch_logging(context, *args, **kwargs):
@@ -245,5 +254,5 @@ def generate_launch_description():
         OpaqueFunction(function=launch_local_planner),
         OpaqueFunction(function=launch_body_force_estimator),
         # OpaqueFunction(function=launch_tests)
-        # OpaqueFunction(function=launch_plan_publisher),
+        OpaqueFunction(function=launch_plan_publisher),
     ])
