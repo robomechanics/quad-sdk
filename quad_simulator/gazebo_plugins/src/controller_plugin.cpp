@@ -76,9 +76,6 @@ controller_interface::CallbackReturn QuadController::on_init(){
   node_->declare_parameter<std::string>("topics.control.joint_command");
   node_->declare_parameter<std::vector<double>>("torque_lims", {21.0, 21.0, 32.0});
   node_->declare_parameter<std::vector<double>>("speed_lims", {37.7, 37.7, 25.1});
-//   for (const auto & param : node_->list_parameters({}, 10).names) {
-//     RCLCPP_INFO(node_->get_logger(), "Param: %s", param.c_str());
-//     }
 
   return controller_interface::CallbackReturn::SUCCESS;
 }
@@ -120,14 +117,14 @@ controller_interface::CallbackReturn QuadController::on_configure(const rclcpp_l
                                         << "' (namespace: " << node_->get_namespace() << ")");
         return controller_interface::CallbackReturn::ERROR;
     }
-    RCLCPP_INFO(node_->get_logger(), "Torque Limits for each joint:");
-    for (size_t i = 0; i < joint_names_.size(); ++i) {
-        if (i < torque_lims_.size()) {
-            RCLCPP_INFO(node_->get_logger(), "  %s: %.3f Nm", joint_names_[i].c_str(), torque_lims_[i]);
-        } else {
-            RCLCPP_WARN(node_->get_logger(), "  %s: No torque limit specified!", joint_names_[i].c_str());
-        }
-    }
+    // RCLCPP_INFO(node_->get_logger(), "Torque Limits for each joint:");
+    // for (size_t i = 0; i < joint_names_.size(); ++i) {
+    //     if (i < torque_lims_.size()) {
+    //         RCLCPP_INFO(node_->get_logger(), "  %s: %.3f Nm", joint_names_[i].c_str(), torque_lims_[i]);
+    //     } else {
+    //         RCLCPP_WARN(node_->get_logger(), "  %s: No torque limit specified!", joint_names_[i].c_str());
+    //     }
+    // }
 
     n_joints_ = joint_names_.size();
     if (n_joints_ == 0){
@@ -169,11 +166,11 @@ controller_interface::CallbackReturn QuadController::on_activate(const rclcpp_li
     joint_cmd_handles_.clear();
     joint_pos_handles_.clear();
     joint_vel_handles_.clear();
-    for (const auto &iface : command_interfaces_) {
-        RCLCPP_INFO(node_->get_logger(), "Checking Interfaces");
-        RCLCPP_INFO(node_->get_logger(), "Available interface: %s/%s",
-            iface.get_name().c_str(), iface.get_interface_name().c_str());
-    }
+    // for (const auto &iface : command_interfaces_) {
+    //     RCLCPP_INFO(node_->get_logger(), "Checking Interfaces");
+    //     RCLCPP_INFO(node_->get_logger(), "Available interface: %s/%s",
+    //         iface.get_name().c_str(), iface.get_interface_name().c_str());
+    // }
     for (const auto& joint_name : joint_names_){
         // auto cmd_handle = command_interfaces_.at(joint_name + "/effort");
         // joint_cmd_handles_.push_back(hardware_interface::LoanedCommandInterface(cmd_handle));
