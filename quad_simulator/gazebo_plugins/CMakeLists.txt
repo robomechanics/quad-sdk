@@ -25,6 +25,10 @@ find_package(gz-plugin2 REQUIRED)
 # list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../../quad_utils/cmake")
 # find_package(RBDL REQUIRED COMPONENTS URDFREADER)
 
+find_package(gz-math7 REQUIRED)
+find_package(gz-common5 REQUIRED)
+
+
 # uncomment the following section in order to fill in
 # further dependencies manually.
 # find_package(<dependency> REQUIRED)
@@ -39,6 +43,10 @@ add_library(quad_controller SHARED
  src/controller_plugin.cpp 
 )
 
+# Splitbelt
+add_library(splitbelt_plugin SHARED
+  src/SplitBeltPlugin.cpp
+)
 
 target_include_directories(ground_truth_estimator PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
@@ -46,6 +54,11 @@ target_include_directories(ground_truth_estimator PUBLIC
 )
 
 target_include_directories(quad_controller PUBLIC
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+  $<INSTALL_INTERFACE:include>
+)
+
+target_include_directories(splitbelt_plugin PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
   $<INSTALL_INTERFACE:include>
 )
@@ -71,12 +84,26 @@ ament_target_dependencies(quad_controller
   quad_utils
 )
 
+ament_target_dependencies(splitbelt_plugin
+  rclcpp
+  std_msgs
+)
+
+target_link_libraries(splitbelt_plugin
+    gz-sim8::gz-sim8
+    gz-math7::gz-math7
+    gz-common5::gz-common5
+  )
+
 
 pluginlib_export_plugin_description_file(controller_interface controller_plugin.xml)
+
+ament_export_libraries(splitbelt_plugin)
 
 install(TARGETS 
   ground_truth_estimator
   quad_controller
+  splitbelt_plugin
   DESTINATION lib
 )
 

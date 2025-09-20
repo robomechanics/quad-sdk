@@ -20,6 +20,9 @@
                 </geometry>
                 <material>
                     <ambient>0.0 0.0 1.0 1.0</ambient>  <!-- blue -->
+                    <diffuse>0 0 1 1</diffuse>
+                    <specular>0.1 0.1 0.1 1</specular>
+                    <emissive>0 0 0 1</emissive>
                 </material>
             </visual>
             <collision name="left_belt_collision">
@@ -54,6 +57,9 @@
                 </geometry>
                 <material>
                     <ambient>0.0 1.0 0.0 1.0</ambient>  <!-- green -->
+                    <diffuse>0 1 0 1</diffuse>
+                    <specular>0.1 0.1 0.1 1</specular>
+                    <emissive>0 0 0 1</emissive>
                 </material>
             </visual>
             <collision name="right_belt_collision">
@@ -113,12 +119,15 @@
                     <izz>1.0</izz>
                 </inertia>
             </inertial>
-            <visual name="rightbelt_visual">
+            <visual name="leftbelt_visual">
                 <geometry>
                     <box><size>100 1 0.005</size></box>
                 </geometry>
                 <material>
                     <ambient>0.0 1.0 0.0 1.0</ambient>  <!-- green -->
+                    <diffuse>0 1 0 1</diffuse>
+                    <specular>0.1 0.1 0.1 1</specular>
+                    <emissive>0 0 0 1</emissive>
                 </material>
             </visual>
             <collision name="left_belt_moving_collision">
@@ -143,7 +152,10 @@
                     <box><size>100 1 0.005</size></box>
                 </geometry>
                 <material>
-                    <ambient>0.0 0.0 1.0 1.0</ambient>  <!-- green -->
+                    <ambient>0.0 0.0 1.0 1.0</ambient>  <!-- blue -->
+                    <diffuse>0 0 1 1</diffuse>
+                    <specular>0.1 0.1 0.1 1</specular>
+                    <emissive>0 0 0 1</emissive>
                 </material>
             </visual>
             <collision name="right_belt_moving_collision">
@@ -153,7 +165,7 @@
             </collision>
         </link>
 
-        <!-- Plugin for Left Conveyor Belt -->
+        <!-- Plugin for Conveyor Belt -->
         <plugin name="splitbelt_plugin" filename="libsplitbelt_plugin.so">
             <left_link_name>left_belt_moving</left_link_name>
             <right_link_name>right_belt_moving</right_link_name>

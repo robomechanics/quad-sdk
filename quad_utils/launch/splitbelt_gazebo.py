@@ -26,7 +26,7 @@ def generate_launch_description():
 
     splitbelt_sdf = DeclareLaunchArgument(
         'splitbelt_sdf',
-        default_value=PathJoinSubstitution([FindPackageShare('splitbelt_description'), 'sdf', 'splitbelt_treadmill.sdf', 'model.sdf']),
+        default_value=PathJoinSubstitution([FindPackageShare('splitbelt_description'), 'sdf', 'splitbelt_treadmill.sdf']),
         description=''
     )
 
@@ -35,19 +35,14 @@ def generate_launch_description():
         PythonLaunchDescriptionSource(
             PathJoinSubstitution([FindPackageShare('quad_utils'), 'launch', 'quad_gazebo.launch.py'])
         ),
-        launch_arguments={}
+        launch_arguments={}.items()
     )
 
-    spawn_obstacle = spawn_obstacle('splitbelt',  "-x 0.0 -y 0.0 -z 0.0", splitbelt_sdf)
+    obstacle = spawn_obstacle('splitbelt',  "-x 0.0 -y 0.0 -z 0.0", splitbelt_sdf)
 
     # delayed_spawn = TimerAction(period=2.0, actions=[spawn_splitbelt])
 
     return LaunchDescription([
-        world_arg,
-        splitbelt_sdf_arg,
-        splitbelt_x_arg,
-        splitbelt_y_arg,
-        splitbelt_z_arg,
         quad_gazebo_launch,
-        delayed_spawn,
+        splitbelt_sdf,
     ])

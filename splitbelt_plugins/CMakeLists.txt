@@ -32,7 +32,7 @@ find_package(gz-math7 REQUIRED)
 find_package(gz-common5 REQUIRED)
 
 # head files
-include_directories(
+include_directories(        # miss
   include
 )
 
@@ -40,7 +40,7 @@ add_library(splitbelt_plugin SHARED
   src/SplitBeltPlugin.cpp
 )
 
-target_link_libraries(splitbelt_plugin
+target_link_libraries(splitbelt_plugin   # miss
   rclcpp::rclcpp
 )
 
