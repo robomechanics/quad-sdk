@@ -12,62 +12,64 @@
 #include <gz/sim/Model.hh>
 #include <gz/sim/Entity.hh>
 #include <gz/sim/EntityComponentManager.hh>
-#include <gz/sim/components/LinearVelocity.hh>
-#include <gz/sim/components/LinearVelocityCmd.hh>
-#include <gz/sim/components/AngularVelocity.hh>
-#include <gz/sim/components/AngularVelocityCmd.hh>
+
+// Joint velocity components only
+#include <gz/sim/components/JointVelocity.hh>
+#include <gz/sim/components/JointVelocityCmd.hh>
 #include <gz/sim/components/Name.hh>
-#include <gz/sim/Link.hh>
+#include <gz/sim/Joint.hh>
 
 namespace splitbelt_plugins
 {
-    // 一个 System 插件，同时实现 Configure 与 PreUpdate
-    class SplitBeltPlugin
+  // A Gazebo Sim System plugin that drives two prismatic joints by velocity
+  class SplitBeltPlugin
       : public gz::sim::System,
         public gz::sim::ISystemConfigure,
         public gz::sim::ISystemPreUpdate
-    {
-    public:
-        SplitBeltPlugin();
-        ~SplitBeltPlugin() override;
+  {
+  public:
+    SplitBeltPlugin();
+    ~SplitBeltPlugin() override;
 
-        // 从 SDF 读参数，解析模型，找到关节
-        void Configure(const gz::sim::Entity &entity,
-                    const std::shared_ptr<const sdf::Element> &sdf,
-                    gz::sim::EntityComponentManager &ecm,
-                    gz::sim::EventManager &eventMgr) override;
+    // Read SDF, resolve joints, setup ROS
+    void Configure(const gz::sim::Entity &entity,
+                   const std::shared_ptr<const sdf::Element> &sdf,
+                   gz::sim::EntityComponentManager &ecm,
+                   gz::sim::EventManager &eventMgr) override;
 
-        // 每步写关节速度
-        void PreUpdate(const gz::sim::UpdateInfo &info,
-                    gz::sim::EntityComponentManager &ecm) override;
+    // Write JointVelocityCmd every sim step
+    void PreUpdate(const gz::sim::UpdateInfo &info,
+                   gz::sim::EntityComponentManager &ecm) override;
 
-    private:
-        void initRosIfNeeded();
-        void leftCmdCb(const std_msgs::msg::Float64::SharedPtr msg);
-        void rightCmdCb(const std_msgs::msg::Float64::SharedPtr msg);
+  private:
+    // ROS helpers
+    void initRosIfNeeded();
+    void leftCmdCb(const std_msgs::msg::Float64::SharedPtr msg);
+    void rightCmdCb(const std_msgs::msg::Float64::SharedPtr msg);
 
-    private:
-        // 模型与实体
-        gz::sim::Model model_{gz::sim::kNullEntity};
-        gz::sim::Entity leftLink_{gz::sim::kNullEntity};
-        gz::sim::Entity rightLink_{gz::sim::kNullEntity};
+  private:
+    // Model & joints
+    gz::sim::Model model_{gz::sim::kNullEntity};
+    gz::sim::Entity leftJoint_{gz::sim::kNullEntity};
+    gz::sim::Entity rightJoint_{gz::sim::kNullEntity};
 
-        // 参数（可由 SDF 配置）
-        std::string leftLinkName_{"left_belt_moving"};
-        std::string rightLinkName_{"right_belt_moving"};
-        double leftVelInit_{0.0};
-        double rightVelInit_{0.0};
+    // Names configurable via SDF
+    std::string leftJointName_{"left_belt_joint"};
+    std::string rightJointName_{"right_belt_joint"};
 
-        // 目标速度（可被 ROS2 回调更新）
-        std::atomic<double> leftVelCmd_{0.0};
-        std::atomic<double> rightVelCmd_{0.0};
+    // Initial velocities (m/s)
+    double leftVelInit_{0.0};
+    double rightVelInit_{0.0};
 
-        // ROS2
-        bool rosInitialized_{false};
-        rclcpp::Node::SharedPtr node_;
-        rclcpp::Subscription<std_msgs::msg::Float64>::SharedPtr leftSub_;
-        rclcpp::Subscription<std_msgs::msg::Float64>::SharedPtr rightSub_;
-        std::thread rosSpinThread_;
-        };
+    // Target velocities updated by ROS callbacks
+    std::atomic<double> leftVelCmd_{0.0};
+    std::atomic<double> rightVelCmd_{0.0};
 
+    // ROS2 bits
+    bool rosInitialized_{false};
+    rclcpp::Node::SharedPtr node_;
+    rclcpp::Subscription<std_msgs::msg::Float64>::SharedPtr leftSub_;
+    rclcpp::Subscription<std_msgs::msg::Float64>::SharedPtr rightSub_;
+    std::thread rosSpinThread_;
+  };
 } // namespace splitbelt_plugins
