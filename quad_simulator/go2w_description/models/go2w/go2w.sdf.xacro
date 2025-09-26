@@ -155,7 +155,7 @@
         <geometry>
           <mesh>
             <scale>1 1 1</scale>
-            <uri>model://go2/dae/thigh.dae</uri>
+            <uri>model://go2w/dae/thigh.dae</uri>
           </mesh>
         </geometry>
         <material>
@@ -303,7 +303,7 @@
       <sensor name="toe0_contact" type="contact">
         <alwaysOn>true</alwaysOn>
         <updateRate>500</updateRate>
-        <topic>/gazebo/toe0_contact_state</topic>
+        <topic>gazebo/toe0_contact_state</topic>
         <frameName>world</frameName>
         <contact>
           <collision>toe0_collision</collision>
@@ -1199,7 +1199,7 @@
     </joint>
 
     <!-- Setup ros control -->
-      <plugin 
+      <!-- <plugin 
           filename="libgz_ros2_control-system.so"
           name="gz_ros2_control::GazeboSimROS2ControlPlugin">
           <controlPeriod>0.002</controlPeriod>
@@ -1207,7 +1207,7 @@
               <ros>
                 <namespace>${namespace}</namespace>
             </ros>
-      </plugin>
+      </plugin> -->
 
     <!-- Publish ground truth state data -->
     <plugin filename="libground_truth_estimator.so" name="ground_truth_estimator">

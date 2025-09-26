@@ -57,7 +57,8 @@ def load_robot_params(context, *args, **kwargs):
     # with open(os.path.join(desc_path, 'models',robot_type,'urdf', urdf_file), 'r') as f:
     #     urdf = f.read()
     urdf = xacro.process_file(urdf_path).toxml()
-    sdf = xacro.process_file(sdf_path, mappings={"namespace": namespace, "controller_config_path": controller_config_path}).toxml()
+    # sdf = xacro.process_file(sdf_path, mappings={"namespace": namespace, "controller_config_path": controller_config_path}).toxml()
+    sdf = xacro.process_file(sdf_path, mappings={"namespace": namespace}).toxml()
 
     return [
         SetLaunchConfiguration('robot_urdf', urdf),
@@ -387,7 +388,7 @@ def generate_launch_description():
         OpaqueFunction(function=spawn_sdf_model),
         OpaqueFunction(function=harmonic_ros_bridge),
         OpaqueFunction(function=access_terrain_map),
-        OpaqueFunction(function=spawn_controller_broadcasters),
+        # OpaqueFunction(function=spawn_controller_broadcasters),
         OpaqueFunction(function=launch_robot_driver),
         OpaqueFunction(function=launch_contact_state_publisher),
         OpaqueFunction(function= launch_visualization_plugins)

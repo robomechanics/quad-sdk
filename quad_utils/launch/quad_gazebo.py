@@ -164,7 +164,7 @@ def launch_plot_juggler(context, *args, **kwargs):
 def generate_launch_description():
     declared_args = [
         DeclareLaunchArgument('world', default_value='flat.sdf', description='SDF world file name to load into simulation'),
-        DeclareLaunchArgument('gui', default_value='false', description='Whether to launch the Gazebo GUI'),
+        DeclareLaunchArgument('gui', default_value='true', description='Whether to launch the Gazebo GUI'),
         DeclareLaunchArgument('paused', default_value='false', description='Whether to start the simulation in a paused state'),
         DeclareLaunchArgument('verbose', default_value='false', description='Launch the simulator in verbose mode'),
         DeclareLaunchArgument('live_plot', default_value='false', description='Launch Plot Juggler'),
@@ -173,7 +173,7 @@ def generate_launch_description():
         DeclareLaunchArgument('use_sim_time', default_value='true', description='Whether to use Computer Clock or Sim Clock'),
         DeclareLaunchArgument(
             'robot_configs',
-            default_value='[{"name": "robot_1", "type": "go2", "controller": "inverse_dynamics", "init_pose" : "-x 0.0 -y 0.0 -z 5"}]',
+            default_value='[{"name": "robot_1", "type": "go2w", "controller": "inverse_dynamics", "init_pose" : "-x 0.0 -y 0.0 -z 5"}]',
             description='A JSON List of robot configurations: MUST specifiy name, type, controller, and spawn pose'
         ),
         DeclareLaunchArgument('scenario', default_value="None", description='Custom Obstacle Scenario to Spawn e.g. Underbrush, Procedural Underbrush)'),
