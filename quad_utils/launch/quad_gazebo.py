@@ -82,7 +82,6 @@ def launch_robot_mapping(context, *args, **kwargs):
                 launch_arguments={
                     'input_type': 'mesh',
                     'world': LaunchConfiguration('world'),
-                    'robot_configs': LaunchConfiguration('robot_configs'),
                     'use_sim_time': LaunchConfiguration('use_sim_time')
                 }.items()
             )
@@ -174,7 +173,7 @@ def generate_launch_description():
         DeclareLaunchArgument(
             'robot_configs',
             default_value='[{"name": "robot_1", "type": "go2", "controller": "inverse_dynamics", "init_pose" : "-x 0.0 -y 0.0 -z 5"}]',
-            description='A JSON List of robot configurations: MUST specifiy name, type, controller, and spawn pose'
+            description='A JSON List of robot configurations: MUST specify name, type, controller, and spawn pose'
         ),
         DeclareLaunchArgument('scenario', default_value="None", description='Custom Obstacle Scenario to Spawn e.g. Underbrush, Procedural Underbrush)'),
         DeclareLaunchArgument('obstacles', default_value='[]',

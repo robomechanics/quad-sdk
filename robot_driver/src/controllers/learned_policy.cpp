@@ -204,10 +204,7 @@ bool LearnedPolicy::computeLegCommandArray(
     const quad_msgs::msg::RobotState &robot_state_msg,
     quad_msgs::msg::LegCommandArray &leg_command_array_msg,
     quad_msgs::msg::GRFArray &grf_array_msg){
-      // (Retraining Policy with Adjusted URDF) Apply Observation and Action Offsets to work with the URDF
-      // Fuck Translating Observations and Actions that Shit Sucks
       // Generate Leg Command Messages from Inferenced Actions and Clip them based on Joint Positional Limits
-
     if ((node_->now() - last_cmd_vel_msg_time_).seconds() >= 0.1){
       return false;
     } 

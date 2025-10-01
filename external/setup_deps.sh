@@ -34,7 +34,7 @@ sudo apt install -y ros-jazzy-urdf
 cd rbdl-orb
 quiet_mkdir build
 cd build
-cmake -D -D CMAKE_POLICY_VERSION_MINIMUM=3.5 -D CMAKE_BUILD_TYPE=Release -D RBDL_BUILD_ADDON_URDFREADER=ON ..
+cmake -D CMAKE_POLICY_VERSION_MINIMUM=3.5 -D CMAKE_BUILD_TYPE=Release -D RBDL_BUILD_ADDON_URDFREADER=ON ..
 make -j8
 sudo make install
 cd ../..
@@ -50,4 +50,3 @@ cmake .. -DCMAKE_INSTALL_PREFIX=/opt/unitree_robotics
 sudo make install
 cd ../..
 
-#Setup and Build for ONNX Runtime

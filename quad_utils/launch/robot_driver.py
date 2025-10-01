@@ -80,10 +80,6 @@ def generate_launch_description():
         use_sim_time,
 
         # Include robot param loader
-        # IncludeLaunchDescription(
-        #     launch_description_source=load_robot_params_path,
-        #     launch_arguments={'robot_type': LaunchConfiguration('robot_type')}.items()
-        # ),
 
         # Launch robot driver
         robot_driver_node,
