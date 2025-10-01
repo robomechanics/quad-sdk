@@ -89,6 +89,6 @@ def generate_launch_description():
     return LaunchDescription([
         DeclareLaunchArgument('namespace', default_value='robot_1'),
         DeclareLaunchArgument('bag_name', default_value='quad_log'),
-        DeclareLaunchArgument('robot_type', default_value='spirit'),
+        DeclareLaunchArgument('robot_type', default_value='go2'),
         OpaqueFunction(function=launch_bag_recording),
     ])

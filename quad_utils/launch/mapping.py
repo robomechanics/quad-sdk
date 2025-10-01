@@ -9,10 +9,6 @@ from launch_ros.substitutions import FindPackageShare
 def generate_launch_description():
     # Declare all launch arguments
     declared_arguments = [
-        DeclareLaunchArgument(
-            'robot_configs', 
-            default_value='[{"name": "robot_1", "type": "spirit", "controller": "inverse_dynamics"}]',
-            description='A JSON List of robot configurations: MUST specifiy name, type, and controller'),
         DeclareLaunchArgument('input_type', default_value='grid',
             description='Input used to generate terrain data'),
         DeclareLaunchArgument('frame_id_mesh_loaded', default_value='map'),
@@ -114,7 +110,6 @@ def generate_launch_description():
             mesh_to_grid_group,
             grid_map_visualization,
             grid_map_filter_node,
-            # rviz2_node,
             static_tf
         ]
     )
