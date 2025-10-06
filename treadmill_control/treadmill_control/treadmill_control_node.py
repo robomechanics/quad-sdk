@@ -8,10 +8,10 @@ class TreadmillControlNode(Node):
         super().__init__('bertec_remote_control')
 
         # parameters for treadmill connection
-        self.declare_parameter('server_ip', '127.0.0.1')
-        self.declare_parameter('rpc_port', '6001')
-        self.declare_parameter('data_port', '6000')
-        self.declare_parameter('client_ip', '127.0.0.1')
+        self.declare_parameter('server_ip', '172.26.4.149')
+        self.declare_parameter('rpc_port', '5555')
+        self.declare_parameter('data_port', '5556')
+        self.declare_parameter('client_ip', '172.26.103.211')
         self.declare_parameter('client_port', '5560')
 
         self.declare_parameter('default_accel', 0.5)  # m/s^2
