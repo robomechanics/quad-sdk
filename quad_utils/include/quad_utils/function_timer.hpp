@@ -19,6 +19,7 @@ class FunctionTimer {
  public:
   /**
    * @brief Constructor for FunctionTimer Class
+   * @param[in] function_name Name of the function being timed
    * @return Constructed object of type FunctionTimer
    */
   FunctionTimer(const char* function_name) {

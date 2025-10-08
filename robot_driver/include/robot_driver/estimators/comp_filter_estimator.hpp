@@ -8,6 +8,8 @@ class CompFilterEstimator : public StateEstimator {
  public:
   /**
    * @brief Constructor for CompFilterEstimator
+   * @param[in] node Shared pointer to rclcpp::Node
+   * @param[in] robot_ns Robot Namespace
    * @return Constructed object of type CompFilterEstimator
    */
   CompFilterEstimator(rclcpp::Node::SharedPtr node, std::string& robot_ns);
@@ -20,6 +22,8 @@ class CompFilterEstimator : public StateEstimator {
 
   /**
    * @brief Helper function to filter mocap data
+   * @param[in] msg Shared pointer to mocap message
+   * @param[in] pos Vector of position data
    */
   void mocapCallBackHelper(const geometry_msgs::msg::PoseStamped::SharedPtr msg,
                            const Eigen::Vector3d& pos);

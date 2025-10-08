@@ -72,7 +72,7 @@ inline std::vector<double> wrapToPi(std::vector<double> data) {
  * @param[in] input_vec Input vector
  * @param[in] output_mat Collection of row vectors such that each row
  * corresponds to exactly one element in the input vector
- * @param[in] input_val Query point
+ * @param[in] query_point Query point
  * @return Vector of interpolated values
  */
 std::vector<double> interpMat(const std::vector<double> input_vec,
@@ -85,7 +85,7 @@ std::vector<double> interpMat(const std::vector<double> input_vec,
  * @param[in] input_vec Input vector
  * @param[in] output_mat Collection of row vectors such that each row
  * corresponds to exactly one element in the input vector
- * @param[in] input_val Query point
+ * @param[in] query_point Query point
  * @return Vector of interpolated values
  */
 Eigen::Vector3d interpVector3d(const std::vector<double> input_vec,
@@ -98,7 +98,7 @@ Eigen::Vector3d interpVector3d(const std::vector<double> input_vec,
  * @param[in] input_vec Input vector
  * @param[in] output_mat Collection of row vectors such that each row
  * corresponds to exactly one element in the input vector
- * @param[in] input_val Query point
+ * @param[in] query_point Query point
  * @return Vector of interpolated values
  */
 std::vector<Eigen::Vector3d> interpMatVector3d(
@@ -110,7 +110,7 @@ std::vector<Eigen::Vector3d> interpMatVector3d(
  * @brief Obtain the correct int within a parameterized vector of ints
  * @param[in] input_vec Input vector
  * @param[in] output_vec Output vector of ints
- * @param[in] input_val Query point
+ * @param[in] query_point Query point
  * @return Correct output int corresponsing to the query point
  */
 int interpInt(const std::vector<double> input_vec, std::vector<int> output_vec,
@@ -135,8 +135,9 @@ std::vector<double> movingAverageFilter(std::vector<double> data,
 std::vector<double> centralDiff(std::vector<double> data, double dt);
 
 /**
- * @brief Unwrap a phase variable by filtering out differences > pi
- * @param[in] data Input vector containing a wrapped signal
+ * @brief Wrap a phase variable to be near a target value
+ * @param[in] val Input value
+ * @param[in] val_target Target value (default 0)
  * @return Vector of unwrapped signal
  */
 template <typename ScalarType>

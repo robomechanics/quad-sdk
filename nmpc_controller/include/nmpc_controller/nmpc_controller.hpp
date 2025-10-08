@@ -24,7 +24,9 @@ class NMPCController {
  public:
   /**
    * @brief Constructor for MPCController
-   * @param[in] nh ROS NodeHandle to publish and subscribe from
+   * @param[in] node Shared pointer to ROS Node to publish and subscribe from
+   * @param[in] type Robot type
+   * @param[in] robot_ns Robot Namespace
    * @return Constructed object of type MPCController
    */
   NMPCController(rclcpp::Node::SharedPtr node, int type, std::string robot_ns);
@@ -37,9 +39,6 @@ class NMPCController {
    * @param[in] contact_schedule Matrix holding the contact schedule
    * @param[in] foot_positions Matrix holding foot positions
    * @param[in] foot_velocities Matrix holding foot velocities
-   * @param[in] first_element_duration Time duration to the next plan index
-   * @param[in] plan_index_diff If the current solving is duplicated in the same
-   * index
    * @param[out] state_traj Optimized state trajectory output
    * @param[out] control_traj Optimized control trajectory output
    * @return good_solve

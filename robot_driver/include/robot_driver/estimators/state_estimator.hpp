@@ -19,6 +19,8 @@ class StateEstimator {
  public:
   /**
    * @brief Constructor for StateEstimator
+   * @param[in] node Shared pointer to rclcpp::Node
+   * @param[in] robot_ns Robot Namespace
    * @return Constructed object of type StateEstimator
    */
   StateEstimator(rclcpp::Node::SharedPtr node, std::string robot_ns);
@@ -26,22 +28,21 @@ class StateEstimator {
   /**
    * @brief Virtual function for initialize filters, should be defined in
    * derived class
-   * @param[in] nh_ ROS Node Ha
    */
   virtual void init() = 0;
 
   /**
    * @brief Virtual update function for update robot state, should be defined in
    * derived class
-   * @param[out] last_robot_state_msg robot state
+   * @param[out] last_robot_state_msg Message including robot state
    */
   virtual bool updateOnce(quad_msgs::msg::RobotState& last_robot_state_msg) = 0;
 
   /**
    * @brief Read IMU data
-   * @param[in] last_imu_msg IMU sensor message
-   * @param[out] fk Linear acceleration
-   * @param[out] wk Angular acceleration
+   * @param[in] last_imu_msg Shared pointer to IMU sensor message
+   * @param[out] fk Vector of Linear acceleration
+   * @param[out] wk Vector of Angular acceleration
    * @param[out] qk Orientation in quaternion
    */
   void readIMU(const sensor_msgs::msg::Imu::SharedPtr& last_imu_msg,
@@ -50,7 +51,7 @@ class StateEstimator {
 
   /**
    * @brief Read joint encoder data
-   * @param[in] last_joint_state_msg Joint state sensor message
+   * @param[in] last_joint_state_msg Shared pointer to joint state sensor message
    * @param[out] jk Jointstate in vector (12 * 1)
    */
   void readJointEncoder(
@@ -59,7 +60,7 @@ class StateEstimator {
 
   /**
    * @brief Load Mocap data to protected variable
-   * @param[in] last_mocap_msg Mocap message
+   * @param[in] last_mocap_msg Shared pointer to last mocap message
    */
   void loadMocapMsg(geometry_msgs::msg::PoseStamped::SharedPtr last_mocap_msg);
 

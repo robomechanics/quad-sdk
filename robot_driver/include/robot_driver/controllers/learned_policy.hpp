@@ -31,14 +31,21 @@ class LearnedPolicy : public LegController {
  public:
  /**
   * @brief Constructor for LearnedPolicy
+  * @param[in] node Shared pointer to rclcpp::Node
+  * @param[in] robot_ns Robot Namespace
   * @return Constructed object of type LearnedPolicy
   */
   LearnedPolicy(rclcpp::Node::SharedPtr node, std::string& robot_ns);
 
  /**
   * @brief Set the desired proportional and derivative gains for all legs
-  * @param[in] kp Proportional gains
-  * @param[in] kd Derivative Gains
+  * @param[in] stance_kp Stance phase proportional gains
+  * @param[in] stance_kd Stance phase derivative gains
+  * @param[in] swing_kp Swing phase proportional gains
+  * @param[in] swing_kd Swing phase derivative gains
+  * @param[in] swing_kp_cart Cartesian Swing phase proportional gains
+  * @param[in] swing_kd_cart Cartesian Swing phase derivative gains
+  * @param[in] model_path Absolute Path to ONNX Model Weights
   */
   void init(const std::vector<double> &stance_kp,
             const std::vector<double> &stance_kd,
@@ -57,12 +64,28 @@ class LearnedPolicy : public LegController {
 
   void adjustObservationalTargets();
 
+  /**
+   * @brief Compute Observations from Robot State
+   * @param[in] robot_state_msg Message including robot state
+   */
   void computeObservations(const quad_msgs::msg::RobotState &robot_state_msg);
 
   void runInference();
 
+  /**
+   * @brief Update the current velocity command message
+   * @param[in] msg Current velocity command vector
+   * @param[in] t_now Current time
+   */
   void updateCmdVelMsg(Eigen::VectorXd msg, rclcpp::Time &t_now);
 
+  /**
+   * @brief Compute the leg command array message for a given current state and
+   * reference plan
+   * @param[in] robot_state_msg Message including robot state
+   * @param[in] leg_command_array_msg Message including leg commands to be sent
+   * @param[in] grf_array_msg Message including ground reaction forces
+   */
   bool computeLegCommandArray(const quad_msgs::msg::RobotState &robot_state_msg,
                               quad_msgs::msg::LegCommandArray &leg_command_array_msg, 
                               quad_msgs::msg::GRFArray &grf_array_msg);

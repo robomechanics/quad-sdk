@@ -29,7 +29,7 @@ class RVizInterface {
  public:
   /**
    * @brief Constructor for RVizInterface Class
-   * @param[in] nh ROS NodeHandle to publish and subscribe from
+   * @param[in] node Shared pointer to ROS Node to publish and subscribe from
    * @return Constructed object of type RVizInterface
    */
   RVizInterface(rclcpp::Node::SharedPtr node);
@@ -42,47 +42,48 @@ class RVizInterface {
  private:
   /**
    * @brief Callback function to handle new body plan data
-   * @param[in] msg plan message contining interpolated output of body planner
+   * @param[in] msg Shared pointer to body plan message contining interpolated output of body planner
+   * @param[in] pub_id Identifier of which publisher to use to handle this data
    */
   void robotPlanCallback(const quad_msgs::msg::RobotPlan::SharedPtr msg,
                          const int pub_id);
 
   /**
    * @brief Callback function to handle new grf data
-   * @param[in] msg plan message contining interpolated output of body planner
+   * @param[in] msg Shared pointer to message contining interpolated output of body planner
    */
   void grfCallback(const quad_msgs::msg::GRFArray::SharedPtr msg);
 
   /**
    * @brief Callback function to handle new body plan discrete state data
-   * @param[in] msg plan message contining discrete output of body planner
+   * @param[in] msg Shared pointer to plan message contining discrete output of body planner
    */
   void discreteBodyPlanCallback(const quad_msgs::msg::RobotPlan::SharedPtr msg);
 
   /**
    * @brief Callback function to handle new discrete foot plan data
-   * @param[in] Footstep plan message containing output of footstep planner
+   * @param[in] msg Shared pointer to plan message containing output of footstep planner
    */
   void footPlanDiscreteCallback(
       const quad_msgs::msg::MultiFootPlanDiscrete::SharedPtr msg);
 
   /**
    * @brief Callback function to handle new continous foot plan data
-   * @param[in] SwingLegPlan message containing output of swing leg planner
+   * @param[in] msg Shared pointer to plan message containing output of swing leg planner
    */
   void footPlanContinuousCallback(
       const quad_msgs::msg::MultiFootPlanContinuous::SharedPtr msg);
 
   /**
    * @brief Callback function to handle new state estimate data
-   * @param[in] msg RobotState message containing output of the state estimator
+   * @param[in] msg Shared pointer to RobotState message containing output of the state estimator
    * node
    */
   void stateEstimateCallback(const quad_msgs::msg::RobotState::SharedPtr msg);
 
   /**
    * @brief Callback function to handle new robot state data
-   * @param[in] msg RobotState message containing output of the state estimator
+   * @param[in] msg Shared pointer to RobotState message containing output of the state estimator
    * node
    * @param[in] pub_id Identifier of which publisher to use to handle this data
    */

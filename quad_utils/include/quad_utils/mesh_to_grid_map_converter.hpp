@@ -42,26 +42,49 @@ class MeshToGridMapConverter {
   void advertiseServices();
   void getParametersFromRos();
 
-  // Datacallback
+  /** @brief Callback for incoming mesh messages
+   * @param[in] mesh Shared pointer to the incoming mesh message
+   */
   void meshCallback(const pcl_msgs::msg::PolygonMesh::SharedPtr mesh);
 
-  // Save callback
+  /** @brief Callback for saving the grid map service
+   * @param[in] request Shared pointer to the service request
+   * @param[in] response Shared pointer to the service response
+   * @return True if successful, false otherwise
+   */
   bool saveGridMapService(const std::shared_ptr<grid_map_msgs::srv::ProcessFile::Request> request,
                           std::shared_ptr<grid_map_msgs::srv::ProcessFile::Response> response);
 
-  // Load mesh, service call
+  /** @brief Callback for loading a mesh from file service
+   * @param[in] request Shared pointer to the service request
+   * @param[in] response Shared pointer to the service response
+   * @return True if successful, false otherwise
+   */
   bool loadMeshService(const std::shared_ptr<grid_map_msgs::srv::ProcessFile::Request> request,
                        std::shared_ptr<grid_map_msgs::srv::ProcessFile::Response> response);
 
-  // Load mesh from file
+  /** @brief Load a mesh from file
+   * @param[in] path_to_mesh_to_load Path to the mesh file to load
+   * @return True if successful, false otherwise
+   */
   bool loadMeshFromFile(const std::string& path_to_mesh_to_load);
 
-  // Converts a mesh to grid map and stores the result
+  /** @brief Convert a mesh to a grid map
+   * @param[in] polygon_mesh The input polygon mesh
+   * @param[in] mesh_frame_id The frame id of the input mesh
+   * @param[in] time_stamp_nano_seconds The timestamp of the input mesh in nanoseconds
+   * @return True if successful, false otherwise
+   */
   bool meshToGridMap(const pcl::PolygonMesh& polygon_mesh,
                      const std::string& mesh_frame_id,
                      const uint64_t& time_stamp_nano_seconds);
 
-  // Saves the grid map
+  /** @brief Save the grid map to a file
+   * @param[in] map The grid map to save
+   * @param[in] path_to_file The path to the file where the grid map should be saved
+   * @param[in] topic_name The topic name associated with the grid map
+   * @return True if successful, false otherwise
+   */
   bool saveGridMap(const grid_map::GridMap& map,
                    const std::string& path_to_file,
                    const std::string& topic_name);

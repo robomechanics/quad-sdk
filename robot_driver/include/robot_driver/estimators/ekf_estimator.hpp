@@ -8,6 +8,8 @@ class EKFEstimator : public StateEstimator {
  public:
   /**
    * @brief Constructor for EKFEstimator
+   * @param[in] node Shared pointer to rclcpp::Node
+   * @param[in] robot_ns Robot Namespace
    * @return Constructed object of type EKFEstimator
    */
   EKFEstimator(rclcpp::Node::SharedPtr node, const std::string& robot_ns);
@@ -20,7 +22,7 @@ class EKFEstimator : public StateEstimator {
 
   /**
    * @brief Perform EKF update once
-   * @param[out] last_robot_state_msg_
+   * @param[out] last_robot_state_msg_ Message including robot state
    */
   bool updateOnce(quad_msgs::msg::RobotState& last_robot_state_msg_) override;
 

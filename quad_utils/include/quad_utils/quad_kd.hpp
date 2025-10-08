@@ -35,6 +35,7 @@ class QuadKD {
 
   /**
    * @brief Constructor for QuadKD Class
+   * @param[in] node Shared pointer to ROS Node
    * @param[in] ns Namespace
    * @return Constructed object of type QuadKD
    */
@@ -342,6 +343,8 @@ class QuadKD {
    * @param[in] joint_state Joint positions and velocities
    * @param[in] torques Joint torques
    * @param[in] terrain Map of the terrain for collision checking
+   * @param[out] state_violation Vector of state violations
+   * @param[out] control_violation Vector of control violations
    * @return Boolean for state validity
    */
   bool isValidFullState(const Eigen::VectorXd &body_state,
@@ -358,6 +361,11 @@ class QuadKD {
    * @param[in] foot_velocities Foot velocities
    * @param[in] grfs Ground reaction forces in the world frame
    * @param[in] terrain Map of the terrain for collision checking
+   * @param[in] joint_positions Joint positions
+   * @param[in] joint_velocities Joint velocities
+   * @param[in] torques Joint torques
+   * @param[out] state_violation Vector of state violations
+   * @param[out] control_violation Vector of control violations
    * @return Boolean for state validity
    */
   bool isValidCentroidalState(
@@ -367,6 +375,13 @@ class QuadKD {
       Eigen::VectorXd &joint_velocities, Eigen::VectorXd &torques,
       Eigen::VectorXd &state_violation, Eigen::VectorXd &control_violation);
 
+  
+  
+  /** * @brief Get the ground clearance at a particular point
+   * @param[in] point Point in world frame
+   * @param[in] terrain Map of the terrain for collision checking
+   * @return Ground clearance at the specified point
+   */
   inline double getGroundClearance(const Eigen::Vector3d &point,
                                    const grid_map::GridMap &terrain) {
     grid_map::Position pos = {point.x(), point.y()};

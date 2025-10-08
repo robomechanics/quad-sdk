@@ -7,10 +7,8 @@ namespace math {
 /**
  * @brief Compute the Kronecker product. A composite array made of blocks of the
  second array scaled by the first
-
  * @param[in] m1 first matrix
  * @param[in] m2 second matrix
- *
  * @return A result of the Kronecker product
  */
 Eigen::MatrixXd kron(const Eigen::MatrixXd &m1, const Eigen::MatrixXd &m2) {
@@ -32,10 +30,8 @@ Eigen::MatrixXd kron(const Eigen::MatrixXd &m1, const Eigen::MatrixXd &m2) {
 
 /**
  * @brief Create a block diagonal matrix from provided matrices 3 input version
- *
  * @param m1 first matrix
  * @param m2 second matrix
- *
  * @return Created a block diagonal matrix
  */
 Eigen::MatrixXd block_diag(const Eigen::MatrixXd &m1,
@@ -54,11 +50,9 @@ Eigen::MatrixXd block_diag(const Eigen::MatrixXd &m1,
 
 /**
  * @brief Create a block diagonal matrix from provided matrices 3 input version
- *
  * @param[in] m1 first matrix
  * @param[in] m2 second matrix
  * @param[in] m3 third matrix
- *
  * @return Created a block diagonal matrix
  */
 Eigen::MatrixXd block_diag(const Eigen::MatrixXd &m1, const Eigen::MatrixXd &m2,
@@ -80,11 +74,9 @@ Eigen::MatrixXd block_diag(const Eigen::MatrixXd &m1, const Eigen::MatrixXd &m2,
 
 /**
  * @brief  Gives a new shape to an array without changing its data.
- *
  * @param[in] x input matrix
  * @param[in] r the number of row elements
- * @param[in] c the number of collum elements
- *
+ * @param[in] c the number of column elements
  * @return The new shape matrix
  */
 Eigen::MatrixXd reshape(Eigen::MatrixXd x, uint32_t r, uint32_t c) {

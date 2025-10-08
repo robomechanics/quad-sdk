@@ -79,60 +79,65 @@ class RobotDriver {
 
   /**
    * @brief Verifies and updates new control mode
-   * @param[in] msg New control mode
+   * @param[in] msg Shared pointer to msg for new control mode
    */
   void controlModeCallback(const std_msgs::msg::UInt8::SharedPtr msg);
 
   /**
    * @brief Callback function to handle new local plan (states and GRFs)
-   * @param[in] msg input message contining the local plan
+   * @param[in] msg Shared pointer to input message containing the local plan
    */
   void localPlanCallback(const quad_msgs::msg::RobotPlan::SharedPtr msg);
 
   /**
    * @brief Callback function to handle current robot state
-   * @param[in] msg input message contining current robot state
+   * @param[in] msg Shared pointer to input message containing current robot state
    */
   void robotStateCallback(const quad_msgs::msg::RobotState::SharedPtr msg);
 
   /**
    * @brief Callback function to handle current robot pose
-   * @param[in] msg input message contining current robot pose
+   * @param[in] msg Shared pointer to input message containing current robot pose
    */
   void mocapCallback(const geometry_msgs::msg::PoseStamped::SharedPtr msg);
 
   /**
    * @brief Callback function to handle reference trajectory state
-   * @param[in] msg input message contining reference trajectory state
+   * @param[in] msg Shared pointer to input message containing reference trajectory state
    */
   void trajectoryStateCallback(const quad_msgs::msg::RobotState::SharedPtr msg);
 
   /**
    * @brief Callback to handle new leg override commands
-   * @param[in] msg Leg override commands
+   * @param[in] msg Shared pointer to msg for leg override commands
    */
   void singleJointCommandCallback(const geometry_msgs::msg::Vector3::SharedPtr msg);
 
   /**
    * @brief Callback to handle new body force estimates
-   * @param[in] msg body force estimates
+   * @param[in] msg Shared pointer to body force estimates
    */
   void bodyForceEstimateCallback(
       const quad_msgs::msg::BodyForceEstimate::SharedPtr msg);
 
   /**
    * @brief Callback to handle control restart flag messages
+   * @param[in] msg Shared pointer to control restart flag message
    */
   void controlRestartFlagCallback(const std_msgs::msg::Bool::SharedPtr msg);
 
   /**
    * @brief Callback to handle new remote heartbeat messages
-   * @param[in] msg Remote heartbeat message
+   * @param[in] msg Shared pointer to remote heartbeat message
    */
   void remoteHeartbeatCallback(const std_msgs::msg::Header::SharedPtr msg);
 
-
+  /**
+   * @brief Callback to handle velocity commands
+   * @param[in] msg Shared pointer to input message containing velocity command
+   */
   void cmdVelCallback(const geometry_msgs::msg::Twist::SharedPtr msg);
+  
   /**
    * @brief Check to make sure required messages are fresh
    */

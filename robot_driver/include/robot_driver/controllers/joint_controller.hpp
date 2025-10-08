@@ -14,6 +14,8 @@ class JointController : public LegController {
  public:
   /**
    * @brief Constructor for JointController
+   * @param[in] node Shared pointer to rclcpp::Node
+   * @param[in] robot_ns Robot Namespace
    * @return Constructed object of type JointController
    */
   JointController(rclcpp::Node::SharedPtr node, std::string &robot_ns);
@@ -23,9 +25,10 @@ class JointController : public LegController {
   /**
    * @brief Compute the leg command array message for a given current state and
    * reference plan
-   * @param[out] leg_command_array_msg Command message after solving inverse
+   * @param[in] robot_state_msg Message including robot state
+   * @param[in] leg_command_array_msg Command message after solving inverse
    * dynamics and including reference setpoints for each joint
-   * @param[out] grf_array_msg GRF command message
+   * @param[in] grf_array_msg GRF command message
    */
   bool computeLegCommandArray(const quad_msgs::msg::RobotState &robot_state_msg,
                               quad_msgs::msg::LegCommandArray &leg_command_array_msg,

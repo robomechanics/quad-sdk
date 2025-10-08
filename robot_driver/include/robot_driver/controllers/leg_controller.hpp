@@ -30,6 +30,8 @@ class LegController {
  public:
   /**
    * @brief Constructor for LegController
+   * @param[in] node Shared pointer to rclcpp::Node
+   * @param[in] robot_ns Robot Namespace
    * @return Constructed object of type LegController
    */
   LegController(rclcpp::Node::SharedPtr node, std::string& robot_ns);
@@ -86,13 +88,17 @@ class LegController {
   /**
    * @brief Compute the leg command array message for a given current state and
    * reference plan
-   * @param[in] local_plan_msg Message of the local referance plan
+   * @param[in] msg Shared pointer to message of the local referance plan
+   * @param[in] t_msg Time at which the plan message was received
    */
   void updateLocalPlanMsg(quad_msgs::msg::RobotPlan::SharedPtr msg,
                           const rclcpp::Time &t_msg);
 
   /**
    * @brief Compute the leg command array message
+   * @param[in] robot_state_msg Message including robot state
+   * @param[out] leg_command_array_msg Message including leg commands to be sent
+   * @param[out] grf_array_msg Message including ground reaction forces
    */
   virtual bool computeLegCommandArray(
       const quad_msgs::msg::RobotState &robot_state_msg,

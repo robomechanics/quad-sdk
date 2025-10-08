@@ -15,11 +15,11 @@ class CmdVelPublisher{
  public:
   /**
   * @brief Constructor for CmdVelPublisher Class
-  * @param[in] node ROS Node Shared Pointer to publish and subscribe from
+  * @param[in] node Shared Pointer to ROS node to publish and subscribe from
   * @return Construced Object of type CmdVelPublisher
-  * 
   */
   CmdVelPublisher(rclcpp::Node::SharedPtr node_);
+  
   /**
    * @brief Calls ros spin_some and pubs data at set frequency
    * 
@@ -33,7 +33,7 @@ class CmdVelPublisher{
    */
   void publishCmdVel();
   /**
-   * @brief Sample a new random twist commadn
+   * @brief Sample a new random twist command
    * 
    */
   void sampleNewCmd();

@@ -28,7 +28,7 @@ class TrajectoryPublisher {
  public:
   /**
    * @brief Constructor for TrajectoryPublisher Class
-   * @param[in] node ROS Node Shared Pointer to publish and subscribe from
+   * @param[in] node Shared Pointer to ROS Node to publish and subscribe from
    * @return Constructed object of type TrajectoryPublisher
    */
   TrajectoryPublisher(rclcpp::Node::SharedPtr node_);
@@ -46,7 +46,7 @@ class TrajectoryPublisher {
 
   /**
    * @brief Callback function to handle new body plan data
-   * @param[in] msg Body plan message contining interpolated output of body
+   * @param[in] msg Shared pointer to body plan message contining interpolated output of body
    * planner
    */
   void robotPlanCallback(const quad_msgs::msg::RobotPlan::SharedPtr msg);

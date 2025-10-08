@@ -300,6 +300,20 @@ class quadNLP : public TNLP {
       eval_sparsity_vec_;
 
   /** Default constructor */
+  /** @brief Construct a new quadNLP object
+   * @param[in] default_system Default system type for all finite elements
+   * @param[in] N Horizon length
+   * @param[in] dt Time duration for each finite element
+   * @param[in] mu Friction coefficient
+   * @param[in] panic_weights Weight on panic variables in cost function
+   * @param[in] constraint_panic_weights Weight on panic variables in constraints
+   * @param[in] Q_temporal_factor Temporal scaling factor for state cost
+   * @param[in] R_temporal_factor Temporal scaling factor for control cost
+   * @param[in] fixed_complexity_schedule Fixed complexity schedule 
+   * @param[in] config NLP configuration struct
+   * @param[in] node Shared Pointer to ROS Node to publish and subscribe from
+   * @param[in] robot_ns Robot Namespace
+   */
   quadNLP(SystemID default_system, int N, double dt, double mu,
           double panic_weights, double constraint_panic_weights,
           double Q_temporal_factor, double R_temporal_factor,
@@ -317,11 +331,25 @@ class quadNLP : public TNLP {
 
   /**@name Overloaded from TNLP */
   //@{
-  /** Method to return some info about the NLP */
+  /** @brief Method to return some info about the NLP 
+   * @param[in] n Number of variables
+   * @param[in] m Number of constraints
+   * @param[in] nnz_jac_g Number of nonzeros in the constraint Jacobian
+   * @param[in] nnz_h_lag Number of nonzeros in the Hessian of the Lagrangian
+   * @param[in] index_style The indexing style for the matrices
+  */
   virtual bool get_nlp_info(Index &n, Index &m, Index &nnz_jac_g,
                             Index &nnz_h_lag, IndexStyleEnum &index_style);
 
-  /** Method to return the bounds for my problem */
+  /** @brief Method to return the bounds for my problem 
+   * @param[in] i Index of the finite element to get bounds for
+   * @param[in] x_lb Lower bounds on the state variables
+   * @param[in] x_ub Upper bounds on the state variables
+   * @param[in] u_lb Lower bounds on the control variables
+   * @param[in] u_ub Upper bounds on the control variables
+   * @param[in] g_l Lower bounds on the constraint variables
+   * @param[in] g_u Upper bounds on the constraint variables
+  */
   bool get_bounds_info_single_complex_fe(int i, Eigen::VectorXd &x_lb,
                                          Eigen::VectorXd &x_ub,
                                          Eigen::VectorXd &u_lb,
@@ -329,33 +357,83 @@ class quadNLP : public TNLP {
                                          Eigen::VectorXd &g_l,
                                          Eigen::VectorXd &g_u);
 
-  /** Method to return the bounds for my problem */
+  /** @brief Method to return the bounds for my problem 
+   * @param[in] i Index of the finite element to get bounds for
+   * @param[in] x_l Lower bounds on the state variables
+   * @param[in] x_u Upper bounds on the state variables
+   * @param[in] m Number of control variables
+   * @param[in] g_l Lower bounds on the constraint variables
+   * @param[in] g_u Upper bounds on the constraint variables
+  */
   virtual bool get_bounds_info(Index n, Number *x_l, Number *x_u, Index m,
                                Number *g_l, Number *g_u);
 
-  /** Method to return the starting point for the algorithm */
+  /** @brief to return the starting point for the algorithm 
+   * @param[in] n Number of variables
+   * @param[in] init_x Whether to initialize the primal variables
+   * @param[in] x Initial guess for the primal variables
+   * @param[in] init_z Whether to initialize the bound multipliers
+   * @param[in] z_L Initial guess for the lower bound multipliers
+   * @param[in] z_U Initial guess for the upper bound multipliers
+   * @param[in] m Number of constraints
+   * @param[in] init_lambda Whether to initialize the constraint multipliers
+   * @param[in] lambda Initial guess for the constraint multipliers
+  */
   virtual bool get_starting_point(Index n, bool init_x, Number *x, bool init_z,
                                   Number *z_L, Number *z_U, Index m,
                                   bool init_lambda, Number *lambda);
 
-  /** Method to return the objective value */
+  /** @brief Method to return the objective value 
+   * @param[in] n Number of variables
+   * @param[in] x Current value of the primal variables
+   * @param[in] new_x Whether the primal variables have changed since the last
+   *        call  
+   * @param[in] obj_value Output value of the objective function
+  */
   virtual bool eval_f(Index n, const Number *x, bool new_x, Number &obj_value);
 
-  /** Method to return the gradient of the objective */
+  /** @brief Method to return the gradient of the objective 
+   * @param[in] n Number of variables
+   * @param[in] x Current value of the primal variables
+   * @param[in] new_x Whether the primal variables have changed since the last
+   *        call  
+   * @param[in] grad_f Output value of the gradient of the objective function
+  */
   virtual bool eval_grad_f(Index n, const Number *x, bool new_x,
                            Number *grad_f);
 
-  /** Method to return the constraint residual for requested data */
+  /** @brief Method to return the constraint residual for requested data 
+   * @param[in] i Index of the finite element to get constraint residual for
+   * @param[in] x0 State at the beginning of the finite element
+   * @param[in] u Control input for the finite element
+   * @param[in] x1 State at the end of the finite element
+  */
   Eigen::VectorXd eval_g_single_complex_fe(int i, const Eigen::VectorXd &x0,
                                            const Eigen::VectorXd &u,
                                            const Eigen::VectorXd &x1);
 
-  /** Method to return the constraint residuals */
+  /** @brief Method to return the constraint residuals 
+   * @param[in] n Number of variables
+   * @param[in] x Current value of the primal variables
+   * @param[in] new_x Whether the primal variables have changed since the last
+   *        call  
+   * @param[in] m Number of constraints
+   * @param[in] g Output value of the constraint residuals
+  */
   virtual bool eval_g(Index n, const Number *x, bool new_x, Index m, Number *g);
 
-  /** Method to return:
+  /** @brief Method to return:
    *   1) The structure of the jacobian (if "values" is NULL)
    *   2) The values of the jacobian (if "values" is not NULL)
+   * @param[in] n Number of variables
+   * @param[in] x Current value of the primal variables
+   * @param[in] new_x Whether the primal variables have changed since the last
+   *       call
+   * @param[in] m Number of constraints
+   * @param[in] nele_jac Number of nonzeros in the Jacobian
+   * @param[in] iRow Row indices of the nonzeros
+   * @param[in] jCol Column indices of the nonzeros
+   * @param[in] values Values of the nonzeros (if NULL, return the structure
    */
   virtual bool eval_jac_g(Index n, const Number *x, bool new_x, Index m,
                           Index nele_jac, Index *iRow, Index *jCol,
@@ -363,9 +441,23 @@ class quadNLP : public TNLP {
 
   virtual void compute_nnz_jac_g();
 
-  /** Method to return:
+  /** @brief Method to return:
    *   1) The structure of the hessian of the lagrangian (if "values" is NULL)
    *   2) The values of the hessian of the lagrangian (if "values" is not NULL)
+   * @param[in] n Number of variables
+   * @param[in] x Current value of the primal variables
+   * @param[in] new_x Whether the primal variables have changed since the last
+   *       call
+   * @param[in] obj_factor The scaling factor for the objective function in the
+   *       lagrangian
+   * @param[in] m Number of constraints
+   * @param[in] lambda The multipliers for the constraints in the lagrangian
+   * @param[in] new_lambda Whether the multipliers have changed since the last
+   *       call
+   * @param[in] nele_hess Number of nonzeros in the Hessian
+   * @param[in] iRow Row indices of the nonzeros
+   * @param[in] jCol Column indices of the nonzeros
+   * @param[in] values Values of the nonzeros (if NULL, return the structure
    */
   virtual bool eval_h(Index n, const Number *x, bool new_x, Number obj_factor,
                       Index m, const Number *lambda, bool new_lambda,
@@ -374,16 +466,45 @@ class quadNLP : public TNLP {
 
   virtual void compute_nnz_h();
 
-  /** This method is called when the algorithm is complete so the TNLP can
-   * store/write the solution */
+  /** @brief This method is called when the algorithm is complete so the TNLP can
+   * store/write the solution
+   * @param[in] status The solver status
+   * @param[in] n Number of variables
+   * @param[in] x Final value of the primal variables
+   * @param[in] z_L Final value of the lower bound multipliers
+   * @param[in] z_U Final value of the upper bound multipliers
+   * @param[in] m Number of constraints
+   * @param[in] g Final value of the constraint residuals
+   * @param[in] lambda Final value of the constraint multipliers
+   * @param[in] obj_value Final value of the objective function
+   * @param[in] ip_data Pointer to an IpoptData object containing
+   *       additional information
+   * @param[in] ip_cq Pointer to an IpoptCalculatedQuantities object
+   *       containing additional information
+   */
   virtual void finalize_solution(SolverReturn status, Index n, const Number *x,
                                  const Number *z_L, const Number *z_U, Index m,
                                  const Number *g, const Number *lambda,
                                  Number obj_value, const IpoptData *ip_data,
                                  IpoptCalculatedQuantities *ip_cq);
 
+  /** @brief 
+   * @param[in] nlp_prev Previous nlp object to get initial guess from
+   * @param[in] shift_idx Number of indices to shift the initial guess by
+   */
   virtual void update_initial_guess(const quadNLP &nlp_prev, int shift_idx);
 
+  /** @brief Method to update the solver with new data 
+   * @param[in] initial_state Current state of the robot
+   * @param[in] ref_traj Reference trajectory for the horizon
+   * @param[in] foot_positions Foot positions in world frame
+   * @param[in] contact_schedule Contact schedule for the horizon
+   * @param[in] adaptive_complexity_schedule Adaptive complexity schedule for the horizon
+   * @param[in] ground_height Ground height for each foot at each finite element
+   * @param[in] first_element_duration Time duration to the next plan index
+   * @param[in] plan_index_diff If the current solving is duplicated in the same index
+   * @param[in] init Whether this is the first time the solver is being initialized
+   */
   virtual void update_solver(
       const Eigen::VectorXd &initial_state, const Eigen::MatrixXd &ref_traj,
       const Eigen::MatrixXd &foot_positions,
@@ -394,10 +515,18 @@ class quadNLP : public TNLP {
       const bool &init);
 
   void update_structure();
-
+  
+  /** @brief Get the lifted trajectory 
+   * @param[out] state_traj_lifted Lifted state trajectory
+   * @param[out] control_traj_lifted Lifted control trajectory
+   */
   void get_lifted_trajectory(Eigen::MatrixXd &state_traj_lifted,
                              Eigen::MatrixXd &control_traj_lifted);
 
+  /** @brief Get the heuristic trajectory 
+   * @param[out] state_traj_heuristic Heuristic state trajectory
+   * @param[out] control_traj_heuristic Heuristic control trajectory
+   */
   void get_heuristic_trajectory(Eigen::MatrixXd &state_traj_heuristic,
                                 Eigen::MatrixXd &control_traj_heuristic);
 

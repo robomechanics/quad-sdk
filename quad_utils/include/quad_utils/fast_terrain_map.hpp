@@ -24,18 +24,18 @@ class FastTerrainMap {
   /**
    * @brief Load data from a grid_map::GridMap object into a FastTerrainMap
    * object
-   * @param[in] int The number of elements in the x direction
-   * @param[in] int The number of elements in the xy direction
-   * @param[in] std::vector<double> The vector of x data
-   * @param[in] std::vector<double> The vector of y data
-   * @param[in] std::vector<std::vector<double>> The nested vector of z data at
-   * each [x,y] location
-   * @param[in] std::vector<std::vector<double>> The nested vector of the x
-   * component of the gradient at each [x,y] location
-   * @param[in] std::vector<std::vector<double>> The nested vector of the y
-   * component of the gradient at each [x,y] location
-   * @param[in] std::vector<std::vector<double>> The nested vector of the z
-   * component of the gradient at each [x,y] location
+   * @param[in] x_size The number of elements in the x direction
+   * @param[in] y_size The number of elements in the y direction
+   * @param[in] x_data The vector of x data
+   * @param[in] y_data The vector of y data
+   * @param[in] z_data The nested vector of z data at each [x,y] location
+   * @param[in] nx_data The nested vector of the x component of the gradient at each [x,y] location
+   * @param[in] ny_data The nested vector of the y component of the gradient at each [x,y] location
+   * @param[in] nz_data The nested vector of the z component of the gradient at each [x,y] location
+   * @param[in] z_data_filt The nested vector of filtered z data at each [x,y] location
+   * @param[in] nx_data_filt The nested vector of the filtered x component of the gradient at each [x,y] location
+   * @param[in] ny_data_filt The nested vector of the filtered y component of the gradient at each [x,y] location
+   * @param[in] nz_data_filt The nested vector of the filtered z component of the gradient at each [x,y] location
    */
   void loadData(int x_size, int y_size, std::vector<double> x_data,
                 std::vector<double> y_data,

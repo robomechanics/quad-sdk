@@ -26,6 +26,7 @@ inline double getROSMessageAgeInMs(std_msgs::msg::Header header,
 
 /**
  * @brief Gets the relative age of a timestamped header
+ * @param[in] node Shared pointer to ROS Node
  * @param[in] header ROS Header that we wish to compute the age of
  * @return Age in ms (compared to ros::Time::now())
  */
@@ -36,6 +37,7 @@ inline double getROSMessageAgeInMs(rclcpp::Node::SharedPtr &node, std_msgs::msg:
 
 /**
  * @brief Gets the relative time (in s) since the beginning of the plan
+ * @param[in] node Shared pointer to ROS Node
  * @param[in] plan_start ROS Time to to compare to
  * @return Time in plan (compared to ros::Time::now())
  */
@@ -46,8 +48,9 @@ inline double getDurationSinceTime(rclcpp::Node::SharedPtr &node, rclcpp::Time p
 
 /**
  * @brief Gets the index associated with a given time
- * @param[out] index Index in plan (compared to ros::Time::now())
- * @param[out] first_element_duration Time duration to next index in plan
+ * @param[in] node Shared pointer to ROS Node
+ * @param[in] index Index in plan (compared to ros::Time::now())
+ * @param[in] first_element_duration Time duration to next index in plan
  * (compared to ros::Time::now())
  * @param[in] plan_start ROS Time to to compare to
  * @param[in] dt Timestep used to discretize the plan
@@ -61,7 +64,7 @@ inline void getPlanIndex(rclcpp::Node::SharedPtr &node, rclcpp::Time plan_start,
 
 /**
  * @brief Load ros parameter into class variable
- * @param[in] nh ROS nodehandle
+ * @param[in] node Shared pointer to ROS Node
  * @param[in] paramName string storing key of param in rosparam server
  * @param[in] varName address of variable to store loaded param
  * @return boolean success
@@ -86,7 +89,7 @@ inline bool loadROSParam(rclcpp::Node::SharedPtr &node, std::string paramName,
 
 /**
  * @brief Load ros parameter into class variable
- * @param[in] nh ROS nodehandle
+ * @param[in] node Shared pointer to ROS Node
  * @param[in] paramName string storing key of param in rosparam server
  * @param[in] varName address of variable to store loaded param
  * @param[in] defaultVal default value to use if rosparam server doesn't contain

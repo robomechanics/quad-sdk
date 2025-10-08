@@ -19,7 +19,7 @@ class BodyForceEstimator {
  public:
   /**
    * @brief Constructor for BodyForceEstimator Class
-   * @param[in] nh ROS NodeHandle to publish and subscribe from
+   * @param[in] node Shared Pointer to ROS Node to publish and subscribe from
    * @return Constructed object of type BodyForceEstimator
    */
   BodyForceEstimator(rclcpp::Node::SharedPtr node);
@@ -31,7 +31,7 @@ class BodyForceEstimator {
 
   /**
    * @brief Callback function to handle new state estimates
-   * @param[in] Robot state message contining position and velocity for each
+   * @param[in] Shared Pointer to robot state message containing position and velocity for each
    * joint and robot body
    */
   void robotStateCallback(const quad_msgs::msg::RobotState::SharedPtr msg);
@@ -83,7 +83,7 @@ class BodyForceEstimator {
   /// Momentum estimate
   double p_hat[12];
 
-  /// Most recent local plan
+  /// Shared pointer to most recent local plan
   quad_msgs::msg::RobotPlan::SharedPtr last_local_plan_msg_;
 
   /// Previous foot state

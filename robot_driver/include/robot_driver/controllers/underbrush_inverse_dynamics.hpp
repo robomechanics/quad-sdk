@@ -14,13 +14,15 @@ class UnderbrushInverseDynamicsController : public LegController {
  public:
   /**
    * @brief Constructor for InverseDynamicsController
+   * @param[in] node Shared pointer to rclcpp::Node
+   * @param[in] robot_ns Robot Namespace
    * @return Constructed object of type InverseDynamicsController
    */
   UnderbrushInverseDynamicsController(rclcpp::Node::SharedPtr node, std::string& robot_ns);
 
   /**
    * @brief Update body force estimate
-   * @param[in] msg current force estimates
+   * @param[in] msg Shared pointer to current force estimates
    */
   void updateBodyForceEstimate(
       const quad_msgs::msg::BodyForceEstimate::SharedPtr msg);
@@ -33,6 +35,7 @@ class UnderbrushInverseDynamicsController : public LegController {
    * @param[in] tau_contact_end Threshold for contact ending in N m
    * @param[in] min_switch Minimum time between transitions in s
    * @param[in] t_down Time for foot to come down in s
+   * @param[in] t_up Time for foot to go up in s
    */
   void setUnderbrushParams(double retract_vel, double tau_push,
                            double tau_contact_start, double tau_contact_end,
