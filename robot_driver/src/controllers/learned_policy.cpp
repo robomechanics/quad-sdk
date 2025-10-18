@@ -138,11 +138,11 @@ void LearnedPolicy::computeObservations(const quad_msgs::msg::RobotState &robot_
     prev_action_ = raw_actions_;
   }
   
-  // obs_.resize(48);
-  // obs_ << base_lin_vel, base_ang_vel, proj_gravity, vel_cmd, joint_positions, joint_velocities, prev_action_;
+  obs_.resize(48);
+  obs_ << base_lin_vel, base_ang_vel, proj_gravity, vel_cmd, joint_positions, joint_velocities, prev_action_;
 
-  obs_.resize(45);
-  obs_ << base_ang_vel, proj_gravity, vel_cmd, joint_positions, joint_velocities, prev_action_;
+  //obs_.resize(45);
+  //obs_ << base_ang_vel, proj_gravity, vel_cmd, joint_positions, joint_velocities, prev_action_;
 }
 
 void LearnedPolicy::runInference(){

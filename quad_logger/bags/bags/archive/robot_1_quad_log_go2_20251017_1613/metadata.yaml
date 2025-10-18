@@ -1,0 +1,352 @@
+rosbag2_bagfile_information:
+  version: 9
+  storage_identifier: mcap
+  duration:
+    nanoseconds: 7174886648
+  starting_time:
+    nanoseconds_since_epoch: 1760732027865061139
+  message_count: 27317
+  topics_with_message_count:
+    - topic_metadata:
+        name: /robot_1/state/ground_truth
+        type: quad_msgs/msg/RobotState
+        serialization_format: cdr
+        offered_qos_profiles:
+          - history: unknown
+            depth: 0
+            reliability: reliable
+            durability: volatile
+            deadline:
+              sec: 9223372036
+              nsec: 854775807
+            lifespan:
+              sec: 9223372036
+              nsec: 854775807
+            liveliness: automatic
+            liveliness_lease_duration:
+              sec: 9223372036
+              nsec: 854775807
+            avoid_ros_namespace_conventions: false
+        type_description_hash: RIHS01_357fe057d0e1518b96dd12482ad262a3d94ae0383affd1e87fe7c3f6e8e53a6a
+      message_count: 3308
+    - topic_metadata:
+        name: /robot_1/body_force/toe_forces
+        type: quad_msgs/msg/GRFArray
+        serialization_format: cdr
+        offered_qos_profiles:
+          - history: unknown
+            depth: 0
+            reliability: reliable
+            durability: volatile
+            deadline:
+              sec: 9223372036
+              nsec: 854775807
+            lifespan:
+              sec: 9223372036
+              nsec: 854775807
+            liveliness: automatic
+            liveliness_lease_duration:
+              sec: 9223372036
+              nsec: 854775807
+            avoid_ros_namespace_conventions: false
+        type_description_hash: RIHS01_34c376d2b6ddfc9ee40f76aed35a29ff7a881034871cdc8d476f6129456a647a
+      message_count: 1665
+    - topic_metadata:
+        name: /robot_1/foot_plan_discrete
+        type: quad_msgs/msg/MultiFootPlanDiscrete
+        serialization_format: cdr
+        offered_qos_profiles:
+          - history: unknown
+            depth: 0
+            reliability: reliable
+            durability: volatile
+            deadline:
+              sec: 9223372036
+              nsec: 854775807
+            lifespan:
+              sec: 9223372036
+              nsec: 854775807
+            liveliness: automatic
+            liveliness_lease_duration:
+              sec: 9223372036
+              nsec: 854775807
+            avoid_ros_namespace_conventions: false
+        type_description_hash: RIHS01_81c4d52d63743464d1c76c5dddfd288d1755d6e4443b5fd79d9f1b915a5fea2a
+      message_count: 0
+    - topic_metadata:
+        name: /robot_1/control/mode
+        type: std_msgs/msg/UInt8
+        serialization_format: cdr
+        offered_qos_profiles:
+          - history: unknown
+            depth: 0
+            reliability: reliable
+            durability: volatile
+            deadline:
+              sec: 9223372036
+              nsec: 854775807
+            lifespan:
+              sec: 9223372036
+              nsec: 854775807
+            liveliness: automatic
+            liveliness_lease_duration:
+              sec: 9223372036
+              nsec: 854775807
+            avoid_ros_namespace_conventions: false
+        type_description_hash: RIHS01_6138bd83d8c3569cb80a667db03cfc1629f529fee79d944c39c34e352e72f010
+      message_count: 7
+    - topic_metadata:
+        name: /robot_1/control/joint_command
+        type: quad_msgs/msg/LegCommandArray
+        serialization_format: cdr
+        offered_qos_profiles:
+          - history: unknown
+            depth: 0
+            reliability: reliable
+            durability: volatile
+            deadline:
+              sec: 9223372036
+              nsec: 854775807
+            lifespan:
+              sec: 9223372036
+              nsec: 854775807
+            liveliness: automatic
+            liveliness_lease_duration:
+              sec: 9223372036
+              nsec: 854775807
+            avoid_ros_namespace_conventions: false
+        type_description_hash: RIHS01_8f70565d793a07553e4a8c8d144cab9541669cbdf880a9f0e5888181c701d9e0
+      message_count: 3494
+    - topic_metadata:
+        name: /robot_1/state/ground_truth_body_frame
+        type: quad_msgs/msg/RobotState
+        serialization_format: cdr
+        offered_qos_profiles:
+          - history: unknown
+            depth: 0
+            reliability: reliable
+            durability: volatile
+            deadline:
+              sec: 9223372036
+              nsec: 854775807
+            lifespan:
+              sec: 9223372036
+              nsec: 854775807
+            liveliness: automatic
+            liveliness_lease_duration:
+              sec: 9223372036
+              nsec: 854775807
+            avoid_ros_namespace_conventions: false
+        type_description_hash: RIHS01_357fe057d0e1518b96dd12482ad262a3d94ae0383affd1e87fe7c3f6e8e53a6a
+      message_count: 3257
+    - topic_metadata:
+        name: /robot_1/control/grfs
+        type: quad_msgs/msg/GRFArray
+        serialization_format: cdr
+        offered_qos_profiles:
+          - history: unknown
+            depth: 0
+            reliability: reliable
+            durability: volatile
+            deadline:
+              sec: 9223372036
+              nsec: 854775807
+            lifespan:
+              sec: 9223372036
+              nsec: 854775807
+            liveliness: automatic
+            liveliness_lease_duration:
+              sec: 9223372036
+              nsec: 854775807
+            avoid_ros_namespace_conventions: false
+        type_description_hash: RIHS01_34c376d2b6ddfc9ee40f76aed35a29ff7a881034871cdc8d476f6129456a647a
+      message_count: 3493
+    - topic_metadata:
+        name: /robot_1/state/trajectory
+        type: quad_msgs/msg/RobotState
+        serialization_format: cdr
+        offered_qos_profiles:
+          - history: unknown
+            depth: 0
+            reliability: reliable
+            durability: volatile
+            deadline:
+              sec: 9223372036
+              nsec: 854775807
+            lifespan:
+              sec: 9223372036
+              nsec: 854775807
+            liveliness: automatic
+            liveliness_lease_duration:
+              sec: 9223372036
+              nsec: 854775807
+            avoid_ros_namespace_conventions: false
+        type_description_hash: RIHS01_357fe057d0e1518b96dd12482ad262a3d94ae0383affd1e87fe7c3f6e8e53a6a
+      message_count: 0
+    - topic_metadata:
+        name: /robot_1/state/estimate
+        type: quad_msgs/msg/RobotState
+        serialization_format: cdr
+        offered_qos_profiles:
+          - history: unknown
+            depth: 0
+            reliability: reliable
+            durability: volatile
+            deadline:
+              sec: 9223372036
+              nsec: 854775807
+            lifespan:
+              sec: 9223372036
+              nsec: 854775807
+            liveliness: automatic
+            liveliness_lease_duration:
+              sec: 9223372036
+              nsec: 854775807
+            avoid_ros_namespace_conventions: false
+        type_description_hash: RIHS01_357fe057d0e1518b96dd12482ad262a3d94ae0383affd1e87fe7c3f6e8e53a6a
+      message_count: 3495
+    - topic_metadata:
+        name: /robot_1/cmd_vel_stamped
+        type: geometry_msgs/msg/TwistStamped
+        serialization_format: cdr
+        offered_qos_profiles:
+          - history: unknown
+            depth: 0
+            reliability: reliable
+            durability: volatile
+            deadline:
+              sec: 9223372036
+              nsec: 854775807
+            lifespan:
+              sec: 9223372036
+              nsec: 854775807
+            liveliness: automatic
+            liveliness_lease_duration:
+              sec: 9223372036
+              nsec: 854775807
+            avoid_ros_namespace_conventions: false
+        type_description_hash: RIHS01_5f0fcd4f81d5d06ad9b4c4c63e3ea51b82d6ae4d0558f1d475229b1121db6f64
+      message_count: 3492
+    - topic_metadata:
+        name: /robot_1/body_force/joint_torques
+        type: quad_msgs/msg/BodyForceEstimate
+        serialization_format: cdr
+        offered_qos_profiles:
+          - history: unknown
+            depth: 0
+            reliability: reliable
+            durability: volatile
+            deadline:
+              sec: 9223372036
+              nsec: 854775807
+            lifespan:
+              sec: 9223372036
+              nsec: 854775807
+            liveliness: automatic
+            liveliness_lease_duration:
+              sec: 9223372036
+              nsec: 854775807
+            avoid_ros_namespace_conventions: false
+        type_description_hash: RIHS01_ea66e8f0ef271ebe09c8bf4d5c61b974707c06d3a33a024195eb86d6df2db349
+      message_count: 1665
+    - topic_metadata:
+        name: /robot_1/state/grfs
+        type: quad_msgs/msg/GRFArray
+        serialization_format: cdr
+        offered_qos_profiles:
+          - history: unknown
+            depth: 0
+            reliability: reliable
+            durability: volatile
+            deadline:
+              sec: 9223372036
+              nsec: 854775807
+            lifespan:
+              sec: 9223372036
+              nsec: 854775807
+            liveliness: automatic
+            liveliness_lease_duration:
+              sec: 9223372036
+              nsec: 854775807
+            avoid_ros_namespace_conventions: false
+        type_description_hash: RIHS01_34c376d2b6ddfc9ee40f76aed35a29ff7a881034871cdc8d476f6129456a647a
+      message_count: 3441
+    - topic_metadata:
+        name: /robot_1/foot_plan_continuous
+        type: quad_msgs/msg/MultiFootPlanContinuous
+        serialization_format: cdr
+        offered_qos_profiles:
+          - history: unknown
+            depth: 0
+            reliability: reliable
+            durability: volatile
+            deadline:
+              sec: 9223372036
+              nsec: 854775807
+            lifespan:
+              sec: 9223372036
+              nsec: 854775807
+            liveliness: automatic
+            liveliness_lease_duration:
+              sec: 9223372036
+              nsec: 854775807
+            avoid_ros_namespace_conventions: false
+        type_description_hash: RIHS01_60297a8e265faabe37403feca5cd714cceb1672292c4c7b335768bb26b37fff1
+      message_count: 0
+    - topic_metadata:
+        name: /robot_1/global_plan
+        type: quad_msgs/msg/RobotPlan
+        serialization_format: cdr
+        offered_qos_profiles:
+          - history: unknown
+            depth: 0
+            reliability: reliable
+            durability: volatile
+            deadline:
+              sec: 9223372036
+              nsec: 854775807
+            lifespan:
+              sec: 9223372036
+              nsec: 854775807
+            liveliness: automatic
+            liveliness_lease_duration:
+              sec: 9223372036
+              nsec: 854775807
+            avoid_ros_namespace_conventions: false
+        type_description_hash: RIHS01_a935f8de718c63bfe73623ddf4a7010d1bb84bec56a635a88810d2af0a686431
+      message_count: 0
+    - topic_metadata:
+        name: /robot_1/local_plan
+        type: quad_msgs/msg/RobotPlan
+        serialization_format: cdr
+        offered_qos_profiles:
+          - history: unknown
+            depth: 0
+            reliability: reliable
+            durability: volatile
+            deadline:
+              sec: 9223372036
+              nsec: 854775807
+            lifespan:
+              sec: 9223372036
+              nsec: 854775807
+            liveliness: automatic
+            liveliness_lease_duration:
+              sec: 9223372036
+              nsec: 854775807
+            avoid_ros_namespace_conventions: false
+        type_description_hash: RIHS01_a935f8de718c63bfe73623ddf4a7010d1bb84bec56a635a88810d2af0a686431
+      message_count: 0
+  compression_format: ""
+  compression_mode: ""
+  relative_file_paths:
+    - robot_1_quad_log_go2_20251017_1613_0.mcap
+  files:
+    - path: robot_1_quad_log_go2_20251017_1613_0.mcap
+      starting_time:
+        nanoseconds_since_epoch: 1760732027865061139
+      duration:
+        nanoseconds: 7174886648
+      message_count: 27317
+  custom_data: ~
+  ros_distro: jazzy
