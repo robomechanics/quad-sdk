@@ -7,3 +7,4 @@ external/ipopt/*
 !external/ipopt/.gitkeep
 *.csv
 matlab_msg_gen/
+robot_driver/config/robot_driver.yaml
