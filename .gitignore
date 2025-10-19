@@ -8,3 +8,4 @@ external/ipopt/*
 *.csv
 matlab_msg_gen/
 robot_driver/config/robot_driver.yaml
+robot_driver/CMakeLists.txt
