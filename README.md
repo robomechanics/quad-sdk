@@ -5,8 +5,8 @@
 
 Special Notes about this branch:
 - the model path is shared (removed from gitignore)
-- robot_driver/config/robot_driver.yaml is in gitignore
-- robot_driver/CMakeLists.txt is in gitignore, but CMakeLists.txt.template is avaliable. Just cp CMakeLists.txt CMakeLists.txt.template if you're on RML computers.
+- robot_driver/config/robot_driver.yaml is in gitignore, but robot_driver.yaml.template is avaliable. Just copy that and change the model path.
+- robot_driver/CMakeLists.txt is in gitignore, but CMakeLists.txt.template is avaliable. Just 'cp CMakeLists.txt.template CMakeLists.txt' if you're on RML computers.
 
 These changes were made to make my local development easier. Let me (Leo) know if you need help.
 
