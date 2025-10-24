@@ -65,6 +65,44 @@ class GroundTruthEstimator : public gz::sim::System,
 
   mutable std::chrono::steady_clock::duration last_time_;
 };
+
+class WheeledGroundTruthEstimator : public gz::sim::System, 
+                                    public gz::sim::ISystemConfigure,
+                                    public gz::sim::ISystemPostUpdate {
+ public:
+  WheeledGroundTruthEstimator() = default;
+  void Configure(const gz::sim::Entity &entity,
+                 const std::shared_ptr<const sdf::Element> &sdf,
+                 gz::sim::EntityComponentManager &ecm,
+                 gz::sim::EventManager &eventMgr) override;
+
+  void PostUpdate(const gz::sim::UpdateInfo &info,
+                 const gz::sim::EntityComponentManager &ecm) override;
+
+ private:
+  gz::sim::Model model_;
+  gz::sim::Entity entity_;
+
+  rclcpp::Node::SharedPtr node_;
+
+  double update_rate_{500.0};
+
+  std::string ground_truth_state_topic_;
+  std::string ground_truth_body_frame_topic_;
+
+  bool urdf_received_ = false;
+  mutable bool time_initialized_ = false;
+  rclcpp::Subscription<std_msgs::msg::String>::SharedPtr urdf_sub_;
+
+  mutable rclcpp::Publisher<quad_msgs::msg::WheeledRobotState>::SharedPtr
+      ground_truth_state_pub_;
+  mutable rclcpp::Publisher<quad_msgs::msg::WheeledRobotState>::SharedPtr
+      ground_truth_state_body_frame_pub_;
+
+  mutable std::shared_ptr<quad_utils::QuadKD> quadKD_;
+
+  mutable std::chrono::steady_clock::duration last_time_;
+};
 }  // namespace gz_plugins
 
 #endif  // GAZEBO_SPIRIT_ESTIMATOR_PLUGIN
