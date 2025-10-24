@@ -33,9 +33,9 @@ rosidl_generate_interfaces(${PROJECT_NAME}
   "msg/LegCommand.msg"
   "msg/LegCommandArray.msg"
   "msg/BodyForceEstimate.msg"
-  "msg/WheeledRobotState"
-  "msg/MultiWheeledFootState"
-  "msg/WheeledFootState"
+  "msg/WheeledRobotState.msg"
+  "msg/MultiWheeledFootState.msg"
+  "msg/WheeledFootState.msg"
   DEPENDENCIES
     std_msgs
     sensor_msgs
