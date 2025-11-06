@@ -13,7 +13,6 @@ QuadKD::QuadKD(rclcpp::Node::SharedPtr node, std::string ns) : node_(node) {
 
 void QuadKD::initModel(std::string ns) {
   std::string robot_description_string;
-
   if (!node_->get_parameter("robot_description", robot_description_string)) {
     RCLCPP_FATAL(node_->get_logger(),
                  "Failed to load robot_description. Shutting down.");

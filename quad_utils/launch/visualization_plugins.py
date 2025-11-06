@@ -12,10 +12,9 @@ def generate_launch_description():
     # Declare launch arguments
     declared_arguments = [
         DeclareLaunchArgument('namespace', default_value='robot_1'),
-        DeclareLaunchArgument('robot_type', default_value='spirit'),
+        DeclareLaunchArgument('robot_type', default_value='go2'),
         DeclareLaunchArgument('robot_description', default_value=''),
         DeclareLaunchArgument('robot_urdf_path', description='Path to Robot URDF Xacro File'),
-        
         DeclareLaunchArgument('use_sim_time', default_value='true')
     ]
 

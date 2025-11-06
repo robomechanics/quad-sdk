@@ -27,10 +27,10 @@ def load_robot_params(context, *args, **kwargs):
         config_file = 'a1.yaml'
     elif robot_type == 'go2':
         desc_pkg = 'go2_description'
-        # urdf_file = 'go2_learned.urdf.xacro'
-        # sdf_file = 'go2_learned.sdf.xacro'
-        urdf_file = 'go2.urdf.xacro'
-        sdf_file = 'go2.sdf.xacro'
+        urdf_file = 'go2_learned.urdf.xacro'
+        sdf_file = 'go2_learned.sdf.xacro'
+        # urdf_file = 'go2.urdf.xacro'
+        # sdf_file = 'go2.sdf.xacro'
         config_file = 'go2.yaml'
     elif robot_type == 'go2w':
         desc_pkg = 'go2w_description'

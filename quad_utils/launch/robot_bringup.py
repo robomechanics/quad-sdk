@@ -28,10 +28,10 @@ def load_robot_params(context, *args, **kwargs):
         config_file = 'a1.yaml'
     elif robot_type == 'go2':
         desc_pkg = 'go2_description'
-        # urdf_file = 'go2_learned.urdf.xacro'
-        # sdf_file = 'go2_learned.sdf.xacro'
-        urdf_file = 'go2.urdf.xacro'
-        sdf_file = 'go2.sdf.xacro'
+        urdf_file = 'go2_learned.urdf.xacro'
+        sdf_file = 'go2_learned.sdf.xacro'
+        # urdf_file = 'go2.urdf.xacro'
+        # sdf_file = 'go2.sdf.xacro'
         config_file = 'go2.yaml'
     elif robot_type == 'go2w':
         desc_pkg = 'go2w_description'
@@ -372,6 +372,25 @@ def launch_visualization_plugins(context, *args, **kwargs):
 
     return [visualization_plugins_launch]
 
+def launch_pinocchio_test_node(context, *args, **kwargs):
+    namespace = LaunchConfiguration('namespace').perform(context)
+    urdf = LaunchConfiguration('robot_urdf').perform(context)
+    sdf = LaunchConfiguration('robot_sdf').perform(context)
+    quad_utils_path = FindPackageShare('quad_utils').perform(context)
+
+    quad_pinocchio_node = Node(
+         package='quad_pinocchio',
+         executable='test_quad_kd_node',
+         name='quad_pinocchio',
+         output='screen',
+         parameters=[{
+              'namespace': namespace,
+              'robot_description' : urdf,
+         }
+         ]
+    )
+    return [quad_pinocchio_node]
+
 def generate_launch_description():
     return LaunchDescription([
         DeclareLaunchArgument('world', default_value = 'flat.sdf', description = 'Loaded World SDF File'),
@@ -384,13 +403,14 @@ def generate_launch_description():
         DeclareLaunchArgument('use_sim_time', default_value = 'true', description='Use Simulation Clock or Computer Clock'),
         OpaqueFunction(function=load_robot_params),
         OpaqueFunction(function=launch_robot_urdf_node),
-        OpaqueFunction(function=spawn_sdf_model),
-        OpaqueFunction(function=harmonic_ros_bridge),
-        OpaqueFunction(function=access_terrain_map),
-        OpaqueFunction(function=spawn_controller_broadcasters),
-        OpaqueFunction(function=launch_robot_driver),
-        OpaqueFunction(function=launch_contact_state_publisher),
-        OpaqueFunction(function= launch_visualization_plugins)
+        OpaqueFunction(function=launch_pinocchio_test_node)
+        # OpaqueFunction(function=spawn_sdf_model),
+        # OpaqueFunction(function=harmonic_ros_bridge),
+        # OpaqueFunction(function=access_terrain_map),
+        # OpaqueFunction(function=spawn_controller_broadcasters),
+        # OpaqueFunction(function=launch_robot_driver),
+        # OpaqueFunction(function=launch_contact_state_publisher),
+        # OpaqueFunction(function= launch_visualization_plugins)
     ])
 
 
