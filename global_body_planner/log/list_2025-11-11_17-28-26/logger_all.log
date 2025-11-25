@@ -1,0 +1,19 @@
+[0.060s] DEBUG:colcon:Command line arguments: ['/usr/bin/colcon', 'list', '-p', '--base-paths', '/home/rml/ros2_ws/src/quad-sdk/global_body_planner', '--log-base', '/dev/null']
+[0.060s] DEBUG:colcon:Parsed command line arguments: Namespace(log_base=None, log_level=None, verb_name='list', build_base='build', ignore_user_meta=False, metas=['./colcon.meta'], base_paths=['/home/rml/ros2_ws/src/quad-sdk/global_body_planner', '--log-base', '/dev/null'], packages_ignore=None, packages_ignore_regex=None, paths=None, packages_up_to=None, packages_up_to_regex=None, packages_above=None, packages_above_and_dependencies=None, packages_above_depth=None, packages_select_by_dep=None, packages_skip_by_dep=None, packages_skip_up_to=None, packages_select_build_failed=False, packages_skip_build_finished=False, packages_select_test_failures=False, packages_skip_test_passed=False, packages_select=None, packages_skip=None, packages_select_regex=None, packages_skip_regex=None, packages_start=None, packages_end=None, allow_overriding=[], topological_order=False, names_only=False, paths_only=True, topological_graph=False, topological_graph_dot=False, topological_graph_density=False, topological_graph_legend=False, topological_graph_dot_cluster=False, topological_graph_dot_include_skipped=False, verb_parser=<colcon_defaults.argument_parser.defaults.DefaultArgumentsDecorator object at 0x7092b6705280>, verb_extension=<colcon_package_information.verb.list.ListVerb object at 0x7092b67046b0>, main=<bound method ListVerb.main of <colcon_package_information.verb.list.ListVerb object at 0x7092b67046b0>>)
+[0.079s] Level 1:colcon.colcon_core.package_discovery:discover_packages(colcon_meta) check parameters
+[0.079s] Level 1:colcon.colcon_core.package_discovery:discover_packages(recursive) check parameters
+[0.079s] Level 1:colcon.colcon_core.package_discovery:discover_packages(ignore) check parameters
+[0.079s] Level 1:colcon.colcon_core.package_discovery:discover_packages(path) check parameters
+[0.079s] Level 1:colcon.colcon_core.package_discovery:discover_packages(recursive) discover
+[0.079s] INFO:colcon.colcon_core.package_discovery:Crawling recursively for packages in '/home/rml/ros2_ws/src/quad-sdk/global_body_planner', '/home/rml/ros2_ws/src/quad-sdk/global_body_planner/--log-base', '/dev/null'
+[0.079s] Level 1:colcon.colcon_core.package_identification:_identify(/home/rml/ros2_ws/src/quad-sdk/global_body_planner) by extensions ['ignore', 'ignore_ament_install']
+[0.079s] Level 1:colcon.colcon_core.package_identification:_identify(/home/rml/ros2_ws/src/quad-sdk/global_body_planner) by extension 'ignore'
+[0.079s] Level 1:colcon.colcon_core.package_identification:_identify(/home/rml/ros2_ws/src/quad-sdk/global_body_planner) by extension 'ignore_ament_install'
+[0.079s] Level 1:colcon.colcon_core.package_identification:_identify(/home/rml/ros2_ws/src/quad-sdk/global_body_planner) by extensions ['colcon_pkg']
+[0.079s] Level 1:colcon.colcon_core.package_identification:_identify(/home/rml/ros2_ws/src/quad-sdk/global_body_planner) by extension 'colcon_pkg'
+[0.079s] Level 1:colcon.colcon_core.package_identification:_identify(/home/rml/ros2_ws/src/quad-sdk/global_body_planner) by extensions ['colcon_meta']
+[0.079s] Level 1:colcon.colcon_core.package_identification:_identify(/home/rml/ros2_ws/src/quad-sdk/global_body_planner) by extension 'colcon_meta'
+[0.079s] Level 1:colcon.colcon_core.package_identification:_identify(/home/rml/ros2_ws/src/quad-sdk/global_body_planner) by extensions ['ros']
+[0.079s] Level 1:colcon.colcon_core.package_identification:_identify(/home/rml/ros2_ws/src/quad-sdk/global_body_planner) by extension 'ros'
+[0.093s] DEBUG:colcon.colcon_core.package_identification:Package '/home/rml/ros2_ws/src/quad-sdk/global_body_planner' with type 'ros.ament_cmake' and name 'global_body_planner'
+[0.093s] Level 1:colcon.colcon_core.package_discovery:discover_packages(recursive) using defaults

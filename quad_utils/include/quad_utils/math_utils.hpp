@@ -17,6 +17,7 @@
 
 #include "quad_utils/function_timer.hpp"
 #include "quad_utils/quad_kd.hpp"
+#include "quad_utils/quad_kd2.hpp"
 
 namespace math_utils {
 

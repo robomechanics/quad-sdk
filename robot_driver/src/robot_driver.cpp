@@ -123,6 +123,7 @@ RobotDriver::RobotDriver(std::shared_ptr<rclcpp::Node> node, int argc, char **ar
 
     // Initialize kinematics object
     quadKD_ = std::make_shared<quad_utils::QuadKD>(node_, robot_ns);
+    quadKD2_ = std::make_shared<quad_utils::QuadKD2>(node_, robot_ns);
     
     // Initialize hardware interface
     if (is_hardware_) {
@@ -642,6 +643,26 @@ void RobotDriver::publishHeartbeat() {
   }
 }
 
+void RobotDriver::testDynamics() {
+  if (debugger){
+    if (rclcpp::Time(last_robot_state_msg_.header.stamp).seconds() != 0) {
+      RCLCPP_INFO(node_->get_logger(), "Running Comparison of the Dynamics");
+      // Shape Tests on The Pinocchio Model Generation
+      // Compute values with Pinocchio
+      
+
+      // Run Update with Last Robot State Message and Then Compute
+      RCLCPP_INFO(node_ ->get_logger(), "Attempting Dynamics State Update");
+      quad_utils::updateDynamics(*quadKD2_, last_robot_state_msg_);
+      RCLCPP_INFO(node_->get_logger(), "Completed Dynamics State Update");
+
+      // Compute Ground Truth values with RBDL
+
+      debugger = false;
+    }
+  }
+}
+
 void RobotDriver::spin() {
   // Initialize timing params
   rclcpp::Rate r(update_rate_);
@@ -661,6 +682,8 @@ void RobotDriver::spin() {
     // Compute the leg command and publish if valid
     bool is_valid = updateControl();
     publishControl(is_valid);
+
+    testDynamics();
 
     // // // Publish state and heartbeat
     publishState();

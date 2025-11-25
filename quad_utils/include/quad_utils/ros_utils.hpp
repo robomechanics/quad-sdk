@@ -422,6 +422,16 @@ void Eigen3ToPointMsg(const Eigen::Vector3d &eigen_vec,
  */
 void pointMsgToEigen(const geometry_msgs::msg::Point &vec,
                      Eigen::Vector3d &eigen_vec);
+
+
+/**
+ * @brief Update Quad_KD with a Fresh Robot State Message
+ * 
+ * @param kinematics 
+ * @param robot_state_msg 
+ */
+void updateDynamics(quad_utils::QuadKD2 &kinematics,
+                    quad_msgs::msg::RobotState robot_state_msg);
 }  // namespace quad_utils
 
 #endif

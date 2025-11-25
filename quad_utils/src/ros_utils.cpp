@@ -702,4 +702,40 @@ void Eigen3ToPointMsg(const Eigen::Vector3d &eigen_vec,
   vec.y = eigen_vec.y();
   vec.z = eigen_vec.z();
 }
+
+void updateDynamics(quad_utils::QuadKD2 &kinematics, 
+                    quad_msgs::msg::RobotState robot_state_msg){
+  
+  const std::size_t n_joints = robot_state_msg.joints.position.size();
+  
+  Eigen::VectorXd q(7 + n_joints);
+  Eigen::VectorXd v(6 + n_joints);
+
+  q.segment(0,3) << robot_state_msg.body.pose.position.x,
+                      robot_state_msg.body.pose.position.y,
+                      robot_state_msg.body.pose.position.z;
+
+  q.segment(3,4) << robot_state_msg.body.pose.orientation.w,
+                      robot_state_msg.body.pose.orientation.x,
+                      robot_state_msg.body.pose.orientation.y,
+                      robot_state_msg.body.pose.orientation.z;
+  
+  Eigen::Map<const Eigen::VectorXd> q_joints(
+        robot_state_msg.joints.position.data(), n_joints);
+  q.segment(7, n_joints) = q_joints;
+
+  v.segment<3>(0) << robot_state_msg.body.twist.angular.x, 
+                      robot_state_msg.body.twist.angular.y, 
+                      robot_state_msg.body.twist.angular.z;
+  
+  v.segment<3>(3) << robot_state_msg.body.twist.linear.x, 
+                      robot_state_msg.body.twist.linear.y, 
+                      robot_state_msg.body.twist.linear.z;
+
+  Eigen::Map<const Eigen::VectorXd> v_joints(robot_state_msg.joints.velocity.data(), n_joints);
+    v.segment(6, n_joints) = v_joints;
+
+  kinematics.update(q,v);
+}
+
 }  // namespace quad_utils

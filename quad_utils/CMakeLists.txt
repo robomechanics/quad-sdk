@@ -27,6 +27,7 @@ find_package(Eigen3 REQUIRED)
 find_package(tf2 REQUIRED)
 find_package(tf2_geometry_msgs REQUIRED)
 find_package(Python3 REQUIRED)
+find_package(pinocchio REQUIRED)
 
 find_package(pluginlib REQUIRED)
 find_package(filters REQUIRED)
@@ -46,6 +47,7 @@ add_library(quad_utils
   src/math_utils.cpp
   src/ros_utils.cpp
   src/quad_kd.cpp
+  src/quad_kd2.cpp
   # src/trajectory_publisher.cpp
   # Add other reusable sources here if needed
 )
@@ -141,6 +143,7 @@ ament_target_dependencies(quad_utils
   tf2
   tf2_geometry_msgs
   cv_bridge
+  pinocchio
 )
 
 ament_target_dependencies(mesh_to_grid_map_node rclcpp)
@@ -239,6 +242,7 @@ ament_export_dependencies(
   rclcpp std_msgs nav_msgs nav2_msgs sensor_msgs geometry_msgs visualization_msgs
   grid_map_core grid_map_ros grid_map_pcl grid_map_msgs quad_msgs
   pcl_msgs pcl_conversions Eigen3 tf2 tf2_geometry_msgs cv_bridge pluginlib filters
+  pinocchio
 )
 
 

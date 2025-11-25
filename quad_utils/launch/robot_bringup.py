@@ -403,14 +403,14 @@ def generate_launch_description():
         DeclareLaunchArgument('use_sim_time', default_value = 'true', description='Use Simulation Clock or Computer Clock'),
         OpaqueFunction(function=load_robot_params),
         OpaqueFunction(function=launch_robot_urdf_node),
-        OpaqueFunction(function=launch_pinocchio_test_node)
-        # OpaqueFunction(function=spawn_sdf_model),
-        # OpaqueFunction(function=harmonic_ros_bridge),
-        # OpaqueFunction(function=access_terrain_map),
-        # OpaqueFunction(function=spawn_controller_broadcasters),
-        # OpaqueFunction(function=launch_robot_driver),
-        # OpaqueFunction(function=launch_contact_state_publisher),
-        # OpaqueFunction(function= launch_visualization_plugins)
+        # OpaqueFunction(function=launch_pinocchio_test_node)
+        OpaqueFunction(function=spawn_sdf_model),
+        OpaqueFunction(function=harmonic_ros_bridge),
+        OpaqueFunction(function=access_terrain_map),
+        OpaqueFunction(function=spawn_controller_broadcasters),
+        OpaqueFunction(function=launch_robot_driver),
+        OpaqueFunction(function=launch_contact_state_publisher),
+        OpaqueFunction(function= launch_visualization_plugins)
     ])
 
 

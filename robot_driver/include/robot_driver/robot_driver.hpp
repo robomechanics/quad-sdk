@@ -165,6 +165,8 @@ class RobotDriver {
    */
   void publishHeartbeat();
 
+  void testDynamics();
+
   /// Subscriber for control mode
   rclcpp::Subscription<std_msgs::msg::UInt8>::SharedPtr control_mode_sub_;
 
@@ -370,6 +372,11 @@ class RobotDriver {
 
   /// QuadKD class
   std::shared_ptr<quad_utils::QuadKD> quadKD_;
+
+  /// For Testing: QuadKD Pinocchio
+  std::shared_ptr<quad_utils::QuadKD2> quadKD2_;
+
+  bool debugger = true;
 
   /// Leg Controller template class
   std::shared_ptr<LegController> leg_controller_;
