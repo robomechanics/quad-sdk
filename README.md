@@ -3,12 +3,26 @@
 
 ## Overview
 
-Special Notes about this branch:
+Special notes about this branch:
 - the model path is shared (removed from gitignore)
 - robot_driver/config/robot_driver.yaml is in gitignore, but robot_driver.yaml.template is avaliable. Just copy that and change the model path.
 - robot_driver/CMakeLists.txt is in gitignore, but CMakeLists.txt.template is avaliable. Just 'cp CMakeLists.txt.template CMakeLists.txt' if you're on RML computers.
 
 These changes were made to make my local development easier. Let me (Leo) know if you need help.
+
+How to run the learned controller:
+
+git checkout devel_ros2
+ros2 launch quad_utils quad_gazebo.py
+ros2 topic pub /robot_1/control/mode std_msgs/UInt8 "data: 1"
+ros2 launch quad_utils quad_plan.py robot_configs:='[{"name": "robot_1", "type": "go2", "controller_mode" : "learned", "reference": "twist", "twist_input": "keyboard"}]'
+
+Non learned controller run:
+
+ros2 launch quad_utils quad_gazebo.py robot_configs:='[{"name": "robot_1", "type": "go2", "controller": "inverse_dynamics", "init_pose" : "-x 0.0 -y 0.0 -z 5"}]'
+ros2 topic pub /robot_1/control/mode std_msgs/UInt8 "data: 1"
+ros2 launch quad_utils quad_plan.py robot_configs:='[{"name": "robot_1", "type": "go2", "controller_mode" : "inverse_dynamics", "reference": "twist", "twist_input": "keyboard"}]'
+
 
 Quad-SDK is an open source, ROS-based full stack software framework for agile quadrupedal locomotion. The design of Quad-SDK is focused on the vertical integration of planning, control, estimation, communication, and development tools which enable agile quadrupedal locomotion in simulation and hardware with minimal user changes for multiple platforms. The modular software architecture allows researchers to experiment with their own implementations of different components while leveraging the existing framework. Quad-SDK also offers Gazebo simulation support and a suite of visualization and data-processing tools for rapid development. Refer to the [paper] for high-level details of the framework.
 

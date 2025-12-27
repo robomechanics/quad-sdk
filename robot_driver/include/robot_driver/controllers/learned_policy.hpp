@@ -95,7 +95,7 @@ class LearnedPolicy : public LegController {
   Eigen::VectorXd actions_{Eigen::VectorXd::Zero(12)};
   Eigen::VectorXd raw_actions_{Eigen::VectorXd::Zero(12)};
 
-  double scale_factor_ = 0.25; // Grabbed Directly From IsaacLab Repo
+  double scale_factor_ = 0.25; // 0.25 Grabbed Directly From IsaacLab Repo
 
   Eigen::VectorXd nominal_stance_pose_{Eigen::VectorXd::Zero(12)};
 

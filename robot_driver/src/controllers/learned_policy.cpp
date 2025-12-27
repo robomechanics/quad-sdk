@@ -1,4 +1,5 @@
 #include "robot_driver/controllers/learned_policy.hpp"
+#include <sstream>
 
 LearnedPolicy::LearnedPolicy(rclcpp::Node::SharedPtr node, std::string& robot_ns): LegController(node, robot_ns){ }
 
@@ -18,6 +19,14 @@ void LearnedPolicy::init(const std::vector<double> &stance_kp,
   swing_kd_cart_ = swing_kd_cart;
   model_path_ = model_path;
   loadONNXModel();
+  //assumeing LF LR RF RR
+  // QuadSDK Order FL(hip 0, thigh 1, knee 2), RL (hip 3, thigh 4, knee 5), FR(hip 6, thigh 7, knee 8), RR(hip 9, thigh 10, knee 11) 
+  //  nominal_stance_pose_ <<   0, 0, 0, 0, 
+  //                            0, 0, 0, 0,
+  //                            0, 0, 0, 0;
+  //  nominal_stance_pose_ << 0.1, 0.1, -0.1, -0.1,  //pose according to isaaclab
+  //                           0.8, 1.0, 0.8, 1.0,
+  //                            -1.5, -1.5, -1.5, -1.5;
   nominal_stance_pose_ << 0.0, 0.0, 0.0, 0.0, 
                            0.8, 0.8, 0.8, 0.8,
                             -1.5, -1.5, -1.5, -1.5; // For Go2 Change this to a Param Later On, IsaacLab
@@ -140,6 +149,11 @@ void LearnedPolicy::computeObservations(const quad_msgs::msg::RobotState &robot_
   
   obs_.resize(48);
   obs_ << base_lin_vel, base_ang_vel, proj_gravity, vel_cmd, joint_positions, joint_velocities, prev_action_;
+  
+  std::ostringstream ss;
+  ss << obs_.transpose();  // turn the vector into a string
+
+  RCLCPP_INFO(node_->get_logger(), "\nObservations:\n[%s]", ss.str().c_str());
 
   //obs_.resize(45);
   //obs_ << base_ang_vel, proj_gravity, vel_cmd, joint_positions, joint_velocities, prev_action_;
@@ -195,6 +209,12 @@ void LearnedPolicy::runInference(){
               unordered_actions_(1), unordered_actions_(5), unordered_actions_(9),
               unordered_actions_(3), unordered_actions_(7), unordered_actions_(11);
 
+  //actions_ << nominal_stance_pose_;
+  
+  std::ostringstream ss;
+  ss << actions_.transpose();  // turn the vector into a string
+
+  RCLCPP_INFO(node_->get_logger(), "\nActions:\n[%s]", ss.str().c_str());
   // Print out Action Commands as a Debugging Step
   temp_actions_ << 0.0, 0.8, -1.5, 0.0, 0.8, -1.5, 0.0, 0.8, -1.5, 0.0, 0.8, -1.5;
   // std::cout << "Outputted Actions"  << unordered_actions_ - nominal_stance_pose_ << std::endl;
@@ -204,9 +224,11 @@ bool LearnedPolicy::computeLegCommandArray(
     const quad_msgs::msg::RobotState &robot_state_msg,
     quad_msgs::msg::LegCommandArray &leg_command_array_msg,
     quad_msgs::msg::GRFArray &grf_array_msg){
-      // Generate Leg Command Messages from Inferenced Actions and Clip them based on Joint Positional Limits
-    if ((node_->now() - last_cmd_vel_msg_time_).seconds() >= 0.1){
-      return false;
+    // Generate Leg Command Messages from Inferenced Actions and Clip them based on Joint Positional Limits
+     if ((node_->now() - last_cmd_vel_msg_time_).seconds() >= 0.1){ //this makes it so that the policy doesnt run when no command is given
+        //computeObservations(robot_state_msg);
+        //runInference();
+       return false;
     } 
     else{
       leg_command_array_msg.leg_commands.resize(num_feet_);
