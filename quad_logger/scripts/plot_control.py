@@ -114,7 +114,9 @@ def plot_control(control_traj, t_window, *args):
     ])
     plt.legend(['X', 'Y', 'Z'], loc='right')
 
-    fig_array = np.array([grf_vectors_fig])
-
     # Export
+    fig_array = [
+    plt.figure(grf_vectors_fig)
+    ]
+    
     return fig_array

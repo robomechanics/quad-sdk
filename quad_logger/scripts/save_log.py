@@ -5,8 +5,8 @@ This module provides functionality to save matplotlib figures to organized
 log directories, creating a persistent record of analysis plots for each trial run.
 """
 
-
 import os
+import matplotlib.pyplot as plt
 
 def save_log(trial_name, fig_array):
     """
@@ -18,14 +18,35 @@ def save_log(trial_name, fig_array):
     Args:
         trial_name (str): Name of the trial, used to create the log subdirectory.
         fig_array (list): List of matplotlib Figure objects to be saved.
+                         Can be nested lists that will be flattened.
 
     Returns:
         str: Path to the log directory where figures were saved.
     """
-    log_dir = os.path.join("logs", trial_name)
-    os.makedirs(log_dir, exist_ok=True)
 
-    for i, fig in enumerate(fig_array):
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    parent_dir = os.path.dirname(script_dir)
+    print(parent_dir)
+    log_dir = os.path.join(parent_dir, "logs", trial_name)
+    figures_dir = os.path.join(log_dir, "figures")
+    os.makedirs(figures_dir, exist_ok=True)
+
+    # Flatten nested lists
+    flat_figs = []
+    for item in fig_array:
+        if isinstance(item, list):
+            flat_figs.extend(item)
+        else:
+            flat_figs.append(item)
+
+    # Save each figure
+    for i, fig in enumerate(flat_figs):
+        # If needed, convert figure number to object
+        if isinstance(fig, int):
+            fig = plt.figure(fig)
         fig_path = os.path.join(log_dir, f"figure_{i+1}.png")
+        print(f"Saving: {fig_path}")
         fig.savefig(fig_path)
+    print(f"Saved to: {os.path.abspath(log_dir)}")
+    
     return log_dir

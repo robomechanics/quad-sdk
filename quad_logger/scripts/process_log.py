@@ -32,7 +32,7 @@ def process_log(*args):
         namespace = ""
 
     # Set parameters to save and set up variables for figure titles and labels
-    save = False
+    save = True
     titles = True
     plot_local_plan_info = True
     window_states = []
@@ -41,14 +41,12 @@ def process_log(*args):
 
     # Load data from parseQuadBag.py
     data, trial_name = parse_quad_bag(trial_name)
-
     state_estimate = data["state_estimate"]
     state_ground_truth = data["state_ground_truth"]
     state_trajectory = data["state_trajectory"]
     state_grfs = data["state_grfs"]
     control_grfs = data["control_grfs"]
     local_plan = data["local_plan"]
-
 
     # Plot everything, separate by:
     # State
@@ -74,14 +72,11 @@ def process_log(*args):
                                         local_plan_figs)
 
     # Consolidate the figures to a single folder
-    fig_array = np.concatenate([state_figs, control_figs, local_plan_figs])
-
+    fig_array = [state_figs, control_figs, local_plan_figs]
 
     if save:
         save_log(trial_name, fig_array)
-
     plt.show()
-
 
 if __name__ == "__main__":
     process_log()

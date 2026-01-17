@@ -493,11 +493,16 @@ def plot_state(state_traj, t_window, *args):
 
         fig8.align_ylabels([ax1, ax2, ax3])
         plt.tight_layout()
-
-    # Return figure handles as numpy array
-    fig_array = np.array([com_traj_fig, linear_state_fig, angular_state_fig,
-                          joint_position_fig, joint_velocity_fig,
-                          joint_effort_fig, foot_position_fig,
-                          foot_velocity_fig])
-
+    #Export
+    fig_array = [
+    plt.figure(com_traj_fig),
+    plt.figure(linear_state_fig),
+    plt.figure(angular_state_fig),
+    plt.figure(joint_position_fig),
+    plt.figure(joint_velocity_fig),
+    plt.figure(joint_effort_fig),
+    plt.figure(foot_position_fig),
+    plt.figure(foot_velocity_fig)
+    ]
+    
     return fig_array

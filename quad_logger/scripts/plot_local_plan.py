@@ -78,7 +78,7 @@ def plot_local_plan(local_plan, t_window, *args):
 
     # Plot Solve Data
     fig_solve = plt.figure(solve_data_fig)
-    fig_solve.canvas.manager.set_window_title("Local Plan Solve Data")
+    fig_solve.canvas.manager.set_window_title("local_plan_solve_data")
 
     plt.subplot(3, 1, 1)
     scale = 1000  # s to ms
@@ -134,7 +134,7 @@ def plot_local_plan(local_plan, t_window, *args):
 
     # Plot Horizon Evolution
     fig_horizon = plt.figure(prediction_horizon_fig)
-    fig_horizon.canvas.manager.set_window_title("Prediction Horizon")
+    fig_horizon.canvas.manager.set_window_title("prediction_horizon")
 
     marker_size_simple = 3
     marker_size_complex = 6
@@ -180,4 +180,9 @@ def plot_local_plan(local_plan, t_window, *args):
     plt.axis([0, np.max(local_plan["time"]), 0, np.max(local_plan["time"])])
 
     # Export
-    return [solve_data_fig, prediction_horizon_fig]
+    fig_array = [
+    plt.figure(solve_data_fig),
+    plt.figure(prediction_horizon_fig)
+    ]
+    
+    return fig_array
