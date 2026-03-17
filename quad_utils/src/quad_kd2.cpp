@@ -66,7 +66,7 @@ void QuadKD2::initModel(std::string ns)
     std::string p = "leg_" + std::to_string(i);
     LimbInfo& limb = limbs_[i];
 
-    //Declare Parameters
+    // Declare Parameters
     if (!node_->has_parameter(p + ".joint_names")) 
         node_->declare_parameter(p + ".joint_names", std::vector<std::string>({"0", "0", "0"}));
     
@@ -391,7 +391,7 @@ void QuadKD2::bodyToFootFKBodyFrame(int leg_index,
   if (leg_index > (legbase_offsets_.size() - 1) || leg_index < 0) {
     throw std::runtime_error("Leg Index is outside of valid range");
   }
-  
+
   // Assume that a Pinocchio update has been called
   assert(updated_);
                 
