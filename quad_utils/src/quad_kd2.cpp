@@ -66,7 +66,7 @@ void QuadKD2::initModel(std::string ns)
     std::string p = "leg_" + std::to_string(i);
     LimbInfo& limb = limbs_[i];
 
-    //Declare Parameters
+    // Declare Parameters
     if (!node_->has_parameter(p + ".joint_names")) 
         node_->declare_parameter(p + ".joint_names", std::vector<std::string>({"0", "0", "0"}));
     
@@ -392,6 +392,9 @@ void QuadKD2::bodyToFootFKBodyFrame(int leg_index,
     throw std::runtime_error("Leg Index is outside of valid range");
   }
 
+  // Assume that a Pinocchio update has been called
+  assert(updated_);
+                
   /// World To Body Frame Transform
   const pinocchio::SE3 &g_world_body_se3 = data_.oMf[body_fid_];
 
@@ -420,6 +423,9 @@ void QuadKD2::worldToFootFKWorldFrame(int leg_index, Eigen::Matrix4d &g_world_fo
     throw std::runtime_error("Leg index is outside of valid range");
   }
 
+  // Assume that a Pinocchio update has been called
+  assert(updated_);
+                
   /// World to Toe Frame Transform
   const LimbInfo &limb = limbs_.at(leg_index);
   const pinocchio::SE3 &g_world_foot_se3 = data_.oMf[limb.toe_fid];
@@ -441,7 +447,9 @@ void QuadKD2::worldToKneeFKWorldFrame(int leg_index, Eigen::Matrix4d &g_world_kn
   if (leg_index > (legbase_offsets_.size() - 1) || leg_index < 0){
     throw std::runtime_error("Leg index is outside of valid range");
   }
-
+  // Assume that a Pinocchio update has been called
+  assert(updated_);
+                
   // World To Knee Frame Transform
   const LimbInfo &limb = limbs_.at(leg_index);
   const pinocchio::SE3 &g_world_knee_se3 = data_.oMf[limb.lower_fid];
@@ -467,7 +475,10 @@ bool QuadKD2::worldToFootIKWorldFrame(int leg_index, Eigen::Vector3d body_pos,
     throw std::runtime_error("Leg index is outside valid range");
   }
 
-// Calculate offsets
+    // Assume that a Pinocchio update has been called
+  assert(updated_);
+                
+  // Calculate offsets
   Eigen::Vector3d legbase_offset = legbase_offsets_[leg_index];
   double l0 = l0_vec_[leg_index];
 
@@ -654,7 +665,10 @@ void QuadKD2::getJacobianWorldAngVel(Eigen::MatrixXd &jacobian) const {
 
 void QuadKD2::getJacobianBodyAngVel(Eigen::MatrixXd &jacobian) const {
   assert(jacobian.rows() == 3 * num_feet_ && jacobian.cols() == nv_);
-
+  
+  // Assume that a Pinocchio update has been called
+  assert(updated_);
+                
   const pinocchio::SE3 &g_world_body_se3 = data_.oMf[body_fid_];
   const Eigen::Matrix3d R_WB = g_world_body_se3.rotation();
   const Eigen::Matrix3d R_BW = R_WB.transpose();
@@ -692,6 +706,8 @@ void QuadKD2::computeInverseDynamics(const Eigen::VectorXd &foot_acc,
                                      const Eigen::VectorXd &grf, 
                                      const std::vector<int> &contact_mode,
                                      Eigen::VectorXd &tau) const {
+  // Assume that a Pinocchio update has been called
+  assert(updated_);
 
   // Build raw Pinocchio-ordered Jacobian J_pin
   Eigen::MatrixXd J_pin = Eigen::MatrixXd::Zero(12, nv_);
@@ -923,7 +939,6 @@ bool QuadKD2::isValidFullState(const Eigen::VectorXd &body_state,
                               const grid_map::GridMap &terrain,
                               Eigen::VectorXd &state_violation,
                               Eigen::VectorXd &control_violation) {
-
   // Assume that a Pinocchio update has been called
   assert(updated_);
 
