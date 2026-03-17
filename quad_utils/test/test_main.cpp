@@ -1,9 +1,13 @@
 #include <gtest/gtest.h>
-#include <rclcpp/rclcpp.h>
+#include <rclcpp/rclcpp.hpp>
 
-int main(int argc, char** argv) {
+int main(int argc, char **argv)
+{
   testing::InitGoogleTest(&argc, argv);
-  ros::init(argc, argv, "quad_utils_tester");
+  rclcpp::init(argc, argv);
 
-  return RUN_ALL_TESTS();
+  int result = RUN_ALL_TESTS();
+
+  rclcpp::shutdown();
+  return result;
 }

@@ -61,7 +61,7 @@ class GroundTruthEstimator : public gz::sim::System,
   mutable rclcpp::Publisher<quad_msgs::msg::RobotState>::SharedPtr
       ground_truth_state_body_frame_pub_;
 
-  mutable std::shared_ptr<quad_utils::QuadKD> quadKD_;
+  mutable std::shared_ptr<quad_utils::QuadKD2> quadKD_;
 
   mutable std::chrono::steady_clock::duration last_time_;
 };

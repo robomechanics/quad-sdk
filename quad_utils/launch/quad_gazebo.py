@@ -163,7 +163,7 @@ def launch_plot_juggler(context, *args, **kwargs):
 def generate_launch_description():
     declared_args = [
         DeclareLaunchArgument('world', default_value='flat.sdf', description='SDF world file name to load into simulation'),
-        DeclareLaunchArgument('gui', default_value='false', description='Whether to launch the Gazebo GUI'),
+        DeclareLaunchArgument('gui', default_value='true', description='Whether to launch the Gazebo GUI'),
         DeclareLaunchArgument('paused', default_value='false', description='Whether to start the simulation in a paused state'),
         DeclareLaunchArgument('verbose', default_value='false', description='Launch the simulator in verbose mode'),
         DeclareLaunchArgument('live_plot', default_value='false', description='Launch Plot Juggler'),

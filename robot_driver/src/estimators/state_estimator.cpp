@@ -1,9 +1,10 @@
 #include "robot_driver/estimators/state_estimator.hpp"
 
-StateEstimator::StateEstimator(rclcpp::Node::SharedPtr node, std::string robot_ns) {
+StateEstimator::StateEstimator(rclcpp::Node::SharedPtr node, const std::string &robot_ns, 
+                              std::shared_ptr<quad_utils::QuadKD2> quadKD) {
   node_ = node;
   robot_ns_ = robot_ns;
-  quadKD_ = std::make_shared<quad_utils::QuadKD>(node_, robot_ns_);
+  quadKD_ = quadKD;
 }
 
 void StateEstimator::init() {}

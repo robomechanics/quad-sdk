@@ -1,7 +1,7 @@
 #include "robot_driver/controllers/leg_controller.hpp"
 
-LegController::LegController(rclcpp::Node::SharedPtr node, std::string& robot_ns) : node_(node), robot_ns_(robot_ns) {
-  quadKD_ = std::make_shared<quad_utils::QuadKD>(node_, robot_ns_);
+LegController::LegController(rclcpp::Node::SharedPtr node, const std::string& robot_ns, 
+                            std::shared_ptr<quad_utils::QuadKD2> quadKD) : node_(node), robot_ns_(robot_ns),  quadKD_(quadKD){
   override_state_machine_ = false;
 }
 

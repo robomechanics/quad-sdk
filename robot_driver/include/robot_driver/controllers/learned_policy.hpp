@@ -33,7 +33,7 @@ class LearnedPolicy : public LegController {
   * @brief Constructor for LearnedPolicy
   * @return Constructed object of type LearnedPolicy
   */
-  LearnedPolicy(rclcpp::Node::SharedPtr node, std::string& robot_ns);
+  LearnedPolicy(rclcpp::Node::SharedPtr node, const std::string& robot_ns, std::shared_ptr<quad_utils::QuadKD2> quadKD);
 
  /**
   * @brief Set the desired proportional and derivative gains for all legs

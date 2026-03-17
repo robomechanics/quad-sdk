@@ -13,7 +13,6 @@ QuadKD::QuadKD(rclcpp::Node::SharedPtr node, std::string ns) : node_(node) {
 
 void QuadKD::initModel(std::string ns) {
   std::string robot_description_string;
-
   if (!node_->get_parameter("robot_description", robot_description_string)) {
     RCLCPP_FATAL(node_->get_logger(),
                  "Failed to load robot_description. Shutting down.");
@@ -370,6 +369,19 @@ bool QuadKD::worldToFootIKWorldFrame(int leg_index, Eigen::Vector3d body_pos,
   g_legbase_foot = g_world_legbase.inverse() * g_world_foot;
   foot_pos_legbase = g_legbase_foot.block<3, 1>(0, 3);
 
+  std::cout << "RBDL Foot Pose Legbase" << foot_pos_legbase << std::endl;
+    std::cout << "leg " << leg_index
+          << " l0=" << l0_vec_[leg_index]
+          << " l1=" << l1_
+          << " l2=" << l2_
+          << " qmin=[" << joint_min_[leg_index][0] << ", "
+                       << joint_min_[leg_index][1] << ", "
+                       << joint_min_[leg_index][2] << "]"
+          << " qmax=[" << joint_max_[leg_index][0] << ", "
+                       << joint_max_[leg_index][1] << ", "
+                       << joint_max_[leg_index][2] << "]"
+          << std::endl;
+
   return legbaseToFootIKLegbaseFrame(leg_index, foot_pos_legbase, joint_state);
 }
 
@@ -396,6 +408,7 @@ bool QuadKD::legbaseToFootIKLegbaseFrame(int leg_index,
   if (abs(temp) > 1) {
     RCLCPP_DEBUG_THROTTLE(node_->get_logger(), *node_->get_clock(), 1e9,
                           "Foot too close, choosing closest alternative\n");
+    std::cout << "1" << std::endl;
     is_exact = false;
     temp = std::max(std::min(temp, 1.0), -1.0);
   }
@@ -415,6 +428,7 @@ bool QuadKD::legbaseToFootIKLegbaseFrame(int leg_index,
     is_exact = false;
     RCLCPP_DEBUG_THROTTLE(node_->get_logger(), *node_->get_clock(), 1e9,
                           "Abad limits exceeded, clamping to %5.3f \n", q0);
+                              std::cout << "2" << std::endl;
   }
 
   // Rotate to ab-ad fixed frame
@@ -429,6 +443,7 @@ bool QuadKD::legbaseToFootIKLegbaseFrame(int leg_index,
     RCLCPP_DEBUG_THROTTLE(node_->get_logger(), *node_->get_clock(), 1e9,
                           "Foot location too far for hip, choosing closest"
                           " alternative \n");
+                              std::cout << "3" << std::endl;
     is_exact = false;
     temp2 = std::max(std::min(temp2, acos_eps), -acos_eps);
   }
@@ -440,6 +455,7 @@ bool QuadKD::legbaseToFootIKLegbaseFrame(int leg_index,
     RCLCPP_DEBUG_THROTTLE(node_->get_logger(), *node_->get_clock(), 1e9,
                           "Foot location too far for knee, choosing closest"
                           " alternative \n");
+                              std::cout << "4" << std::endl;
     is_exact = false;
 
     temp3 = std::max(std::min(temp3, acos_eps), -acos_eps);
@@ -455,6 +471,7 @@ bool QuadKD::legbaseToFootIKLegbaseFrame(int leg_index,
     is_exact = false;
     RCLCPP_DEBUG_THROTTLE(node_->get_logger(), *node_->get_clock(), 1e9,
                           "Hip limits exceeded, clamping to %5.3f \n", q1);
+                              std::cout << "5" << std::endl;
   }
 
   // Compute knee val to get closest toe position in the plane
@@ -471,6 +488,7 @@ bool QuadKD::legbaseToFootIKLegbaseFrame(int leg_index,
     is_exact = false;
     RCLCPP_DEBUG_THROTTLE(node_->get_logger(), *node_->get_clock(), 1e9,
                           "Knee limits exceeded, clamping to %5.3f \n", q2);
+                              std::cout << "6" << std::endl;
   }
 
   // q1 is undefined if q2=0, resolve this
@@ -480,12 +498,14 @@ bool QuadKD::legbaseToFootIKLegbaseFrame(int leg_index,
                           "Hip value undefined (in singularity), setting to"
                           " %5.3f \n",
                           q1);
+                              std::cout << "7" << std::endl;
     is_exact = false;
   }
 
   if (z_body_frame - l0 * sin(q0) > 0) {
     RCLCPP_DEBUG_THROTTLE(node_->get_logger(), *node_->get_clock(), 1e9,
                           "IK solution is in hip-inverted region! Beware!\n");
+                              std::cout << "8" << std::endl;
     is_exact = false;
   }
 
@@ -731,7 +751,8 @@ bool QuadKD::convertCentroidalToFullBody(const Eigen::VectorXd &body_state,
                                                    foot_pos, leg_joint_state);
     joint_positions.segment<3>(3 * i) = leg_joint_state;
   }
-
+  std::cout << "Joint Positions Computed by RBDL: " << std::endl;
+  std::cout << joint_positions << std::endl;
   auto t_ik = std::chrono::steady_clock::now();
 
   // Load state positions
@@ -740,7 +761,9 @@ bool QuadKD::convertCentroidalToFullBody(const Eigen::VectorXd &body_state,
 
   // Compute jacobian
   Eigen::MatrixXd jacobian = Eigen::MatrixXd::Zero(12, 18);
-  getJacobianBodyAngVel(state_positions, jacobian);
+  // getJacobianBodyAngVel(state_positions, jacobian);
+  // std::cout << "Jacobian Computed by RBDL" << std::endl;
+  // std::cout << jacobian << std::endl;
 
   auto t_jacob = std::chrono::steady_clock::now();
 

@@ -245,7 +245,7 @@ NMPCController::NMPCController(rclcpp::Node::SharedPtr node, int robot_id, std::
   }
 
   require_init_ = true;
-  quadKD_ = std::make_shared<quad_utils::QuadKD>(node_, robot_ns_);
+  quadKD_ = std::make_shared<quad_utils::QuadKD2>(node_, robot_ns_);
 }
 
 bool NMPCController::computeLegPlan(

@@ -10,7 +10,8 @@ class InertiaEstimationController : public LegController {
    * @brief Constructor for InertiaEstimationController
    * @return Constructed object of type InertiaEstimationController
    */
-  InertiaEstimationController(rclcpp::Node::SharedPtr node, std::string& robot_ns);
+  InertiaEstimationController(rclcpp::Node::SharedPtr node, const std::string& robot_ns,
+                              std::shared_ptr<quad_utils::QuadKD2> quadKD);
 
   /**
    * @brief Compute the leg command array message for a given current state and

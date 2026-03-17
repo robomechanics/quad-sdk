@@ -28,8 +28,6 @@ def load_robot_params(context, *args, **kwargs):
         config_file = 'a1.yaml'
     elif robot_type == 'go2':
         desc_pkg = 'go2_description'
-        # urdf_file = 'go2_learned.urdf.xacro'
-        # sdf_file = 'go2_learned.sdf.xacro'
         urdf_file = 'go2.urdf.xacro'
         sdf_file = 'go2.sdf.xacro'
         config_file = 'go2.yaml'
@@ -43,6 +41,11 @@ def load_robot_params(context, *args, **kwargs):
         urdf_file = 'b2.urdf.xacro'
         sdf_file = 'b2.sdf.xacro'
         config_file = 'b2.yaml'
+    elif robot_type == 'spot':
+        desc_pkg = 'spot_description'
+        urdf_file = 'spot.urdf.xacro'
+        sdf_file = 'spot.sdf.xacro'
+        config_file = 'spot.yaml'
     else:
         raise RuntimeError(f"[robot_bringup] Unsupported robot type: {robot_type}")
 
@@ -52,12 +55,11 @@ def load_robot_params(context, *args, **kwargs):
     sdf_path = os.path.join(desc_path, 'models', robot_type, sdf_file)
 
     controller_config_path = os.path.join(FindPackageShare('gazebo_scripts').perform(context), 'config', 'quad_control.yaml')
+    robot_config_path = os.path.join(FindPackageShare('quad_utils').perform(context), 'config', config_file)
 
-    # Load URDF and SDF from disk, Might be Unnecessary
-    # with open(os.path.join(desc_path, 'models',robot_type,'urdf', urdf_file), 'r') as f:
-    #     urdf = f.read()
+    # Load URDF and SDF from disk
     urdf = xacro.process_file(urdf_path).toxml()
-    sdf = xacro.process_file(sdf_path, mappings={"namespace": namespace, "controller_config_path": controller_config_path}).toxml()
+    sdf = xacro.process_file(sdf_path, mappings={"namespace": namespace, "controller_config_path": controller_config_path, "robot_config_path": robot_config_path}).toxml()
 
     return [
         SetLaunchConfiguration('robot_urdf', urdf),
@@ -267,31 +269,6 @@ def harmonic_ros_bridge(context, *args, **kwargs):
     namespace = LaunchConfiguration('namespace').perform(context)
     quad_utils_path = FindPackageShare('quad_utils').perform(context)
     
-    # joint_state_bridge = Node(
-    #     package='ros_gz_bridge',
-    #     executable='parameter_bridge',
-    #     name='joint_state_bridge',
-    #     # namespace=namespace,
-    #     # output='screen',
-    #     arguments=[
-    #         f'/world/default/model/{namespace}/joint_state@sensor_msgs/msg/JointState[gz.msgs.Model'
-    #     ],
-    #     remappings=[
-    #         (f'/world/default/model/{namespace}/joint_state', f'/{namespace}/joint_states')
-    #     ]
-    # )
-    # If you want to do it with a YAML file
-    # joint_state_bridge = Node(
-    #     package='ros_gz_bridge',
-    #     executable='parameter_bridge',
-    #     name='joint_state_bridge',
-    #     # namespace=namespace,
-    #     output='screen',
-    #     parameters=[{
-    #         'config_file': os.path.join(quad_utils_path, 'config', 'ros_gz_bridge.yaml'),
-    #         # 'qos_overrides./tf_static.publisher.durability': 'transient_local',
-    #     }],
-    # )
     toe_args, toe_remaps = [],[]
     for toe_id in range(4):
         toe_args.append(f'/world/default/model/{namespace}/link/toe{toe_id}/sensor/toe{toe_id}_contact/contact@ros_gz_interfaces/msg/Contacts[gz.msgs.Contacts')
@@ -372,6 +349,25 @@ def launch_visualization_plugins(context, *args, **kwargs):
 
     return [visualization_plugins_launch]
 
+def launch_pinocchio_test_node(context, *args, **kwargs):
+    namespace = LaunchConfiguration('namespace').perform(context)
+    urdf = LaunchConfiguration('robot_urdf').perform(context)
+    sdf = LaunchConfiguration('robot_sdf').perform(context)
+    quad_utils_path = FindPackageShare('quad_utils').perform(context)
+
+    quad_pinocchio_node = Node(
+         package='quad_pinocchio',
+         executable='test_quad_kd_node',
+         name='quad_pinocchio',
+         output='screen',
+         parameters=[{
+              'namespace': namespace,
+              'robot_description' : urdf,
+         }
+         ]
+    )
+    return [quad_pinocchio_node]
+
 def generate_launch_description():
     return LaunchDescription([
         DeclareLaunchArgument('world', default_value = 'flat.sdf', description = 'Loaded World SDF File'),
@@ -384,6 +380,7 @@ def generate_launch_description():
         DeclareLaunchArgument('use_sim_time', default_value = 'true', description='Use Simulation Clock or Computer Clock'),
         OpaqueFunction(function=load_robot_params),
         OpaqueFunction(function=launch_robot_urdf_node),
+        # OpaqueFunction(function=launch_pinocchio_test_node)
         OpaqueFunction(function=spawn_sdf_model),
         OpaqueFunction(function=harmonic_ros_bridge),
         OpaqueFunction(function=access_terrain_map),

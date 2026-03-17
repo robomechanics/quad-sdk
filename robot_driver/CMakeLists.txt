@@ -29,6 +29,10 @@ find_package(tf2_eigen REQUIRED)
 find_package(geometry_msgs REQUIRED)
 # find_package(unitree_sdk2 REQUIRED)
 
+if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
+  set(CMAKE_BUILD_TYPE Release CACHE STRING "Build type" FORCE)
+endif()
+
 find_library(ONNXRUNTIME_LIB
   NAMES onnxruntime
   PATHS /usr/local/lib /usr/local/lib64
@@ -49,7 +53,7 @@ include_directories(${MBLINK_DIR}/include)
 link_directories(${MBLINK_DIR}/lib)
 
 message(STATUS "Using architecture ${CMAKE_SYSTEM_PROCESSOR}")
-if (CMAKE_SYSTEM_PROCESSOR STREQUAL "arm" OR CMAKE_SYSTEM_PROCESSOR STREQUAL "aarch64")
+if(CMAKE_SYSTEM_PROCESSOR STREQUAL "arm" OR CMAKE_SYSTEM_PROCESSOR STREQUAL "aarch64")
   set(GRMBLINK libgrmblink_tx2.a)
 else()
   set(GRMBLINK libgrmblink_linux.a)
@@ -125,7 +129,7 @@ install(
   DESTINATION include
 )
 
-install (TARGETS
+install(TARGETS
   robot_driver
   robot_driver_node
   ARCHIVE DESTINATION lib
@@ -137,14 +141,27 @@ install (TARGETS
 
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)
+  find_package(ament_cmake_gtest REQUIRED)
+  set(ament_cmake_cpplint_FOUND TRUE)
+  set(ament_cmake_uncrustify_FOUND TRUE)
   # the following line skips the linter which checks for copyrights
   # comment the line when a copyright and license is added to all source files
-  set(ament_cmake_copyright_FOUND TRUE)
+  # set(ament_cmake_copyright_FOUND TRUE)
   # the following line skips cpplint (only works in a git repo)
   # comment the line when this package is in a git repo and when
   # a copyright and license is added to all source files
-  set(ament_cmake_cpplint_FOUND TRUE)
-  ament_lint_auto_find_test_dependencies()
+  ament_add_gtest(robot_driver_test
+    test/test_robot_driver.cpp
+  )
+
+  target_link_libraries(robot_driver_test
+    ${PROJECT_NAME}
+  )
+
+  ament_target_dependencies(robot_driver_test
+    rclcpp
+    quad_utils
+  )
 endif()
 
 ament_package()

@@ -66,7 +66,7 @@ LocalPlanner::LocalPlanner(rclcpp::Node::SharedPtr node)
                              use_twist_input_, false);
 
     // Convert kinematics
-    quadKD_ = std::make_shared<quad_utils::QuadKD>(node_, robot_ns_);
+    quadKD_ = std::make_shared<quad_utils::QuadKD2>(node_, robot_ns_);
 
     // Initialize body and foot position arrays (grf_plan horizon is one index
     // shorter since control after last state is not in the horizon)
@@ -563,7 +563,6 @@ void LocalPlanner::publishLocalPlan() {
             quad_utils::eigenToBodyStateMsg(body_plan_.row(i));
         robot_state_msg.feet = foot_plan_msg.states[i];
         quad_utils::ikRobotState(*quadKD_, robot_state_msg);
-
         // Add the GRF information
         quad_msgs::msg::GRFArray grf_array_msg;
         quad_utils::eigenToGRFArrayMsg(grf_plan_.row(i),

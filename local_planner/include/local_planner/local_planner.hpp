@@ -243,7 +243,7 @@ class LocalPlanner {
   Eigen::MatrixXd foot_plan_discrete_;
 
   /// QuadKD class
-  std::shared_ptr<quad_utils::QuadKD> quadKD_;
+  std::shared_ptr<quad_utils::QuadKD2> quadKD_;
 
   /// Twist input
   Eigen::VectorXd cmd_vel_;

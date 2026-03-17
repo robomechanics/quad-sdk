@@ -47,7 +47,7 @@ def generate_launch_description():
         package='robot_driver',
         executable='robot_driver_node',
         name='robot_driver',
-        # output='screen',
+        output='screen',
         parameters=[
             robot_driver_param_file,
             robot_driver_topics_file,

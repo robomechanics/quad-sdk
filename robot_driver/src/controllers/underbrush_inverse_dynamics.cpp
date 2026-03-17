@@ -1,6 +1,7 @@
 #include "robot_driver/controllers/underbrush_inverse_dynamics.hpp"
 
-UnderbrushInverseDynamicsController::UnderbrushInverseDynamicsController(rclcpp::Node::SharedPtr node, std::string& robot_ns) : LegController(node, robot_ns) {
+UnderbrushInverseDynamicsController::UnderbrushInverseDynamicsController(rclcpp::Node::SharedPtr node, const std::string& robot_ns,
+          std::shared_ptr<quad_utils::QuadKD2> quadKD) : LegController(node, robot_ns, quadKD) {
   force_mode_ = {0, 0, 0, 0};
   last_mode_ = {0, 0, 0, 0};
 
@@ -292,8 +293,7 @@ bool UnderbrushInverseDynamicsController::computeLegCommandArray(
     }
 
     // Compute joint torques
-    quadKD_->computeInverseDynamics(state_positions, state_velocities,
-                                    ref_foot_acceleration, grf_array,
+    quadKD_->computeInverseDynamics(ref_foot_acceleration, grf_array,
                                     contact_mode, tau_array);
 
     for (int i = 0; i < num_feet_; ++i) {

@@ -16,7 +16,7 @@ class JointController : public LegController {
    * @brief Constructor for JointController
    * @return Constructed object of type JointController
    */
-  JointController(rclcpp::Node::SharedPtr node, std::string &robot_ns);
+  JointController(rclcpp::Node::SharedPtr node, const std::string &robot_ns, std::shared_ptr<quad_utils::QuadKD2> quadKD);
 
   void updateSingleJointCommand(const geometry_msgs::msg::Vector3::SharedPtr &msg);
 
