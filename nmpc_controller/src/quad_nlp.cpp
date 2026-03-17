@@ -42,7 +42,7 @@ quadNLP::quadNLP(SystemID default_system, int N, double dt, double mu,
   }
 
   // Compute initial kinematics information
-  quadKD_ = std::make_shared<quad_utils::QuadKD>(node_, robot_ns_);
+  quadKD_ = std::make_shared<quad_utils::QuadKD2>(node_, robot_ns_);
   Eigen::VectorXd initial_state(12);
   initial_state.fill(0);
   initial_state(2) = 0.2;

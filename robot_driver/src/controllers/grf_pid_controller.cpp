@@ -1,6 +1,7 @@
 #include "robot_driver/controllers/grf_pid_controller.hpp"
 
-GrfPidController::GrfPidController(rclcpp::Node::SharedPtr node, std::string& robot_ns) : LegController(node, robot_ns) {
+GrfPidController::GrfPidController(rclcpp::Node::SharedPtr node, const std::string& robot_ns,
+                                  std::shared_ptr<quad_utils::QuadKD2> quadKD) : LegController(node, robot_ns, quadKD) {
   pos_error_int_.setZero();
   ang_error_int_.setZero();
   t_old_ = node_->now();
@@ -115,8 +116,7 @@ bool GrfPidController::computeLegCommandArray(
   std::vector<int> contact_mode = {1, 1, 1, 1};
 
   // Compute joint torques
-  quadKD_->computeInverseDynamics(state_positions, state_velocities,
-                                  ref_foot_acceleration, grf_array,
+  quadKD_->computeInverseDynamics(ref_foot_acceleration, grf_array,
                                   contact_mode, tau_array);
 
   for (int i = 0; i < num_feet_; ++i) {

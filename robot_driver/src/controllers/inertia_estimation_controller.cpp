@@ -1,6 +1,7 @@
 #include "robot_driver/controllers/inertia_estimation_controller.hpp"
 
-InertiaEstimationController::InertiaEstimationController(rclcpp::Node::SharedPtr node, std::string& robot_ns) : LegController(node, robot_ns) {}
+InertiaEstimationController::InertiaEstimationController(rclcpp::Node::SharedPtr node, const std::string& robot_ns,
+                                                        std::shared_ptr<quad_utils::QuadKD2> quadKD) : LegController(node, robot_ns, quadKD) {}
 
 bool InertiaEstimationController::computeLegCommandArray(
     const quad_msgs::msg::RobotState &robot_state_msg,
@@ -102,8 +103,7 @@ bool InertiaEstimationController::computeLegCommandArray(
     }
 
     // Compute joint torques
-    quadKD_->computeInverseDynamics(state_positions, state_velocities,
-                                    ref_foot_acceleration, grf_array,
+    quadKD_->computeInverseDynamics(ref_foot_acceleration, grf_array,
                                     contact_mode, tau_array);
 
     // Convert gains to eigen vectors for easier math
@@ -120,7 +120,7 @@ bool InertiaEstimationController::computeLegCommandArray(
                         ref_foot_velocities - foot_velocities);
 
     // Transform PD into joint space
-    quadKD_->getJacobianBodyAngVel(state_positions, jacobian);
+    quadKD_->getJacobianBodyAngVel(jacobian);
     swing_cart_fb =
         jacobian.block(0, 0, 3 * num_feet_, 3 * num_feet_).transpose() *
         swing_cart_fb;

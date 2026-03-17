@@ -32,7 +32,8 @@ class LegController {
    * @brief Constructor for LegController
    * @return Constructed object of type LegController
    */
-  LegController(rclcpp::Node::SharedPtr node, std::string& robot_ns);
+  LegController(rclcpp::Node::SharedPtr node, const std::string& robot_ns,
+                std::shared_ptr<quad_utils::QuadKD2> quadKD);
 
   /**
    * @brief Set the desired proportional and derivative gains for all legs
@@ -113,7 +114,7 @@ class LegController {
   const int num_feet_ = 4;
 
   /// QuadKD class
-  std::shared_ptr<quad_utils::QuadKD> quadKD_;
+  std::shared_ptr<quad_utils::QuadKD2> quadKD_;
 
   /// PD gain when foot is in stance
   std::vector<double> stance_kp_;

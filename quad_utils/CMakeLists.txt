@@ -1,6 +1,10 @@
 cmake_minimum_required(VERSION 3.8)
 project(quad_utils)
 
+if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
+  set(CMAKE_BUILD_TYPE Release CACHE STRING "Build type" FORCE)
+endif()
+
 if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   add_compile_options(-Wall -Wextra -Wpedantic)
 endif()
@@ -27,6 +31,7 @@ find_package(Eigen3 REQUIRED)
 find_package(tf2 REQUIRED)
 find_package(tf2_geometry_msgs REQUIRED)
 find_package(Python3 REQUIRED)
+find_package(pinocchio REQUIRED)
 
 find_package(pluginlib REQUIRED)
 find_package(filters REQUIRED)
@@ -46,8 +51,8 @@ add_library(quad_utils
   src/math_utils.cpp
   src/ros_utils.cpp
   src/quad_kd.cpp
+  src/quad_kd2.cpp
   # src/trajectory_publisher.cpp
-  # Add other reusable sources here if needed
 )
 
 target_include_directories(quad_utils PUBLIC
@@ -74,10 +79,10 @@ add_executable(rviz_interface_node
   src/rviz_interface_node.cpp
   src/rviz_interface.cpp)
 
-add_executable(trajectory_publisher_node
-  src/trajectory_publisher_node.cpp
-  src/trajectory_publisher.cpp
-  )
+# add_executable(trajectory_publisher_node
+#   src/trajectory_publisher_node.cpp
+#   src/trajectory_publisher.cpp
+#   )
 
 add_executable(grid_map_filters_demo
   src/filters_demo.cpp
@@ -89,10 +94,10 @@ target_include_directories(rviz_interface_node PUBLIC
   $<INSTALL_INTERFACE:include>
 )
 
-target_include_directories(trajectory_publisher_node PUBLIC
-  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-  $<INSTALL_INTERFACE:include>
-)
+# target_include_directories(trajectory_publisher_node PUBLIC
+#   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+#   $<INSTALL_INTERFACE:include>
+# )
 
 target_include_directories(grid_map_filters_demo PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
@@ -115,15 +120,15 @@ target_link_libraries(rviz_interface_node
 
 )
 
-target_link_libraries(trajectory_publisher_node
-  quad_utils
-  ${tf2_LIBRARIES}
-  ${tf2_geometry_msgs_LIBRARIES}
-)
+# target_link_libraries(trajectory_publisher_node
+#   quad_utils
+#   ${tf2_LIBRARIES}
+#   ${tf2_geometry_msgs_LIBRARIES}
+# )
 
 
 ament_target_dependencies(quad_utils 
-  rclcpp 
+  rclcpp
   std_msgs
   nav_msgs
   nav2_msgs
@@ -141,6 +146,7 @@ ament_target_dependencies(quad_utils
   tf2
   tf2_geometry_msgs
   cv_bridge
+  pinocchio
 )
 
 ament_target_dependencies(mesh_to_grid_map_node rclcpp)
@@ -158,15 +164,15 @@ ament_target_dependencies(rviz_interface_node
   tf2_geometry_msgs
 )
 
-ament_target_dependencies(trajectory_publisher_node
-  rclcpp
-  quad_msgs
-  tf2
-  tf2_ros
-  tf2_geometry_msgs
-  visualization_msgs
-  grid_map_core  
-)
+# ament_target_dependencies(trajectory_publisher_node
+#   rclcpp
+#   quad_msgs
+#   tf2
+#   tf2_ros
+#   tf2_geometry_msgs
+#   visualization_msgs
+#   grid_map_core  
+# )
 
 ament_target_dependencies(grid_map_filters_demo
   rclcpp
@@ -182,10 +188,10 @@ install(TARGETS
   DESTINATION lib/${PROJECT_NAME}
 )
 
-install(TARGETS
-  trajectory_publisher_node
-  DESTINATION lib/${PROJECT_NAME}
-)
+# install(TARGETS
+#   trajectory_publisher_node
+#   DESTINATION lib/${PROJECT_NAME}
+# )
 
 # Install Libraries and Executables
 install(TARGETS quad_utils
@@ -239,48 +245,46 @@ ament_export_dependencies(
   rclcpp std_msgs nav_msgs nav2_msgs sensor_msgs geometry_msgs visualization_msgs
   grid_map_core grid_map_ros grid_map_pcl grid_map_msgs quad_msgs
   pcl_msgs pcl_conversions Eigen3 tf2 tf2_geometry_msgs cv_bridge pluginlib filters
+  pinocchio
 )
 
 
 if(BUILD_TESTING)
   # find_package(ament_lint_auto REQUIRED)
   find_package(ament_cmake_gtest REQUIRED)
-  find_package(launch_testing_ament_cmake REQUIRED)
+  find_package(grid_map_core REQUIRED)
+  # find_package(launch_testing_ament_cmake REQUIRED)
   # set(ament_cmake_copyright_FOUND TRUE)
   # the following line skips cpplint (only works in a git repo)
   # comment the line when this package is in a git repo and when
   # a copyright and license is added to all source files
-  # set(ament_cmake_cpplint_FOUND TRUE)
-  # ament_lint_auto_find_test_dependencies()
-#   ament_add_gtest(test_quad_kd
-#     test/test_quad_kd.cpp
-#   )
-#   set_tests_properties(test_quad_kd PROPERTIES DISABLED TRUE)
-#   ament_target_dependencies(test_quad_kd
-#     rclcpp
-#     std_msgs
-#     grid_map_core
-#     Eigen3
-#     tf2
-#     quad_msgs
-#   )
-#   target_link_libraries(test_quad_kd quad_utils)
-#   target_include_directories(test_quad_kd PUBLIC
-#     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-#   )
-#   add_launch_test(
-#     launch/test_quad_kd.py
-#     TARGET test_quad_kd_launch
-#     TIMEOUT 150
-#   )
-  
-#   install(TARGETS
-#     test_quad_kd
-#     DESTINATION lib/${PROJECT_NAME}
-#   )
-#   install(DIRECTORY launch
-#   DESTINATION share/${PROJECT_NAME}
-# )
+  set(ament_cmake_cpplint_FOUND TRUE)
+  set(ament_cmake_uncrustify_FOUND TRUE)
+
+  ament_add_gtest(quad_utils_test
+    test/test_quad_kd.cpp
+    test/test_rviz_interface.cpp
+    test/test_main.cpp
+    test/test_math_utils.cpp
+  )
+
+  if(TARGET quad_utils_test)
+    target_link_libraries(quad_utils_test
+      quad_utils
+    )
+
+    ament_target_dependencies(quad_utils_test
+      rclcpp
+      std_msgs
+      grid_map_core
+      tf2
+      quad_msgs
+    )
+
+    target_include_directories(quad_utils_test PUBLIC
+      $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+    )
+  endif()
 endif()
 
 ament_package()

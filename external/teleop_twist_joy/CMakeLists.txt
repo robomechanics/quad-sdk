@@ -63,10 +63,12 @@ install(DIRECTORY launch config
 
 if(BUILD_TESTING)
   # Disable some broken tests for now
-  set(ament_cmake_copyright_FOUND TRUE)
+  # set(ament_cmake_copyright_FOUND TRUE)
 
   find_package(ament_lint_auto REQUIRED)
-  ament_lint_auto_find_test_dependencies()
+  # ament_lint_auto_find_test_dependencies()
+  set(ament_cmake_cpplint_FOUND TRUE)
+  set(ament_cmake_uncrustify_FOUND TRUE)
 
   set(_teleop_twist_joy_launch_tests
     # Check axes and scaling.

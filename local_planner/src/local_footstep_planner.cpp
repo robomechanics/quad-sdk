@@ -36,7 +36,7 @@ void LocalFootstepPlanner::setTemporalParams(
 void LocalFootstepPlanner::setSpatialParams(
     double ground_clearance, double hip_clearance, double grf_weight,
     double standing_error_threshold,
-    std::shared_ptr<quad_utils::QuadKD> kinematics,
+    std::shared_ptr<quad_utils::QuadKD2> kinematics,
     double foothold_search_radius, double foothold_obj_threshold,
     std::string obj_fun_layer, double toe_radius) {
   ground_clearance_ = ground_clearance;

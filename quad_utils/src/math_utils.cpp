@@ -15,7 +15,7 @@ std::vector<double> interpMat(const std::vector<double> input_vec,
   std::vector<double> y1, y2, interp_data;
 
   // Find the correct values to interp between
-  for (int i = 0; i < input_vec.size(); i++) {
+  for (size_t i = 0; i < input_vec.size(); i++) {
     if (input_vec[i] <= query_point && query_point < input_vec[i + 1]) {
       t1 = input_vec[i];
       t2 = input_vec[i + 1];
@@ -26,7 +26,7 @@ std::vector<double> interpMat(const std::vector<double> input_vec,
   }
 
   // Apply linear interpolation for each element in the vector
-  for (int i = 0; i < input_mat.front().size(); i++) {
+  for (size_t i = 0; i < input_mat.front().size(); i++) {
     double result = y1[i] + (y2[i] - y1[i]) / (t2 - t1) * (query_point - t1);
     interp_data.push_back(result);
   }
@@ -47,7 +47,7 @@ Eigen::Vector3d interpVector3d(const std::vector<double> input_vec,
   Eigen::Vector3d y1, y2, interp_data;
 
   // Find the correct values to interp between
-  for (int i = 0; i < input_vec.size(); i++) {
+  for (size_t i = 0; i < input_vec.size(); i++) {
     if (input_vec[i] <= query_point && query_point < input_vec[i + 1]) {
       t1 = input_vec[i];
       t2 = input_vec[i + 1];
@@ -78,7 +78,7 @@ std::vector<Eigen::Vector3d> interpMatVector3d(
   std::vector<Eigen::Vector3d> y1, y2, interp_data;
 
   // Find the correct values to interp between
-  for (int i = 0; i < input_vec.size(); i++) {
+  for (size_t i = 0; i < input_vec.size(); i++) {
     if (input_vec[i] <= query_point && query_point < input_vec[i + 1]) {
       t1 = input_vec[i];
       t2 = input_vec[i + 1];
@@ -89,7 +89,7 @@ std::vector<Eigen::Vector3d> interpMatVector3d(
   }
 
   // Apply linear interpolation for each element in the vector
-  for (int i = 0; i < output_mat.front().size(); i++) {
+  for (size_t i = 0; i < output_mat.front().size(); i++) {
     Eigen::Vector3d interp_eigen_vec;
     interp_eigen_vec = y1[i].array() + (y2[i].array() - y1[i].array()) /
                                            (t2 - t1) * (query_point - t1);
@@ -112,7 +112,7 @@ int interpInt(const std::vector<double> input_vec, std::vector<int> output_vec,
 
   // Find the correct values to interp between
   int idx = 0;
-  for (int i = 0; i < input_vec.size(); i++) {
+  for (size_t i = 0; i < input_vec.size(); i++) {
     if (input_vec[i] <= query_point && query_point < input_vec[i + 1]) {
       return output_vec[i];
     }
@@ -183,14 +183,14 @@ std::vector<double> centralDiff(std::vector<double> data, double dt) {
 
 std::vector<double> unwrap(std::vector<double> data) {
   std::vector<double> data_unwrapped = data;
-  for (int i = 1; i < data.size(); i++) {
+  for (size_t i = 1; i < data.size(); i++) {
     double diff = data[i] - data[i - 1];
     if (diff > M_PI) {
-      for (int j = i; j < data.size(); j++) {
+      for (size_t j = i; j < data.size(); j++) {
         data_unwrapped[j] = data_unwrapped[j] - 2 * M_PI;
       }
     } else if (diff < -M_PI) {
-      for (int j = i; j < data.size(); j++) {
+      for (size_t j = i; j < data.size(); j++) {
         data_unwrapped[j] = data_unwrapped[j] + 2 * M_PI;
       }
     }

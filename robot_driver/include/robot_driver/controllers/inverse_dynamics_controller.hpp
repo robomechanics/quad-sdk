@@ -15,7 +15,8 @@ class InverseDynamicsController : public LegController {
    * @brief Constructor for InverseDynamicsController
    * @return Constructed object of type InverseDynamicsController
    */
-  InverseDynamicsController(rclcpp::Node::SharedPtr node, std::string& robot_ns);
+  InverseDynamicsController(rclcpp::Node::SharedPtr node, const std::string& robot_ns,
+                           std::shared_ptr<quad_utils::QuadKD2> quadKD);
 
   /**
    * @brief Compute the leg command array message for a given current state and

@@ -4,6 +4,7 @@
 #include <quad_msgs/msg/contact_mode.hpp>
 #include <quad_msgs/msg/robot_state.hpp>
 #include <quad_utils/quad_kd.hpp>
+#include <quad_utils/quad_kd2.hpp>
 #include <quad_utils/ros_utils.hpp>
 #include <rclcpp/rclcpp.hpp>
 #include <sensor_msgs/msg/imu.hpp>
@@ -21,7 +22,7 @@ class StateEstimator {
    * @brief Constructor for StateEstimator
    * @return Constructed object of type StateEstimator
    */
-  StateEstimator(rclcpp::Node::SharedPtr node, std::string robot_ns);
+  StateEstimator(rclcpp::Node::SharedPtr node, const std::string &robot_ns, std::shared_ptr<quad_utils::QuadKD2> quadKD);
 
   /**
    * @brief Virtual function for initialize filters, should be defined in
@@ -82,7 +83,7 @@ class StateEstimator {
   quad_msgs::msg::RobotState state_est_;
 
   /// QuadKD class
-  std::shared_ptr<quad_utils::QuadKD> quadKD_;
+  std::shared_ptr<quad_utils::QuadKD2> quadKD_;
 
   /// Last mocap data
   geometry_msgs::msg::PoseStamped::SharedPtr last_mocap_msg_;

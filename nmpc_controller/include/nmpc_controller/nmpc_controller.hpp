@@ -116,7 +116,7 @@ class NMPCController {
   SmartPtr<IpoptApplication> app_;
 
   /// Pointer to robot kinematics
-  std::shared_ptr<quad_utils::QuadKD> quadKD_;
+  std::shared_ptr<quad_utils::QuadKD2> quadKD_;
 
   /// Whether enable variable horizon
   bool enable_variable_horizon_;
