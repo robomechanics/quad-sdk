@@ -81,3 +81,50 @@
       stand_joint_angles: [0.0, 0.76, 1.52]
       sit_joint_angles: [0.0, 0.2, 0.2]
       torque_limit: [33.5, 33.5, 33.5]
+      
+/**:
+  ros__parameters:
+    leg_0:
+      joint_names: ["8", "0", "1"]
+      abad:
+        sign: 1.0
+        offset: 0.0
+      hip:
+        sign: 1.0
+        offset: 0.0
+      knee:
+        sign: 1.0
+        offset: 0.0
+    leg_1: 
+      joint_names: ["9", "2", "3"]
+      abad:
+        sign: 1.0
+        offset: 0.0
+      hip:
+        sign: 1.0
+        offset: 0.0
+      knee:
+        sign: 1.0
+        offset: 0.0
+    leg_2: 
+      joint_names: ["10", "4", "5"]
+      abad:
+        sign: 1.0
+        offset: 0.0
+      hip:
+        sign: 1.0
+        offset: 0.0
+      knee:
+        sign: 1.0
+        offset: 0.0
+    leg_3: 
+      joint_names: ["11", "6", "7"]
+      abad:
+        sign: 1.0
+        offset: 0.0
+      hip:
+        sign: 1.0
+        offset: 0.0
+      knee:
+        sign: 1.0
+        offset: 0.0

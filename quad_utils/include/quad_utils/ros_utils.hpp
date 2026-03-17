@@ -98,7 +98,7 @@ inline bool loadROSParamDefault(rclcpp::Node::SharedPtr node, std::string paramN
                                 ParamType &varName, ParamType defaultVal) {
   if (!node->has_parameter(paramName)){
     try{
-      node->declare_parameter<ParamType>(paramName);
+      node->declare_parameter<ParamType>(paramName, defaultVal);
     } catch (const rclcpp::exceptions::ParameterAlreadyDeclaredException &e){
     }
   }
@@ -243,7 +243,7 @@ quad_msgs::msg::MultiFootState interpMultiFootPlanContinuous(
  * @param[in] multi_foot_state message of state of each foot
  * @param[out] joint_state message of the corresponding joint state
  */
-void ikRobotState(const quad_utils::QuadKD &kinematics,
+void ikRobotState(quad_utils::QuadKD2 &kinematics,
                   quad_msgs::msg::BodyState body_state,
                   quad_msgs::msg::MultiFootState multi_foot_state,
                   sensor_msgs::msg::JointState &joint_state);
@@ -253,7 +253,7 @@ void ikRobotState(const quad_utils::QuadKD &kinematics,
  * @param[in] kinematics Pointer to kinematics object
  * @param[out] state RobotState message to which to add joint data
  */
-void ikRobotState(const quad_utils::QuadKD &kinematics,
+void ikRobotState(quad_utils::QuadKD2 &kinematics,
                   quad_msgs::msg::RobotState &state);
 
 /**
@@ -264,7 +264,7 @@ void ikRobotState(const quad_utils::QuadKD &kinematics,
  * @param[in] joint_state message of the corresponding joint state
  * @param[out] multi_foot_state message of state of each foot
  */
-void fkRobotState(const quad_utils::QuadKD &kinematics,
+void fkRobotState(quad_utils::QuadKD2 &kinematics,
                   quad_msgs::msg::BodyState body_state,
                   sensor_msgs::msg::JointState joint_state,
                   quad_msgs::msg::MultiFootState &multi_foot_state);
@@ -274,7 +274,7 @@ void fkRobotState(const quad_utils::QuadKD &kinematics,
  * @param[in] kinematics Pointer to kinematics object
  * @param[out] state RobotState message to which to add joint data
  */
-void fkRobotState(const quad_utils::QuadKD &kinematics,
+void fkRobotState(quad_utils::QuadKD2 &kinematics,
                   quad_msgs::msg::RobotState &state);
 
 /**

@@ -16,7 +16,8 @@ class UnderbrushInverseDynamicsController : public LegController {
    * @brief Constructor for InverseDynamicsController
    * @return Constructed object of type InverseDynamicsController
    */
-  UnderbrushInverseDynamicsController(rclcpp::Node::SharedPtr node, std::string& robot_ns);
+  UnderbrushInverseDynamicsController(rclcpp::Node::SharedPtr node, const std::string& robot_ns,
+                                      std::shared_ptr<quad_utils::QuadKD2> quadKD);
 
   /**
    * @brief Update body force estimate

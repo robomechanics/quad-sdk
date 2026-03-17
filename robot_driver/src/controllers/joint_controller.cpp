@@ -1,6 +1,7 @@
 #include "robot_driver/controllers/joint_controller.hpp"
 
-JointController::JointController(rclcpp::Node::SharedPtr node, std::string &robot_ns) : LegController(node, robot_ns){
+JointController::JointController(rclcpp::Node::SharedPtr node, const std::string &robot_ns,
+                                std::shared_ptr<quad_utils::QuadKD2> quadKD) : LegController(node, robot_ns, quadKD){
   leg_idx_ = 0;
   joint_idx_ = 0;
   joint_torque_ = 0.0;

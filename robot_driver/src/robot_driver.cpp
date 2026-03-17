@@ -8,7 +8,7 @@ RobotDriver::RobotDriver(std::shared_ptr<rclcpp::Node> node, int argc, char **ar
     robot_heartbeat_topic, single_joint_cmd_topic, mocap_topic, 
     control_restart_flag_topic, body_force_estimate_topic, cmd_vel_topic, cmd_vel_stamped_topic, state_estimate_topic;
 
-    quad_utils::loadROSParam(node_, "namespace", robot_ns);
+    quad_utils::loadROSParamDefault(node_, "namespace", robot_ns, std::string("robot_1"));
     quad_utils::loadROSParam(node_, "robot_description", robot_description);
     quad_utils::loadROSParamDefault(node_, "robot_type", robot_name,
                                     std::string("spirit"));
@@ -74,7 +74,6 @@ RobotDriver::RobotDriver(std::shared_ptr<rclcpp::Node> node, int argc, char **ar
     quad_utils::loadROSParam(node_, "robot_driver.model_path", model_path_);
     quad_utils::loadROSParam(node_, "robot_driver.cmd_vel_filter_const", cmd_vel_filter_const_);
     quad_utils::loadROSParam(node_, "robot_driver.cmd_vel_scale", cmd_vel_scale_);
-
 
     // Setup pubs and subs
     local_plan_sub_ = node_->create_subscription<quad_msgs::msg::RobotPlan>(local_plan_topic, 
@@ -162,9 +161,9 @@ RobotDriver::RobotDriver(std::shared_ptr<rclcpp::Node> node, int argc, char **ar
 void RobotDriver::initStateEstimator() {
   if (estimator_id_ == "comp_filter") {
     RCLCPP_INFO_STREAM(node_->get_logger(), "Comp Filter");
-    state_estimator_ = std::make_shared<CompFilterEstimator>(node_, robot_ns);
+    state_estimator_ = std::make_shared<CompFilterEstimator>(node_, robot_ns, quadKD2_);
   } else if (estimator_id_ == "ekf_filter") {
-    state_estimator_ = std::make_shared<EKFEstimator>(node_, robot_ns);
+    state_estimator_ = std::make_shared<EKFEstimator>(node_, robot_ns, quadKD2_);
   } else {
     RCLCPP_ERROR(node_->get_logger(), "Invalid estimator id '%s', returning nullptr", estimator_id_.c_str());
     state_estimator_ = nullptr;
@@ -177,13 +176,13 @@ void RobotDriver::initStateEstimator() {
 
 void RobotDriver::initLegController() {
     if (controller_id_ == "inverse_dynamics") {
-    leg_controller_ = std::make_shared<InverseDynamicsController>(node_, robot_ns);
+    leg_controller_ = std::make_shared<InverseDynamicsController>(node_, robot_ns, quadKD2_);
     } else if (controller_id_ == "grf_pid") {
-    leg_controller_ = std::make_shared<GrfPidController>(node_, robot_ns);
+    leg_controller_ = std::make_shared<GrfPidController>(node_, robot_ns, quadKD2_);
     } else if (controller_id_ == "joint") {
-    leg_controller_ = std::make_shared<JointController>(node_, robot_ns);
+    leg_controller_ = std::make_shared<JointController>(node_, robot_ns, quadKD2_);
     } else if (controller_id_ == "underbrush") {
-    leg_controller_ = std::make_shared<UnderbrushInverseDynamicsController>(node_, robot_ns);
+    leg_controller_ = std::make_shared<UnderbrushInverseDynamicsController>(node_, robot_ns, quadKD2_);
     double retract_vel, tau_push, tau_contact_start, tau_contact_end,
         min_switch, t_down, t_up;
     quad_utils::loadROSParam(node_, "underbrush_swing.retract_vel", retract_vel);
@@ -201,9 +200,9 @@ void RobotDriver::initLegController() {
     c->setUnderbrushParams(retract_vel, tau_push, tau_contact_start,
                            tau_contact_end, min_switch, t_down, t_up);
     } else if (controller_id_ == "inertia_estimation") {
-    leg_controller_ = std::make_shared<InertiaEstimationController>(node_, robot_ns);
+    leg_controller_ = std::make_shared<InertiaEstimationController>(node_, robot_ns, quadKD2_);
     } else if (controller_id_ == "learned"){
-    leg_controller_ = std::make_shared<LearnedPolicy>(node_, robot_ns);
+    leg_controller_ = std::make_shared<LearnedPolicy>(node_, robot_ns, quadKD2_);
     } 
     else {
         RCLCPP_ERROR(node_->get_logger(), "Invalid controller id %s, returning nullptr", controller_id_.c_str());
@@ -646,19 +645,9 @@ void RobotDriver::publishHeartbeat() {
 void RobotDriver::testDynamics() {
   if (debugger){
     if (rclcpp::Time(last_robot_state_msg_.header.stamp).seconds() != 0) {
-      RCLCPP_INFO(node_->get_logger(), "Running Comparison of the Dynamics");
-      // Shape Tests on The Pinocchio Model Generation
-      // Compute values with Pinocchio
-      
-
-      // Run Update with Last Robot State Message and Then Compute
-      RCLCPP_INFO(node_ ->get_logger(), "Attempting Dynamics State Update");
       quad_utils::updateDynamics(*quadKD2_, last_robot_state_msg_);
-      RCLCPP_INFO(node_->get_logger(), "Completed Dynamics State Update");
+      // RCLCPP_INFO(node_->get_logger(), "Completed Dynamics State Update");
 
-      // Compute Ground Truth values with RBDL
-
-      debugger = false;
     }
   }
 }
@@ -678,14 +667,14 @@ void RobotDriver::spin() {
 
     // Get the newest state information
     updateState();
+    
+    testDynamics();
 
     // Compute the leg command and publish if valid
     bool is_valid = updateControl();
     publishControl(is_valid);
 
-    testDynamics();
-
-    // // // Publish state and heartbeat
+    // Publish state and heartbeat
     publishState();
     publishHeartbeat();
 

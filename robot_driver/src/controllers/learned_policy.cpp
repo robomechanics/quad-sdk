@@ -1,6 +1,7 @@
 #include "robot_driver/controllers/learned_policy.hpp"
 
-LearnedPolicy::LearnedPolicy(rclcpp::Node::SharedPtr node, std::string& robot_ns): LegController(node, robot_ns){ }
+LearnedPolicy::LearnedPolicy(rclcpp::Node::SharedPtr node, const std::string& robot_ns,
+                            std::shared_ptr<quad_utils::QuadKD2> quadKD): LegController(node, robot_ns, quadKD){ }
 
 void LearnedPolicy::init(const std::vector<double> &stance_kp,
                         const std::vector<double> &stance_kd,

@@ -3,6 +3,7 @@
 <sdf version='1.11' xmlns:xacro="http://www.ros.org/wiki/xacro">
   <xacro:arg name="namespace" default="robot_1" />
   <xacro:arg name="controller_config_path" default="/path/quad_control.yaml" />
+  <xacro:arg name="robot_config_path" default="/path/go2.yaml" />
 
   <model name='go2'>
     <link name='body'>
@@ -113,14 +114,14 @@
       </visual>
     </link>
     <joint name='0' type='revolute'>
-      <pose relative_to='hip0'>0 0.095500000000000002 0 0 1.5708 0</pose>
+      <pose relative_to='hip0'>0 0.095500000000000002 0 0 0 0</pose>
       <parent>hip0</parent>
       <child>upper0</child>
       <axis>
-        <xyz>0 -1 0</xyz>
+        <xyz>0 1 0</xyz>
         <limit>
-          <lower>-2.61799</lower>
-          <upper>2.61799</upper>
+          <lower>-1.5708</lower>
+          <upper>3.4906999999999999</upper>
           <effort>23.699999999999999</effort>
           <velocity>30.100000000000001</velocity>
         </limit>
@@ -167,14 +168,14 @@
       </visual>
     </link>
     <joint name='1' type='revolute'>
-      <pose relative_to='upper0'>0 0 -0.21299999999999999 -3.14159 0 -3.14159</pose>
+      <pose relative_to='upper0'>0 0 -0.21299999999999999 0 0 0</pose>
       <parent>upper0</parent>
       <child>lower0</child>
       <axis>
         <xyz>0 1 0</xyz>
         <limit>
-          <lower>0.445059</lower>
-          <upper>2.22529</upper>
+          <lower>-2.7227000000000001</lower>
+          <upper>-0.83775999999999995</upper>
           <effort>45.43</effort>
           <velocity>15.699999999999999</velocity>
         </limit>
@@ -246,7 +247,7 @@
           <ambient>1 1 1 1</ambient>
         </material>
       </visual>
-      <visual name='lower_fixed_joint_lump__FL_foot_visual_1'>
+      <visual name='lower0_fixed_joint_lump__FL_foot_visual_1'>
         <pose>0 0 -0.21299999999999999 0 0 0</pose>
         <geometry>
           <mesh>
@@ -401,14 +402,14 @@
       </visual>
     </link>
     <joint name='4' type='revolute'>
-      <pose relative_to='hip2'>0 -0.095500000000000002 0 0 1.5708 0</pose>
+      <pose relative_to='hip2'>0 -0.095500000000000002 0 0 0 0</pose>
       <parent>hip2</parent>
       <child>upper2</child>
       <axis>
-        <xyz>0 -1 0</xyz>
+        <xyz>0 1 0</xyz>
         <limit>
-          <lower>-2.61799</lower>
-          <upper>2.61799</upper>
+          <lower>-1.5708</lower>
+          <upper>3.4906999999999999</upper>
           <effort>23.699999999999999</effort>
           <velocity>30.100000000000001</velocity>
         </limit>
@@ -455,14 +456,14 @@
       </visual>
     </link>
     <joint name='5' type='revolute'>
-      <pose relative_to='upper2'>0 0 -0.21299999999999999 -3.14159 0 -3.14159</pose>
+      <pose relative_to='upper2'>0 0 -0.21299999999999999 0 0 0</pose>
       <parent>upper2</parent>
       <child>lower2</child>
       <axis>
         <xyz>0 1 0</xyz>
         <limit>
-          <lower>0.445059</lower>
-          <upper>2.22529</upper>
+          <lower>-2.7227000000000001</lower>
+          <upper>-0.83775999999999995</upper>
           <effort>45.43</effort>
           <velocity>15.699999999999999</velocity>
         </limit>
@@ -690,14 +691,14 @@
       </visual>
     </link>
     <joint name='2' type='revolute'>
-      <pose relative_to='hip1'>0 0.095500000000000002 0 0 1.5708 0</pose>
+      <pose relative_to='hip1'>0 0.095500000000000002 0 0 0 0</pose>
       <parent>hip1</parent>
       <child>upper1</child>
       <axis>
-        <xyz>0 -1 0</xyz>
+        <xyz>0 1 0</xyz>
         <limit>
-          <lower>-2.61799</lower>
-          <upper>2.61799</upper>
+          <lower>-0.52359999999999995</lower>
+          <upper>4.5378999999999996</upper>
           <effort>23.699999999999999</effort>
           <velocity>30.100000000000001</velocity>
         </limit>
@@ -744,14 +745,14 @@
       </visual>
     </link>
     <joint name='3' type='revolute'>
-      <pose relative_to='upper1'>0 0 -0.21299999999999999 -3.14159 0 -3.14159</pose>
+      <pose relative_to='upper1'>0 0 -0.21299999999999999 0 0 0</pose>
       <parent>upper1</parent>
       <child>lower1</child>
       <axis>
         <xyz>0 1 0</xyz>
         <limit>
-          <lower>0.445059</lower>
-          <upper>2.22529</upper>
+          <lower>-2.7227000000000001</lower>
+          <upper>-0.83775999999999995</upper>
           <effort>45.43</effort>
           <velocity>15.699999999999999</velocity>
         </limit>
@@ -978,14 +979,14 @@
       </visual>
     </link>
     <joint name='6' type='revolute'>
-      <pose relative_to='hip3'>0 -0.095500000000000002 0 0 1.5708 0</pose>
+      <pose relative_to='hip3'>0 -0.095500000000000002 0 0 0 0</pose>
       <parent>hip3</parent>
       <child>upper3</child>
       <axis>
-        <xyz>0 -1 0</xyz>
+        <xyz>0 1 0</xyz>
         <limit>
-          <lower>-2.61799</lower>
-          <upper>2.61799</upper>
+          <lower>-0.52359999999999995</lower>
+          <upper>4.5378999999999996</upper>
           <effort>23.699999999999999</effort>
           <velocity>30.100000000000001</velocity>
         </limit>
@@ -1032,14 +1033,14 @@
       </visual>
     </link>
     <joint name='7' type='revolute'>
-      <pose relative_to='upper3'>0 0 -0.21299999999999999 -3.14159 0 -3.14159</pose>
+      <pose relative_to='upper3'>0 0 -0.21299999999999999 0 0 0</pose>
       <parent>upper3</parent>
       <child>lower3</child>
       <axis>
         <xyz>0 1 0</xyz>
         <limit>
-          <lower>0.445059</lower>
-          <upper>2.22529</upper>
+          <lower>-2.7227000000000001</lower>
+          <upper>-0.83775999999999995</upper>
           <effort>45.43</effort>
           <velocity>15.699999999999999</velocity>
         </limit>
@@ -1210,7 +1211,7 @@
       <velocity_decay/>
       <self_collide>0</self_collide>
     </link>
-    <frame name='hip0_rotor_joint' attached_to='body'>
+     <frame name='hip0_rotor_joint' attached_to='body'>
       <pose>0.11215 0.04675 0 0 0 0</pose>
     </frame>
     <frame name='hip0_rotor' attached_to='hip0_rotor_joint'>
@@ -1397,25 +1398,25 @@
     </joint>
 
     <!-- Setup ros control -->
-      <plugin 
-          filename="libgz_ros2_control-system.so"
-          name="gz_ros2_control::GazeboSimROS2ControlPlugin">
-          <controlPeriod>0.002</controlPeriod>
-          <parameters>$(arg controller_config_path)</parameters>
-              <ros>
-                <namespace>$(arg namespace)</namespace>
-            </ros>
-      </plugin>
+    <plugin 
+        filename="libgz_ros2_control-system.so"
+        name="gz_ros2_control::GazeboSimROS2ControlPlugin">
+        <controlPeriod>0.002</controlPeriod>
+        <parameters>$(arg controller_config_path)</parameters>
+            <ros>
+              <namespace>$(arg namespace)</namespace>
+          </ros>
+    </plugin>
 
     <!-- Publish ground truth state data -->
     <plugin filename="libground_truth_estimator.so" name="ground_truth_estimator">
       <updateRateHZ>500.0</updateRateHZ>
       <ground_truth_state_topic>state/ground_truth</ground_truth_state_topic>
       <ground_truth_body_frame_topic>state/ground_truth_body_frame</ground_truth_body_frame_topic>
+      <parameters>$(arg robot_config_path)</parameters>
       <ros>
         <parameter name="use_sim_time">true</parameter>
       </ros>
     </plugin>
-
   </model>
 </sdf>

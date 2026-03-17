@@ -319,7 +319,7 @@ quad_msgs::msg::MultiFootState interpMultiFootPlanContinuous(
 //   return interp_state;
 // }
 
-void ikRobotState(const quad_utils::QuadKD &kinematics,
+void ikRobotState(quad_utils::QuadKD2 &kinematics,
                   quad_msgs::msg::BodyState body_state,
                   quad_msgs::msg::MultiFootState multi_foot_state,
                   sensor_msgs::msg::JointState &joint_state) {
@@ -390,7 +390,8 @@ void ikRobotState(const quad_utils::QuadKD &kinematics,
 
   // Compute jacobian
   Eigen::MatrixXd jacobian = Eigen::MatrixXd::Zero(12, 18);
-  kinematics.getJacobianBodyAngVel(state_positions, jacobian);
+  kinematics.updateFromBodyJoints(ref_body_state, joint_positions);
+  kinematics.getJacobianBodyAngVel(jacobian);
 
   // Compute joint velocities
   joint_velocities =
@@ -403,12 +404,12 @@ void ikRobotState(const quad_utils::QuadKD &kinematics,
   }
 }
 
-void ikRobotState(const quad_utils::QuadKD &kinematics,
+void ikRobotState(quad_utils::QuadKD2 &kinematics,
                   quad_msgs::msg::RobotState &state) {
   ikRobotState(kinematics, state.body, state.feet, state.joints);
 }
 
-void fkRobotState(const quad_utils::QuadKD &kinematics,
+void fkRobotState(quad_utils::QuadKD2 &kinematics,
                   quad_msgs::msg::BodyState body_state,
                   sensor_msgs::msg::JointState joint_state,
                   quad_msgs::msg::MultiFootState &multi_foot_state) {
@@ -417,47 +418,6 @@ void fkRobotState(const quad_utils::QuadKD &kinematics,
 
   int num_feet = 4;
   multi_foot_state.feet.resize(num_feet);
-
-  int joint_index = -1;
-  for (int i = 0; i < multi_foot_state.feet.size(); i++) {
-    // Get joint data for indexed leg leg
-    Eigen::Vector3d leg_joint_state;
-
-    for (int j = 0; j < 3; j++) {
-      joint_index++;
-      leg_joint_state[j] = joint_state.position.at(joint_index);
-    }
-
-    // Get corresponding body plan data
-    Eigen::Vector3d body_pos = {body_state.pose.position.x,
-                                body_state.pose.position.y,
-                                body_state.pose.position.z};
-
-    tf2::Quaternion q;
-    tf2::convert(body_state.pose.orientation, q);
-    tf2::Matrix3x3 m(q);
-    double roll, pitch, yaw;
-    m.getRPY(roll, pitch, yaw);
-    Eigen::Vector3d body_rpy = {roll, pitch, yaw};
-
-    // Compute IK to get joint data
-    Eigen::Vector3d foot_pos;
-    kinematics.worldToFootFKWorldFrame(i, body_pos, body_rpy, leg_joint_state,
-                                       foot_pos);
-
-    // Add to the foot position vector
-    multi_foot_state.feet[i].position.x = foot_pos[0];
-    multi_foot_state.feet[i].position.y = foot_pos[1];
-    multi_foot_state.feet[i].position.z = foot_pos[2];
-
-    multi_foot_state.feet[i].header = multi_foot_state.header;
-  }
-
-  // Declare state data as Eigen vectors
-  Eigen::VectorXd ref_body_state(12), foot_velocities(12);
-
-  // Load state data
-  ref_body_state = quad_utils::bodyStateMsgToEigen(body_state);
 
   // Define vectors for joint positions and velocities
   Eigen::VectorXd joint_positions(12), joint_velocities(12);
@@ -468,6 +428,12 @@ void fkRobotState(const quad_utils::QuadKD &kinematics,
   // Load joint velocities
   quad_utils::vectorToEigen(joint_state.velocity, joint_velocities);
 
+    // Declare state data as Eigen vectors
+  Eigen::VectorXd ref_body_state(12), foot_velocities(12);
+
+  // Load state data
+  ref_body_state = quad_utils::bodyStateMsgToEigen(body_state);
+
   // Define vectors for state positions
   Eigen::VectorXd state_positions(18), state_velocities(18);
 
@@ -477,9 +443,64 @@ void fkRobotState(const quad_utils::QuadKD &kinematics,
   // Load state velocities
   state_velocities << joint_velocities, ref_body_state.tail(6);
 
+  kinematics.updateFromBodyJoints(ref_body_state, joint_positions);
+
+
+  // int joint_index = -1;
+  for (int i = 0; i < multi_foot_state.feet.size(); i++) {
+    // Get joint data for indexed leg leg
+    // Eigen::Vector3d leg_joint_state;
+
+    // for (int j = 0; j < 3; j++) {
+    //   joint_index++;
+    //   leg_joint_state[j] = joint_state.position.at(joint_index);
+    // }
+
+    // Get corresponding body plan data
+    // Eigen::Vector3d body_pos = {body_state.pose.position.x,
+    //                             body_state.pose.position.y,
+    //                             body_state.pose.position.z};
+
+    // tf2::Quaternion q;
+    // tf2::convert(body_state.pose.orientation, q);
+    // tf2::Matrix3x3 m(q);
+    // double roll, pitch, yaw;
+    // m.getRPY(roll, pitch, yaw);
+    // Eigen::Vector3d body_rpy = {roll, pitch, yaw};
+    // Eigen::VectorXd body_state_eig = quad_utils::bodyStateMsgToEigen(body_state);
+
+    // kinematics.updateFromBodyJoints(body_state_eig, joint_positions);
+
+    // Compute IK to get joint data
+    Eigen::Vector3d foot_pos;
+    kinematics.worldToFootFKWorldFrame(i, foot_pos);
+
+    // Add to the foot position vector
+    multi_foot_state.feet[i].position.x = foot_pos[0];
+    multi_foot_state.feet[i].position.y = foot_pos[1];
+    multi_foot_state.feet[i].position.z = foot_pos[2];
+
+    multi_foot_state.feet[i].header = multi_foot_state.header;
+  }
+
+  // // Declare state data as Eigen vectors
+  // Eigen::VectorXd ref_body_state(12), foot_velocities(12);
+
+  // // Load state data
+  // ref_body_state = quad_utils::bodyStateMsgToEigen(body_state);
+
+  // // Define vectors for state positions
+  // Eigen::VectorXd state_positions(18), state_velocities(18);
+
+  // // Load state positions
+  // state_positions << joint_positions, ref_body_state.head(6);
+
+  // // Load state velocities
+  // state_velocities << joint_velocities, ref_body_state.tail(6);
+
   // Compute jacobian
   Eigen::MatrixXd jacobian = Eigen::MatrixXd::Zero(12, 18);
-  kinematics.getJacobianBodyAngVel(state_positions, jacobian);
+  kinematics.getJacobianBodyAngVel(jacobian);
 
   // Compute foot velocities
   foot_velocities = jacobian * state_velocities;
@@ -492,7 +513,7 @@ void fkRobotState(const quad_utils::QuadKD &kinematics,
   }
 }
 
-void fkRobotState(const quad_utils::QuadKD &kinematics,
+void fkRobotState(quad_utils::QuadKD2 &kinematics,
                   quad_msgs::msg::RobotState &state) {
   fkRobotState(kinematics, state.body, state.joints, state.feet);
 }
@@ -705,37 +726,52 @@ void Eigen3ToPointMsg(const Eigen::Vector3d &eigen_vec,
 
 void updateDynamics(quad_utils::QuadKD2 &kinematics, 
                     quad_msgs::msg::RobotState robot_state_msg){
+
+  Eigen::VectorXd body_state(12);
+  Eigen::VectorXd joint_positions, joint_velocities;
+
+  // Load body state
+  body_state = quad_utils::bodyStateMsgToEigen(robot_state_msg.body);
+
+  // Load joint positions
+  quad_utils::vectorToEigen(robot_state_msg.joints.position, joint_positions);
+
+  // Load joint velocities
+  quad_utils::vectorToEigen(robot_state_msg.joints.velocity, joint_velocities);
+
+
+  kinematics.updateFromBodyJoints(body_state, joint_positions, joint_velocities);
   
-  const std::size_t n_joints = robot_state_msg.joints.position.size();
+  // const std::size_t n_joints = robot_state_msg.joints.position.size();
   
-  Eigen::VectorXd q(7 + n_joints);
-  Eigen::VectorXd v(6 + n_joints);
+  // Eigen::VectorXd q(7 + n_joints);
+  // Eigen::VectorXd v(6 + n_joints);
 
-  q.segment(0,3) << robot_state_msg.body.pose.position.x,
-                      robot_state_msg.body.pose.position.y,
-                      robot_state_msg.body.pose.position.z;
+  // q.segment(0,3) << robot_state_msg.body.pose.position.x,
+  //                     robot_state_msg.body.pose.position.y,
+  //                     robot_state_msg.body.pose.position.z;
 
-  q.segment(3,4) << robot_state_msg.body.pose.orientation.w,
-                      robot_state_msg.body.pose.orientation.x,
-                      robot_state_msg.body.pose.orientation.y,
-                      robot_state_msg.body.pose.orientation.z;
+  // q.segment(3,4) << robot_state_msg.body.pose.orientation.w,
+  //                     robot_state_msg.body.pose.orientation.x,
+  //                     robot_state_msg.body.pose.orientation.y,
+  //                     robot_state_msg.body.pose.orientation.z;
   
-  Eigen::Map<const Eigen::VectorXd> q_joints(
-        robot_state_msg.joints.position.data(), n_joints);
-  q.segment(7, n_joints) = q_joints;
+  // Eigen::Map<const Eigen::VectorXd> q_joints(
+  //       robot_state_msg.joints.position.data(), n_joints);
+  // q.segment(7, n_joints) = q_joints;
 
-  v.segment<3>(0) << robot_state_msg.body.twist.angular.x, 
-                      robot_state_msg.body.twist.angular.y, 
-                      robot_state_msg.body.twist.angular.z;
+  // v.segment<3>(0) << robot_state_msg.body.twist.angular.x, 
+  //                     robot_state_msg.body.twist.angular.y, 
+  //                     robot_state_msg.body.twist.angular.z;
   
-  v.segment<3>(3) << robot_state_msg.body.twist.linear.x, 
-                      robot_state_msg.body.twist.linear.y, 
-                      robot_state_msg.body.twist.linear.z;
+  // v.segment<3>(3) << robot_state_msg.body.twist.linear.x, 
+  //                     robot_state_msg.body.twist.linear.y, 
+  //                     robot_state_msg.body.twist.linear.z;
 
-  Eigen::Map<const Eigen::VectorXd> v_joints(robot_state_msg.joints.velocity.data(), n_joints);
-    v.segment(6, n_joints) = v_joints;
+  // Eigen::Map<const Eigen::VectorXd> v_joints(robot_state_msg.joints.velocity.data(), n_joints);
+  //   v.segment(6, n_joints) = v_joints;
 
-  kinematics.update(q,v);
+  // kinematics.updateFromPinocchio(q,v);
 }
 
 }  // namespace quad_utils

@@ -10,7 +10,7 @@ class EKFEstimator : public StateEstimator {
    * @brief Constructor for EKFEstimator
    * @return Constructed object of type EKFEstimator
    */
-  EKFEstimator(rclcpp::Node::SharedPtr node, const std::string& robot_ns);
+  EKFEstimator(rclcpp::Node::SharedPtr node, const std::string& robot_ns, std::shared_ptr<quad_utils::QuadKD2> quadKD);
 
   /**
    * @brief Initialize EKF

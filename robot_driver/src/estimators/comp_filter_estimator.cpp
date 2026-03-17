@@ -1,6 +1,7 @@
 #include "robot_driver/estimators/comp_filter_estimator.hpp"
 
-CompFilterEstimator::CompFilterEstimator(rclcpp::Node::SharedPtr node, std::string& robot_ns): StateEstimator(node, robot_ns) {}
+CompFilterEstimator::CompFilterEstimator(rclcpp::Node::SharedPtr node, const std::string& robot_ns,
+                                        std::shared_ptr<quad_utils::QuadKD2> quadKD): StateEstimator(node, robot_ns, quadKD) {}
 
 void CompFilterEstimator::init() {
   // load Comp_filter params
@@ -100,6 +101,7 @@ bool CompFilterEstimator::updateOnce(
                                  last_robot_state_msg_.body.twist.linear);
 
   // Fill in the rest of the state message (foot state and headers)
+  quad_utils::updateDynamics(*quadKD_, last_robot_state_msg_);
   quad_utils::fkRobotState(*quadKD_, last_robot_state_msg_);
   quad_utils::updateStateHeaders(last_robot_state_msg_, state_timestamp, "map",
                                  0);

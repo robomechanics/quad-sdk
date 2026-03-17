@@ -16,6 +16,7 @@
 #include <quad_utils/function_timer.hpp>
 #include <quad_utils/math_utils.hpp>
 #include <quad_utils/quad_kd.hpp>
+#include <quad_utils/quad_kd2.hpp>
 #include <quad_utils/ros_utils.hpp>
 #include <rclcpp/rclcpp.hpp>
 
@@ -66,7 +67,7 @@ class LocalFootstepPlanner {
    */
   void setSpatialParams(double ground_clearance, double hip_clearance,
                         double grf_weight, double standing_error_threshold,
-                        std::shared_ptr<quad_utils::QuadKD> kinematics,
+                        std::shared_ptr<quad_utils::QuadKD2> kinematics,
                         double foothold_search_radius,
                         double foothold_obj_threshold,
                         std::string obj_fun_layer, double toe_radius);
@@ -436,7 +437,7 @@ class LocalFootstepPlanner {
   const int LAND_STANCE = 3;
 
   /// QuadKD class
-  std::shared_ptr<quad_utils::QuadKD> quadKD_;
+  std::shared_ptr<quad_utils::QuadKD2> quadKD_;
 
   /// Threshold of body error from desired goal to start stepping
   double standing_error_threshold_ = 0;

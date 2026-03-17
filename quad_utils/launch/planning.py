@@ -27,10 +27,8 @@ def load_robot_params(context, *args, **kwargs):
         config_file = 'a1.yaml'
     elif robot_type == 'go2':
         desc_pkg = 'go2_description'
-        urdf_file = 'go2_learned.urdf.xacro'
-        sdf_file = 'go2_learned.sdf.xacro'
-        # urdf_file = 'go2.urdf.xacro'
-        # sdf_file = 'go2.sdf.xacro'
+        urdf_file = 'go2.urdf.xacro'
+        sdf_file = 'go2.sdf.xacro'
         config_file = 'go2.yaml'
     elif robot_type == 'go2w':
         desc_pkg = 'go2w_description'
@@ -51,8 +49,6 @@ def load_robot_params(context, *args, **kwargs):
     sdf_path = os.path.join(desc_path, 'models', robot_type, sdf_file)
     controller_config_path = os.path.join(FindPackageShare('gazebo_scripts').perform(context), 'config', 'quad_control.yaml')
     # Load URDF and SDF from disk, Might be Unnecessary
-    # with open(os.path.join(desc_path, 'models',robot_type,'urdf', urdf_file), 'r') as f:
-    #     urdf = f.read()
     urdf = xacro.process_file(urdf_path).toxml()
     sdf = xacro.process_file(sdf_path, mappings={"namespace": namespace, "controller_config_path": controller_config_path}).toxml()
 
@@ -152,7 +148,7 @@ def launch_local_planner(context, *args, **kwargs):
             package='local_planner',
             executable='local_planner_node',
             name='local_planner',
-            # output='screen',
+            output='screen',
             parameters=[local_planner_param_file,
                 nmpc_controller_param_file, 
                 local_planner_topics_file,
@@ -254,5 +250,5 @@ def generate_launch_description():
         OpaqueFunction(function=launch_local_planner),
         OpaqueFunction(function=launch_body_force_estimator),
         # OpaqueFunction(function=launch_tests)
-        OpaqueFunction(function=launch_plan_publisher),
+        # OpaqueFunction(function=launch_plan_publisher),
     ])

@@ -12,9 +12,14 @@
 #include <pinocchio/algorithm/kinematics.hpp>
 #include <pinocchio/algorithm/frames.hpp>
 #include <pinocchio/algorithm/jacobian.hpp>
+#include <pinocchio/algorithm/compute-all-terms.hpp>
 #include <pinocchio/multibody/model.hpp>
 #include <pinocchio/multibody/data.hpp>
 #include <pinocchio/parsers/urdf.hpp>
+#include <pinocchio/math/rpy.hpp>
+#include <pinocchio/multibody/joint/joint-revolute-unaligned.hpp>
+#include <pinocchio/multibody/joint/joint-revolute.hpp>
+
 
 #include <chrono>
 #include <grid_map_core/GridMap.hpp>
@@ -40,10 +45,17 @@ class QuadKD2 {
    * @return Constructed object of type QuadKD
    */
   QuadKD2();
+
+    /**
+   * @brief Constructor for QuadKD Class
+   * @param[in] node Shared Pointer to ROS2 Node
+   * @return Constructed object of type QuadKD
+   */
   QuadKD2(rclcpp::Node::SharedPtr node);
 
   /**
    * @brief Constructor for QuadKD Class
+   * @param[in] node Shared Pointer to ROS2 Node
    * @param[in] ns Namespace
    * @return Constructed object of type QuadKD
    */
@@ -141,19 +153,54 @@ class QuadKD2 {
   double getLinkLength(int leg_index, int link_index) const;
 
   /**
-   * @brief Update Internal Pinocchio Data data_ with 
-   * 
-   * @param[in] q  Full State of the Robot Body Pos, RPY, and 
-   * @param[in] v 
+   * @brief Generate a Pinocchio ordered q and v from Quad-SDK internal states
+   * @param[in] body_state Eigen vector with Quad-SDK ordered robot body state (12)
+   * @param[in] joint_positions Eigen vector with Quad-SDK ordered robot joint positions (12)
+   * @param[in] joint_velocities Eigen vector with Quad-SDK ordered robot joint velocities (12)
+   * @param[out] q Pinocchio generalized configuration [base_pos(3) base orientation(4) joint_positions (12)]
+   * @param[out] v Pinocchio generalized velocity [base_linear(3) base_angular(3) joint_velocities (12)]
    */
-  void update(const Eigen::VectorXd q, const Eigen::VectorXd v);
+  void assembleQVFromBodyAndJoints(
+    const Eigen::VectorXd &body_state, const Eigen::VectorXd &joint_positions,
+    const Eigen::VectorXd &joint_velocities, Eigen::VectorXd &q, Eigen::VectorXd &v) const;
 
   /**
-   * @brief Update Internal Pinocchio Data data_ with 
-   * 
-   * @param q 
+   * @brief Generate a Pinocchio Style q from Quad-SDK internal states
+   * @param[in] body_state Eigen vector with Quad-SDK ordered robot body state (12)
+   * @param[in] joint_positions Eigen vector with Quad-SDK ordered robot joint positions (12)
+   * @param[out] q Pinocchio generalized configuration [base_pos(3) base orientation(4) joint_positions (12)]
    */
-  void update(const Eigen::VectorXd q);
+  void assembleQFromBodyAndJoints(
+    const Eigen::VectorXd &body_state, const Eigen::VectorXd &joint_positions, Eigen::VectorXd &q) const;
+
+  /**
+   * @brief Update Internal Pinocchio Data data_ with fresh state information
+   * @param[in] body_state  Full State of the Robot Body pos, velocity and RPY
+   * @param[in] joint_positions Eigen vector with robot joint positions (12)
+   * @param[in] joint_velocities Eigen vector with robot joint velocities (12)
+   */
+  void updateFromBodyJoints(const Eigen::VectorXd &body_state, const Eigen::VectorXd &joint_positions,
+              const Eigen::VectorXd &joint_velocities);
+
+  /**
+   * @brief Update Internal Pinocchio Data data_ with fresh state information
+   * @param[in] body_state  Full State of the robot body pos, vel, and RPY
+   * @param[in] joint_positions Eigen vector with robot joint positions (12)
+   */
+  void updateFromBodyJoints(const Eigen::VectorXd &body_state, const Eigen::VectorXd &joint_positions);
+
+  /**
+   * @brief Update Internal Pinocchio Data data_ with fresh state information
+   * @param[in] q Pinocchio generalized configuration [base_pos(3) base orientation(4) joint_positions (12)]
+   * @param[in] v Pinocchio generalized velocity [base_linear(3) base_angular(3) joint_velocities (12)]
+   */
+  void updateFromPinocchio(const Eigen::VectorXd &q, const Eigen::VectorXd &v);
+
+  /**
+   * @brief Update Internal Pinocchio Data data_ with fresh state information
+   * @param q Pinocchio generalized configuration [base_pos(3) base orientation(4) joint_positions (12)]
+   */
+  void updateFromPinocchio(const Eigen::VectorXd &q);
 
   /**
    * @brief Get the transform from the world frame to the leg base
@@ -198,7 +245,6 @@ class QuadKD2 {
   /**
    * @brief Compute forward kinematics for a specified leg from the body COM
    * @param[in] leg_index Quad leg (0 = FL, 1 = BL, 2 = FR, 3 = BR)
-   * @param[in] joint_state Joint states for the specified leg (abad, hip, knee)
    * @param[out] g_body_foot Transform of the specified foot in world frame
    */
   void bodyToFootFKBodyFrame(int leg_index, Eigen::Matrix4d &g_body_foot) const;
@@ -206,7 +252,6 @@ class QuadKD2 {
   /**
    * @brief Compute forward kinematics for a specified leg from the body COM
    * @param[in] leg_index Quad leg (0 = FL, 1 = BL, 2 = FR, 3 = BR)
-   * @param[in] joint_state Joint states for the specified leg (abad, hip, knee)
    * @param[out] foot_pos_world Position of the specified foot in world frame
    */
   void bodyToFootFKBodyFrame(int leg_index,
@@ -246,11 +291,15 @@ class QuadKD2 {
   /**
    * @brief Compute inverse kinematics for a specified leg
    * @param[in] leg_index Quad leg (0 = FL, 1 = BL, 2 = FR, 3 = BR)
+   * @param[in] body_pos Position of Center of Body Frame
+   * @param[in] body_rpy Orientation of body frame in roll, pitch, yaw
    * @param[in] foot_pos_world Position of the specified foot in world frame
    * @param[out] joint_state Joint states for the specified leg (abad, hip,
    * knee)
    */
   bool worldToFootIKWorldFrame(int leg_index,
+                               Eigen::Vector3d body_pos,
+                               Eigen::Vector3d body_rpy,
                                Eigen::Vector3d foot_pos_world,
                                Eigen::Vector3d &joint_state) const;
 
@@ -267,28 +316,119 @@ class QuadKD2 {
                                    Eigen::Vector3d &joint_state) const;
   /**
    * @brief Compute Jacobian for generalized coordinates
-   * @param[in] state Joint and body states
    * @param[out] jacobian Jacobian for generalized coordinates
    */
-  void getJacobianGenCoord(const Eigen::VectorXd &state,
-                           Eigen::MatrixXd &jacobian) const;
+  void getJacobianGenCoord(Eigen::MatrixXd &jacobian) const;
 
   /**
    * @brief Compute Jacobian for angular velocity in body frame
-   * @param[in] state Joint and body states
+   * @brief v = [v_foot0_world, v_foot1_world, v_foot2_world, v_foot3_world]
+   * q_dot_func = [theta_dot v_base_world w_base_body]
+   * v = jacobian * q_dot_func
    * @param[out] jacobian Jacobian for angular velocity in body frame
    */
-  void getJacobianBodyAngVel(const Eigen::VectorXd &state,
-                             Eigen::MatrixXd &jacobian) const;
+  void getJacobianBodyAngVel(Eigen::MatrixXd &jacobian) const;
 
   /**
    * @brief Compute Jacobian for angular velocity in world frame
-   * @param[in] state Joint and body states
+   * @brief v = [v_foot0_world, v_foot1_world, v_foot2_world, v_foot3_world]
+   * q_dot_func = [theta_dot v_base_world w_base_world]
+   * v = jacobian * q_dot_func
    * @param[out] jacobian Jacobian for angular velocity in world frame
    */
-  void getJacobianWorldAngVel(const Eigen::VectorXd &state,
-                              Eigen::MatrixXd &jacobian) const;
+  void getJacobianWorldAngVel(Eigen::MatrixXd &jacobian) const;
 
+  /**
+   * @brief Compute inverse dynamics for swing leg 
+   * @param[in] foot_acc Foot absolute acceleration in world frame
+   * @param[in] grf Ground reaction force
+   * @param[in] contact_mode Contact mode of the legs
+   * @param[out] tau Joint torques
+   */
+  void computeInverseDynamics(const Eigen::VectorXd &foot_acc,
+                              const Eigen::VectorXd &grf,
+                              const std::vector<int> &contact_mode,
+                              Eigen::VectorXd &tau) const;
+
+  /**
+   * @brief Convert centroidal model states (foot coordinates and grfs) to full
+   * body (joints and torques)
+   * @param[in] body_state Position states
+   * @param[in] foot_positions Foot positions in the world frame
+   * @param[in] foot_velocities Foot velocities in the world frame
+   * @param[in] grfs Ground reaction forces
+   * @param[out] joint_positions Joint positions
+   * @param[out] joint_velocities Joint velocities
+   * @param[out] tau Joint torques
+   * @return boolean for exactness of kinematics
+   */
+  bool convertCentroidalToFullBody(const Eigen::VectorXd &body_state,
+                                   const Eigen::VectorXd &foot_positions,
+                                   const Eigen::VectorXd &foot_velocities,
+                                   const Eigen::VectorXd &grfs,
+                                   Eigen::VectorXd &joint_positions,
+                                   Eigen::VectorXd &joint_velocities,
+                                   Eigen::VectorXd &torques);
+
+  /**
+   * @brief Apply a uniform maximum torque to a given set of joint torques
+   * @param[in] torques Joint torques. in Nm
+   * @param[in] constrained_torques Joint torques after applying max, in Nm
+   * @return Boolean to indicate if initial torques is feasible (checks if
+   * torques == constrained_torques)
+   */
+  bool applyMotorModel(const Eigen::VectorXd &torques,
+                       Eigen::VectorXd &constrained_torques);
+
+  /**
+   * @brief Apply a linear motor model to a given set of joint torques and
+   * velocities
+   * @param[in] torques Joint torques. in Nm
+   * @param[in] joint_velocities Velocities of each joint. in rad/s
+   * @param[in] constrained_torques Joint torques after applying motor model, in
+   * Nm
+   * @return Boolean to indicate if initial torques is feasible (checks if
+   * torques == constrained_torques)
+   */
+  bool applyMotorModel(const Eigen::VectorXd &torques,
+                       const Eigen::VectorXd &joint_velocities,
+                       Eigen::VectorXd &constrained_torques);
+
+  /**
+   * @brief Check if state is valid
+   * @param[in] body_state Robot body positions and velocities
+   * @param[in] joint_positions Joint positions and velocities
+   * @param[in] joint_velocities Joint velocities
+   * @param[in] torques Joint torques
+   * @param[in] terrain Map of the terrain for collision checking
+   * @return Boolean vector for state and control validity
+   */
+  bool isValidFullState(const Eigen::VectorXd &body_state,
+                        const Eigen::VectorXd &joint_positions, 
+                        const Eigen::VectorXd &joint_velocities,
+                        const Eigen::VectorXd &torques,
+                        const grid_map::GridMap &terrain,
+                        Eigen::VectorXd &state_violation,
+                        Eigen::VectorXd &control_violation);
+
+  /**
+   * @brief Check if state is valid
+   * @param[in] body_state Robot body positions and velocities
+   * @param[in] foot_positions Foot positions
+   * @param[in] foot_velocities Foot velocities
+   * @param[in] grfs Ground reaction forces in the world frame
+   * @param[in] terrain Map of the terrain for collision checking
+   * @param[in] joint_positions Joint positions and velocities
+   * @param[in] joint_velocities Joint velocities
+   * @param[in] torques Joint torques
+   * @return Boolean for state validity
+   */
+  bool isValidCentroidalState(
+      const Eigen::VectorXd &body_state, const Eigen::VectorXd &foot_positions,
+      const Eigen::VectorXd &foot_velocities, const Eigen::VectorXd &grfs,
+      const grid_map::GridMap &terrain, Eigen::VectorXd &joint_positions,
+      Eigen::VectorXd &joint_velocities, Eigen::VectorXd &torques,
+      Eigen::VectorXd &state_violation, Eigen::VectorXd &control_violation);
 
   inline double getGroundClearance(const Eigen::Vector3d &point,
                                    const grid_map::GridMap &terrain) {
@@ -303,6 +443,15 @@ class QuadKD2 {
  private:
   /// Number of feet
   const int num_feet_ = 4;
+
+  /// Number of joints
+  const int num_joints_ = 12;
+
+  /// Dimension of Pinocchio Generalized Velocity Vector (18 for a Quadruped)
+  std::size_t nv_;
+
+  /// Diemnsion of Pinocchio Generalized Configuration Vector (19 for Quadruped)
+  std::size_t nq_;
 
   /// Vector of the abad link lengths
   std::vector<double> l0_vec_;
@@ -352,19 +501,59 @@ class QuadKD2 {
   /// Pinocchio frame ID for body link
   pinocchio::FrameIndex body_fid_;
 
+  /// JointConvention Struct Containing Mapping Between URDF Joint Origin/Axis Defintions
+  struct JointConvention{
+    double origin_offset; // The RPY component Origin Position from Where Joint Angles are Measured
+    double sign; // The axis direction (1.0 or -1.0)
+  };
+
+
   /// Limb Info Struct Containing Per Leg Pinocchio Mappings
   struct LimbInfo {
-    pinocchio::FrameIndex toe_fid;
-    pinocchio::FrameIndex lower_fid;
-    pinocchio::FrameIndex upper_fid;
+
     pinocchio::FrameIndex hip_fid;
+    pinocchio::FrameIndex upper_fid;
+    pinocchio::FrameIndex lower_fid;
+    pinocchio::FrameIndex toe_fid;
+
     pinocchio::JointIndex abad_jid;
     pinocchio::JointIndex hip_jid;
     pinocchio::JointIndex knee_jid;
+    pinocchio::FrameIndex toe_jid; // Pinocchio Stores Fixed Joints as FrameIndexes
+
+    // Velocity and Position Ordering that Pinocchio Expects
+    int abad_pin_vel_idx;
+    int hip_pin_vel_idx;
+    int knee_pin_vel_idx;
+
+    int abad_pin_pos_idx;
+    int hip_pin_pos_idx;
+    int knee_pin_pos_idx;
+
+    JointConvention abad_conv;
+    JointConvention hip_conv;
+    JointConvention knee_conv;
+
+    std::vector<std::string> joint_names;
   };
 
   /// Vector of LimbInfo Structs
   std::vector<QuadKD2::LimbInfo> limbs_;
+
+  /// Velocity Index Mapping from Quad-SDk to Pinocchio Internal Convention
+  std::vector<int> sdk_to_pin_v_;
+
+  /// Position Index Mapping from Quad-SDK to Pinocchio Internal Convention
+  std::vector<int> sdk_to_pin_q_;
+
+  /// Velocity Index Mapping from Pinocchio Internal to Quad-SDK Convention 
+  std::vector<int> pin_to_sdk_v_;
+
+  /// Position Index Mapping from Pinocchio Internal to Quad-SDK Convention 
+  std::vector<int> pin_to_sdk_q_;
+
+  /// Boolean Flag for data_ updates
+  bool updated_ = false;
 
   /// Vector of leg indicies in toe ID order
   std::vector<int> leg_idx_list_;

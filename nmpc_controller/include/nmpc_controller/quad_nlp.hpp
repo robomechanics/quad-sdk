@@ -42,6 +42,7 @@
 #include "nmpc_controller/gen/eval_jac_g_spirit.h"
 #include "quad_utils/function_timer.hpp"
 #include "quad_utils/quad_kd.hpp"
+#include "quad_utils/quad_kd2.hpp"
 #include <quad_msgs/msg/robot_plan_diagnostics.hpp>
 
 using namespace Ipopt;
@@ -125,7 +126,7 @@ class quadNLP : public TNLP {
   SystemID default_system_;
 
   // QuadKD object for kinematics calculations
-  std::shared_ptr<quad_utils::QuadKD> quadKD_;
+  std::shared_ptr<quad_utils::QuadKD2> quadKD_;
 
   // Horizon length, state dimension, input dimension, and constraints dimension
   int N_, g_relaxed_;

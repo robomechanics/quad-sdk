@@ -15,8 +15,22 @@ void GroundTruthEstimator::Configure(
   if (!rclcpp::ok()) {
     rclcpp::init(0, nullptr);
   }
+
+  std::string params_file;
+  if (sdf->HasElement("parameters")) {
+    params_file = sdf->Get<std::string>("parameters");
+    // RCLCPP_INFO(this->node_->get_logger(), "")
+  }
+
   rclcpp::NodeOptions options;
+  options.automatically_declare_parameters_from_overrides(true);
+  options.allow_undeclared_parameters(true);
+
+  if (!params_file.empty()) {
+    options.arguments({"--ros-args", "--params-file", params_file});
+  }
   // options.arguments({"--ros-args", "--namespace", robot_ns});
+
   this->node_ = std::make_shared<rclcpp::Node>("gz_ground_truth_estimator",
                                                robot_ns, options);
   if (!this->node_->has_parameter("use_sim_time")) {
@@ -75,7 +89,7 @@ void GroundTruthEstimator::Configure(
                       "Received and set robot_description parameter.");
 
           try {
-            this->quadKD_ = std::make_shared<quad_utils::QuadKD>(this->node_);
+            this->quadKD_ = std::make_shared<quad_utils::QuadKD2>(this->node_);
             RCLCPP_INFO(this->node_->get_logger(), "Makes QuadKD Class.");
           } catch (const std::exception &e) {
             RCLCPP_ERROR(this->node_->get_logger(), "QuadKD init failed: %s",
@@ -213,9 +227,17 @@ void GroundTruthEstimator::PostUpdate(
   state.body.twist.linear.y = lin_vel.Y();
   state.body.twist.linear.z = lin_vel.Z();
 
-  state.body.twist.angular.x = ang_vel.X();
-  state.body.twist.angular.y = ang_vel.Y();
-  state.body.twist.angular.z = ang_vel.Z();
+  const auto q_wb = pose.Rot();
+  const auto q_bw = q_wb.Inverse();
+
+  const gz::math::Vector3d v_w   = lin_vel;           // world linear vel of body origin
+  const gz::math::Vector3d w_w   = ang_vel;           // world angular vel
+  const gz::math::Vector3d v_b   = q_bw * v_w;        // express in body frame
+  const gz::math::Vector3d w_b   = q_bw * w_w;        // express in body frame
+
+  state.body.twist.angular.x = w_b.X();
+  state.body.twist.angular.y = w_b.Y();
+  state.body.twist.angular.z = w_b.Z();
 
   // Sanity Check Robot Spawn Pose
   // RCLCPP_INFO(this->node_->get_logger(),
@@ -269,6 +291,7 @@ void GroundTruthEstimator::PostUpdate(
 
   int num_feet = 4;
   state.feet.feet.resize(num_feet);
+  quad_utils::updateDynamics(*this->quadKD_, state);
   quad_utils::fkRobotState(*this->quadKD_, state);
 
   // Update the Feet Positions and Velocities
@@ -304,14 +327,6 @@ void GroundTruthEstimator::PostUpdate(
   state_body_frame.body.pose.position.x = 0.0;
   state_body_frame.body.pose.position.y = 0.0;
   state_body_frame.body.pose.position.z = 0.0;
-
-  const auto q_wb = pose.Rot();
-  const auto q_bw = q_wb.Inverse();
-
-  const gz::math::Vector3d v_w   = lin_vel;           // world linear vel of body origin
-  const gz::math::Vector3d w_w   = ang_vel;           // world angular vel
-  const gz::math::Vector3d v_b   = q_bw * v_w;        // express in body frame
-  const gz::math::Vector3d w_b   = q_bw * w_w;        // express in body frame
 
   state_body_frame.body.twist.linear.x  = v_b.X();
   state_body_frame.body.twist.linear.y  = v_b.Y();
