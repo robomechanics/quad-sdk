@@ -34,7 +34,7 @@ jobs:
             ./setup.sh
 
             cd /root/ros2_ws
-            colcon build --event-handlers console_direct+ --parallel-workers 1 --executor
+            colcon build --event-handlers console_direct+ --parallel-workers 1
 
       - run:
           name: Run tests
