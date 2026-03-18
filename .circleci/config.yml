@@ -2,7 +2,7 @@ jobs:
   build-and-test:
     docker:
       - image: osrf/ros:jazzy-desktop-full
-    resource_class: large
+    resource_class: 2xlarge
 
     working_directory: /root/ros2_ws/src/quad-sdk
 
