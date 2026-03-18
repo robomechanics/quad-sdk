@@ -7,6 +7,9 @@ jobs:
 
     shell: /bin/bash -eo pipefail
 
+    environment:
+      DEBIAN_FRONTEND: noninteractive
+
     steps:
       - checkout
 
@@ -15,6 +18,12 @@ jobs:
           command: |
             apt update
 
+      - run:
+          name: Fetch submodules
+          command: |
+            git submodule sync --recursive
+            git submodule update --init --recursive
+            
       - run:
           name: Setup dependencies and build
           command: |
