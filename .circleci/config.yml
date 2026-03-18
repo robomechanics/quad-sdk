@@ -26,14 +26,6 @@ jobs:
             git submodule update --init --recursive
 
       - run:
-          name: Add swap space
-          command: |
-            fallocate -l 8G /swapfile
-            chmod 600 /swapfile
-            mkswap /swapfile
-            swapon /swapfile
-
-      - run:
           name: Setup dependencies and build
           command: |
             source /opt/ros/jazzy/setup.bash
@@ -43,7 +35,7 @@ jobs:
             ./setup.sh
 
             cd /root/ros2_ws
-            colcon build --executor sequential --parallel-workers 1 --cmake-args -DCMAKE_BUILD_TYPE=RelWithDebInfo
+            colcon build --executor sequential --parallel-workers 1 --cmake-args -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCMAKE_CXX_FLAGS="-O1" -DCMAKE_C_FLAGS="-O1"
 
       - run:
           name: Run tests
