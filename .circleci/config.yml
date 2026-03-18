@@ -1,38 +1,49 @@
 jobs:
   build-and-test:
-    working_directory: /ros2_ws/src
     docker:
       - image: osrf/ros:jazzy-desktop-full
+
+    working_directory: /root/ros2_ws/src/quad-sdk
+
+    shell: /bin/bash -eo pipefail
+
     steps:
       - checkout
+
       - run:
-          name: "Update packages"
-          command: sudo apt update
+          name: Update packages
+          command: |
+            apt update
+
       - run:
-          name: "Call setup script and build"
+          name: Setup dependencies and build
           command: |
             source /opt/ros/jazzy/setup.bash
+
+            cd /root/ros2_ws/src/quad-sdk
             chmod +x setup.sh
             ./setup.sh
-            cd /ros2_ws
-            colcon build -j4 -l4
+
+            cd /root/ros2_ws
+            colcon build --event-handlers console_direct+ --parallel-workers 4
+
       - run:
-          name: "Load ROS params in the background"
+          name: Run tests
           command: |
             source /opt/ros/jazzy/setup.bash
-            source /ros2_ws/install/setup.bash
-            ros2 launch quad_utils load_global_params.launch load_robot_params:=true
-          background: true
+            source /root/ros2_ws/install/setup.bash
+
+            cd /root/ros2_ws
+            colcon test --event-handlers console_direct+ --parallel-workers 2
+            colcon test-result --verbose
+
       - run:
-          name: "Run tests"
+          name: Run soft linting checks
           command: |
-            cd /ros2_ws
-            source /opt/ros/jazzy/setup.bash
-            source /ros2_ws/install/setup.bash
-            colcon run_tests -j2 -l2 && catkin_test_results
-      - run:
-          name: "Run soft linting checks"
-          command: ./scripts/lint_soft.sh
+            cd /root/ros2_ws/src/quad-sdk
+            chmod +x ./scripts/lint_soft.sh
+            ./scripts/lint_soft.sh
+
 workflows:
   version: 2
   jazzy-build-and-test:

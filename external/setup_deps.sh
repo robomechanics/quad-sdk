@@ -51,4 +51,4 @@ sudo make install
 cd ../..
 
 # Setup and Build for Pinocchio
-sudo apt install ros-jazzy-pinocchio
+sudo apt install -y ros-jazzy-pinocchio
