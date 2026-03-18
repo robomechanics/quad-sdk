@@ -2,6 +2,7 @@ jobs:
   build-and-test:
     docker:
       - image: osrf/ros:jazzy-desktop-full
+    resource_class: large
 
     working_directory: /root/ros2_ws/src/quad-sdk
 
@@ -34,7 +35,7 @@ jobs:
             ./setup.sh
 
             cd /root/ros2_ws
-            colcon build --event-handlers console_direct+ --parallel-workers 1
+            colcon build --executor sequential --parallel-workers 1 --cmake-args -DCMAKE_BUILD_TYPE=Release
 
       - run:
           name: Run tests
