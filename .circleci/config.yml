@@ -26,6 +26,14 @@ jobs:
             git submodule update --init --recursive
 
       - run:
+          name: Add swap space
+          command: |
+            fallocate -l 8G /swapfile
+            chmod 600 /swapfile
+            mkswap /swapfile
+            swapon /swapfile
+
+      - run:
           name: Setup dependencies and build
           command: |
             source /opt/ros/jazzy/setup.bash
