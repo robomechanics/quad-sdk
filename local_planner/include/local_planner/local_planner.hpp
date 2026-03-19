@@ -17,7 +17,6 @@
 #include <tf2/LinearMath/Quaternion.h>
 #include <tf2_geometry_msgs/tf2_geometry_msgs.hpp>
 
-
 //! Local Body Planner library
 /*!
    Wrapper around Quadrupedal MPC that interfaces with our ROS architecture
@@ -82,9 +81,9 @@ class LocalPlanner {
    */
   void getReference();
 
-   /**
-    * @brief Unwrap the yaw signal in the reference body plan
-    */
+  /**
+   * @brief Unwrap the yaw signal in the reference body plan
+   */
   void unwrapYawReference();
 
   /**
@@ -123,10 +122,12 @@ class LocalPlanner {
   rclcpp::Publisher<quad_msgs::msg::RobotPlan>::SharedPtr local_plan_pub_;
 
   /// ROS publisher for discrete foot plan
-  rclcpp::Publisher<quad_msgs::msg::MultiFootPlanDiscrete>::SharedPtr foot_plan_discrete_pub_;
+  rclcpp::Publisher<quad_msgs::msg::MultiFootPlanDiscrete>::SharedPtr
+      foot_plan_discrete_pub_;
 
   /// ROS publisher for continuous foot plan
-  rclcpp::Publisher<quad_msgs::msg::MultiFootPlanContinuous>::SharedPtr foot_plan_continuous_pub_;
+  rclcpp::Publisher<quad_msgs::msg::MultiFootPlanContinuous>::SharedPtr
+      foot_plan_continuous_pub_;
 
   /// Define map frame
   std::string map_frame_;

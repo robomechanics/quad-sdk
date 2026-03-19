@@ -59,7 +59,8 @@ class BodyForceEstimator {
   rclcpp::Subscription<quad_msgs::msg::RobotPlan>::SharedPtr local_plan_sub_;
 
   /// ROS publisher for body force force estimates
-  rclcpp::Publisher<quad_msgs::msg::BodyForceEstimate>::SharedPtr body_force_pub_;
+  rclcpp::Publisher<quad_msgs::msg::BodyForceEstimate>::SharedPtr
+      body_force_pub_;
 
   /// ROS publisher for toe force estimates
   rclcpp::Publisher<quad_msgs::msg::GRFArray>::SharedPtr toe_force_pub_;

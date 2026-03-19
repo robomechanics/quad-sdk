@@ -41,8 +41,8 @@ class ContactStatePublisher {
    * @brief Processes new contact state data, GRF data
    * @param[in] msg New contact state data
    */
-   template<int toe_idx>
-   void onContactToe(const ros_gz_interfaces::msg::Contacts::SharedPtr msg);
+  template <int toe_idx>
+  void onContactToe(const ros_gz_interfaces::msg::Contacts::SharedPtr msg);
 
   bool checkMessageTiming(double current_sim_time, int toe_idx);
   void resetMessage(int toe_idx);
@@ -52,10 +52,14 @@ class ContactStatePublisher {
    */
   void publishContactState();
 
-  rclcpp::Subscription<ros_gz_interfaces::msg::Contacts>::SharedPtr toe_0_contact_state_sub_;
-  rclcpp::Subscription<ros_gz_interfaces::msg::Contacts>::SharedPtr toe_1_contact_state_sub_;
-  rclcpp::Subscription<ros_gz_interfaces::msg::Contacts>::SharedPtr toe_2_contact_state_sub_;
-  rclcpp::Subscription<ros_gz_interfaces::msg::Contacts>::SharedPtr toe_3_contact_state_sub_;
+  rclcpp::Subscription<ros_gz_interfaces::msg::Contacts>::SharedPtr
+      toe_0_contact_state_sub_;
+  rclcpp::Subscription<ros_gz_interfaces::msg::Contacts>::SharedPtr
+      toe_1_contact_state_sub_;
+  rclcpp::Subscription<ros_gz_interfaces::msg::Contacts>::SharedPtr
+      toe_2_contact_state_sub_;
+  rclcpp::Subscription<ros_gz_interfaces::msg::Contacts>::SharedPtr
+      toe_3_contact_state_sub_;
 
   std::array<double, 4> last_contact_time_;
 

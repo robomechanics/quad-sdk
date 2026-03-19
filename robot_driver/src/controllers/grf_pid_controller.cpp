@@ -1,7 +1,9 @@
 #include "robot_driver/controllers/grf_pid_controller.hpp"
 
-GrfPidController::GrfPidController(rclcpp::Node::SharedPtr node, const std::string& robot_ns,
-                                  std::shared_ptr<quad_utils::QuadKD2> quadKD) : LegController(node, robot_ns, quadKD) {
+GrfPidController::GrfPidController(rclcpp::Node::SharedPtr node,
+                                   const std::string& robot_ns,
+                                   std::shared_ptr<quad_utils::QuadKD2> quadKD)
+    : LegController(node, robot_ns, quadKD) {
   pos_error_int_.setZero();
   ang_error_int_.setZero();
   t_old_ = node_->now();
@@ -9,9 +11,9 @@ GrfPidController::GrfPidController(rclcpp::Node::SharedPtr node, const std::stri
 }
 
 bool GrfPidController::computeLegCommandArray(
-    const quad_msgs::msg::RobotState &robot_state_msg,
-    quad_msgs::msg::LegCommandArray &leg_command_array_msg,
-    quad_msgs::msg::GRFArray &grf_array_msg) {
+    const quad_msgs::msg::RobotState& robot_state_msg,
+    quad_msgs::msg::LegCommandArray& leg_command_array_msg,
+    quad_msgs::msg::GRFArray& grf_array_msg) {
   leg_command_array_msg.leg_commands.resize(num_feet_);
 
   // Define vectors for joint positions and velocities

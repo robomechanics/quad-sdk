@@ -12,7 +12,6 @@
 #include <tf2_geometry_msgs/tf2_geometry_msgs.hpp>
 #include <visualization_msgs/msg/marker.hpp>
 
-
 #include <Eigen/Dense>
 #include <string>
 #include <random>
@@ -31,8 +30,10 @@ class ForceApplicator {
 
   ~ForceApplicator() {
     // Stop periodic timer (if any)
-  if (clear_timer_) { clear_timer_->cancel(); }
-  clear_timer_.reset();
+    if (clear_timer_) {
+      clear_timer_->cancel();
+    }
+    clear_timer_.reset();
   }
 
   /**
@@ -66,17 +67,20 @@ class ForceApplicator {
   void applyForce();
 
   double computeEuclideanDistance(const Eigen::Vector3d& point1,
-                           const Eigen::Vector3d& point2);
+                                  const Eigen::Vector3d& point2);
 
   /// Nodehandle to pub to and sub from
   rclcpp::Node::SharedPtr node_;
 
   /// ros Publisher for Force Visualization Marker
-  rclcpp::Publisher<visualization_msgs::msg::Marker>::SharedPtr force_marker_pub_;
+  rclcpp::Publisher<visualization_msgs::msg::Marker>::SharedPtr
+      force_marker_pub_;
 
-  /// ros Publishers for Force 
-  rclcpp::Publisher<ros_gz_interfaces::msg::EntityWrench>::SharedPtr wrench_persist_pub_;
-  rclcpp::Publisher<ros_gz_interfaces::msg::Entity>::SharedPtr wrench_clear_pub_;
+  /// ros Publishers for Force
+  rclcpp::Publisher<ros_gz_interfaces::msg::EntityWrench>::SharedPtr
+      wrench_persist_pub_;
+  rclcpp::Publisher<ros_gz_interfaces::msg::Entity>::SharedPtr
+      wrench_clear_pub_;
 
   /// ros Subscriber for last robot state
   rclcpp::Subscription<quad_msgs::msg::RobotState>::SharedPtr robot_state_sub_;
@@ -101,7 +105,7 @@ class ForceApplicator {
   // Yaml File Force Magnitudes
   double force_x_, force_y_, force_z_;
 
-  //Applied Force Components
+  // Applied Force Components
   double fx, fy, fz;
 
   double force_magnitude_;
@@ -123,7 +127,7 @@ class ForceApplicator {
   double distance_threshold_;
 
   bool have_pose_ = false;
-  
+
   bool single_ = false;
 
   double update_rate_;

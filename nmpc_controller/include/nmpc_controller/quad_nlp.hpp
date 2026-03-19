@@ -8,7 +8,7 @@
 #define __quadNLP_HPP__
 
 #include <sys/resource.h>
-#include <rbdl/rbdl.h> 
+#include <rbdl/rbdl.h>
 #include <Eigen/Dense>
 #include <Eigen/Sparse>
 
@@ -305,7 +305,9 @@ class quadNLP : public TNLP {
           double panic_weights, double constraint_panic_weights,
           double Q_temporal_factor, double R_temporal_factor,
           const Eigen::VectorXi &fixed_complexity_schedule,
-          const NLPConfig &config, rclcpp::Node::SharedPtr node, std::string robot_ns);
+          const NLPConfig &config,
+          rclcpp::Node::SharedPtr node,
+          std::string robot_ns);
 
   /**
    * @brief Custom deep copy constructor

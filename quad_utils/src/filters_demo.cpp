@@ -13,33 +13,26 @@
 
 #include "quad_utils/filters_demo.hpp"
 
-namespace grid_map_demos
-{
+namespace grid_map_demos {
 
 FiltersDemo::FiltersDemo()
-: Node("grid_map_filters_demo"),
-  filterChain_("grid_map::GridMap")
-{
+    : Node("grid_map_filters_demo"), filterChain_("grid_map::GridMap") {
   if (!readParameters()) {
     return;
   }
 
-    auto qos = rclcpp::QoS(rclcpp::KeepLast(1)).reliable().transient_local();
-    subscriber_ = this->create_subscription<grid_map_msgs::msg::GridMap>(
-        inputTopic_,
-        qos,
-        std::bind(&FiltersDemo::callback, this, std::placeholders::_1));
+  auto qos = rclcpp::QoS(rclcpp::KeepLast(1)).reliable().transient_local();
+  subscriber_ = this->create_subscription<grid_map_msgs::msg::GridMap>(
+      inputTopic_, qos,
+      std::bind(&FiltersDemo::callback, this, std::placeholders::_1));
 
   publisher_ = this->create_publisher<grid_map_msgs::msg::GridMap>(
-    outputTopic_,
-    rclcpp::QoS(1).transient_local());
-
+      outputTopic_, rclcpp::QoS(1).transient_local());
 
   // Setup filter chain.
-  if (filterChain_.configure(
-      filterChainParametersName_, this->get_node_logging_interface(),
-      this->get_node_parameters_interface()))
-  {
+  if (filterChain_.configure(filterChainParametersName_,
+                             this->get_node_logging_interface(),
+                             this->get_node_parameters_interface())) {
     RCLCPP_INFO(this->get_logger(), "Filter chain configured.");
   } else {
     RCLCPP_ERROR(this->get_logger(), "Could not configure the filter chain!");
@@ -48,15 +41,13 @@ FiltersDemo::FiltersDemo()
   }
 }
 
-FiltersDemo::~FiltersDemo()
-{
-}
+FiltersDemo::~FiltersDemo() {}
 
-bool FiltersDemo::readParameters()
-{
+bool FiltersDemo::readParameters() {
   this->declare_parameter<std::string>("input_topic");
   this->declare_parameter("output_topic", std::string("output"));
-  this->declare_parameter("filter_chain_parameter_name", std::string("filters"));
+  this->declare_parameter("filter_chain_parameter_name",
+                          std::string("filters"));
 
   if (!this->get_parameter("input_topic", inputTopic_)) {
     RCLCPP_ERROR(this->get_logger(), "Could not read parameter `input_topic`.");
@@ -64,12 +55,13 @@ bool FiltersDemo::readParameters()
   }
 
   this->get_parameter("output_topic", outputTopic_);
-  this->get_parameter("filter_chain_parameter_name", filterChainParametersName_);
+  this->get_parameter("filter_chain_parameter_name",
+                      filterChainParametersName_);
   return true;
 }
 
-void FiltersDemo::callback(const grid_map_msgs::msg::GridMap::SharedPtr message)
-{
+void FiltersDemo::callback(
+    const grid_map_msgs::msg::GridMap::SharedPtr message) {
   // Convert message to map.
   grid_map::GridMap inputMap;
   grid_map::GridMapRosConverter::fromMessage(*message, inputMap);
@@ -77,7 +69,8 @@ void FiltersDemo::callback(const grid_map_msgs::msg::GridMap::SharedPtr message)
   // Apply filter chain.
   grid_map::GridMap outputMap;
   if (!filterChain_.update(inputMap, outputMap)) {
-    RCLCPP_ERROR(this->get_logger(), "Could not update the grid map filter chain!");
+    RCLCPP_ERROR(this->get_logger(),
+                 "Could not update the grid map filter chain!");
     return;
   }
 

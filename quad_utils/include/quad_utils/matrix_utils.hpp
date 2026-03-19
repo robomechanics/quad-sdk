@@ -13,7 +13,7 @@ namespace math {
  *
  * @return A result of the Kronecker product
  */
-Eigen::MatrixXd kron(const Eigen::MatrixXd &m1, const Eigen::MatrixXd &m2) {
+Eigen::MatrixXd kron(const Eigen::MatrixXd& m1, const Eigen::MatrixXd& m2) {
   uint32_t m1r = m1.rows();
   uint32_t m1c = m1.cols();
   uint32_t m2r = m2.rows();
@@ -38,8 +38,8 @@ Eigen::MatrixXd kron(const Eigen::MatrixXd &m1, const Eigen::MatrixXd &m2) {
  *
  * @return Created a block diagonal matrix
  */
-Eigen::MatrixXd block_diag(const Eigen::MatrixXd &m1,
-                           const Eigen::MatrixXd &m2) {
+Eigen::MatrixXd block_diag(const Eigen::MatrixXd& m1,
+                           const Eigen::MatrixXd& m2) {
   uint32_t m1r = m1.rows();
   uint32_t m1c = m1.cols();
   uint32_t m2r = m2.rows();
@@ -61,8 +61,8 @@ Eigen::MatrixXd block_diag(const Eigen::MatrixXd &m1,
  *
  * @return Created a block diagonal matrix
  */
-Eigen::MatrixXd block_diag(const Eigen::MatrixXd &m1, const Eigen::MatrixXd &m2,
-                           const Eigen::MatrixXd &m3) {
+Eigen::MatrixXd block_diag(const Eigen::MatrixXd& m1, const Eigen::MatrixXd& m2,
+                           const Eigen::MatrixXd& m3) {
   uint32_t m1r = m1.rows();
   uint32_t m1c = m1.cols();
   uint32_t m2r = m2.rows();

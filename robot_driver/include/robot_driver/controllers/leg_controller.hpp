@@ -47,8 +47,8 @@ class LegController {
    * @param[in] kp Proportional gains
    * @param[in] kd Derivative gains
    */
-  virtual void init(const std::vector<double> &kp,
-                    const std::vector<double> &kd);
+  virtual void init(const std::vector<double>& kp,
+                    const std::vector<double>& kd);
 
   /**
    * @brief Set the desired stance and swing proportional and derivative gains
@@ -59,12 +59,12 @@ class LegController {
    * @param[in] swing_kp_cart Cartesian Swing phase proportional gains
    * @param[in] swing_kd_cart Cartesian Swing phase derivative gains
    */
-  virtual void init(const std::vector<double> &stance_kp,
-                    const std::vector<double> &stance_kd,
-                    const std::vector<double> &swing_kp,
-                    const std::vector<double> &swing_kd,
-                    const std::vector<double> &swing_kp_cart,
-                    const std::vector<double> &swing_kd_cart);
+  virtual void init(const std::vector<double>& stance_kp,
+                    const std::vector<double>& stance_kd,
+                    const std::vector<double>& swing_kp,
+                    const std::vector<double>& swing_kd,
+                    const std::vector<double>& swing_kp_cart,
+                    const std::vector<double>& swing_kd_cart);
 
   /**
    * @brief Set the desired stance and swing proportional and derivative gains
@@ -76,13 +76,13 @@ class LegController {
    * @param[in] swing_kd_cart Cartesian Swing phase derivative gains
    * @param[in] model_path Absolute Path to ONNX Model Weights
    */
-  virtual void init(const std::vector<double> &stance_kp,
-                    const std::vector<double> &stance_kd,
-                    const std::vector<double> &swing_kp,
-                    const std::vector<double> &swing_kd,
-                    const std::vector<double> &swing_kp_cart,
-                    const std::vector<double> &swing_kd_cart,
-                    const std::string &model_path);
+  virtual void init(const std::vector<double>& stance_kp,
+                    const std::vector<double>& stance_kd,
+                    const std::vector<double>& swing_kp,
+                    const std::vector<double>& swing_kd,
+                    const std::vector<double>& swing_kp_cart,
+                    const std::vector<double>& swing_kd_cart,
+                    const std::string& model_path);
 
   /**
    * @brief Compute the leg command array message for a given current state and
@@ -90,20 +90,19 @@ class LegController {
    * @param[in] local_plan_msg Message of the local referance plan
    */
   void updateLocalPlanMsg(quad_msgs::msg::RobotPlan::SharedPtr msg,
-                          const rclcpp::Time &t_msg);
+                          const rclcpp::Time& t_msg);
 
   /**
    * @brief Compute the leg command array message
    */
   virtual bool computeLegCommandArray(
-      const quad_msgs::msg::RobotState &robot_state_msg,
-      quad_msgs::msg::LegCommandArray &leg_command_array_msg,
-      quad_msgs::msg::GRFArray &grf_array_msg) = 0;
+      const quad_msgs::msg::RobotState& robot_state_msg,
+      quad_msgs::msg::LegCommandArray& leg_command_array_msg,
+      quad_msgs::msg::GRFArray& grf_array_msg) = 0;
 
   inline bool overrideStateMachine() { return override_state_machine_; }
 
  protected:
-
   /// Shared Pointer to Launch Node
   rclcpp::Node::SharedPtr node_;
 
@@ -139,7 +138,6 @@ class LegController {
 
   // Absolute Path to ONNX Policy Weights
   std::string model_path_;
-
 };
 
 #endif  // LEG_CONTROLLER_H

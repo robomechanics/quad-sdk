@@ -5,9 +5,9 @@
 
 namespace gz_plugins {
 void GroundTruthEstimator::Configure(
-    const gz::sim::Entity &entity,
-    const std::shared_ptr<const sdf::Element> &sdf,
-    gz::sim::EntityComponentManager &ecm, gz::sim::EventManager &eventMgr) {
+    const gz::sim::Entity& entity,
+    const std::shared_ptr<const sdf::Element>& sdf,
+    gz::sim::EntityComponentManager& ecm, gz::sim::EventManager& eventMgr) {
   this->model_ = gz::sim::Model(entity);
   this->entity_ = entity;
 
@@ -91,7 +91,7 @@ void GroundTruthEstimator::Configure(
           try {
             this->quadKD_ = std::make_shared<quad_utils::QuadKD2>(this->node_);
             RCLCPP_INFO(this->node_->get_logger(), "Makes QuadKD Class.");
-          } catch (const std::exception &e) {
+          } catch (const std::exception& e) {
             RCLCPP_ERROR(this->node_->get_logger(), "QuadKD init failed: %s",
                          e.what());
           }
@@ -101,7 +101,7 @@ void GroundTruthEstimator::Configure(
   std::vector<std::string> links_to_check = {"body", "toe0", "toe1", "toe2",
                                              "toe3"};
 
-  for (const auto &link_name : links_to_check) {
+  for (const auto& link_name : links_to_check) {
     auto link_entity = this->model_.LinkByName(ecm, link_name);
     if (link_entity == gz::sim::kNullEntity) continue;
 
@@ -113,7 +113,8 @@ void GroundTruthEstimator::Configure(
 
     if (!ecm.EntityHasComponentType(
             link_entity, gz::sim::components::WorldAngularVelocity::typeId)) {
-      ecm.CreateComponent(link_entity, gz::sim::components::WorldAngularVelocity());
+      ecm.CreateComponent(link_entity,
+                          gz::sim::components::WorldAngularVelocity());
     }
 
     if (!ecm.EntityHasComponentType(link_entity,
@@ -125,7 +126,7 @@ void GroundTruthEstimator::Configure(
   std::vector<std::string> joint_names = {"8",  "0", "1", "9",  "2", "3",
                                           "10", "4", "5", "11", "6", "7"};
 
-  for (const auto &joint_name : joint_names) {
+  for (const auto& joint_name : joint_names) {
     auto joint_entity = this->model_.JointByName(ecm, joint_name);
     if (joint_entity == gz::sim::kNullEntity) continue;
 
@@ -140,7 +141,7 @@ void GroundTruthEstimator::Configure(
     }
   }
 
-  for (const auto &joint_name : joint_names) {
+  for (const auto& joint_name : joint_names) {
     auto joint_entity = this->model_.JointByName(ecm, joint_name);
     if (joint_entity != gz::sim::kNullEntity) {
       gz::sim::Joint joint(joint_entity);
@@ -152,9 +153,8 @@ void GroundTruthEstimator::Configure(
 }
 
 void GroundTruthEstimator::PostUpdate(
-    const gz::sim::UpdateInfo &info,
-    const gz::sim::EntityComponentManager &ecm) {
-
+    const gz::sim::UpdateInfo& info,
+    const gz::sim::EntityComponentManager& ecm) {
   rclcpp::spin_some(this->node_);
   if (!this->node_ || !this->model_.Valid(ecm)) return;
 
@@ -209,9 +209,9 @@ void GroundTruthEstimator::PostUpdate(
   auto lin_vel_opt = body_link.WorldLinearVelocity(ecm);
   auto ang_vel_opt = body_link.WorldAngularVelocity(ecm);
 
-  const auto &pose    = *pose_opt;
-  const auto &lin_vel = *lin_vel_opt;
-  const auto &ang_vel = *ang_vel_opt;
+  const auto& pose = *pose_opt;
+  const auto& lin_vel = *lin_vel_opt;
+  const auto& ang_vel = *ang_vel_opt;
 
   // Update and publish state estimate message
   quad_msgs::msg::RobotState state;
@@ -230,10 +230,10 @@ void GroundTruthEstimator::PostUpdate(
   const auto q_wb = pose.Rot();
   const auto q_bw = q_wb.Inverse();
 
-  const gz::math::Vector3d v_w   = lin_vel;           // world linear vel of body origin
-  const gz::math::Vector3d w_w   = ang_vel;           // world angular vel
-  const gz::math::Vector3d v_b   = q_bw * v_w;        // express in body frame
-  const gz::math::Vector3d w_b   = q_bw * w_w;        // express in body frame
+  const gz::math::Vector3d v_w = lin_vel;     // world linear vel of body origin
+  const gz::math::Vector3d w_w = ang_vel;     // world angular vel
+  const gz::math::Vector3d v_b = q_bw * v_w;  // express in body frame
+  const gz::math::Vector3d w_b = q_bw * w_w;  // express in body frame
 
   state.body.twist.angular.x = w_b.X();
   state.body.twist.angular.y = w_b.Y();
@@ -254,7 +254,6 @@ void GroundTruthEstimator::PostUpdate(
     auto joint_entity = this->model_.JointByName(ecm, state.joints.name[i]);
     double pos = 0.0, vel = 0.0, torque = 0.0;
     if (joint_entity) {
-
       gz::sim::Joint joint(joint_entity);
       auto pos_opt = joint.Position(ecm);
       auto vel_opt = joint.Velocity(ecm);
@@ -263,12 +262,12 @@ void GroundTruthEstimator::PostUpdate(
       if (pos_opt && !pos_opt->empty()) {
         pos = (*pos_opt)[0];
       }
-      if ( vel_opt && !vel_opt->empty()) {
+      if (vel_opt && !vel_opt->empty()) {
         vel = (*vel_opt)[0];
       }
       if (wrench_opt) {
-        const auto &wrench_msg = (*wrench_opt)[0];
-        const auto &torque_msg = wrench_msg.torque();
+        const auto& wrench_msg = (*wrench_opt)[0];
+        const auto& torque_msg = wrench_msg.torque();
 
         // Interpret based on leg phase (same logic as Classic)
         switch (i % 3) {
@@ -301,14 +300,13 @@ void GroundTruthEstimator::PostUpdate(
     auto toe_pose_opt = toes[i].WorldPose(ecm);
     auto toe_vel_opt = toes[i].WorldLinearVelocity(ecm);
     if (toe_pose_opt) {
-      const auto &toe_pose = *toe_pose_opt;
+      const auto& toe_pose = *toe_pose_opt;
       state.feet.feet[i].position.x = toe_pose.Pos().X();
       state.feet.feet[i].position.y = toe_pose.Pos().Y();
       state.feet.feet[i].position.z = toe_pose.Pos().Z();
-
     }
     if (toe_vel_opt) {
-      const auto &toe_vel = *toe_vel_opt;
+      const auto& toe_vel = *toe_vel_opt;
       state.feet.feet[i].velocity.x = toe_vel.X();
       state.feet.feet[i].velocity.y = toe_vel.Y();
       state.feet.feet[i].velocity.z = toe_vel.Z();
@@ -328,24 +326,25 @@ void GroundTruthEstimator::PostUpdate(
   state_body_frame.body.pose.position.y = 0.0;
   state_body_frame.body.pose.position.z = 0.0;
 
-  state_body_frame.body.twist.linear.x  = v_b.X();
-  state_body_frame.body.twist.linear.y  = v_b.Y();
-  state_body_frame.body.twist.linear.z  = v_b.Z();
+  state_body_frame.body.twist.linear.x = v_b.X();
+  state_body_frame.body.twist.linear.y = v_b.Y();
+  state_body_frame.body.twist.linear.z = v_b.Z();
   state_body_frame.body.twist.angular.x = w_b.X();
   state_body_frame.body.twist.angular.y = w_b.Y();
   state_body_frame.body.twist.angular.z = w_b.Z();
 
   // Feet positions/velocities in body frame
-  const gz::math::Vector3d p_body_w = pose.Pos();     // world position of body origin
+  const gz::math::Vector3d p_body_w =
+      pose.Pos();  // world position of body origin
 
-  std::array<gz::sim::Link,4> toes_body = {toe0, toe1, toe2, toe3};
+  std::array<gz::sim::Link, 4> toes_body = {toe0, toe1, toe2, toe3};
   for (int i = 0; i < 4; ++i) {
     auto toe_pose_opt = toes_body[i].WorldPose(ecm);
-    auto toe_vel_opt  = toes_body[i].WorldLinearVelocity(ecm);
+    auto toe_vel_opt = toes_body[i].WorldLinearVelocity(ecm);
     if (!toe_pose_opt || !toe_vel_opt) continue;
 
     const auto& toe_pose_w = *toe_pose_opt;
-    const auto& toe_vel_w  = *toe_vel_opt;
+    const auto& toe_vel_w = *toe_vel_opt;
 
     // r: toe position relative to body origin, in world
     const gz::math::Vector3d r_w = toe_pose_w.Pos() - p_body_w;
@@ -366,7 +365,6 @@ void GroundTruthEstimator::PostUpdate(
     state_body_frame.feet.feet[i].velocity.y = v_toe_b.Y();
     state_body_frame.feet.feet[i].velocity.z = v_toe_b.Z();
   }
-
 
   this->ground_truth_state_body_frame_pub_->publish(state_body_frame);
 }

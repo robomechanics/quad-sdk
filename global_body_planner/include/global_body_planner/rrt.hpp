@@ -41,9 +41,9 @@ class RRT {
    * @return Int describing the result of the attempt (TRAPPED, ADVANCED, or
    * REACHED)
    */
-  int attemptConnect(const State &s_existing, const State &s, double t_s,
-                     StateActionResult &result,
-                     const PlannerConfig &planner_config, int direction);
+  int attemptConnect(const State& s_existing, const State& s, double t_s,
+                     StateActionResult& result,
+                     const PlannerConfig& planner_config, int direction);
 
   /** Attempt to connect two states, and return a new state if the full
    * connection is not possible. Internally computes stance time
@@ -54,9 +54,9 @@ class RRT {
    * @return Int describing the result of the attempt (TRAPPED, ADVANCED, or
    * REACHED)
    */
-  int attemptConnect(const State &s_existing, const State &s,
-                     StateActionResult &result,
-                     const PlannerConfig &planner_config, int direction);
+  int attemptConnect(const State& s_existing, const State& s,
+                     StateActionResult& result,
+                     const PlannerConfig& planner_config, int direction);
 
   /** Extend the tree towards the desired state
    * @param[in] T The PlannerClass instance containing the tree
@@ -65,9 +65,11 @@ class RRT {
    * @param[in] direction The direction with which to peform the extension
    * (FORWARD to go away from the root vertex, REVERSE to go towards it)
    */
-  virtual int extend(PlannerClass &T, const State &s,
-                     const PlannerConfig &planner_config, int direction,
-                     rclcpp::Publisher<visualization_msgs::msg::MarkerArray>::SharedPtr &tree_pub);
+  virtual int extend(
+      PlannerClass& T, const State& s, const PlannerConfig& planner_config,
+      int direction,
+      rclcpp::Publisher<visualization_msgs::msg::MarkerArray>::SharedPtr&
+          tree_pub);
 
   /**
    * @brief Get the path from the root vertex to the specified one
@@ -76,14 +78,14 @@ class RRT {
    * @return Vector of vertex indices on the path from the root of the tree to
    * the desired
    */
-  std::vector<int> pathFromStart(PlannerClass &T, int idx);
+  std::vector<int> pathFromStart(PlannerClass& T, int idx);
 
   /**
    * @brief Print the states in the specified path via stdout
    * @param[in] T The PlannerClass instance containing the tree
    * @param[in] path Vector of vertices in the path
    */
-  void printPath(PlannerClass &T, std::vector<int> path);
+  void printPath(PlannerClass& T, std::vector<int> path);
 
   /**
    * @brief Get the statistics for the planner solve
@@ -94,9 +96,9 @@ class RRT {
    * @param[out] dist_to_goal Distance from the final state to the goal (0 if
    * solved)
    */
-  void getStatistics(double &plan_time, int &vertices_generated,
-                     double &plan_length, double &path_duration,
-                     double &dist_to_goal);
+  void getStatistics(double& plan_time, int& vertices_generated,
+                     double& plan_length, double& path_duration,
+                     double& dist_to_goal);
 
   /**
    * @brief Generate a new state that can be connected to the tree and is as
@@ -109,9 +111,11 @@ class RRT {
    * @return Boolean if the new state got closer to the specified state than any
    * other in the tree
    */
-  bool newConfig(State s, State s_near, StateActionResult &result,
-                 const PlannerConfig &planner_config, int direction,
-                 rclcpp::Publisher<visualization_msgs::msg::MarkerArray>::SharedPtr &tree_pub);
+  bool newConfig(
+      State s, State s_near, StateActionResult& result,
+      const PlannerConfig& planner_config, int direction,
+      rclcpp::Publisher<visualization_msgs::msg::MarkerArray>::SharedPtr&
+          tree_pub);
 
   /**
    * @brief Get the states along the specified path of vertex indices
@@ -119,7 +123,7 @@ class RRT {
    * @param[in] path Vector of vertices in the path
    * @return The sequence of states in the path
    */
-  std::vector<State> getStateSequence(PlannerClass &T, std::vector<int> path);
+  std::vector<State> getStateSequence(PlannerClass& T, std::vector<int> path);
 
   /**
    * @brief Get the actions along the specified path of vertex indices (assumes
@@ -128,7 +132,7 @@ class RRT {
    * @param[in] path Vector of vertices in the path
    * @return The sequence of actions in the path
    */
-  std::vector<Action> getActionSequence(PlannerClass &T, std::vector<int> path);
+  std::vector<Action> getActionSequence(PlannerClass& T, std::vector<int> path);
 
  protected:
   /// Probability with which the goal is sampled (if running vanilla RRT)

@@ -1,7 +1,9 @@
 #include "robot_driver/controllers/underbrush_inverse_dynamics.hpp"
 
-UnderbrushInverseDynamicsController::UnderbrushInverseDynamicsController(rclcpp::Node::SharedPtr node, const std::string& robot_ns,
-          std::shared_ptr<quad_utils::QuadKD2> quadKD) : LegController(node, robot_ns, quadKD) {
+UnderbrushInverseDynamicsController::UnderbrushInverseDynamicsController(
+    rclcpp::Node::SharedPtr node, const std::string& robot_ns,
+    std::shared_ptr<quad_utils::QuadKD2> quadKD)
+    : LegController(node, robot_ns, quadKD) {
   force_mode_ = {0, 0, 0, 0};
   last_mode_ = {0, 0, 0, 0};
 
@@ -29,12 +31,12 @@ void UnderbrushInverseDynamicsController::setUnderbrushParams(
 }
 
 bool UnderbrushInverseDynamicsController::computeLegCommandArray(
-    const quad_msgs::msg::RobotState &robot_state_msg,
-    quad_msgs::msg::LegCommandArray &leg_command_array_msg,
-    quad_msgs::msg::GRFArray &grf_array_msg) {
+    const quad_msgs::msg::RobotState& robot_state_msg,
+    quad_msgs::msg::LegCommandArray& leg_command_array_msg,
+    quad_msgs::msg::GRFArray& grf_array_msg) {
   if ((last_local_plan_msg_ == NULL || last_body_force_estimate_msg_ == NULL) ||
-      ((node_->now() - rclcpp::Time(last_local_plan_msg_->header.stamp)).seconds() >=
-       0.1)) {
+      ((node_->now() - rclcpp::Time(last_local_plan_msg_->header.stamp))
+           .seconds() >= 0.1)) {
     return false;
   } else {
     leg_command_array_msg.leg_commands.resize(num_feet_);
@@ -62,18 +64,23 @@ bool UnderbrushInverseDynamicsController::computeLegCommandArray(
         tau_swing_leg_array(3 * num_feet_);
 
     // Get reference state and grf from local plan or traj + grf messages
-    rclcpp::Time t_first_state(last_local_plan_msg_->states.front().header.stamp);
-    double t_now = (node_->now() - rclcpp::Time(last_local_plan_msg_->state_timestamp))
-                       .seconds();  // Use time of state - RECOMMENDED
+    rclcpp::Time t_first_state(
+        last_local_plan_msg_->states.front().header.stamp);
+    double t_now =
+        (node_->now() - rclcpp::Time(last_local_plan_msg_->state_timestamp))
+            .seconds();  // Use time of state - RECOMMENDED
     double t_now2 = node_->now().seconds();
 
     if ((t_now <
-         (rclcpp::Time(last_local_plan_msg_->states.front().header.stamp) - t_first_state)
+         (rclcpp::Time(last_local_plan_msg_->states.front().header.stamp) -
+          t_first_state)
              .seconds()) ||
         (t_now >
-         (rclcpp::Time(last_local_plan_msg_->states.back().header.stamp) - t_first_state)
+         (rclcpp::Time(last_local_plan_msg_->states.back().header.stamp) -
+          t_first_state)
              .seconds())) {
-      RCLCPP_ERROR(node_->get_logger(), "ID node couldn't find the correct ref state!");
+      RCLCPP_ERROR(node_->get_logger(),
+                   "ID node couldn't find the correct ref state!");
     }
 
     int all_TD = 0;  // end looping when all next touchdowns have been found
@@ -81,17 +88,22 @@ bool UnderbrushInverseDynamicsController::computeLegCommandArray(
     // Interpolate the local plan to get the reference state and ff GRF
     for (size_t i = 0; i < last_local_plan_msg_->states.size() - 1; i++) {
       if ((t_now >=
-           (rclcpp::Time(last_local_plan_msg_->states[i].header.stamp) - t_first_state)
+           (rclcpp::Time(last_local_plan_msg_->states[i].header.stamp) -
+            t_first_state)
                .seconds()) &&
           (t_now <
-           (rclcpp::Time(last_local_plan_msg_->states[i + 1].header.stamp) - t_first_state)
+           (rclcpp::Time(last_local_plan_msg_->states[i + 1].header.stamp) -
+            t_first_state)
                .seconds())) {
         double t_interp =
             (t_now -
-             (rclcpp::Time(last_local_plan_msg_->states[i].header.stamp) - t_first_state)
+             (rclcpp::Time(last_local_plan_msg_->states[i].header.stamp) -
+              t_first_state)
                  .seconds()) /
-            (rclcpp::Time(last_local_plan_msg_->states[i + 1].header.stamp).seconds() -
-             rclcpp::Time(last_local_plan_msg_->states[i].header.stamp).seconds());
+            (rclcpp::Time(last_local_plan_msg_->states[i + 1].header.stamp)
+                 .seconds() -
+             rclcpp::Time(last_local_plan_msg_->states[i].header.stamp)
+                 .seconds());
 
         // Linearly interpolate between states
         quad_utils::interpRobotState(last_local_plan_msg_->states[i],
@@ -108,14 +120,16 @@ bool UnderbrushInverseDynamicsController::computeLegCommandArray(
             // t_switch_.at(j) =
             // last_local_plan_msg_->states[i+1].header.stamp.toSec();
             t_LO_.at(j) =
-                rclcpp::Time(last_local_plan_msg_->states[i + 1].header.stamp).seconds();
+                rclcpp::Time(last_local_plan_msg_->states[i + 1].header.stamp)
+                    .seconds();
           }
         }
 
         // break;
 
-      } else if (t_now < rclcpp::Time(last_local_plan_msg_->states[i + 1]
-                             .header.stamp).seconds()) {  // find next touchdowns
+      } else if (t_now <
+                 rclcpp::Time(last_local_plan_msg_->states[i + 1].header.stamp)
+                     .seconds()) {  // find next touchdowns
         if (all_TD == pow(2.0, num_feet_) -
                           1) {  // terminate when all next touchdowns are found
           break;
@@ -130,7 +144,8 @@ bool UnderbrushInverseDynamicsController::computeLegCommandArray(
             } else {
               if (last_local_plan_msg_->states[i].feet.feet.at(j).contact) {
                 t_TD_.at(j) =
-                    rclcpp::Time(last_local_plan_msg_->states[i].header.stamp).seconds();
+                    rclcpp::Time(last_local_plan_msg_->states[i].header.stamp)
+                        .seconds();
                 all_TD = all_TD | (1 << j);  // next touchdown found
               }
             }
@@ -147,7 +162,8 @@ bool UnderbrushInverseDynamicsController::computeLegCommandArray(
     for (int i = 0; i < 4; i++) {
       if (!ref_state_msg_.feet.feet.at(i).contact) {
         for (int j = 0; j < last_local_plan_msg_->states.size() - 1; j++) {
-          if (t_now < rclcpp::Time(last_local_plan_msg_->states[j].header.stamp).seconds() &&
+          if (t_now < rclcpp::Time(last_local_plan_msg_->states[j].header.stamp)
+                          .seconds() &&
               bool(last_local_plan_msg_->states[j].feet.feet.at(i).contact)) {
             ref_underbrush_msg.feet.feet.at(i).position.x =
                 robot_state_msg.feet.feet.at(i).position.x;
@@ -213,7 +229,8 @@ bool UnderbrushInverseDynamicsController::computeLegCommandArray(
     for (int i = 0; i < 4; i++) {
       if (!ref_state_msg_.feet.feet.at(i).contact) {
         for (size_t j = 0; j < last_local_plan_msg_->states.size() - 1; j++) {
-          if (t_now < rclcpp::Time(last_local_plan_msg_->states[j].header.stamp).seconds() &&
+          if (t_now < rclcpp::Time(last_local_plan_msg_->states[j].header.stamp)
+                          .seconds() &&
               bool(last_local_plan_msg_->states[j].feet.feet.at(i).contact)) {
             ref_abad_msg.feet.feet.at(i).position.x =
                 last_local_plan_msg_->states[j].feet.feet.at(i).position.x;

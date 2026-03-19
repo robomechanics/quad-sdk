@@ -7,34 +7,34 @@
 
 //! A class for publishing random twist velocity commands to the robot
 /*!
-   CmdVelPublisher is a class for publishing the random twist velocity 
-   commands given bounds on x, y, and yaw. Primaily used for testing to 
+   CmdVelPublisher is a class for publishing the random twist velocity
+   commands given bounds on x, y, and yaw. Primaily used for testing to
    assess velocity tracking policy/controller performance
 */
-class CmdVelPublisher{
+class CmdVelPublisher {
  public:
   /**
-  * @brief Constructor for CmdVelPublisher Class
-  * @param[in] node ROS Node Shared Pointer to publish and subscribe from
-  * @return Construced Object of type CmdVelPublisher
-  * 
-  */
+   * @brief Constructor for CmdVelPublisher Class
+   * @param[in] node ROS Node Shared Pointer to publish and subscribe from
+   * @return Construced Object of type CmdVelPublisher
+   *
+   */
   CmdVelPublisher(rclcpp::Node::SharedPtr node_);
   /**
    * @brief Calls ros spin_some and pubs data at set frequency
-   * 
+   *
    */
   void spin();
 
  private:
   /**
    * @brief Update and publish cmd vel command based on the mode
-   * 
+   *
    */
   void publishCmdVel();
   /**
    * @brief Sample a new random twist commadn
-   * 
+   *
    */
   void sampleNewCmd();
 
@@ -80,6 +80,5 @@ class CmdVelPublisher{
   int seed_;
 
   double test_duration_;
-
 };
 #endif  // CMD_VEL_PUBLIDHER

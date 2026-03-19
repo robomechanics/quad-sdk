@@ -6,7 +6,6 @@
 #include <unordered_map>
 #include <unordered_set>
 
-
 #include "global_body_planner/planning_utils.hpp"
 
 using namespace planning_utils;

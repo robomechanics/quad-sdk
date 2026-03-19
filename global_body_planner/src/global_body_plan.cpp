@@ -32,12 +32,12 @@ void GlobalBodyPlan::eraseAfterIndex(int start_index) {
                      length_plan_.end());
 }
 
-void GlobalBodyPlan::loadPlanData(int plan_status, FullState &start_state,
+void GlobalBodyPlan::loadPlanData(int plan_status, FullState& start_state,
                                   double dist_to_goal,
-                                  std::vector<State> &state_sequence,
-                                  std::vector<Action> &action_sequence,
+                                  std::vector<State>& state_sequence,
+                                  std::vector<Action>& action_sequence,
                                   double dt, double t0,
-                                  const PlannerConfig &planner_config) {
+                                  const PlannerConfig& planner_config) {
   plan_status_ = plan_status;
   state_sequence_ = state_sequence;
   action_sequence_ = action_sequence;
@@ -72,13 +72,14 @@ void GlobalBodyPlan::loadPlanData(int plan_status, FullState &start_state,
 }
 
 void GlobalBodyPlan::addStateAndGRFToMsg(double t, int plan_index,
-                                         const FullState &body_state,
-                                         const GRF &grf, int primitive_id,
-                                         quad_msgs::msg::RobotPlan &msg) {
+                                         const FullState& body_state,
+                                         const GRF& grf, int primitive_id,
+                                         quad_msgs::msg::RobotPlan& msg) {
   // Represent each state as an Odometry message
   quad_msgs::msg::RobotState state;
   quad_utils::updateStateHeaders(state,
-                                 rclcpp::Time(msg.global_plan_timestamp) + rclcpp::Duration::from_seconds(t),
+                                 rclcpp::Time(msg.global_plan_timestamp) +
+                                     rclcpp::Duration::from_seconds(t),
                                  msg.header.frame_id, plan_index);
 
   // Load the data into the message
@@ -106,8 +107,8 @@ void GlobalBodyPlan::addStateAndGRFToMsg(double t, int plan_index,
 }
 
 void GlobalBodyPlan::convertToMsg(
-    quad_msgs::msg::RobotPlan &robot_plan_msg,
-    quad_msgs::msg::RobotPlan &discrete_robot_plan_msg) {
+    quad_msgs::msg::RobotPlan& robot_plan_msg,
+    quad_msgs::msg::RobotPlan& discrete_robot_plan_msg) {
   if (getSize() <= 0) return;
 
   // Loop through the interpolated body plan and add to message

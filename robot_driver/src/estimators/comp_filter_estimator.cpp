@@ -1,7 +1,9 @@
 #include "robot_driver/estimators/comp_filter_estimator.hpp"
 
-CompFilterEstimator::CompFilterEstimator(rclcpp::Node::SharedPtr node, const std::string& robot_ns,
-                                        std::shared_ptr<quad_utils::QuadKD2> quadKD): StateEstimator(node, robot_ns, quadKD) {}
+CompFilterEstimator::CompFilterEstimator(
+    rclcpp::Node::SharedPtr node, const std::string& robot_ns,
+    std::shared_ptr<quad_utils::QuadKD2> quadKD)
+    : StateEstimator(node, robot_ns, quadKD) {}
 
 void CompFilterEstimator::init() {
   // load Comp_filter params
@@ -15,24 +17,24 @@ void CompFilterEstimator::init() {
   quad_utils::loadROSParam(node_, "robot_driver.low_pass_c", low_pass_c_);
   quad_utils::loadROSParam(node_, "robot_driver.low_pass_d", low_pass_d_);
   high_pass_filter.A =
-      Eigen::Map<Eigen::Matrix<double, 2, 2> >(high_pass_a_.data()).transpose();
+      Eigen::Map<Eigen::Matrix<double, 2, 2>>(high_pass_a_.data()).transpose();
   high_pass_filter.B =
-      Eigen::Map<Eigen::Matrix<double, 1, 2> >(high_pass_b_.data()).transpose();
+      Eigen::Map<Eigen::Matrix<double, 1, 2>>(high_pass_b_.data()).transpose();
   high_pass_filter.C =
-      Eigen::Map<Eigen::Matrix<double, 2, 1> >(high_pass_c_.data()).transpose();
+      Eigen::Map<Eigen::Matrix<double, 2, 1>>(high_pass_c_.data()).transpose();
   high_pass_filter.D =
-      Eigen::Map<Eigen::Matrix<double, 1, 1> >(high_pass_d_.data()).transpose();
+      Eigen::Map<Eigen::Matrix<double, 1, 1>>(high_pass_d_.data()).transpose();
   high_pass_filter.x.resize(3);
   high_pass_filter.init = false;
 
   low_pass_filter.A =
-      Eigen::Map<Eigen::Matrix<double, 2, 2> >(low_pass_a_.data()).transpose();
+      Eigen::Map<Eigen::Matrix<double, 2, 2>>(low_pass_a_.data()).transpose();
   low_pass_filter.B =
-      Eigen::Map<Eigen::Matrix<double, 1, 2> >(low_pass_b_.data()).transpose();
+      Eigen::Map<Eigen::Matrix<double, 1, 2>>(low_pass_b_.data()).transpose();
   low_pass_filter.C =
-      Eigen::Map<Eigen::Matrix<double, 2, 1> >(low_pass_c_.data()).transpose();
+      Eigen::Map<Eigen::Matrix<double, 2, 1>>(low_pass_c_.data()).transpose();
   low_pass_filter.D =
-      Eigen::Map<Eigen::Matrix<double, 1, 1> >(low_pass_d_.data()).transpose();
+      Eigen::Map<Eigen::Matrix<double, 1, 1>>(low_pass_d_.data()).transpose();
   low_pass_filter.x.resize(3);
   low_pass_filter.init = false;
 }
@@ -48,7 +50,7 @@ bool CompFilterEstimator::updateOnce(
   // Check if mocap data was received
   if (!last_mocap_msg_) {
     RCLCPP_WARN_THROTTLE(node_->get_logger(), *node_->get_clock(), 1000,
-     "No body pose (mocap) recieved");
+                         "No body pose (mocap) recieved");
     return false;
   }
   // Copy mocap readings

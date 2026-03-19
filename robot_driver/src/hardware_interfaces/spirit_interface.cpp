@@ -1,6 +1,6 @@
 #include "robot_driver/hardware_interfaces/spirit_interface.hpp"
 
-SpiritInterface::SpiritInterface() : HardwareInterface(){}
+SpiritInterface::SpiritInterface() : HardwareInterface() {}
 
 void SpiritInterface::loadInterface(int argc, char** argv) {
   /// Ghost MBLink interface class

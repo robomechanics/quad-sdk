@@ -4,7 +4,6 @@ ContactStatePublisher::ContactStatePublisher(rclcpp::Node::SharedPtr node)
     : node_(node),
       tf_buffer_(node_->get_clock(), tf2::durationFromSec(10.0), node_),
       tf_listener_(tf_buffer_, node_) {
-
   // Load rosparams from parameter server
   std::string grf_topic, toe0_contact_state_topic, toe1_contact_state_topic,
       toe2_contact_state_topic, toe3_contact_state_topic;
@@ -23,17 +22,30 @@ ContactStatePublisher::ContactStatePublisher(rclcpp::Node::SharedPtr node)
   quad_utils::loadROSParam(node_, "namespace", ns);
   quad_utils::loadROSParam(node_, "world", world_name);
 
-  toe_0_contact_state_sub_ = node_->create_subscription<ros_gz_interfaces::msg::Contacts>(toe0_contact_state_topic, 1, 
-    std::bind(&ContactStatePublisher::onContactToe<0>, this, std::placeholders::_1));
-  toe_1_contact_state_sub_ = node_->create_subscription<ros_gz_interfaces::msg::Contacts>(toe1_contact_state_topic, 1, 
-    std::bind(&ContactStatePublisher::onContactToe<1>, this, std::placeholders::_1));
-  toe_2_contact_state_sub_ = node_->create_subscription<ros_gz_interfaces::msg::Contacts>(toe2_contact_state_topic, 1, 
-    std::bind(&ContactStatePublisher::onContactToe<2>, this, std::placeholders::_1));  
-  toe_3_contact_state_sub_ = node_->create_subscription<ros_gz_interfaces::msg::Contacts>(toe3_contact_state_topic, 1, 
-    std::bind(&ContactStatePublisher::onContactToe<3>, this, std::placeholders::_1));
+  toe_0_contact_state_sub_ =
+      node_->create_subscription<ros_gz_interfaces::msg::Contacts>(
+          toe0_contact_state_topic, 1,
+          std::bind(&ContactStatePublisher::onContactToe<0>, this,
+                    std::placeholders::_1));
+  toe_1_contact_state_sub_ =
+      node_->create_subscription<ros_gz_interfaces::msg::Contacts>(
+          toe1_contact_state_topic, 1,
+          std::bind(&ContactStatePublisher::onContactToe<1>, this,
+                    std::placeholders::_1));
+  toe_2_contact_state_sub_ =
+      node_->create_subscription<ros_gz_interfaces::msg::Contacts>(
+          toe2_contact_state_topic, 1,
+          std::bind(&ContactStatePublisher::onContactToe<2>, this,
+                    std::placeholders::_1));
+  toe_3_contact_state_sub_ =
+      node_->create_subscription<ros_gz_interfaces::msg::Contacts>(
+          toe3_contact_state_topic, 1,
+          std::bind(&ContactStatePublisher::onContactToe<3>, this,
+                    std::placeholders::_1));
 
-  // RCLCPP_INFO( node_->get_logger(), "Subscription Topic: [%s] ", toe0_contact_state_topic.c_str());
-  // RCLCPP_INFO( node_->get_logger(), "Publisher Topic: [%s] ", grf_topic.c_str());
+  // RCLCPP_INFO( node_->get_logger(), "Subscription Topic: [%s] ",
+  // toe0_contact_state_topic.c_str()); RCLCPP_INFO( node_->get_logger(),
+  // "Publisher Topic: [%s] ", grf_topic.c_str());
 
   // Setup pubs
   grf_pub_ = node_->create_publisher<quad_msgs::msg::GRFArray>(grf_topic, 10);
@@ -48,21 +60,22 @@ ContactStatePublisher::ContactStatePublisher(rclcpp::Node::SharedPtr node)
 }
 
 template <int toe_idx>
-void ContactStatePublisher::onContactToe(const ros_gz_interfaces::msg::Contacts::SharedPtr msg) {
-
-  std::string terrain_name = "flat::body::collision"; //Change this to be the world name 
+void ContactStatePublisher::onContactToe(
+    const ros_gz_interfaces::msg::Contacts::SharedPtr msg) {
+  std::string terrain_name =
+      "flat::body::collision";  // Change this to be the world name
   std::string toe_collision_names[4] = {"toe0_collision", "toe1_collision",
                                         "toe2_collision", "toe3_collision"};
   std::string toe_string = toe_collision_names[toe_idx];
 
   // Toe Transform Names
   std::string ns = node_->get_namespace();
-  if (!ns.empty() && ns.front() == '/'){
-    ns = ns.substr(1); // Remove leading slash
+  if (!ns.empty() && ns.front() == '/') {
+    ns = ns.substr(1);  // Remove leading slash
   }
   const std::array<std::string, 4> toe_transform_names = {
-    ns + "_ground_truth/toe0", ns + "_ground_truth/toe1",
-    ns + "_ground_truth/toe2", ns + "_ground_truth/toe3"};
+      ns + "_ground_truth/toe0", ns + "_ground_truth/toe1",
+      ns + "_ground_truth/toe2", ns + "_ground_truth/toe3"};
 
   // Initialize outputs
   grf_array_msg_.vectors[toe_idx].x = 0.0;
@@ -75,15 +88,17 @@ void ContactStatePublisher::onContactToe(const ros_gz_interfaces::msg::Contacts:
 
   grf_array_msg_.contact_states[toe_idx] = false;
 
-  for(const auto& contact : msg->contacts){
+  for (const auto& contact : msg->contacts) {
     const std::string& str_toe = contact.collision1.name;
     const std::string& str_terrain = contact.collision2.name;
-    // RCLCPP_INFO( node_->get_logger(), "Contact detected between: [%s] and [%s]", str_toe.c_str(), str_terrain.c_str());
+    // RCLCPP_INFO( node_->get_logger(), "Contact detected between: [%s] and
+    // [%s]", str_toe.c_str(), str_terrain.c_str());
 
-    std::size_t found_toe =  str_toe.find(toe_string);
+    std::size_t found_toe = str_toe.find(toe_string);
     std::size_t found_terrain = str_terrain.find(terrain_name);
 
-    if((found_toe !=std::string::npos) && (found_terrain != std::string::npos)){
+    if ((found_toe != std::string::npos) &&
+        (found_terrain != std::string::npos)) {
       last_contact_time_[toe_idx] = node_->get_clock()->now().seconds();
       // Get total wrench
       if (!contact.wrenches.empty()) {
@@ -97,7 +112,8 @@ void ContactStatePublisher::onContactToe(const ros_gz_interfaces::msg::Contacts:
         grf_array_msg_.vectors[toe_idx].y = fy;
         grf_array_msg_.vectors[toe_idx].z = fz;
       }
-      // Add up position - there might be multiple contact points for one contaxct pair
+      // Add up position - there might be multiple contact points for one
+      // contaxct pair
       for (const auto& pos : contact.positions) {
         grf_array_msg_.points[toe_idx].x += pos.x;
         grf_array_msg_.points[toe_idx].y += pos.y;
@@ -114,7 +130,6 @@ void ContactStatePublisher::onContactToe(const ros_gz_interfaces::msg::Contacts:
 
       // We only want the contact pair with ground
       break;  // Only use the first matching contact
-
     }
   }
   // Not needed, Automatically published in the World Frame
@@ -124,7 +139,8 @@ void ContactStatePublisher::onContactToe(const ros_gz_interfaces::msg::Contacts:
   //       "map", toe_transform_names[toe_idx], tf2::TimePointZero);
 
   // } catch (tf2::TransformException &ex) {
-  //   RCLCPP_WARN_THROTTLE(node_->get_logger(), *node_->get_clock(), 1000, "%s",
+  //   RCLCPP_WARN_THROTTLE(node_->get_logger(), *node_->get_clock(), 1000,
+  //   "%s",
   //                        ex.what());
   //   ready_to_publish_ = false;
   //   return;
@@ -139,10 +155,14 @@ void ContactStatePublisher::onContactToe(const ros_gz_interfaces::msg::Contacts:
 }
 
 // At bottom of contact_state_publisher.cpp
-template void ContactStatePublisher::onContactToe<0>(ros_gz_interfaces::msg::Contacts::SharedPtr msg);
-template void ContactStatePublisher::onContactToe<1>(ros_gz_interfaces::msg::Contacts::SharedPtr msg);
-template void ContactStatePublisher::onContactToe<2>(ros_gz_interfaces::msg::Contacts::SharedPtr msg);
-template void ContactStatePublisher::onContactToe<3>(ros_gz_interfaces::msg::Contacts::SharedPtr msg);
+template void ContactStatePublisher::onContactToe<0>(
+    ros_gz_interfaces::msg::Contacts::SharedPtr msg);
+template void ContactStatePublisher::onContactToe<1>(
+    ros_gz_interfaces::msg::Contacts::SharedPtr msg);
+template void ContactStatePublisher::onContactToe<2>(
+    ros_gz_interfaces::msg::Contacts::SharedPtr msg);
+template void ContactStatePublisher::onContactToe<3>(
+    ros_gz_interfaces::msg::Contacts::SharedPtr msg);
 
 bool ContactStatePublisher::checkMessageTiming(double current_sim_time,
                                                int toe_idx) {
@@ -181,7 +201,6 @@ void ContactStatePublisher::spin() {
   // rclcpp::Rate r(update_rate_);
   rclcpp::Rate r(update_rate_);
   while (rclcpp::ok()) {
-
     // Collect new messages on subscriber topics
     rclcpp::spin_some(node_);
 

@@ -15,7 +15,6 @@
 
 #include <Eigen/Dense>
 
-
 //! A class for publishing the current state of a trajectory
 /*!
    TrajectoryPublisher is a class for publishing the current state of a given
@@ -60,7 +59,8 @@ class TrajectoryPublisher {
   rclcpp::Subscription<quad_msgs::msg::RobotPlan>::SharedPtr body_plan_sub_;
 
   /// ROS Publisher for the current trajectory state
-  rclcpp::Publisher<quad_msgs::msg::RobotState>::SharedPtr trajectory_state_pub_;
+  rclcpp::Publisher<quad_msgs::msg::RobotState>::SharedPtr
+      trajectory_state_pub_;
 
   /// Node Pointer to pub to and sub from
   rclcpp::Node::SharedPtr node_;

@@ -8,23 +8,22 @@
 
 namespace quad_utils {
 
-static grid_map::GridMap makeFlatMap(double height)
-{
+static grid_map::GridMap makeFlatMap(double height) {
   grid_map::GridMap map({"z"});
-  map.setGeometry(grid_map::Length(10.0, 10.0), 0.1, grid_map::Position(0.0, 0.0));
+  map.setGeometry(grid_map::Length(10.0, 10.0), 0.1,
+                  grid_map::Position(0.0, 0.0));
   for (grid_map::GridMapIterator it(map); !it.isPastEnd(); ++it) {
     map.at("z", *it) = height;
   }
   return map;
 }
 
-static std::string runXacro(const std::string &xacro_path)
-{
+static std::string runXacro(const std::string& xacro_path) {
   std::string cmd = "xacro " + xacro_path;
   std::array<char, 4096> buffer;
   std::string result;
 
-  FILE *pipe = popen(cmd.c_str(), "r");
+  FILE* pipe = popen(cmd.c_str(), "r");
   if (!pipe) {
     throw std::runtime_error("Failed to run xacro");
   }
@@ -37,10 +36,10 @@ static std::string runXacro(const std::string &xacro_path)
 
 struct RobotKinematicsConfig {
   std::string xacro_pkg;
-  std::string xacro_relpath;   // relative inside pkg share
-  std::array<std::array<std::string,3>,4> leg_joint_names; // [leg][3]
+  std::string xacro_relpath;  // relative inside pkg share
+  std::array<std::array<std::string, 3>, 4> leg_joint_names;  // [leg][3]
   double abad_sign, abad_offset;
-  double hip_sign,  hip_offset;
+  double hip_sign, hip_offset;
   double knee_sign, knee_offset;
 };
 
@@ -48,15 +47,16 @@ static RobotKinematicsConfig spiritCfg() {
   RobotKinematicsConfig c;
   c.xacro_pkg = "spirit_description";
   c.xacro_relpath = "models/spirit/urdf/spirit.urdf.xacro";
-  c.leg_joint_names = {{
-    {{"8","0","1"}},
-    {{"9","2","3"}},
-    {{"10","4","5"}},
-    {{"11","6","7"}}
-  }};
-  c.abad_sign = 1.0;  c.abad_offset = 0.0;
-  c.hip_sign  = 1.0;  c.hip_offset  = 0.0;
-  c.knee_sign = 1.0; c.knee_offset = 0.0;
+  c.leg_joint_names = {{{{"8", "0", "1"}},
+                        {{"9", "2", "3"}},
+                        {{"10", "4", "5"}},
+                        {{"11", "6", "7"}}}};
+  c.abad_sign = 1.0;
+  c.abad_offset = 0.0;
+  c.hip_sign = 1.0;
+  c.hip_offset = 0.0;
+  c.knee_sign = 1.0;
+  c.knee_offset = 0.0;
   // c.knee_sign = 1.0; c.knee_offset = M_PI;
   return c;
 }
@@ -65,22 +65,24 @@ static RobotKinematicsConfig go2Cfg() {
   RobotKinematicsConfig c;
   c.xacro_pkg = "go2_description";
   c.xacro_relpath = "models/go2/urdf/go2.urdf.xacro";
-  c.leg_joint_names = {{
-    {{"FL_hip_joint","FL_thigh_joint","FL_calf_joint"}},
-    {{"RL_hip_joint","RL_thigh_joint","RL_calf_joint"}},
-    {{"FR_hip_joint","FR_thigh_joint","FR_calf_joint"}},
-    {{"RR_hip_joint","RR_thigh_joint","RR_calf_joint"}}
-  }};
-  c.abad_sign = 1.0;  c.abad_offset = 0.0;
-  c.hip_sign  = -1.0; c.hip_offset  = M_PI/2.0;
-  c.knee_sign = 1.0; c.knee_offset = -M_PI;
+  c.leg_joint_names = {{{{"FL_hip_joint", "FL_thigh_joint", "FL_calf_joint"}},
+                        {{"RL_hip_joint", "RL_thigh_joint", "RL_calf_joint"}},
+                        {{"FR_hip_joint", "FR_thigh_joint", "FR_calf_joint"}},
+                        {{"RR_hip_joint", "RR_thigh_joint", "RR_calf_joint"}}}};
+  c.abad_sign = 1.0;
+  c.abad_offset = 0.0;
+  c.hip_sign = -1.0;
+  c.hip_offset = M_PI / 2.0;
+  c.knee_sign = 1.0;
+  c.knee_offset = -M_PI;
   return c;
 }
 
 static void loadRobotParams(const rclcpp::Node::SharedPtr& node,
-                            const RobotKinematicsConfig& cfg){
+                            const RobotKinematicsConfig& cfg) {
   const std::string xacro_path =
-    ament_index_cpp::get_package_share_directory(cfg.xacro_pkg) + "/" + cfg.xacro_relpath;
+      ament_index_cpp::get_package_share_directory(cfg.xacro_pkg) + "/" +
+      cfg.xacro_relpath;
 
   const std::string urdf_string = runXacro(xacro_path);
   node->declare_parameter<std::string>("robot_description", urdf_string);
@@ -88,11 +90,9 @@ static void loadRobotParams(const rclcpp::Node::SharedPtr& node,
   for (int i = 0; i < 4; i++) {
     const std::string p = "leg_" + std::to_string(i);
 
-    std::vector<std::string> names = {
-      cfg.leg_joint_names[i][0],
-      cfg.leg_joint_names[i][1],
-      cfg.leg_joint_names[i][2]
-    };
+    std::vector<std::string> names = {cfg.leg_joint_names[i][0],
+                                      cfg.leg_joint_names[i][1],
+                                      cfg.leg_joint_names[i][2]};
     node->declare_parameter(p + ".joint_names", names);
 
     node->declare_parameter(p + ".abad.sign", cfg.abad_sign);
@@ -106,9 +106,9 @@ static void loadRobotParams(const rclcpp::Node::SharedPtr& node,
 
 const double kinematics_tol = 1e-4;
 
-TEST(KinematicsTest, testDifferentialFKIK){
-  if (!rclcpp::ok()){
-    rclcpp::init(0,nullptr);
+TEST(KinematicsTest, testDifferentialFKIK) {
+  if (!rclcpp::ok()) {
+    rclcpp::init(0, nullptr);
   }
 
   auto node = std::make_shared<rclcpp::Node>("kinematics_compare_test");
@@ -121,7 +121,7 @@ TEST(KinematicsTest, testDifferentialFKIK){
   quad_utils::QuadKD2 kinematics(node);
   const int num_tests = 20;
 
-  for (size_t i = 0; i < num_tests; i++){
+  for (size_t i = 0; i < num_tests; i++) {
     // Declare input and output Robot State object
     quad_msgs::msg::RobotState state, state_out;
 
@@ -154,7 +154,7 @@ TEST(KinematicsTest, testDifferentialFKIK){
         state.joints.position.push_back(0.1);
         state.joints.position.push_back(0.2);
         state.joints.position.push_back(0.3);
-      } else{
+      } else {
         state.joints.position.push_back(0.1);
         state.joints.position.push_back(0.2);
         state.joints.position.push_back(0.3);
@@ -170,10 +170,11 @@ TEST(KinematicsTest, testDifferentialFKIK){
       state.joints.effort.push_back(0.0);
       state.joints.effort.push_back(0.0);
     }
-    
+
     // Run FK to get foot velocities and IK them back
     quad_utils::fkRobotState(kinematics, state.body, state.joints, state.feet);
-    quad_utils::ikRobotState(kinematics, state.body, state.feet, state_out.joints);
+    quad_utils::ikRobotState(kinematics, state.body, state.feet,
+                             state_out.joints);
 
     // Extract input joint velocities
     Eigen::VectorXd vel(12), vel_out(12);
@@ -186,9 +187,9 @@ TEST(KinematicsTest, testDifferentialFKIK){
   }
 }
 
-TEST(KinematicsTest, testSpiritFootForces){
-  if (!rclcpp::ok()){
-    rclcpp::init(0,nullptr);
+TEST(KinematicsTest, testSpiritFootForces) {
+  if (!rclcpp::ok()) {
+    rclcpp::init(0, nullptr);
   }
 
   auto node = std::make_shared<rclcpp::Node>("kinematics_compare_test");
@@ -234,7 +235,7 @@ TEST(KinematicsTest, testSpiritFootForces){
       -2.0 * (ls(0, 1) + ls(1, 1));
 
   // Compute joint torques
-  Eigen::VectorXd body_state(12);       // your helper expects size >= 6; 12 is fine
+  Eigen::VectorXd body_state(12);  // your helper expects size >= 6; 12 is fine
   body_state.setZero();
   body_state.segment<3>(0) = state_positions.segment<3>(12);  // x,y,z
   body_state.segment<3>(3) = state_positions.segment<3>(15);  // r,p,y
@@ -370,8 +371,8 @@ TEST(KinematicsTest, testSpiritFootForces){
 }
 
 TEST(KinematicsTest, testFKIKFeasibleConfigurations) {
-  if (!rclcpp::ok()){
-    rclcpp::init(0,nullptr);
+  if (!rclcpp::ok()) {
+    rclcpp::init(0, nullptr);
   }
 
   auto node = std::make_shared<rclcpp::Node>("kinematics_compare_test");
@@ -398,39 +399,37 @@ TEST(KinematicsTest, testFKIKFeasibleConfigurations) {
 
   // Compute the Kinematics
   int N = 10000;
-  for (int config = 0; config < N; config++){
+  for (int config = 0; config < N; config++) {
     // Sample a full joint configuration for all 4 legs
-    for (int leg_index = 0; leg_index < 4; ++leg_index){
-      joint_positions.segment<3>(3*leg_index) << (kinematics.getJointUpperLimit(leg_index, 0) -
-                                kinematics.getJointLowerLimit(leg_index, 0)) *
-                                        (double)rand() / RAND_MAX +
-                                    kinematics.getJointLowerLimit(leg_index, 0),
-                                (kinematics.getJointUpperLimit(leg_index, 1) -
-                                kinematics.getJointLowerLimit(leg_index, 1)) *
-                                        (double)rand() / RAND_MAX +
-                                    kinematics.getJointLowerLimit(leg_index, 1),
-                                (kinematics.getJointUpperLimit(leg_index, 2) -
-                                kinematics.getJointLowerLimit(leg_index, 2)) *
-                                        (double)rand() / RAND_MAX +
-                                    kinematics.getJointLowerLimit(leg_index, 2);
-
+    for (int leg_index = 0; leg_index < 4; ++leg_index) {
+      joint_positions.segment<3>(3 * leg_index)
+          << (kinematics.getJointUpperLimit(leg_index, 0) -
+              kinematics.getJointLowerLimit(leg_index, 0)) *
+                     (double)rand() / RAND_MAX +
+                 kinematics.getJointLowerLimit(leg_index, 0),
+          (kinematics.getJointUpperLimit(leg_index, 1) -
+           kinematics.getJointLowerLimit(leg_index, 1)) *
+                  (double)rand() / RAND_MAX +
+              kinematics.getJointLowerLimit(leg_index, 1),
+          (kinematics.getJointUpperLimit(leg_index, 2) -
+           kinematics.getJointLowerLimit(leg_index, 2)) *
+                  (double)rand() / RAND_MAX +
+              kinematics.getJointLowerLimit(leg_index, 2);
     }
 
     // Update the model once for this configuration
     kinematics.updateFromBodyJoints(body_state, joint_positions);
 
     // Per Leg FK-> IK -> FK
-    for (int leg = 0; leg < 4; ++leg){
-
+    for (int leg = 0; leg < 4; ++leg) {
       // Compute foot positions in this configuration
       kinematics.worldToFootFKWorldFrame(leg, foot_pos_world);
 
       // Run IK to compute corresponding joint angles, then back through FK
       // This ensures that we are enforcing a hip-above-knee configuration if
       // otherwise ambiguous.
-      bool exact = kinematics.worldToFootIKWorldFrame(leg, body_pos, body_rpy,
-                                   foot_pos_world, joint_state_test);
-
+      bool exact = kinematics.worldToFootIKWorldFrame(
+          leg, body_pos, body_rpy, foot_pos_world, joint_state_test);
 
       const Eigen::Vector3d joint_state = joint_positions.segment<3>(3 * leg);
       // Skip if original configuration was in an alternate configuration
@@ -452,8 +451,8 @@ TEST(KinematicsTest, testFKIKFeasibleConfigurations) {
 }
 
 TEST(KinematicsTest, testMotorModel) {
-  if (!rclcpp::ok()){
-    rclcpp::init(0,nullptr);
+  if (!rclcpp::ok()) {
+    rclcpp::init(0, nullptr);
   }
 
   auto node = std::make_shared<rclcpp::Node>("kinematics_compare_test");
@@ -503,9 +502,9 @@ TEST(KinematicsTest, testMotorModel) {
   EXPECT_TRUE(average_time <= 1e-6);
 }
 
-TEST(KinematicsTest, testBodyToFootFK){
-    if (!rclcpp::ok()){
-    rclcpp::init(0,nullptr);
+TEST(KinematicsTest, testBodyToFootFK) {
+  if (!rclcpp::ok()) {
+    rclcpp::init(0, nullptr);
   }
 
   auto node = std::make_shared<rclcpp::Node>("kinematics_compare_test");
@@ -517,18 +516,18 @@ TEST(KinematicsTest, testBodyToFootFK){
 
   quad_utils::QuadKD2 kinematics(node);
 
-    // Set up problem variables
+  // Set up problem variables
   Eigen::Matrix4d g_world_foot;
   Eigen::Matrix4d g_body_foot;
   Eigen::Vector3d foot_pos_body;
 
   Eigen::Matrix4d g_body_foot_test;
   Eigen::Vector3d foot_pos_body_test;
-  
+
   Eigen::VectorXd body_state(12);
   Eigen::VectorXd joint_positions(12);
   body_state.setZero();
-  joint_positions.setZero(); 
+  joint_positions.setZero();
 
   double pos_min = -1.0;
   double pos_max = 1.0;
@@ -553,32 +552,34 @@ TEST(KinematicsTest, testBodyToFootFK){
         (pitch_max - pitch_min) * rand() / RAND_MAX + pitch_min,
         (yaw_max - yaw_min) * rand() / RAND_MAX + yaw_min};
 
-    Eigen::Matrix4d g_world_body = kinematics.createAffineMatrix(body_pos, body_rpy);
+    Eigen::Matrix4d g_world_body =
+        kinematics.createAffineMatrix(body_pos, body_rpy);
 
     // Compose a Complete State for Update
     body_state.segment<3>(0) = body_pos;
     body_state.segment<3>(3) = body_rpy;
-    for (int leg_index = 0; leg_index < 4; leg_index++){
-      joint_positions.segment<3>(3*leg_index) << (kinematics.getJointUpperLimit(leg_index, 0) -
-                                      kinematics.getJointLowerLimit(leg_index, 0)) *
-                                             (double)rand() / RAND_MAX +
-                                         kinematics.getJointLowerLimit(leg_index, 0),
-                                     (kinematics.getJointUpperLimit(leg_index, 1) -
-                                      kinematics.getJointLowerLimit(leg_index, 1)) *
-                                             (double)rand() / RAND_MAX +
-                                         kinematics.getJointLowerLimit(leg_index, 1),
-                                     (kinematics.getJointUpperLimit(leg_index, 2) -
-                                      kinematics.getJointLowerLimit(leg_index, 2)) *
-                                             (double)rand() / RAND_MAX +
-                                         kinematics.getJointLowerLimit(leg_index, 2);
+    for (int leg_index = 0; leg_index < 4; leg_index++) {
+      joint_positions.segment<3>(3 * leg_index)
+          << (kinematics.getJointUpperLimit(leg_index, 0) -
+              kinematics.getJointLowerLimit(leg_index, 0)) *
+                     (double)rand() / RAND_MAX +
+                 kinematics.getJointLowerLimit(leg_index, 0),
+          (kinematics.getJointUpperLimit(leg_index, 1) -
+           kinematics.getJointLowerLimit(leg_index, 1)) *
+                  (double)rand() / RAND_MAX +
+              kinematics.getJointLowerLimit(leg_index, 1),
+          (kinematics.getJointUpperLimit(leg_index, 2) -
+           kinematics.getJointLowerLimit(leg_index, 2)) *
+                  (double)rand() / RAND_MAX +
+              kinematics.getJointLowerLimit(leg_index, 2);
     }
     kinematics.updateFromBodyJoints(body_state, joint_positions);
     for (int leg_index = 0; leg_index < 4; leg_index++) {
-
       // Compute the foot position in world frame with FK then tranform into
       // body frame
       kinematics.worldToFootFKWorldFrame(leg_index, g_world_foot);
-      kinematics.transformWorldToBody(body_pos, body_rpy, g_world_foot, g_body_foot);
+      kinematics.transformWorldToBody(body_pos, body_rpy, g_world_foot,
+                                      g_body_foot);
       foot_pos_body = g_body_foot.block<3, 1>(0, 3);
 
       // Compute foot positions directly from the body frame
@@ -592,9 +593,9 @@ TEST(KinematicsTest, testBodyToFootFK){
   }
 }
 
-TEST(KinematicsTest, testConvertCentroidalToFullBody){
-  if (!rclcpp::ok()){
-    rclcpp::init(0,nullptr);
+TEST(KinematicsTest, testConvertCentroidalToFullBody) {
+  if (!rclcpp::ok()) {
+    rclcpp::init(0, nullptr);
   }
 
   auto node = std::make_shared<rclcpp::Node>("kinematics_compare_test");
@@ -651,7 +652,7 @@ TEST(KinematicsTest, testConvertCentroidalToFullBody){
     for (int i = 0; i < 4; i++) {
       Eigen::Vector3d nominal_hip_pos_world;
       kinematics.worldToNominalHipFKWorldFrame(i, body_pos, body_rpy,
-                                            nominal_hip_pos_world);
+                                               nominal_hip_pos_world);
       nominal_hip_pos_world[2] = 0;
       foot_positions.segment<3>(3 * i) = nominal_hip_pos_world;
     }
@@ -673,25 +674,26 @@ TEST(KinematicsTest, testConvertCentroidalToFullBody){
     bool is_exact = kinematics.convertCentroidalToFullBody(
         body_state, foot_positions, foot_velocities, grfs, joint_positions,
         joint_velocities, torques);
-    
-    // Compute expected joint positions (IK angles transformed to Pinocchio space)
+
+    // Compute expected joint positions (IK angles transformed to Pinocchio
+    // space)
     double l1 = kinematics.getLinkLength(0, 2);
     double hip_ik = asin(0.5 * h / l1);
     double knee_ik = 2 * hip_ik;
     double hip_pin = hip_ik * cfg.hip_sign + cfg.hip_offset;
     double knee_pin = knee_ik * cfg.knee_sign + cfg.knee_offset;
     Eigen::VectorXd joint_positions_expected(12), joint_velocities_expected(12);
-    joint_positions_expected << 0, hip_pin, knee_pin,
-        0, hip_pin, knee_pin, 0, hip_pin, knee_pin, 0, hip_pin, knee_pin;
+    joint_positions_expected << 0, hip_pin, knee_pin, 0, hip_pin, knee_pin, 0,
+        hip_pin, knee_pin, 0, hip_pin, knee_pin;
 
-    // Compute expected joint velocities (IK velocities transformed to Pinocchio space)
-    double hip_vel_ik =
-        -0.5 * foot_vel_z / (l1 * cos(hip_ik));
+    // Compute expected joint velocities (IK velocities transformed to Pinocchio
+    // space)
+    double hip_vel_ik = -0.5 * foot_vel_z / (l1 * cos(hip_ik));
     double knee_vel_ik = 2 * hip_vel_ik;
     double hip_vel_pin = hip_vel_ik * cfg.hip_sign;
     double knee_vel_pin = knee_vel_ik * cfg.knee_sign;
-    joint_velocities_expected << 0, 0, 0, 0, hip_vel_pin,
-        knee_vel_pin, 0, hip_vel_pin, knee_vel_pin, 0, 0, 0;
+    joint_velocities_expected << 0, 0, 0, 0, hip_vel_pin, knee_vel_pin, 0,
+        hip_vel_pin, knee_vel_pin, 0, 0, 0;
 
     // Check joint positions and velocities match
     EXPECT_TRUE(is_exact);
@@ -723,9 +725,9 @@ TEST(KinematicsTest, testConvertCentroidalToFullBody){
   auto t_start = std::chrono::steady_clock::now();
   for (int i = 0; i < N; i++) {
     count++;
-    kinematics.convertCentroidalToFullBody(body_state, foot_positions,
-                                        foot_velocities, grfs, joint_positions,
-                                        joint_velocities, torques);
+    kinematics.convertCentroidalToFullBody(
+        body_state, foot_positions, foot_velocities, grfs, joint_positions,
+        joint_velocities, torques);
   }
   auto t_end = std::chrono::steady_clock::now();
 
@@ -740,4 +742,4 @@ TEST(KinematicsTest, testConvertCentroidalToFullBody){
   EXPECT_TRUE(average_time < 1e-4);
 }
 
-}
+}  // namespace quad_utils

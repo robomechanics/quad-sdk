@@ -51,8 +51,9 @@ class HardwareInterface {
    * @param[in] user_data Vector containing user data
    * @return boolean indicating success of transmission
    */
-  virtual bool send(const quad_msgs::msg::LegCommandArray& leg_command_array_msg,
-                    const Eigen::VectorXd& user_tx_data) = 0;
+  virtual bool send(
+      const quad_msgs::msg::LegCommandArray& leg_command_array_msg,
+      const Eigen::VectorXd& user_tx_data) = 0;
 
   /**
    * @brief Recieve data from the robot

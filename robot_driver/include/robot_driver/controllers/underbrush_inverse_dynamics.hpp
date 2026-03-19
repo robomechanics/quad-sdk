@@ -16,8 +16,9 @@ class UnderbrushInverseDynamicsController : public LegController {
    * @brief Constructor for InverseDynamicsController
    * @return Constructed object of type InverseDynamicsController
    */
-  UnderbrushInverseDynamicsController(rclcpp::Node::SharedPtr node, const std::string& robot_ns,
-                                      std::shared_ptr<quad_utils::QuadKD2> quadKD);
+  UnderbrushInverseDynamicsController(
+      rclcpp::Node::SharedPtr node, const std::string& robot_ns,
+      std::shared_ptr<quad_utils::QuadKD2> quadKD);
 
   /**
    * @brief Update body force estimate
@@ -47,15 +48,18 @@ class UnderbrushInverseDynamicsController : public LegController {
    * dynamics and including reference setpoints for each joint
    * @param[out] grf_array_msg GRF command message
    */
-  bool computeLegCommandArray(const quad_msgs::msg::RobotState &robot_state_msg,
-                              quad_msgs::msg::LegCommandArray &leg_command_array_msg,
-                              quad_msgs::msg::GRFArray &grf_array_msg);
+  bool computeLegCommandArray(
+      const quad_msgs::msg::RobotState& robot_state_msg,
+      quad_msgs::msg::LegCommandArray& leg_command_array_msg,
+      quad_msgs::msg::GRFArray& grf_array_msg);
 
   /**
    * @brief Return the reference state used for current tracking
    * @return Reference state
    */
-  inline quad_msgs::msg::RobotState getReferenceState() { return ref_state_msg_; }
+  inline quad_msgs::msg::RobotState getReferenceState() {
+    return ref_state_msg_;
+  }
 
  private:
   /// Prior grf_array

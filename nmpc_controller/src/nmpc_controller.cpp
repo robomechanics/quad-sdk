@@ -1,6 +1,7 @@
 #include "nmpc_controller/nmpc_controller.hpp"
 
-NMPCController::NMPCController(rclcpp::Node::SharedPtr node, int robot_id, std::string robot_ns) {
+NMPCController::NMPCController(rclcpp::Node::SharedPtr node, int robot_id,
+                               std::string robot_ns) {
   node_ = node;
   robot_ns_ = robot_ns;
   robot_id_ = robot_id;
@@ -16,7 +17,7 @@ NMPCController::NMPCController(rclcpp::Node::SharedPtr node, int robot_id, std::
       default_system = A1;
       break;
     case 2:
-      robot_ns_="go2";
+      robot_ns_ = "go2";
       default_system = GO2;
       break;
     default:
@@ -78,10 +79,10 @@ NMPCController::NMPCController(rclcpp::Node::SharedPtr node, int robot_id, std::
                              x_lb);
     quad_utils::loadROSParam(node_, "nmpc_controller." + component + ".x_ub",
                              x_ub);
-    quad_utils::loadROSParam(node_, "nmpc_controller." + component + ".x_lb_soft",
-                             x_lb_soft);
-    quad_utils::loadROSParam(node_, "nmpc_controller." + component + ".x_ub_soft",
-                             x_ub_soft);
+    quad_utils::loadROSParam(
+        node_, "nmpc_controller." + component + ".x_lb_soft", x_lb_soft);
+    quad_utils::loadROSParam(
+        node_, "nmpc_controller." + component + ".x_ub_soft", x_ub_soft);
     quad_utils::loadROSParam(node_, "nmpc_controller." + component + ".u_lb",
                              u_lb);
     quad_utils::loadROSParam(node_, "nmpc_controller." + component + ".u_ub",
@@ -90,20 +91,19 @@ NMPCController::NMPCController(rclcpp::Node::SharedPtr node, int robot_id, std::
                              g_lb);
     quad_utils::loadROSParam(node_, "nmpc_controller." + component + ".g_ub",
                              g_ub);
-    quad_utils::loadROSParam(node_, "nmpc_controller." + component + ".x_weights",
-                             x_weights);
-    quad_utils::loadROSParam(node_, "nmpc_controller." + component + ".u_weights",
-                             u_weights);
+    quad_utils::loadROSParam(
+        node_, "nmpc_controller." + component + ".x_weights", x_weights);
+    quad_utils::loadROSParam(
+        node_, "nmpc_controller." + component + ".u_weights", u_weights);
 
-    if (component == "joints"){
+    if (component == "joints") {
       x_weights.clear();
       u_weights.clear();
       u_lb.clear();
       u_ub.clear();
     }
-    RCLCPP_INFO(node_->get_logger(),
-            "Component: %s, u_lb size: %zu",
-            component.c_str(), u_lb.size());
+    RCLCPP_INFO(node_->get_logger(), "Component: %s, u_lb size: %zu",
+                component.c_str(), u_lb.size());
     // Make sure the bounds are the correct size
     if (x_dim != x_lb.size()) throw std::runtime_error("x_lb wrong size");
     if (x_dim != x_ub.size()) throw std::runtime_error("x_ub wrong size");
@@ -150,7 +150,7 @@ NMPCController::NMPCController(rclcpp::Node::SharedPtr node, int robot_id, std::
       }
     }
   }
-  
+
   config_.x_dim_null = config_.x_dim_complex - config_.x_dim_simple;
   config_.u_dim_null = config_.u_dim_complex - config_.u_dim_simple;
 
@@ -179,24 +179,29 @@ NMPCController::NMPCController(rclcpp::Node::SharedPtr node, int robot_id, std::
   Eigen::VectorXi fixed_complexity_schedule(N_);
   fixed_complexity_schedule.setZero();
   adaptive_complexity_schedule_ = fixed_complexity_schedule;
-  quad_utils::loadROSParam(node_, "nmpc_controller.enable_mixed_complexity", enable_mixed_complexity_);
+  quad_utils::loadROSParam(node_, "nmpc_controller.enable_mixed_complexity",
+                           enable_mixed_complexity_);
   // Adaptive complexity is only supported for Spirit
   if (robot_ns_ != "spirit") enable_mixed_complexity_ = false;
 
   // If mixed complexity is enabled, load the desired structures
   if (enable_mixed_complexity_) {
     default_system = SIMPLE_TO_SIMPLE;
-    quad_utils::loadROSParam(node_, "nmpc_controller.enable_adaptive_complexity",
-                    enable_adaptive_complexity_);
+    quad_utils::loadROSParam(node_,
+                             "nmpc_controller.enable_adaptive_complexity",
+                             enable_adaptive_complexity_);
     // Define and load adaptive complexity parameters
     std::vector<int64_t> fixed_complex_idxs;
     int fixed_complex_head, fixed_complex_tail;
-    quad_utils::loadROSParam(node_, "nmpc_controller.fixed_complex_idxs", fixed_complex_idxs);
-    quad_utils::loadROSParam(node_, "nmpc_controller.fixed_complex_head", fixed_complex_head);
-    quad_utils::loadROSParam(node_, "nmpc_controller.fixed_complex_tail", fixed_complex_tail);
-    
+    quad_utils::loadROSParam(node_, "nmpc_controller.fixed_complex_idxs",
+                             fixed_complex_idxs);
+    quad_utils::loadROSParam(node_, "nmpc_controller.fixed_complex_head",
+                             fixed_complex_head);
+    quad_utils::loadROSParam(node_, "nmpc_controller.fixed_complex_tail",
+                             fixed_complex_tail);
+
     for (int idx : fixed_complex_idxs) {
-      if (idx == 0 && fixed_complex_idxs.size() == 1){
+      if (idx == 0 && fixed_complex_idxs.size() == 1) {
         break;
       }
       if (idx >= 0 && idx <= N_) {
@@ -214,7 +219,8 @@ NMPCController::NMPCController(rclcpp::Node::SharedPtr node, int robot_id, std::
   }
   mynlp_ = new quadNLP(default_system, N_, dt_, mu, panic_weights,
                        constraint_panic_weights, Q_temporal_factor,
-                       R_temporal_factor, fixed_complexity_schedule, config_, node_, robot_ns_);
+                       R_temporal_factor, fixed_complexity_schedule, config_,
+                       node_, robot_ns_);
 
   app_ = IpoptApplicationFactory();
 
@@ -249,15 +255,15 @@ NMPCController::NMPCController(rclcpp::Node::SharedPtr node, int robot_id, std::
 }
 
 bool NMPCController::computeLegPlan(
-    const Eigen::VectorXd &initial_state, const Eigen::MatrixXd &ref_traj,
-    const Eigen::MatrixXd &foot_positions_body,
-    Eigen::MatrixXd &foot_positions_world,
-    Eigen::MatrixXd &foot_velocities_world,
-    const std::vector<std::vector<bool>> &contact_schedule,
-    const Eigen::VectorXd &ref_ground_height,
-    const double &first_element_duration, int plan_index_diff,
-    const grid_map::GridMap &terrain, Eigen::MatrixXd &state_traj,
-    Eigen::MatrixXd &control_traj) {
+    const Eigen::VectorXd& initial_state, const Eigen::MatrixXd& ref_traj,
+    const Eigen::MatrixXd& foot_positions_body,
+    Eigen::MatrixXd& foot_positions_world,
+    Eigen::MatrixXd& foot_velocities_world,
+    const std::vector<std::vector<bool>>& contact_schedule,
+    const Eigen::VectorXd& ref_ground_height,
+    const double& first_element_duration, int plan_index_diff,
+    const grid_map::GridMap& terrain, Eigen::MatrixXd& state_traj,
+    Eigen::MatrixXd& control_traj) {
   mynlp_->foot_pos_body_ = -foot_positions_body;
   mynlp_->foot_pos_world_ = foot_positions_world;
   mynlp_->foot_vel_world_ = foot_velocities_world;
@@ -279,10 +285,10 @@ bool NMPCController::computeLegPlan(
 }
 
 bool NMPCController::computePlan(
-    const Eigen::VectorXd &initial_state, const Eigen::MatrixXd &ref_traj,
-    const std::vector<std::vector<bool>> &contact_schedule,
-    Eigen::MatrixXd &foot_positions, Eigen::MatrixXd &foot_velocities,
-    Eigen::MatrixXd &state_traj, Eigen::MatrixXd &control_traj) {
+    const Eigen::VectorXd& initial_state, const Eigen::MatrixXd& ref_traj,
+    const std::vector<std::vector<bool>>& contact_schedule,
+    Eigen::MatrixXd& foot_positions, Eigen::MatrixXd& foot_velocities,
+    Eigen::MatrixXd& state_traj, Eigen::MatrixXd& control_traj) {
   // Update solver settings
   ApplicationReturnStatus status;
   app_->Options()->SetNumericValue("mu_init", mynlp_->mu0_);
@@ -298,15 +304,18 @@ bool NMPCController::computePlan(
   // Load the state and control trajectories
   state_traj = Eigen::MatrixXd::Zero(N_, config_.x_dim_simple);
   control_traj = Eigen::MatrixXd::Zero(N_ - 1, config_.u_dim_simple);
-  state_traj.row(0) = mynlp_->get_primal_state_var(mynlp_->w0_, 0).block(0,0,config_.x_dim_simple, 1)
-                        //   .head(config_.x_dim_simple)
+  state_traj.row(0) = mynlp_->get_primal_state_var(mynlp_->w0_, 0)
+                          .block(0, 0, config_.x_dim_simple, 1)
+                          //   .head(config_.x_dim_simple)
                           .transpose();
 
   for (int i = 0; i < N_ - 1; ++i) {
-    control_traj.row(i) = mynlp_->get_primal_control_var(mynlp_->w0_, i).block(0,0,config_.u_dim_simple, 1)
-                            //   .head(config_.u_dim_simple)
+    control_traj.row(i) = mynlp_->get_primal_control_var(mynlp_->w0_, i)
+                              .block(0, 0, config_.u_dim_simple, 1)
+                              //   .head(config_.u_dim_simple)
                               .transpose();
-    state_traj.row(i + 1) = mynlp_->get_primal_state_var(mynlp_->w0_, i + 1).block(0,0,config_.x_dim_simple, 1)
+    state_traj.row(i + 1) = mynlp_->get_primal_state_var(mynlp_->w0_, i + 1)
+                                .block(0, 0, config_.x_dim_simple, 1)
                                 // .head(config_.x_dim_simple)
                                 .transpose();
   }
@@ -344,9 +353,8 @@ bool NMPCController::computePlan(
     mynlp_->warm_start_ = false;
     require_init_ = true;
     RCLCPP_WARN_STREAM(node_->get_logger(), "NMPC solving fail");
-    RCLCPP_WARN_STREAM(
-    node_->get_logger(), "Fail time = " << node_->get_clock()->now().seconds();
-);
+    RCLCPP_WARN_STREAM(node_->get_logger(),
+                       "Fail time = " << node_->get_clock()->now().seconds(););
     return false;
   }
 }

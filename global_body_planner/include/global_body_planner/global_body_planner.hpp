@@ -95,7 +95,7 @@ class GlobalBodyPlanner {
    */
   void addStateAndGRFToMsg(double t, int plan_index, FullState body_state,
                            GRF grf, int primitive_id,
-                           quad_msgs::msg::RobotPlan &body_plan_msg);
+                           quad_msgs::msg::RobotPlan& body_plan_msg);
 
   /**
    * @brief Publish the current body plan
@@ -135,13 +135,15 @@ class GlobalBodyPlanner {
   rclcpp::Subscription<quad_msgs::msg::RobotState>::SharedPtr robot_state_sub_;
 
   /// Subscriber for goal state messages
-  rclcpp::Subscription<geometry_msgs::msg::PointStamped>::SharedPtr goal_state_sub_;
+  rclcpp::Subscription<geometry_msgs::msg::PointStamped>::SharedPtr
+      goal_state_sub_;
 
   /// Publisher for body plan messages
   rclcpp::Publisher<quad_msgs::msg::RobotPlan>::SharedPtr body_plan_pub_;
 
   /// Publisher for discrete states in body plan messages
-  rclcpp::Publisher<quad_msgs::msg::RobotPlan>::SharedPtr discrete_body_plan_pub_;
+  rclcpp::Publisher<quad_msgs::msg::RobotPlan>::SharedPtr
+      discrete_body_plan_pub_;
 
   /// Publisher for the planning tree
   rclcpp::Publisher<visualization_msgs::msg::MarkerArray>::SharedPtr tree_pub_;

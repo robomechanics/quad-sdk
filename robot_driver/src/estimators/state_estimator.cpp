@@ -1,7 +1,8 @@
 #include "robot_driver/estimators/state_estimator.hpp"
 
-StateEstimator::StateEstimator(rclcpp::Node::SharedPtr node, const std::string &robot_ns, 
-                              std::shared_ptr<quad_utils::QuadKD2> quadKD) {
+StateEstimator::StateEstimator(rclcpp::Node::SharedPtr node,
+                               const std::string& robot_ns,
+                               std::shared_ptr<quad_utils::QuadKD2> quadKD) {
   node_ = node;
   robot_ns_ = robot_ns;
   quadKD_ = quadKD;
@@ -9,9 +10,9 @@ StateEstimator::StateEstimator(rclcpp::Node::SharedPtr node, const std::string &
 
 void StateEstimator::init() {}
 
-void StateEstimator::readIMU(const sensor_msgs::msg::Imu::SharedPtr& last_imu_msg_,
-                             Eigen::Vector3d& fk, Eigen::Vector3d& wk,
-                             Eigen::Quaterniond& qk) {
+void StateEstimator::readIMU(
+    const sensor_msgs::msg::Imu::SharedPtr& last_imu_msg_, Eigen::Vector3d& fk,
+    Eigen::Vector3d& wk, Eigen::Quaterniond& qk) {
   if (last_imu_msg_) {
     fk << (*last_imu_msg_).linear_acceleration.x,
         (*last_imu_msg_).linear_acceleration.y,
@@ -40,7 +41,7 @@ void StateEstimator::readJointEncoder(
 }
 
 void StateEstimator::loadMocapMsg(
-  geometry_msgs::msg::PoseStamped::SharedPtr last_mocap_msg) {
+    geometry_msgs::msg::PoseStamped::SharedPtr last_mocap_msg) {
   last_mocap_msg_ = last_mocap_msg;
 }
 

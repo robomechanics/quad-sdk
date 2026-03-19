@@ -31,8 +31,11 @@ class GBPL : public RRT {
    * (FORWARD to go away from the root vertex, REVERSE to go towards it)
    * @param[in] tree_pub Publisher for broadcasting the tree visual
    */
-  int connect(PlannerClass &T, State s, const PlannerConfig &planner_config,
-              int direction, rclcpp::Publisher<visualization_msgs::msg::MarkerArray>::SharedPtr &tree_pub);
+  int connect(
+      PlannerClass& T, State s, const PlannerConfig& planner_config,
+      int direction,
+      rclcpp::Publisher<visualization_msgs::msg::MarkerArray>::SharedPtr&
+          tree_pub);
 
   /**
    * @brief Get the actions along the specified path of vertex indices (assumes
@@ -41,7 +44,7 @@ class GBPL : public RRT {
    * @param[in] path Vector of vertices in the path
    * @return The sequence of actions in the path
    */
-  std::vector<Action> getActionSequenceReverse(PlannerClass &T,
+  std::vector<Action> getActionSequenceReverse(PlannerClass& T,
                                                std::vector<int> path);
 
   /**
@@ -51,9 +54,9 @@ class GBPL : public RRT {
    * @param[in] action_sequence The sequence of actions in the path
    * @param[in] planner_config Configuration parameters
    */
-  void postProcessPath(std::vector<State> &state_sequence,
-                       std::vector<Action> &action_sequence,
-                       const PlannerConfig &planner_config);
+  void postProcessPath(std::vector<State>& state_sequence,
+                       std::vector<Action>& action_sequence,
+                       const PlannerConfig& planner_config);
 
   /**
    * @brief Post process the path by removing extraneous states that can be
@@ -64,10 +67,10 @@ class GBPL : public RRT {
    * @param[out] action_sequence The sequence of actions in th  e path
    * @param[in] planner_config Configuration parameters
    */
-  void extractPath(PlannerClass &Ta, PlannerClass &Tb,
-                   std::vector<State> &state_sequence,
-                   std::vector<Action> &action_sequence,
-                   const PlannerConfig &planner_config);
+  void extractPath(PlannerClass& Ta, PlannerClass& Tb,
+                   std::vector<State>& state_sequence,
+                   std::vector<Action>& action_sequence,
+                   const PlannerConfig& planner_config);
 
   /**
    * @brief Post process the path by removing extraneous states that can be
@@ -78,10 +81,10 @@ class GBPL : public RRT {
    * @param[out] action_sequence The sequence of actions in th  e path
    * @param[in] terrain Height map of the terrain
    */
-  void extractClosestPath(PlannerClass &Ta, const State &s_goal,
-                          std::vector<State> &state_sequence,
-                          std::vector<Action> &action_sequence,
-                          const PlannerConfig &planner_config);
+  void extractClosestPath(PlannerClass& Ta, const State& s_goal,
+                          std::vector<State>& state_sequence,
+                          std::vector<Action>& action_sequence,
+                          const PlannerConfig& planner_config);
 
   /**
    * @brief Run the full RRT-Connect planner until the goal is found or time has
@@ -93,9 +96,11 @@ class GBPL : public RRT {
    * @param[out] action_sequence The sequence of actions in the final path
    * @return Boolean for success of the planner
    */
-  int findPlan(const PlannerConfig &planner_config, State s_start, State s_goal,
-               std::vector<State> &state_sequence,
-               std::vector<Action> &action_sequence, rclcpp::Publisher<visualization_msgs::msg::MarkerArray>::SharedPtr &tree_pub);
+  int findPlan(
+      const PlannerConfig& planner_config, State s_start, State s_goal,
+      std::vector<State>& state_sequence, std::vector<Action>& action_sequence,
+      rclcpp::Publisher<visualization_msgs::msg::MarkerArray>::SharedPtr&
+          tree_pub);
 
  protected:
   /// Time horizon (in seconds) the planner is allowed to search until restarted

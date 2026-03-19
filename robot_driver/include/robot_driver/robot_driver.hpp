@@ -111,7 +111,8 @@ class RobotDriver {
    * @brief Callback to handle new leg override commands
    * @param[in] msg Leg override commands
    */
-  void singleJointCommandCallback(const geometry_msgs::msg::Vector3::SharedPtr msg);
+  void singleJointCommandCallback(
+      const geometry_msgs::msg::Vector3::SharedPtr msg);
 
   /**
    * @brief Callback to handle new body force estimates
@@ -130,7 +131,6 @@ class RobotDriver {
    * @param[in] msg Remote heartbeat message
    */
   void remoteHeartbeatCallback(const std_msgs::msg::Header::SharedPtr msg);
-
 
   void cmdVelCallback(const geometry_msgs::msg::Twist::SharedPtr msg);
   /**
@@ -180,28 +180,33 @@ class RobotDriver {
   rclcpp::Subscription<quad_msgs::msg::RobotState>::SharedPtr robot_state_sub_;
 
   /// ROS subscriber for body force estimates
-  rclcpp::Subscription<quad_msgs::msg::BodyForceEstimate>::SharedPtr body_force_estimate_sub_;
+  rclcpp::Subscription<quad_msgs::msg::BodyForceEstimate>::SharedPtr
+      body_force_estimate_sub_;
 
   /// ROS subscriber for control restart flag
-  rclcpp::Subscription<std_msgs::msg::Bool>::SharedPtr control_restart_flag_sub_;
+  rclcpp::Subscription<std_msgs::msg::Bool>::SharedPtr
+      control_restart_flag_sub_;
 
   /// ROS publisher for ground truth state
   rclcpp::Publisher<quad_msgs::msg::RobotState>::SharedPtr robot_state_pub_;
 
   // ROS publisher for state estimate
-  rclcpp::Publisher<quad_msgs::msg::RobotState>::SharedPtr trajectry_robot_state_pub_;
+  rclcpp::Publisher<quad_msgs::msg::RobotState>::SharedPtr
+      trajectry_robot_state_pub_;
 
   /// ROS subscriber for remote heartbeat
   rclcpp::Subscription<std_msgs::msg::Header>::SharedPtr remote_heartbeat_sub_;
 
   /// ROS subscriber for single joint command
-  rclcpp::Subscription<geometry_msgs::msg::Vector3>::SharedPtr single_joint_cmd_sub_;
+  rclcpp::Subscription<geometry_msgs::msg::Vector3>::SharedPtr
+      single_joint_cmd_sub_;
 
   /// ROS Subscriber for twist velocity commands (for learned policies)
   rclcpp::Subscription<geometry_msgs::msg::Twist>::SharedPtr cmd_vel_sub_;
 
   /// ROS publisher for time stamped twist velocity commands
-  rclcpp::Publisher<geometry_msgs::msg::TwistStamped>::SharedPtr cmd_vel_stamped_pub_;
+  rclcpp::Publisher<geometry_msgs::msg::TwistStamped>::SharedPtr
+      cmd_vel_stamped_pub_;
 
   /// ROS publisher for state estimate messages
   rclcpp::Publisher<quad_msgs::msg::RobotState>::SharedPtr state_estimate_pub_;
@@ -210,7 +215,8 @@ class RobotDriver {
   rclcpp::Publisher<std_msgs::msg::Header>::SharedPtr robot_heartbeat_pub_;
 
   /// ROS publisher for inverse dynamics
-  rclcpp::Publisher<quad_msgs::msg::LegCommandArray>::SharedPtr leg_command_array_pub_;
+  rclcpp::Publisher<quad_msgs::msg::LegCommandArray>::SharedPtr
+      leg_command_array_pub_;
 
   /// ROS publisher for desired GRF
   rclcpp::Publisher<quad_msgs::msg::GRFArray>::SharedPtr grf_pub_;
@@ -223,7 +229,7 @@ class RobotDriver {
 
   /// ROS Wrapper Node
   std::shared_ptr<rclcpp::Node> node_;
-  
+
   // Robot Namespace
   std::string robot_ns;
 

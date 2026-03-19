@@ -22,7 +22,7 @@ class PlannerClass : public GraphClass {
    * @param[in] planner_config Configuration structure used for sampling params
    * @return Constructed object of type PlannerClass
    */
-  PlannerClass(int direction, const PlannerConfig &planner_config);
+  PlannerClass(int direction, const PlannerConfig& planner_config);
 
   /**
    * @brief Generate a random state by sampling from within the bounds of the
@@ -30,7 +30,7 @@ class PlannerClass : public GraphClass {
    * @param[in] terrain Height map of the terrain
    * @return Newly generated random state
    */
-  State randomState(const PlannerConfig &planner_config);
+  State randomState(const PlannerConfig& planner_config);
 
   /**
    * @brief Get the closest N vertices to the specified state by Euclidean

@@ -3,7 +3,6 @@
 
 #include <rclcpp/rclcpp.hpp>
 
-
 // #include <grid_map_msgs/srv/process_file.h>
 // #include <pcl/PolygonMesh.h>
 // #include <pcl_msgs/PolygonMesh.h>
@@ -46,12 +45,14 @@ class MeshToGridMapConverter {
   void meshCallback(const pcl_msgs::msg::PolygonMesh::SharedPtr mesh);
 
   // Save callback
-  bool saveGridMapService(const std::shared_ptr<grid_map_msgs::srv::ProcessFile::Request> request,
-                          std::shared_ptr<grid_map_msgs::srv::ProcessFile::Response> response);
+  bool saveGridMapService(
+      const std::shared_ptr<grid_map_msgs::srv::ProcessFile::Request> request,
+      std::shared_ptr<grid_map_msgs::srv::ProcessFile::Response> response);
 
   // Load mesh, service call
-  bool loadMeshService(const std::shared_ptr<grid_map_msgs::srv::ProcessFile::Request> request,
-                       std::shared_ptr<grid_map_msgs::srv::ProcessFile::Response> response);
+  bool loadMeshService(
+      const std::shared_ptr<grid_map_msgs::srv::ProcessFile::Request> request,
+      std::shared_ptr<grid_map_msgs::srv::ProcessFile::Response> response);
 
   // Load mesh from file
   bool loadMeshFromFile(const std::string& path_to_mesh_to_load);
@@ -70,17 +71,19 @@ class MeshToGridMapConverter {
   rclcpp::Node::SharedPtr node_;
 
   // Data subscribers.
-//   ros::Subscriber mesh_sub_;
+  //   ros::Subscriber mesh_sub_;
   rclcpp::Subscription<pcl_msgs::msg::PolygonMesh>::SharedPtr mesh_sub_;
 
   // Publishers
-//   ros::Publisher grid_map_pub_;
+  //   ros::Publisher grid_map_pub_;
   rclcpp::Publisher<grid_map_msgs::msg::GridMap>::SharedPtr grid_map_pub_;
 
   // Services
-//   ros::ServiceServer save_grid_map_srv_;
-  rclcpp::Service<grid_map_msgs::srv::ProcessFile>::SharedPtr save_grid_map_srv_;
-  rclcpp::Service<grid_map_msgs::srv::ProcessFile>::SharedPtr load_map_service_server_;
+  //   ros::ServiceServer save_grid_map_srv_;
+  rclcpp::Service<grid_map_msgs::srv::ProcessFile>::SharedPtr
+      save_grid_map_srv_;
+  rclcpp::Service<grid_map_msgs::srv::ProcessFile>::SharedPtr
+      load_map_service_server_;
 
   // Last grid map
   std::shared_ptr<grid_map::GridMap> last_grid_map_ptr_;
@@ -94,7 +97,6 @@ class MeshToGridMapConverter {
   std::string world_name_;
 
   // Control Parameters
-  
 };
 
 }  // namespace mesh_to_grid_map

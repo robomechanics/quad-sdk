@@ -22,7 +22,8 @@ class StateEstimator {
    * @brief Constructor for StateEstimator
    * @return Constructed object of type StateEstimator
    */
-  StateEstimator(rclcpp::Node::SharedPtr node, const std::string &robot_ns, std::shared_ptr<quad_utils::QuadKD2> quadKD);
+  StateEstimator(rclcpp::Node::SharedPtr node, const std::string& robot_ns,
+                 std::shared_ptr<quad_utils::QuadKD2> quadKD);
 
   /**
    * @brief Virtual function for initialize filters, should be defined in

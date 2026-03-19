@@ -6,32 +6,27 @@ using namespace quad_utils;
 
 QuadKD2::QuadKD2(rclcpp::Node::SharedPtr node) : node_(node) { initModel(""); }
 
-QuadKD2::QuadKD2(rclcpp::Node::SharedPtr node, std::string ns) : node_(node)
-{
+QuadKD2::QuadKD2(rclcpp::Node::SharedPtr node, std::string ns) : node_(node) {
   initModel("/" + ns + "/");
 }
 
-void QuadKD2::initModel(std::string ns)
-{
+void QuadKD2::initModel(std::string ns) {
   std::string robot_description_string;
 
-  if (!node_->get_parameter("robot_description", robot_description_string))
-  {
+  if (!node_->get_parameter("robot_description", robot_description_string)) {
     RCLCPP_FATAL(node_->get_logger(),
                  "Failed to load robot_description. Shutting down.");
     rclcpp::shutdown();
   }
 
-  try
-  {
-    pinocchio::urdf::buildModelFromXML(robot_description_string, pinocchio::JointModelFreeFlyer(), model_);
+  try {
+    pinocchio::urdf::buildModelFromXML(
+        robot_description_string, pinocchio::JointModelFreeFlyer(), model_);
     data_ = pinocchio::Data(model_);
     RCLCPP_INFO(node_->get_logger(),
                 "Loaded Pinocchio model with %d joints and %d bodies.",
                 model_.njoints, model_.nbodies);
-  }
-  catch (const std::exception &e)
-  {
+  } catch (const std::exception& e) {
     RCLCPP_FATAL(node_->get_logger(), "Error loading model.");
     rclcpp::shutdown();
   }
@@ -43,11 +38,12 @@ void QuadKD2::initModel(std::string ns)
   std::vector<std::string> lower_name_list = {"lower0", "lower1", "lower2",
                                               "lower3"};
   std::vector<std::string> toe_name_list = {"toe0", "toe1", "toe2", "toe3"};
-  
+
   std::vector<std::string> abad_joint_list = {"8", "9", "10", "11"};
   std::vector<std::string> hip_joint_list = {"0", "2", "4", "6"};
   std::vector<std::string> knee_joint_list = {"1", "3", "5", "7"};
-  std::vector<std::string> toe_joint_list = {"jtoe0", "jtoe1", "jtoe2", "jtoe3"};
+  std::vector<std::string> toe_joint_list = {"jtoe0", "jtoe1", "jtoe2",
+                                             "jtoe3"};
 
   // Get the Body Frame ID
   body_fid_ = model_.getFrameId(body_name_list[0]);
@@ -62,33 +58,44 @@ void QuadKD2::initModel(std::string ns)
   joint_min_.resize(num_feet_);
   joint_max_.resize(num_feet_);
 
-  for (int i = 0; i < num_feet_; ++i){
+  for (int i = 0; i < num_feet_; ++i) {
     std::string p = "leg_" + std::to_string(i);
     LimbInfo& limb = limbs_[i];
 
     // Declare Parameters
-    if (!node_->has_parameter(p + ".joint_names")) 
-        node_->declare_parameter(p + ".joint_names", std::vector<std::string>({"0", "0", "0"}));
-    
-    if (!node_->has_parameter(p + ".abad.sign")) node_->declare_parameter(p + ".abad.sign", 1.0);
-    if (!node_->has_parameter(p + ".abad.offset")) node_->declare_parameter(p + ".abad.offset", 0.0);
-    
-    if (!node_->has_parameter(p + ".hip.sign")) node_->declare_parameter(p + ".hip.sign", 1.0);
-    if (!node_->has_parameter(p + ".hip.offset")) node_->declare_parameter(p + ".hip.offset", 0.0);
-    
-    if (!node_->has_parameter(p + ".knee.sign")) node_->declare_parameter(p + ".knee.sign", 1.0);
-    if (!node_->has_parameter(p + ".knee.offset")) node_->declare_parameter(p + ".knee.offset", 0.0);
+    if (!node_->has_parameter(p + ".joint_names"))
+      node_->declare_parameter(p + ".joint_names",
+                               std::vector<std::string>({"0", "0", "0"}));
 
-    // Load Bridge Parameters which account for discrepencies between Robot URDF Models (Diff Axis of Rotation, Origin)
+    if (!node_->has_parameter(p + ".abad.sign"))
+      node_->declare_parameter(p + ".abad.sign", 1.0);
+    if (!node_->has_parameter(p + ".abad.offset"))
+      node_->declare_parameter(p + ".abad.offset", 0.0);
+
+    if (!node_->has_parameter(p + ".hip.sign"))
+      node_->declare_parameter(p + ".hip.sign", 1.0);
+    if (!node_->has_parameter(p + ".hip.offset"))
+      node_->declare_parameter(p + ".hip.offset", 0.0);
+
+    if (!node_->has_parameter(p + ".knee.sign"))
+      node_->declare_parameter(p + ".knee.sign", 1.0);
+    if (!node_->has_parameter(p + ".knee.offset"))
+      node_->declare_parameter(p + ".knee.offset", 0.0);
+
+    // Load Bridge Parameters which account for discrepencies between Robot URDF
+    // Models (Diff Axis of Rotation, Origin)
     node_->get_parameter(p + ".joint_names", limb.joint_names);
     limb.abad_conv.sign = node_->get_parameter(p + ".abad.sign").as_double();
-    limb.abad_conv.origin_offset = node_->get_parameter(p + ".abad.offset").as_double();
+    limb.abad_conv.origin_offset =
+        node_->get_parameter(p + ".abad.offset").as_double();
 
     limb.hip_conv.sign = node_->get_parameter(p + ".hip.sign").as_double();
-    limb.hip_conv.origin_offset = node_->get_parameter(p + ".hip.offset").as_double();
+    limb.hip_conv.origin_offset =
+        node_->get_parameter(p + ".hip.offset").as_double();
 
     limb.knee_conv.sign = node_->get_parameter(p + ".knee.sign").as_double();
-    limb.knee_conv.origin_offset = node_->get_parameter(p + ".knee.offset").as_double();
+    limb.knee_conv.origin_offset =
+        node_->get_parameter(p + ".knee.offset").as_double();
 
     // Pinocchio Internal ID's, Used for Accessing internal Pinocchio data_
     limb.toe_fid = model_.getFrameId(toe_name_list[i]);
@@ -97,18 +104,18 @@ void QuadKD2::initModel(std::string ns)
     limb.hip_fid = model_.getFrameId(hip_name_list[i]);
 
     limb.abad_jid = model_.getJointId(abad_joint_list[i]);
-    limb.hip_jid  = model_.getJointId(hip_joint_list[i]);
+    limb.hip_jid = model_.getJointId(hip_joint_list[i]);
     limb.knee_jid = model_.getJointId(knee_joint_list[i]);
     limb.toe_jid = model_.getFrameId(toe_joint_list[i]);
-    
+
     // Set Indicies for q and v vector creation (Pinocchio Internal Mapping)
     // i.e. Joint Order that Pinocchio Expects When Performing Updates
     limb.abad_pin_pos_idx = model_.joints[limb.abad_jid].idx_q();
-    limb.hip_pin_pos_idx  = model_.joints[limb.hip_jid ].idx_q();
+    limb.hip_pin_pos_idx = model_.joints[limb.hip_jid].idx_q();
     limb.knee_pin_pos_idx = model_.joints[limb.knee_jid].idx_q();
 
     limb.abad_pin_vel_idx = model_.joints[limb.abad_jid].idx_v();
-    limb.hip_pin_vel_idx  = model_.joints[limb.hip_jid ].idx_v();
+    limb.hip_pin_vel_idx = model_.joints[limb.hip_jid].idx_v();
     limb.knee_pin_vel_idx = model_.joints[limb.knee_jid].idx_v();
 
     // Extract Robot Specific Geometries, Offsets
@@ -117,7 +124,7 @@ void QuadKD2::initModel(std::string ns)
     // Abad to Hip Offset
     legbase_offsets_[i] = model_.jointPlacements[limb.abad_jid].translation();
     legbase_SE3_[i] = model_.jointPlacements[limb.abad_jid];
-    
+
     // Y offset between abad an hip rotational planes
     l0_vec_[i] = model_.jointPlacements[limb.hip_jid].translation()(1);
 
@@ -130,29 +137,27 @@ void QuadKD2::initModel(std::string ns)
     l2_ = foot_offset_.cwiseAbs().maxCoeff();
 
     // Extract Joint Limits for Each Leg
-    joint_min_[i] = { model_.lowerPositionLimit[limb.abad_pin_pos_idx],
-                      model_.lowerPositionLimit[limb.hip_pin_pos_idx],
-                      model_.lowerPositionLimit[limb.knee_pin_pos_idx] };
-                      
-    joint_max_[i] = { model_.upperPositionLimit[limb.abad_pin_pos_idx],
-                      model_.upperPositionLimit[limb.hip_pin_pos_idx],
-                      model_.upperPositionLimit[limb.knee_pin_pos_idx] };
+    joint_min_[i] = {model_.lowerPositionLimit[limb.abad_pin_pos_idx],
+                     model_.lowerPositionLimit[limb.hip_pin_pos_idx],
+                     model_.lowerPositionLimit[limb.knee_pin_pos_idx]};
 
+    joint_max_[i] = {model_.upperPositionLimit[limb.abad_pin_pos_idx],
+                     model_.upperPositionLimit[limb.hip_pin_pos_idx],
+                     model_.upperPositionLimit[limb.knee_pin_pos_idx]};
   }
 
   g_body_legbases_.resize(4);
-  for (int leg_index = 0; leg_index < 4; leg_index++)
-  {
+  for (int leg_index = 0; leg_index < 4; leg_index++) {
     // Compute transforms to the Legbase (Used in Local Planner)
-    pinocchio::JointIndex j_abad = model_.getJointId(abad_joint_list.at(leg_index));
+    pinocchio::JointIndex j_abad =
+        model_.getJointId(abad_joint_list.at(leg_index));
     g_body_legbases_[leg_index] =
-      convertSE3ToAffine(model_.jointPlacements[j_abad]);
+        convertSE3ToAffine(model_.jointPlacements[j_abad]);
   }
 }
 
 Eigen::Matrix4d QuadKD2::createAffineMatrix(Eigen::Vector3d trans,
-                                           Eigen::Vector3d rpy) const
-{
+                                            Eigen::Vector3d rpy) const {
   Eigen::Transform<double, 3, Eigen::Affine> t;
   t = Eigen::Translation<double, 3>(trans);
   t.rotate(Eigen::AngleAxisd(rpy[2], Eigen::Vector3d::UnitZ()));
@@ -163,8 +168,7 @@ Eigen::Matrix4d QuadKD2::createAffineMatrix(Eigen::Vector3d trans,
 }
 
 Eigen::Matrix4d QuadKD2::createAffineMatrix(Eigen::Vector3d trans,
-                                           Eigen::AngleAxisd rot) const
-{
+                                            Eigen::AngleAxisd rot) const {
   Eigen::Transform<double, 3, Eigen::Affine> t;
   t = Eigen::Translation<double, 3>(trans);
   t.rotate(rot);
@@ -172,84 +176,77 @@ Eigen::Matrix4d QuadKD2::createAffineMatrix(Eigen::Vector3d trans,
   return t.matrix();
 }
 
-pinocchio::SE3 QuadKD2::convertAffineToSE3(Eigen::Matrix4d g_transform) const
-{
-  Eigen::Matrix3d rot = g_transform.topLeftCorner<3,3>();
-  Eigen::Vector3d trans = g_transform.topRightCorner<3,1>();
+pinocchio::SE3 QuadKD2::convertAffineToSE3(Eigen::Matrix4d g_transform) const {
+  Eigen::Matrix3d rot = g_transform.topLeftCorner<3, 3>();
+  Eigen::Vector3d trans = g_transform.topRightCorner<3, 1>();
   pinocchio::SE3 se3_transform(rot, trans);
 
   return se3_transform;
 }
 
-Eigen::Matrix4d QuadKD2::convertSE3ToAffine(pinocchio::SE3 se3_transform) const
-{
+Eigen::Matrix4d QuadKD2::convertSE3ToAffine(
+    pinocchio::SE3 se3_transform) const {
   Eigen::Matrix4d g_transform = se3_transform.toHomogeneousMatrix();
 
   return g_transform;
 }
 
-double QuadKD2::getJointLowerLimit(int leg_index, int joint_index) const
-{
+double QuadKD2::getJointLowerLimit(int leg_index, int joint_index) const {
   return joint_min_[leg_index][joint_index];
 }
 
-double QuadKD2::getJointUpperLimit(int leg_index, int joint_index) const
-{
+double QuadKD2::getJointUpperLimit(int leg_index, int joint_index) const {
   return joint_max_[leg_index][joint_index];
 }
 
-double QuadKD2::getLinkLength(int leg_index, int link_index) const
-{
-  switch (link_index)
-  {
-  case 0:
-    return l0_vec_[leg_index];
-  case 1:
-    return l1_;
-  case 2:
-    return l2_;
-  default:
-    throw std::runtime_error("Invalid link index");
+double QuadKD2::getLinkLength(int leg_index, int link_index) const {
+  switch (link_index) {
+    case 0:
+      return l0_vec_[leg_index];
+    case 1:
+      return l1_;
+    case 2:
+      return l2_;
+    default:
+      throw std::runtime_error("Invalid link index");
   }
 }
 
-void QuadKD2::assembleQFromBodyAndJoints(
-    const Eigen::VectorXd &body_state, const Eigen::VectorXd &joint_positions,
-    Eigen::VectorXd &q) const {
+void QuadKD2::assembleQFromBodyAndJoints(const Eigen::VectorXd& body_state,
+                                         const Eigen::VectorXd& joint_positions,
+                                         Eigen::VectorXd& q) const {
   q.resize(nq_);
 
   // Base position
   q.segment<3>(0) = body_state.segment<3>(0);
 
   // Base orientation (RPY → quaternion)
-  const double roll  = body_state(3);
+  const double roll = body_state(3);
   const double pitch = body_state(4);
-  const double yaw   = body_state(5);
+  const double yaw = body_state(5);
 
-  Eigen::Quaterniond quat =
-      Eigen::AngleAxisd(yaw,   Eigen::Vector3d::UnitZ()) *
-      Eigen::AngleAxisd(pitch, Eigen::Vector3d::UnitY()) *
-      Eigen::AngleAxisd(roll,  Eigen::Vector3d::UnitX());
+  Eigen::Quaterniond quat = Eigen::AngleAxisd(yaw, Eigen::Vector3d::UnitZ()) *
+                            Eigen::AngleAxisd(pitch, Eigen::Vector3d::UnitY()) *
+                            Eigen::AngleAxisd(roll, Eigen::Vector3d::UnitX());
 
   // Pinocchio expects [qx, qy, qz, qw]
   q.segment<4>(3) << quat.x(), quat.y(), quat.z(), quat.w();
 
   // Joint positions
-  for (int leg = 0; leg < num_feet_; ++leg)
-  {
-    const auto &L = limbs_[leg];
+  for (int leg = 0; leg < num_feet_; ++leg) {
+    const auto& L = limbs_[leg];
     const int u = 3 * leg;
 
     q[L.abad_pin_pos_idx] = joint_positions[u + 0];
-    q[L.hip_pin_pos_idx ] = joint_positions[u + 1];
+    q[L.hip_pin_pos_idx] = joint_positions[u + 1];
     q[L.knee_pin_pos_idx] = joint_positions[u + 2];
   }
 }
 
 void QuadKD2::assembleQVFromBodyAndJoints(
-    const Eigen::VectorXd &body_state, const Eigen::VectorXd &joint_positions,
-    const Eigen::VectorXd &joint_velocities, Eigen::VectorXd &q, Eigen::VectorXd &v) const {
-  
+    const Eigen::VectorXd& body_state, const Eigen::VectorXd& joint_positions,
+    const Eigen::VectorXd& joint_velocities, Eigen::VectorXd& q,
+    Eigen::VectorXd& v) const {
   q.resize(nq_);
   v.resize(nv_);
 
@@ -261,10 +258,9 @@ void QuadKD2::assembleQVFromBodyAndJoints(
   double pitch = body_state(4);
   double yaw = body_state(5);
 
-  Eigen::Quaterniond quat =
-      Eigen::AngleAxisd(yaw,   Eigen::Vector3d::UnitZ()) *
-      Eigen::AngleAxisd(pitch, Eigen::Vector3d::UnitY()) *
-      Eigen::AngleAxisd(roll,  Eigen::Vector3d::UnitX());
+  Eigen::Quaterniond quat = Eigen::AngleAxisd(yaw, Eigen::Vector3d::UnitZ()) *
+                            Eigen::AngleAxisd(pitch, Eigen::Vector3d::UnitY()) *
+                            Eigen::AngleAxisd(roll, Eigen::Vector3d::UnitX());
 
   q.segment<4>(3) << quat.x(), quat.y(), quat.z(), quat.w();
 
@@ -277,37 +273,38 @@ void QuadKD2::assembleQVFromBodyAndJoints(
   v.segment<3>(3) = body_state.segment<3>(9);
 
   // Joint positions and velocities
-  for (int leg = 0; leg < num_feet_; ++leg)
-  {
-    const auto &L = limbs_[leg];
+  for (int leg = 0; leg < num_feet_; ++leg) {
+    const auto& L = limbs_[leg];
     const int u = 3 * leg;
 
     q[L.abad_pin_pos_idx] = joint_positions[u + 0];
-    q[L.hip_pin_pos_idx ] = joint_positions[u + 1];
+    q[L.hip_pin_pos_idx] = joint_positions[u + 1];
     q[L.knee_pin_pos_idx] = joint_positions[u + 2];
 
     v[L.abad_pin_vel_idx] = joint_velocities[u + 0];
-    v[L.hip_pin_vel_idx ] = joint_velocities[u + 1];
+    v[L.hip_pin_vel_idx] = joint_velocities[u + 1];
     v[L.knee_pin_vel_idx] = joint_velocities[u + 2];
   }
 }
 
-void QuadKD2::updateFromBodyJoints(
-  const Eigen::VectorXd &body_state, const Eigen::VectorXd &joint_positions,
-  const Eigen::VectorXd &joint_velocities){
+void QuadKD2::updateFromBodyJoints(const Eigen::VectorXd& body_state,
+                                   const Eigen::VectorXd& joint_positions,
+                                   const Eigen::VectorXd& joint_velocities) {
   Eigen::VectorXd q, v;
-  assembleQVFromBodyAndJoints(body_state, joint_positions, joint_velocities, q, v);
+  assembleQVFromBodyAndJoints(body_state, joint_positions, joint_velocities, q,
+                              v);
   updateFromPinocchio(q, v);
 }
 
-void QuadKD2::updateFromBodyJoints(
-  const Eigen::VectorXd &body_state, const Eigen::VectorXd &joint_positions){
- Eigen::VectorXd q;
- assembleQFromBodyAndJoints(body_state, joint_positions, q);
- updateFromPinocchio(q);
+void QuadKD2::updateFromBodyJoints(const Eigen::VectorXd& body_state,
+                                   const Eigen::VectorXd& joint_positions) {
+  Eigen::VectorXd q;
+  assembleQFromBodyAndJoints(body_state, joint_positions, q);
+  updateFromPinocchio(q);
 }
 
-void QuadKD2::updateFromPinocchio(const Eigen::VectorXd &q, const Eigen::VectorXd &v){
+void QuadKD2::updateFromPinocchio(const Eigen::VectorXd& q,
+                                  const Eigen::VectorXd& v) {
   Eigen::VectorXd a = Eigen::VectorXd::Zero(nv_);
   pinocchio::computeAllTerms(model_, data_, q, v);
   pinocchio::forwardKinematics(model_, data_, q, v, a);
@@ -316,7 +313,7 @@ void QuadKD2::updateFromPinocchio(const Eigen::VectorXd &q, const Eigen::VectorX
   updated_ = true;
 }
 
-void QuadKD2::updateFromPinocchio(const Eigen::VectorXd &q){
+void QuadKD2::updateFromPinocchio(const Eigen::VectorXd& q) {
   pinocchio::forwardKinematics(model_, data_, q);
   pinocchio::computeJointJacobians(model_, data_, q);
   pinocchio::updateFramePlacements(model_, data_);
@@ -324,9 +321,9 @@ void QuadKD2::updateFromPinocchio(const Eigen::VectorXd &q){
 }
 
 void QuadKD2::transformBodyToWorld(Eigen::Vector3d body_pos,
-                                  Eigen::Vector3d body_rpy,
-                                  Eigen::Matrix4d transform_body,
-                                  Eigen::Matrix4d &transform_world) const {
+                                   Eigen::Vector3d body_rpy,
+                                   Eigen::Matrix4d transform_body,
+                                   Eigen::Matrix4d& transform_world) const {
   // Compute transform from world to body frame
   Eigen::Matrix4d g_world_body = createAffineMatrix(body_pos, body_rpy);
 
@@ -335,9 +332,9 @@ void QuadKD2::transformBodyToWorld(Eigen::Vector3d body_pos,
 }
 
 void QuadKD2::transformWorldToBody(Eigen::Vector3d body_pos,
-                                  Eigen::Vector3d body_rpy,
-                                  Eigen::Matrix4d transform_world,
-                                  Eigen::Matrix4d &transform_body) const {
+                                   Eigen::Vector3d body_rpy,
+                                   Eigen::Matrix4d transform_world,
+                                   Eigen::Matrix4d& transform_body) const {
   // Compute transform from world to body frame
   Eigen::Matrix4d g_world_body = createAffineMatrix(body_pos, body_rpy);
 
@@ -347,8 +344,7 @@ void QuadKD2::transformWorldToBody(Eigen::Vector3d body_pos,
 
 void QuadKD2::worldToLegbaseFKWorldFrame(
     int leg_index, Eigen::Vector3d body_pos, Eigen::Vector3d body_rpy,
-    Eigen::Matrix4d &g_world_legbase) const {
-      
+    Eigen::Matrix4d& g_world_legbase) const {
   Eigen::Matrix4d g_world_body = createAffineMatrix(body_pos, body_rpy);
 
   // Compute transform for leg base relative to the world frame
@@ -357,7 +353,7 @@ void QuadKD2::worldToLegbaseFKWorldFrame(
 
 void QuadKD2::worldToLegbaseFKWorldFrame(
     int leg_index, Eigen::Vector3d body_pos, Eigen::Vector3d body_rpy,
-    Eigen::Vector3d &leg_base_pos_world) const {
+    Eigen::Vector3d& leg_base_pos_world) const {
   Eigen::Matrix4d g_world_legbase;
   worldToLegbaseFKWorldFrame(leg_index, body_pos, body_rpy, g_world_legbase);
 
@@ -366,7 +362,7 @@ void QuadKD2::worldToLegbaseFKWorldFrame(
 
 void QuadKD2::worldToNominalHipFKWorldFrame(
     int leg_index, Eigen::Vector3d body_pos, Eigen::Vector3d body_rpy,
-    Eigen::Vector3d &nominal_hip_pos_world) const {
+    Eigen::Vector3d& nominal_hip_pos_world) const {
   // Compute transforms
   Eigen::Matrix4d g_world_body = createAffineMatrix(body_pos, body_rpy);
   // Compute transform from body to legbase but offset by l0
@@ -379,28 +375,28 @@ void QuadKD2::worldToNominalHipFKWorldFrame(
   nominal_hip_pos_world = g_world_nominal_hip.block<3, 1>(0, 3);
 }
 
-void QuadKD2::getRotationMatrix(const Eigen::VectorXd &rpy,
-                               Eigen::Matrix3d &rot) const {
+void QuadKD2::getRotationMatrix(const Eigen::VectorXd& rpy,
+                                Eigen::Matrix3d& rot) const {
   rot = Eigen::AngleAxisd(rpy(2), Eigen::Vector3d::UnitZ()) *
         Eigen::AngleAxisd(rpy(1), Eigen::Vector3d::UnitY()) *
         Eigen::AngleAxisd(rpy(0), Eigen::Vector3d::UnitX());
 }
 
 void QuadKD2::bodyToFootFKBodyFrame(int leg_index,
-                                  Eigen::Matrix4d &g_body_foot) const {
+                                    Eigen::Matrix4d& g_body_foot) const {
   if (leg_index > (legbase_offsets_.size() - 1) || leg_index < 0) {
     throw std::runtime_error("Leg Index is outside of valid range");
   }
 
   // Assume that a Pinocchio update has been called
   assert(updated_);
-                
+
   /// World To Body Frame Transform
-  const pinocchio::SE3 &g_world_body_se3 = data_.oMf[body_fid_];
+  const pinocchio::SE3& g_world_body_se3 = data_.oMf[body_fid_];
 
   /// World to Toe Frame Transform
-  const LimbInfo &limb = limbs_.at(leg_index);
-  const pinocchio::SE3 &g_world_foot_se3 = data_.oMf[limb.toe_fid];
+  const LimbInfo& limb = limbs_.at(leg_index);
+  const pinocchio::SE3& g_world_foot_se3 = data_.oMf[limb.toe_fid];
 
   // Convert To Body Frame Transformation
   pinocchio::SE3 g_body_foot_se3 =
@@ -410,74 +406,77 @@ void QuadKD2::bodyToFootFKBodyFrame(int leg_index,
   g_body_foot = g_body_foot_se3.toHomogeneousMatrix();
 }
 
-void QuadKD2::bodyToFootFKBodyFrame(int leg_index, Eigen::Vector3d &foot_pos_body) const {
+void QuadKD2::bodyToFootFKBodyFrame(int leg_index,
+                                    Eigen::Vector3d& foot_pos_body) const {
   Eigen::Matrix4d g_body_foot;
   QuadKD2::bodyToFootFKBodyFrame(leg_index, g_body_foot);
 
   // Extract cartesian position of foot in the body frame
-  foot_pos_body = g_body_foot.block<3,1>(0,3);
+  foot_pos_body = g_body_foot.block<3, 1>(0, 3);
 }
 
-void QuadKD2::worldToFootFKWorldFrame(int leg_index, Eigen::Matrix4d &g_world_foot) const {
+void QuadKD2::worldToFootFKWorldFrame(int leg_index,
+                                      Eigen::Matrix4d& g_world_foot) const {
   if (leg_index > (legbase_offsets_.size() - 1) || leg_index < 0) {
     throw std::runtime_error("Leg index is outside of valid range");
   }
 
   // Assume that a Pinocchio update has been called
   assert(updated_);
-                
+
   /// World to Toe Frame Transform
-  const LimbInfo &limb = limbs_.at(leg_index);
-  const pinocchio::SE3 &g_world_foot_se3 = data_.oMf[limb.toe_fid];
+  const LimbInfo& limb = limbs_.at(leg_index);
+  const pinocchio::SE3& g_world_foot_se3 = data_.oMf[limb.toe_fid];
 
   // Convert to Eigen Homogenous Matrix
   g_world_foot = g_world_foot_se3.toHomogeneousMatrix();
-
 }
 
-void QuadKD2::worldToFootFKWorldFrame(int leg_index, Eigen::Vector3d &foot_pos_world) const {
+void QuadKD2::worldToFootFKWorldFrame(int leg_index,
+                                      Eigen::Vector3d& foot_pos_world) const {
   Eigen::Matrix4d g_world_foot;
   QuadKD2::worldToFootFKWorldFrame(leg_index, g_world_foot);
 
   // Extract cartesian position of the foot in the world frame
-  foot_pos_world = g_world_foot.block<3,1>(0,3);
+  foot_pos_world = g_world_foot.block<3, 1>(0, 3);
 }
 
-void QuadKD2::worldToKneeFKWorldFrame(int leg_index, Eigen::Matrix4d &g_world_knee) const {
-  if (leg_index > (legbase_offsets_.size() - 1) || leg_index < 0){
+void QuadKD2::worldToKneeFKWorldFrame(int leg_index,
+                                      Eigen::Matrix4d& g_world_knee) const {
+  if (leg_index > (legbase_offsets_.size() - 1) || leg_index < 0) {
     throw std::runtime_error("Leg index is outside of valid range");
   }
   // Assume that a Pinocchio update has been called
   assert(updated_);
-                
+
   // World To Knee Frame Transform
-  const LimbInfo &limb = limbs_.at(leg_index);
-  const pinocchio::SE3 &g_world_knee_se3 = data_.oMf[limb.lower_fid];
+  const LimbInfo& limb = limbs_.at(leg_index);
+  const pinocchio::SE3& g_world_knee_se3 = data_.oMf[limb.lower_fid];
 
   // Convert to Eigen Homogenous Matrix
   g_world_knee = g_world_knee_se3.toHomogeneousMatrix();
-
 }
 
-void QuadKD2::worldToKneeFKWorldFrame(int leg_index, Eigen::Vector3d &knee_pos_world) const{
+void QuadKD2::worldToKneeFKWorldFrame(int leg_index,
+                                      Eigen::Vector3d& knee_pos_world) const {
   Eigen::Matrix4d g_world_knee;
   QuadKD2::worldToKneeFKWorldFrame(leg_index, g_world_knee);
 
   // Extract cartesian position of the foot in the world frame
-  knee_pos_world = g_world_knee.block<3,1>(0,3);
+  knee_pos_world = g_world_knee.block<3, 1>(0, 3);
 }
 
 bool QuadKD2::worldToFootIKWorldFrame(int leg_index, Eigen::Vector3d body_pos,
-                                     Eigen::Vector3d body_rpy,
-                                     Eigen::Vector3d foot_pos_world,
-                                     Eigen::Vector3d &joint_state) const {
-  if (leg_index > (legbase_offsets_.size() - 1) || leg_index < 0){
+                                      Eigen::Vector3d body_rpy,
+                                      Eigen::Vector3d foot_pos_world,
+                                      Eigen::Vector3d& joint_state) const {
+  if (leg_index > (legbase_offsets_.size() - 1) || leg_index < 0) {
     throw std::runtime_error("Leg index is outside valid range");
   }
 
-    // Assume that a Pinocchio update has been called
+  // Assume that a Pinocchio update has been called
   assert(updated_);
-                
+
   // Calculate offsets
   Eigen::Vector3d legbase_offset = legbase_offsets_[leg_index];
   double l0 = l0_vec_[leg_index];
@@ -502,8 +501,8 @@ bool QuadKD2::worldToFootIKWorldFrame(int leg_index, Eigen::Vector3d body_pos,
 }
 
 bool QuadKD2::legbaseToFootIKLegbaseFrame(int leg_index,
-                                         Eigen::Vector3d foot_pos_legbase,
-                                         Eigen::Vector3d &joint_state) const {
+                                          Eigen::Vector3d foot_pos_legbase,
+                                          Eigen::Vector3d& joint_state) const {
   // Initialize exact bool
   bool is_exact = true;
 
@@ -536,13 +535,15 @@ bool QuadKD2::legbaseToFootIKLegbaseFrame(int leg_index,
     q0 = acos(temp) + atan2(z, y);
   }
 
-  q0_pin = (q0 *limbs_[leg_index].abad_conv.sign) + limbs_[leg_index].abad_conv.origin_offset;
+  q0_pin = (q0 * limbs_[leg_index].abad_conv.sign) +
+           limbs_[leg_index].abad_conv.origin_offset;
 
   // Make sure abad is within joint limits, clamp otherwise
   if (q0_pin > joint_max_[leg_index][0] || q0_pin < joint_min_[leg_index][0]) {
     q0_pin = std::max(std::min(q0_pin, joint_max_[leg_index][0]),
-                  joint_min_[leg_index][0]);
-    q0 = (q0_pin - limbs_[leg_index].abad_conv.origin_offset) / limbs_[leg_index].abad_conv.sign;
+                      joint_min_[leg_index][0]);
+    q0 = (q0_pin - limbs_[leg_index].abad_conv.origin_offset) /
+         limbs_[leg_index].abad_conv.sign;
     is_exact = false;
     RCLCPP_DEBUG_THROTTLE(node_->get_logger(), *node_->get_clock(), 1e9,
                           "Abad limits exceeded, clamping to %5.3f \n", q0);
@@ -579,13 +580,15 @@ bool QuadKD2::legbaseToFootIKLegbaseFrame(int leg_index,
   // Compute joint angles
   q1 = 0.5 * M_PI + atan2(x, -z) - acos(temp2);
   // q1 = atan2(x, -z) + acos(temp2);
-  q1_pin = (q1 *limbs_[leg_index].hip_conv.sign) + limbs_[leg_index].hip_conv.origin_offset;
+  q1_pin = (q1 * limbs_[leg_index].hip_conv.sign) +
+           limbs_[leg_index].hip_conv.origin_offset;
 
   // Make sure hip is within joint limits
   if (q1_pin > joint_max_[leg_index][1] || q1_pin < joint_min_[leg_index][1]) {
     q1_pin = std::max(std::min(q1_pin, joint_max_[leg_index][1]),
-                  joint_min_[leg_index][1]);
-    q1 = (q1_pin - limbs_[leg_index].hip_conv.origin_offset) / limbs_[leg_index].hip_conv.sign;
+                      joint_min_[leg_index][1]);
+    q1 = (q1_pin - limbs_[leg_index].hip_conv.origin_offset) /
+         limbs_[leg_index].hip_conv.sign;
     is_exact = false;
     RCLCPP_DEBUG_THROTTLE(node_->get_logger(), *node_->get_clock(), 1e9,
                           "Hip limits exceeded, clamping to %5.3f \n", q1);
@@ -597,13 +600,15 @@ bool QuadKD2::legbaseToFootIKLegbaseFrame(int leg_index,
   toe_pos << x, z;
   toe_offset = toe_pos - knee_pos;
   q2 = atan2(-toe_offset(1), toe_offset(0)) + q1;
-  q2_pin = (q2 *limbs_[leg_index].knee_conv.sign) + limbs_[leg_index].knee_conv.origin_offset;
-  
+  q2_pin = (q2 * limbs_[leg_index].knee_conv.sign) +
+           limbs_[leg_index].knee_conv.origin_offset;
+
   // Make sure knee is within joint limits
   if (q2_pin > joint_max_[leg_index][2] || q2_pin < joint_min_[leg_index][2]) {
     q2_pin = std::max(std::min(q2_pin, joint_max_[leg_index][2]),
-                  joint_min_[leg_index][2]);
-    q2 = (q2_pin - limbs_[leg_index].knee_conv.origin_offset) / limbs_[leg_index].knee_conv.sign;           
+                      joint_min_[leg_index][2]);
+    q2 = (q2_pin - limbs_[leg_index].knee_conv.origin_offset) /
+         limbs_[leg_index].knee_conv.sign;
     is_exact = false;
     RCLCPP_DEBUG_THROTTLE(node_->get_logger(), *node_->get_clock(), 1e9,
                           "Knee limits exceeded, clamping to %5.3f \n", q2);
@@ -629,55 +634,57 @@ bool QuadKD2::legbaseToFootIKLegbaseFrame(int leg_index,
   return is_exact;
 }
 
-void QuadKD2::getJacobianGenCoord(Eigen::MatrixXd &jacobian) const {
+void QuadKD2::getJacobianGenCoord(Eigen::MatrixXd& jacobian) const {
   this->getJacobianBodyAngVel(jacobian);
 
-  const pinocchio::SE3 &g_world_body_se3 = data_.oMf[body_fid_];
-  Eigen::Matrix3d R_WB = g_world_body_se3.rotation();  
+  const pinocchio::SE3& g_world_body_se3 = data_.oMf[body_fid_];
+  Eigen::Matrix3d R_WB = g_world_body_se3.rotation();
   Eigen::Vector3d ypr = R_WB.eulerAngles(2, 1, 0);
-  double yaw   = ypr[0];
+  double yaw = ypr[0];
   double pitch = ypr[1];
-  double roll  = ypr[2];
-  
+  double roll = ypr[2];
+
   // RBDL uses Jacobian w.r.t. floating base angular velocity in body frame,
   // which is multiplied by Jacobian to map it to Euler angle change rate here
   for (int i = 0; i < 4; i++) {
     Eigen::MatrixXd transform_jac(3, 3);
-    transform_jac << 1, 0, -sin(pitch), 0, cos(roll),
-        cos(pitch) * sin(roll), 0, -sin(roll),
-        cos(pitch) * cos(roll);
+    transform_jac << 1, 0, -sin(pitch), 0, cos(roll), cos(pitch) * sin(roll), 0,
+        -sin(roll), cos(pitch) * cos(roll);
 
     jacobian.block(3 * i, 15, 3, 3) =
         jacobian.block(3 * i, 15, 3, 3) * transform_jac;
   }
 }
 
-void QuadKD2::getJacobianWorldAngVel(Eigen::MatrixXd &jacobian) const {
+void QuadKD2::getJacobianWorldAngVel(Eigen::MatrixXd& jacobian) const {
   this->getJacobianBodyAngVel(jacobian);
 
-  const pinocchio::SE3 &g_world_body_se3 = data_.oMf[body_fid_];
+  const pinocchio::SE3& g_world_body_se3 = data_.oMf[body_fid_];
   Eigen::Matrix3d R_BW = g_world_body_se3.rotation().transpose();
 
   for (int i = 0; i < num_feet_; ++i) {
-    jacobian.block(3*i, nv_ - 3, 3, 3) = jacobian.block(3*i, nv_ - 3, 3, 3) * R_BW;
+    jacobian.block(3 * i, nv_ - 3, 3, 3) =
+        jacobian.block(3 * i, nv_ - 3, 3, 3) * R_BW;
   }
 }
 
-void QuadKD2::getJacobianBodyAngVel(Eigen::MatrixXd &jacobian) const {
+void QuadKD2::getJacobianBodyAngVel(Eigen::MatrixXd& jacobian) const {
   assert(jacobian.rows() == 3 * num_feet_ && jacobian.cols() == nv_);
-  
+
   // Assume that a Pinocchio update has been called
   assert(updated_);
-                
-  const pinocchio::SE3 &g_world_body_se3 = data_.oMf[body_fid_];
+
+  const pinocchio::SE3& g_world_body_se3 = data_.oMf[body_fid_];
   const Eigen::Matrix3d R_WB = g_world_body_se3.rotation();
   const Eigen::Matrix3d R_BW = R_WB.transpose();
 
   jacobian.setZero();
   Eigen::MatrixXd jac_block(6, nv_);
-  for (int i = 0; i < num_feet_; i++){
+  for (int i = 0; i < num_feet_; i++) {
     jac_block.setZero();
-    pinocchio::getFrameJacobian(model_, data_, limbs_[i].toe_fid, pinocchio::ReferenceFrame::LOCAL_WORLD_ALIGNED, jac_block);
+    pinocchio::getFrameJacobian(model_, data_, limbs_[i].toe_fid,
+                                pinocchio::ReferenceFrame::LOCAL_WORLD_ALIGNED,
+                                jac_block);
 
     // Pinocchio Convention (free flyer)
     // q = [x_world y_world z_world congugate_quaternion_body_to_world theta]
@@ -688,24 +695,27 @@ void QuadKD2::getJacobianBodyAngVel(Eigen::MatrixXd &jacobian) const {
     // Reordering Columns and Rows to Reflect Quad-SDK Convention
     const auto jac_block_lin = jac_block.block(0, 0, 3, nv_);
     const int u = 3 * i;
-    jacobian.block(3*i, u + 0, 3, 1) = jac_block_lin.col(limbs_[i].abad_pin_vel_idx);
-    jacobian.block(3*i, u + 1, 3, 1) = jac_block_lin.col(limbs_[i].hip_pin_vel_idx);
-    jacobian.block(3*i, u + 2, 3, 1) = jac_block_lin.col(limbs_[i].knee_pin_vel_idx);
+    jacobian.block(3 * i, u + 0, 3, 1) =
+        jac_block_lin.col(limbs_[i].abad_pin_vel_idx);
+    jacobian.block(3 * i, u + 1, 3, 1) =
+        jac_block_lin.col(limbs_[i].hip_pin_vel_idx);
+    jacobian.block(3 * i, u + 2, 3, 1) =
+        jac_block_lin.col(limbs_[i].knee_pin_vel_idx);
 
-    jacobian.block(3*i, nv_- 6, 3, 3) = jac_block_lin.block(0, 0, 3, 3)* R_BW;
-    jacobian.block(3*i, nv_ - 3, 3, 3 ) = jac_block_lin.block(0, 3, 3, 3);
-
+    jacobian.block(3 * i, nv_ - 6, 3, 3) =
+        jac_block_lin.block(0, 0, 3, 3) * R_BW;
+    jacobian.block(3 * i, nv_ - 3, 3, 3) = jac_block_lin.block(0, 3, 3, 3);
   }
-    // Function Internal Convention (Refer to this When Using)
-    // v = [v_foot0_world, v_foot1_world, v_foot2_world, v_foot3_world]
-    // q_dot_func = [theta_dot v_base_world w_base_body]
-    // v = jacobian * q_dot_func
+  // Function Internal Convention (Refer to this When Using)
+  // v = [v_foot0_world, v_foot1_world, v_foot2_world, v_foot3_world]
+  // q_dot_func = [theta_dot v_base_world w_base_body]
+  // v = jacobian * q_dot_func
 }
 
-void QuadKD2::computeInverseDynamics(const Eigen::VectorXd &foot_acc,
-                                     const Eigen::VectorXd &grf, 
-                                     const std::vector<int> &contact_mode,
-                                     Eigen::VectorXd &tau) const {
+void QuadKD2::computeInverseDynamics(const Eigen::VectorXd& foot_acc,
+                                     const Eigen::VectorXd& grf,
+                                     const std::vector<int>& contact_mode,
+                                     Eigen::VectorXd& tau) const {
   // Assume that a Pinocchio update has been called
   assert(updated_);
 
@@ -715,7 +725,8 @@ void QuadKD2::computeInverseDynamics(const Eigen::VectorXd &foot_acc,
     Eigen::MatrixXd jac_block(6, nv_);
     jac_block.setZero();
     pinocchio::getFrameJacobian(model_, data_, limbs_[i].toe_fid,
-                                pinocchio::ReferenceFrame::LOCAL_WORLD_ALIGNED, jac_block);
+                                pinocchio::ReferenceFrame::LOCAL_WORLD_ALIGNED,
+                                jac_block);
     J_pin.block(3 * i, 0, 3, nv_) = jac_block.block(0, 0, 3, nv_);
   }
 
@@ -740,8 +751,8 @@ void QuadKD2::computeInverseDynamics(const Eigen::VectorXd &foot_acc,
 
   // Reorder M and N from Pinocchio order to quad-sdk order so all
   // block operations below use a consistent joint ordering.
-  const Eigen::MatrixXd &M_pin = data_.M;
-  const Eigen::VectorXd &N_pin = data_.nle;
+  const Eigen::MatrixXd& M_pin = data_.M;
+  const Eigen::VectorXd& N_pin = data_.nle;
 
   Eigen::MatrixXd M(nv_, nv_);
   Eigen::VectorXd N(nv_);
@@ -762,9 +773,11 @@ void QuadKD2::computeInverseDynamics(const Eigen::VectorXd &foot_acc,
 
   // Compute J_dot*q_dot
   Eigen::VectorXd foot_acc_J_dot(12);
-  for (int i = 0; i < 4; i++){
-    const pinocchio::Motion &a_world = pinocchio::getFrameAcceleration(model_, data_, limbs_[i].toe_fid, pinocchio::ReferenceFrame::LOCAL_WORLD_ALIGNED);
-    foot_acc_J_dot.segment(3 * i, 3) = a_world.linear(); 
+  for (int i = 0; i < 4; i++) {
+    const pinocchio::Motion& a_world = pinocchio::getFrameAcceleration(
+        model_, data_, limbs_[i].toe_fid,
+        pinocchio::ReferenceFrame::LOCAL_WORLD_ALIGNED);
+    foot_acc_J_dot.segment(3 * i, 3) = a_world.linear();
   }
 
   // Compute constraint Jacobian A and A_dot*q_dot
@@ -828,8 +841,7 @@ void QuadKD2::computeInverseDynamics(const Eigen::VectorXd &foot_acc,
   // Convert the order back
   for (int i = 0; i < num_feet_; i++) {
     if (contact_mode.at(i)) {
-      tau.segment(3 * i, 3) =
-          tau_stance.segment(6 + 3 * i, 3);
+      tau.segment(3 * i, 3) = tau_stance.segment(6 + 3 * i, 3);
     } else {
       tau.segment(3 * i, 3) = tau_swing.segment(3 * i, 3);
     }
@@ -842,14 +854,11 @@ void QuadKD2::computeInverseDynamics(const Eigen::VectorXd &foot_acc,
   }
 }
 
-bool QuadKD2::convertCentroidalToFullBody(const Eigen::VectorXd &body_state,
-                                         const Eigen::VectorXd &foot_positions,
-                                         const Eigen::VectorXd &foot_velocities,
-                                         const Eigen::VectorXd &grfs,
-                                         Eigen::VectorXd &joint_positions,
-                                         Eigen::VectorXd &joint_velocities,
-                                         Eigen::VectorXd &torques) {
-
+bool QuadKD2::convertCentroidalToFullBody(
+    const Eigen::VectorXd& body_state, const Eigen::VectorXd& foot_positions,
+    const Eigen::VectorXd& foot_velocities, const Eigen::VectorXd& grfs,
+    Eigen::VectorXd& joint_positions, Eigen::VectorXd& joint_velocities,
+    Eigen::VectorXd& torques) {
   // Assume the conversion is exact unless a check below fails
   bool is_exact = true;
 
@@ -863,7 +872,7 @@ bool QuadKD2::convertCentroidalToFullBody(const Eigen::VectorXd &body_state,
     Eigen::Vector3d leg_joint_state;
     Eigen::Vector3d foot_pos = foot_positions.segment<3>(3 * i);
     is_exact = is_exact && worldToFootIKWorldFrame(i, body_pos, body_rpy,
-                                                  foot_pos, leg_joint_state);
+                                                   foot_pos, leg_joint_state);
     joint_positions.segment<3>(3 * i) = leg_joint_state;
   }
 
@@ -903,8 +912,8 @@ bool QuadKD2::convertCentroidalToFullBody(const Eigen::VectorXd &body_state,
   return is_exact;
 }
 
-bool QuadKD2::applyMotorModel(const Eigen::VectorXd &torques,
-                             Eigen::VectorXd &constrained_torques) {
+bool QuadKD2::applyMotorModel(const Eigen::VectorXd& torques,
+                              Eigen::VectorXd& constrained_torques) {
   // Constrain torques to max values
   constrained_torques.resize(torques.size());
   constrained_torques = torques.cwiseMax(-tau_max_).cwiseMin(tau_max_);
@@ -913,9 +922,9 @@ bool QuadKD2::applyMotorModel(const Eigen::VectorXd &torques,
   return constrained_torques.isApprox(torques);
 }
 
-bool QuadKD2::applyMotorModel(const Eigen::VectorXd &joint_torques,
-                             const Eigen::VectorXd &joint_velocities,
-                             Eigen::VectorXd &constrained_joint_torques) {
+bool QuadKD2::applyMotorModel(const Eigen::VectorXd& joint_torques,
+                              const Eigen::VectorXd& joint_velocities,
+                              Eigen::VectorXd& constrained_joint_torques) {
   // Constrain torques to max values
   Eigen::VectorXd constraint_violation(joint_torques.size());
   constrained_joint_torques.resize(joint_torques.size());
@@ -932,13 +941,13 @@ bool QuadKD2::applyMotorModel(const Eigen::VectorXd &joint_torques,
   return constrained_joint_torques.isApprox(joint_torques);
 }
 
-bool QuadKD2::isValidFullState(const Eigen::VectorXd &body_state,
-                              const Eigen::VectorXd &joint_positions,
-                              const Eigen::VectorXd &joint_velocities,
-                              const Eigen::VectorXd &joint_torques,
-                              const grid_map::GridMap &terrain,
-                              Eigen::VectorXd &state_violation,
-                              Eigen::VectorXd &control_violation) {
+bool QuadKD2::isValidFullState(const Eigen::VectorXd& body_state,
+                               const Eigen::VectorXd& joint_positions,
+                               const Eigen::VectorXd& joint_velocities,
+                               const Eigen::VectorXd& joint_torques,
+                               const grid_map::GridMap& terrain,
+                               Eigen::VectorXd& state_violation,
+                               Eigen::VectorXd& control_violation) {
   // Assume that a Pinocchio update has been called
   assert(updated_);
 
@@ -965,23 +974,21 @@ bool QuadKD2::isValidFullState(const Eigen::VectorXd &body_state,
 }
 
 bool QuadKD2::isValidCentroidalState(
-    const Eigen::VectorXd &body_state, const Eigen::VectorXd &foot_positions,
-    const Eigen::VectorXd &foot_velocities, const Eigen::VectorXd &grfs,
-    const grid_map::GridMap &terrain, Eigen::VectorXd &joint_positions,
-    Eigen::VectorXd &joint_velocities, Eigen::VectorXd &joint_torques,
-    Eigen::VectorXd &state_violation, Eigen::VectorXd &control_violation) {
-  
-
+    const Eigen::VectorXd& body_state, const Eigen::VectorXd& foot_positions,
+    const Eigen::VectorXd& foot_velocities, const Eigen::VectorXd& grfs,
+    const grid_map::GridMap& terrain, Eigen::VectorXd& joint_positions,
+    Eigen::VectorXd& joint_velocities, Eigen::VectorXd& joint_torques,
+    Eigen::VectorXd& state_violation, Eigen::VectorXd& control_violation) {
   // Convert to full
-  bool is_exact = convertCentroidalToFullBody(body_state,
-      foot_positions, foot_velocities, grfs, joint_positions,
+  bool is_exact = convertCentroidalToFullBody(
+      body_state, foot_positions, foot_velocities, grfs, joint_positions,
       joint_velocities, joint_torques);
-  
+
   updateFromBodyJoints(body_state, joint_positions, joint_velocities);
 
-  bool is_valid = isValidFullState(body_state, joint_positions, joint_velocities,
-                                  joint_torques, terrain, 
-                                  state_violation, control_violation);
+  bool is_valid = isValidFullState(body_state, joint_positions,
+                                   joint_velocities, joint_torques, terrain,
+                                   state_violation, control_violation);
 
   return (is_exact && is_valid);
 }

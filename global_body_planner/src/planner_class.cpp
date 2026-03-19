@@ -5,7 +5,7 @@
 
 using namespace planning_utils;
 
-PlannerClass::PlannerClass(int direction, const PlannerConfig &planner_config) {
+PlannerClass::PlannerClass(int direction, const PlannerConfig& planner_config) {
   direction_ = direction;
 
   double vel_mean = planner_config.v_nom;
@@ -19,7 +19,7 @@ PlannerClass::PlannerClass(int direction, const PlannerConfig &planner_config) {
       vel_mean_log, vel_sigma_log);
 }
 
-State PlannerClass::randomState(const PlannerConfig &planner_config) {
+State PlannerClass::randomState(const PlannerConfig& planner_config) {
   double x_min, x_max, y_min, y_max;
   getMapBounds(planner_config, x_min, x_max, y_min, y_max);
 

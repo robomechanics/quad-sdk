@@ -10,7 +10,8 @@ class CompFilterEstimator : public StateEstimator {
    * @brief Constructor for CompFilterEstimator
    * @return Constructed object of type CompFilterEstimator
    */
-  CompFilterEstimator(rclcpp::Node::SharedPtr node, const std::string& robot_ns, std::shared_ptr<quad_utils::QuadKD2> quadKD);
+  CompFilterEstimator(rclcpp::Node::SharedPtr node, const std::string& robot_ns,
+                      std::shared_ptr<quad_utils::QuadKD2> quadKD);
 
   /**
    * @brief Initialize Complementary Filter
@@ -75,6 +76,5 @@ class CompFilterEstimator : public StateEstimator {
 
   /// Last mocap time
   rclcpp::Time last_mocap_time_;
-
 };
 #endif  // COMP_FILTER_H

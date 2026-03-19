@@ -10,4 +10,4 @@ set -o errexit
 set -o pipefail
 
 export PATH=$PATH:~/.local/bin/ 
-cpplint --quiet --filter=-legal,-runtime,-build,-readability/casting,-readability/fn_size --extensions=cpp,h,hpp --recursive  --exclude=external/* --exclude=nmpc_controller/src/gen/ --exclude=nmpc_controller/include/nmpc_controller/gen/ ./
+cpplint --quiet --filter=-legal,-runtime,-build,-readability/casting,-readability/fn_size --extensions=cpp,h,hpp --recursive  --exclude=external/* --exclude=nmpc_controller/src/gen/ --exclude=nmpc_controller/include/nmpc_controller/gen/ --exclude=matlab_msg_gen/* ./

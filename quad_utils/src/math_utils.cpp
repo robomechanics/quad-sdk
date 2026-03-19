@@ -129,12 +129,15 @@ std::vector<double> movingAverageFilter(std::vector<double> data,
   // Check to ensure window size is an odd integer, if not add one to make it so
   if ((window_size % 2) == 0) {
     window_size += 1;
-    std::cerr << "[WARNING] Filter window size is even, adding one to maintain symmetry" << std::endl;
+    std::cerr << "[WARNING] Filter window size is even, adding one to maintain "
+                 "symmetry"
+              << std::endl;
   }
 
   // Make sure that the window size is acceptable
   if (window_size >= N) {
-    std::cerr << "[WARNING] Filter window size is bigger than data" << std::endl;
+    std::cerr << "[WARNING] Filter window size is bigger than data"
+              << std::endl;
   }
 
   // Loop through the data
@@ -199,7 +202,7 @@ std::vector<double> unwrap(std::vector<double> data) {
   return data_unwrapped;
 }
 
-Eigen::MatrixXd sdlsInv(const Eigen::MatrixXd &jacobian) {
+Eigen::MatrixXd sdlsInv(const Eigen::MatrixXd& jacobian) {
   Eigen::JacobiSVD<Eigen::MatrixXd> svd(
       jacobian, Eigen::ComputeThinU | Eigen::ComputeThinV);
 

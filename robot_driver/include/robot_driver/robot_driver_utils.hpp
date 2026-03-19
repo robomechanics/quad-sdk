@@ -8,7 +8,8 @@
 namespace robot_driver_utils {
 
 void loadMotorCommandMsg(double pos_setpoint, double vel_setpoint, double ff,
-                         double kp, double kd, quad_msgs::msg::MotorCommand &msg);
+                         double kp, double kd,
+                         quad_msgs::msg::MotorCommand& msg);
 
 }  // namespace robot_driver_utils
 

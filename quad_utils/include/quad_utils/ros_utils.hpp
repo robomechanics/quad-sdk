@@ -29,7 +29,8 @@ inline double getROSMessageAgeInMs(std_msgs::msg::Header header,
  * @param[in] header ROS Header that we wish to compute the age of
  * @return Age in ms (compared to ros::Time::now())
  */
-inline double getROSMessageAgeInMs(rclcpp::Node::SharedPtr &node, std_msgs::msg::Header header) {
+inline double getROSMessageAgeInMs(rclcpp::Node::SharedPtr& node,
+                                   std_msgs::msg::Header header) {
   rclcpp::Time t_compare = node->get_clock()->now();
   return quad_utils::getROSMessageAgeInMs(header, t_compare);
 }
@@ -39,7 +40,8 @@ inline double getROSMessageAgeInMs(rclcpp::Node::SharedPtr &node, std_msgs::msg:
  * @param[in] plan_start ROS Time to to compare to
  * @return Time in plan (compared to ros::Time::now())
  */
-inline double getDurationSinceTime(rclcpp::Node::SharedPtr &node, rclcpp::Time plan_start) {
+inline double getDurationSinceTime(rclcpp::Node::SharedPtr& node,
+                                   rclcpp::Time plan_start) {
   rclcpp::Time now = node->get_clock()->now();
   return (now - plan_start).seconds();
 }
@@ -52,8 +54,9 @@ inline double getDurationSinceTime(rclcpp::Node::SharedPtr &node, rclcpp::Time p
  * @param[in] plan_start ROS Time to to compare to
  * @param[in] dt Timestep used to discretize the plan
  */
-inline void getPlanIndex(rclcpp::Node::SharedPtr &node, rclcpp::Time plan_start, double dt, int &index,
-                         double &first_element_duration) {
+inline void getPlanIndex(rclcpp::Node::SharedPtr& node, rclcpp::Time plan_start,
+                         double dt, int& index,
+                         double& first_element_duration) {
   double duration = getDurationSinceTime(node, plan_start);
   index = std::floor(duration / dt);
   first_element_duration = (index + 1) * dt - duration;
@@ -67,12 +70,12 @@ inline void getPlanIndex(rclcpp::Node::SharedPtr &node, rclcpp::Time plan_start,
  * @return boolean success
  */
 template <class ParamType>
-inline bool loadROSParam(rclcpp::Node::SharedPtr &node, std::string paramName,
-                         ParamType &varName) {
-  if (!node->has_parameter(paramName)){
-    try{
+inline bool loadROSParam(rclcpp::Node::SharedPtr& node, std::string paramName,
+                         ParamType& varName) {
+  if (!node->has_parameter(paramName)) {
+    try {
       node->declare_parameter<ParamType>(paramName);
-    } catch (const rclcpp::exceptions::ParameterAlreadyDeclaredException &e){
+    } catch (const rclcpp::exceptions::ParameterAlreadyDeclaredException& e) {
     }
   }
   if (!node->get_parameter(paramName, varName)) {
@@ -94,15 +97,16 @@ inline bool loadROSParam(rclcpp::Node::SharedPtr &node, std::string paramName,
  * @return boolean (true if found rosparam, false if loaded default)
  */
 template <class ParamType>
-inline bool loadROSParamDefault(rclcpp::Node::SharedPtr node, std::string paramName,
-                                ParamType &varName, ParamType defaultVal) {
-  if (!node->has_parameter(paramName)){
-    try{
+inline bool loadROSParamDefault(rclcpp::Node::SharedPtr node,
+                                std::string paramName, ParamType& varName,
+                                ParamType defaultVal) {
+  if (!node->has_parameter(paramName)) {
+    try {
       node->declare_parameter<ParamType>(paramName, defaultVal);
-    } catch (const rclcpp::exceptions::ParameterAlreadyDeclaredException &e){
+    } catch (const rclcpp::exceptions::ParameterAlreadyDeclaredException& e) {
     }
   }
-  
+
   if (!node->get_parameter(paramName, varName)) {
     varName = defaultVal;
     RCLCPP_INFO(
@@ -130,7 +134,7 @@ inline bool loadROSParamDefault(rclcpp::Node::SharedPtr node, std::string paramN
  * @param[in] frame Frame_id for the state message
  * @param[in] traj_index Trajectory index of this state message
  */
-void updateStateHeaders(quad_msgs::msg::RobotState &msg, rclcpp::Time stamp,
+void updateStateHeaders(quad_msgs::msg::RobotState& msg, rclcpp::Time stamp,
                         std::string frame, int traj_index);
 
 /**
@@ -142,7 +146,7 @@ void updateStateHeaders(quad_msgs::msg::RobotState &msg, rclcpp::Time stamp,
  */
 void interpHeader(std_msgs::msg::Header header_1,
                   std_msgs::msg::Header header_2, double t_interp,
-                  std_msgs::msg::Header &interp_header);
+                  std_msgs::msg::Header& interp_header);
 
 /**
  * @brief Interpolate data between two Odometry messages.
@@ -153,7 +157,7 @@ void interpHeader(std_msgs::msg::Header header_1,
  */
 void interpOdometry(quad_msgs::msg::BodyState state_1,
                     quad_msgs::msg::BodyState state_2, double t_interp,
-                    quad_msgs::msg::BodyState &interp_state);
+                    quad_msgs::msg::BodyState& interp_state);
 
 /**
  * @brief Interpolate data between two JointState messages.
@@ -164,7 +168,7 @@ void interpOdometry(quad_msgs::msg::BodyState state_1,
  */
 void interpJointState(sensor_msgs::msg::JointState state_1,
                       sensor_msgs::msg::JointState state_2, double t_interp,
-                      sensor_msgs::msg::JointState &interp_state);
+                      sensor_msgs::msg::JointState& interp_state);
 
 /**
  * @brief Interpolate data between two FootState messages.
@@ -176,7 +180,7 @@ void interpJointState(sensor_msgs::msg::JointState state_1,
 void interpMultiFootState(quad_msgs::msg::MultiFootState state_1,
                           quad_msgs::msg::MultiFootState state_2,
                           double t_interp,
-                          quad_msgs::msg::MultiFootState &interp_state);
+                          quad_msgs::msg::MultiFootState& interp_state);
 
 /**
  * @brief Interpolate data between two GRFArray messages.
@@ -187,7 +191,7 @@ void interpMultiFootState(quad_msgs::msg::MultiFootState state_1,
  */
 void interpGRFArray(quad_msgs::msg::GRFArray state_1,
                     quad_msgs::msg::GRFArray state_2, double t_interp,
-                    quad_msgs::msg::GRFArray &interp_state);
+                    quad_msgs::msg::GRFArray& interp_state);
 
 /**
  * @brief Interpolate data between two RobotState messages.
@@ -198,7 +202,7 @@ void interpGRFArray(quad_msgs::msg::GRFArray state_1,
  */
 void interpRobotState(quad_msgs::msg::RobotState state_1,
                       quad_msgs::msg::RobotState state_2, double t_interp,
-                      quad_msgs::msg::RobotState &interp_state);
+                      quad_msgs::msg::RobotState& interp_state);
 
 /**
  * @brief Interpolate data from a BodyPlan message.
@@ -210,9 +214,9 @@ void interpRobotState(quad_msgs::msg::RobotState state_1,
  * @param[out] interp_grf Interpolated GRF array
  */
 void interpRobotPlan(quad_msgs::msg::RobotPlan msg, double t,
-                     quad_msgs::msg::RobotState &interp_state,
-                     int &interp_primitive_id,
-                     quad_msgs::msg::GRFArray &interp_grf);
+                     quad_msgs::msg::RobotState& interp_state,
+                     int& interp_primitive_id,
+                     quad_msgs::msg::GRFArray& interp_grf);
 
 /**
  * @brief Interpolate data from a MultiFootPlanContinuous message.
@@ -243,18 +247,18 @@ quad_msgs::msg::MultiFootState interpMultiFootPlanContinuous(
  * @param[in] multi_foot_state message of state of each foot
  * @param[out] joint_state message of the corresponding joint state
  */
-void ikRobotState(quad_utils::QuadKD2 &kinematics,
+void ikRobotState(quad_utils::QuadKD2& kinematics,
                   quad_msgs::msg::BodyState body_state,
                   quad_msgs::msg::MultiFootState multi_foot_state,
-                  sensor_msgs::msg::JointState &joint_state);
+                  sensor_msgs::msg::JointState& joint_state);
 
 /**
  * @brief Perform IK and save to the state.joint field
  * @param[in] kinematics Pointer to kinematics object
  * @param[out] state RobotState message to which to add joint data
  */
-void ikRobotState(quad_utils::QuadKD2 &kinematics,
-                  quad_msgs::msg::RobotState &state);
+void ikRobotState(quad_utils::QuadKD2& kinematics,
+                  quad_msgs::msg::RobotState& state);
 
 /**
  * @brief Perform FK to compute a foot state message corresponding to body and
@@ -264,32 +268,32 @@ void ikRobotState(quad_utils::QuadKD2 &kinematics,
  * @param[in] joint_state message of the corresponding joint state
  * @param[out] multi_foot_state message of state of each foot
  */
-void fkRobotState(quad_utils::QuadKD2 &kinematics,
+void fkRobotState(quad_utils::QuadKD2& kinematics,
                   quad_msgs::msg::BodyState body_state,
                   sensor_msgs::msg::JointState joint_state,
-                  quad_msgs::msg::MultiFootState &multi_foot_state);
+                  quad_msgs::msg::MultiFootState& multi_foot_state);
 
 /**
  * @brief Perform FK and save to the state.feet field
  * @param[in] kinematics Pointer to kinematics object
  * @param[out] state RobotState message to which to add joint data
  */
-void fkRobotState(quad_utils::QuadKD2 &kinematics,
-                  quad_msgs::msg::RobotState &state);
+void fkRobotState(quad_utils::QuadKD2& kinematics,
+                  quad_msgs::msg::RobotState& state);
 
 /**
  * @brief Convert robot state message to Eigen
  * @param[in] state Eigen vector with body state data
  * @return Odometry msg with body state data
  */
-quad_msgs::msg::BodyState eigenToBodyStateMsg(const Eigen::VectorXd &state);
+quad_msgs::msg::BodyState eigenToBodyStateMsg(const Eigen::VectorXd& state);
 
 /**
  * @brief Convert robot state message to Eigen
  * @param[in] body Odometry msg with body state data
  * @return Eigen vector with body state data
  */
-Eigen::VectorXd bodyStateMsgToEigen(const quad_msgs::msg::BodyState &body);
+Eigen::VectorXd bodyStateMsgToEigen(const quad_msgs::msg::BodyState& body);
 
 /**
  * @brief Convert Eigen vector of GRFs to GRFArray msg
@@ -300,7 +304,7 @@ Eigen::VectorXd bodyStateMsgToEigen(const quad_msgs::msg::BodyState &body);
  */
 void eigenToGRFArrayMsg(Eigen::VectorXd grf_array,
                         quad_msgs::msg::MultiFootState multi_foot_state_msg,
-                        quad_msgs::msg::GRFArray &grf_msg);
+                        quad_msgs::msg::GRFArray& grf_msg);
 
 /**
  * @brief Convert GRFArray msg to Eigen vector of GRFs
@@ -308,7 +312,7 @@ void eigenToGRFArrayMsg(Eigen::VectorXd grf_array,
  * @return grf_array Eigen vector with grf data in leg order
  */
 Eigen::VectorXd grfArrayMsgToEigen(
-    const quad_msgs::msg::GRFArray &grf_array_msg_);
+    const quad_msgs::msg::GRFArray& grf_array_msg_);
 
 /**
  * @brief Convert robot foot state message to Eigen
@@ -316,8 +320,8 @@ Eigen::VectorXd grfArrayMsgToEigen(
  * information
  * @param[out] foot_position Eigen vector with foot position
  */
-void footStateMsgToEigen(const quad_msgs::msg::FootState &foot_state_msg,
-                         Eigen::Vector3d &foot_position);
+void footStateMsgToEigen(const quad_msgs::msg::FootState& foot_state_msg,
+                         Eigen::Vector3d& foot_position);
 
 /**
  * @brief Convert robot multi foot state message to Eigen
@@ -326,8 +330,8 @@ void footStateMsgToEigen(const quad_msgs::msg::FootState &foot_state_msg,
  * @param[out] foot_positions Eigen vector with foot state data
  */
 void multiFootStateMsgToEigen(
-    const quad_msgs::msg::MultiFootState &multi_foot_state_msg,
-    Eigen::VectorXd &foot_positions);
+    const quad_msgs::msg::MultiFootState& multi_foot_state_msg,
+    Eigen::VectorXd& foot_positions);
 
 /**
  * @brief Convert robot multi foot state message to Eigen
@@ -337,8 +341,8 @@ void multiFootStateMsgToEigen(
  * @param[out] foot_velocities Eigen vector with foot velocity data
  */
 void multiFootStateMsgToEigen(
-    const quad_msgs::msg::MultiFootState &multi_foot_state_msg,
-    Eigen::VectorXd &foot_positions, Eigen::VectorXd &foot_velocities);
+    const quad_msgs::msg::MultiFootState& multi_foot_state_msg,
+    Eigen::VectorXd& foot_positions, Eigen::VectorXd& foot_velocities);
 
 /**
  * @brief Convert robot multi foot state message to Eigen
@@ -349,9 +353,9 @@ void multiFootStateMsgToEigen(
  * @param[out] foot_acceleration Eigen vector with foot acceleration data
  */
 void multiFootStateMsgToEigen(
-    const quad_msgs::msg::MultiFootState &multi_foot_state_msg,
-    Eigen::VectorXd &foot_positions, Eigen::VectorXd &foot_velocities,
-    Eigen::VectorXd &foot_acceleration);
+    const quad_msgs::msg::MultiFootState& multi_foot_state_msg,
+    Eigen::VectorXd& foot_positions, Eigen::VectorXd& foot_velocities,
+    Eigen::VectorXd& foot_acceleration);
 
 /**
  * @brief Convert eigen vectors to foot state messages
@@ -362,7 +366,7 @@ void multiFootStateMsgToEigen(
  */
 void eigenToFootStateMsg(Eigen::VectorXd foot_position,
                          Eigen::VectorXd foot_velocity,
-                         quad_msgs::msg::FootState &foot_state_msg);
+                         quad_msgs::msg::FootState& foot_state_msg);
 
 /**
  * @brief Convert eigen vectors to foot state messages
@@ -375,62 +379,61 @@ void eigenToFootStateMsg(Eigen::VectorXd foot_position,
 void eigenToFootStateMsg(Eigen::VectorXd foot_position,
                          Eigen::VectorXd foot_velocity,
                          Eigen::VectorXd foot_acceleration,
-                         quad_msgs::msg::FootState &foot_state_msg);
+                         quad_msgs::msg::FootState& foot_state_msg);
 
 /**
  * @brief Convert eigen vector to stl vector
  * @param[in] eigen_vec Eigen vector with data
  * @param[out] vec stl vector
  */
-void eigenToVector(const Eigen::VectorXd &eigen_vec, std::vector<double> &vec);
+void eigenToVector(const Eigen::VectorXd& eigen_vec, std::vector<double>& vec);
 
 /**
  * @brief Convert stl vector to eigen vector
  * @param[in] vec stl vector
  * @param[out] eigen_vec Eigen vector with data
  */
-void vectorToEigen(const std::vector<double> &vec, Eigen::VectorXd &eigen_vec);
+void vectorToEigen(const std::vector<double>& vec, Eigen::VectorXd& eigen_vec);
 
 /**
  * @brief Convert eigen vector to geometry_msgs::Vector3
  * @param[in] vec Eigen vector
  * @param[out] eigen_vec msg vector
  */
-void Eigen3ToVector3Msg(const Eigen::Vector3d &eigen_vec,
-                        geometry_msgs::msg::Vector3 &vec);
+void Eigen3ToVector3Msg(const Eigen::Vector3d& eigen_vec,
+                        geometry_msgs::msg::Vector3& vec);
 
 /**
  * @brief Convert geometry_msgs::Vector3 vector to eigen vector
  * @param[in] vec msg vector
  * @param[out] eigen_vec Eigen vector
  */
-void vector3MsgToEigen(const geometry_msgs::msg::Vector3 &vec,
-                       Eigen::Vector3d &eigen_vec);
+void vector3MsgToEigen(const geometry_msgs::msg::Vector3& vec,
+                       Eigen::Vector3d& eigen_vec);
 
 /**
  * @brief Convert eigen vector to geometry_msgs::Point
  * @param[in] vec Eigen vector
  * @param[out] eigen_vec msg point
  */
-void Eigen3ToPointMsg(const Eigen::Vector3d &eigen_vec,
-                      geometry_msgs::msg::Point &vec);
+void Eigen3ToPointMsg(const Eigen::Vector3d& eigen_vec,
+                      geometry_msgs::msg::Point& vec);
 
 /**
  * @brief Convert geometry_msgs::Point vector to eigen vector
  * @param[in] vec msg point
  * @param[out] eigen_vec Eigen vector
  */
-void pointMsgToEigen(const geometry_msgs::msg::Point &vec,
-                     Eigen::Vector3d &eigen_vec);
-
+void pointMsgToEigen(const geometry_msgs::msg::Point& vec,
+                     Eigen::Vector3d& eigen_vec);
 
 /**
  * @brief Update Quad_KD with a Fresh Robot State Message
- * 
- * @param kinematics 
- * @param robot_state_msg 
+ *
+ * @param kinematics
+ * @param robot_state_msg
  */
-void updateDynamics(quad_utils::QuadKD2 &kinematics,
+void updateDynamics(quad_utils::QuadKD2& kinematics,
                     quad_msgs::msg::RobotState robot_state_msg);
 }  // namespace quad_utils
 

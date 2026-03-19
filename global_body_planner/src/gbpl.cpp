@@ -4,8 +4,11 @@ using namespace planning_utils;
 
 GBPL::GBPL() {}
 
-int GBPL::connect(PlannerClass &T, State s, const PlannerConfig &planner_config,
-                  int direction, rclcpp::Publisher<visualization_msgs::msg::MarkerArray>::SharedPtr &tree_pub) {
+int GBPL::connect(
+    PlannerClass& T, State s, const PlannerConfig& planner_config,
+    int direction,
+    rclcpp::Publisher<visualization_msgs::msg::MarkerArray>::SharedPtr&
+        tree_pub) {
   // Find nearest neighbor
   flipDirection(s);
   int s_near_index = T.getNearestNeighbor(s);
@@ -30,7 +33,7 @@ int GBPL::connect(PlannerClass &T, State s, const PlannerConfig &planner_config,
   return connect_result;
 }
 
-std::vector<Action> GBPL::getActionSequenceReverse(PlannerClass &T,
+std::vector<Action> GBPL::getActionSequenceReverse(PlannerClass& T,
                                                    std::vector<int> path) {
   // Assumes that actions are synched with the states at which they are executed
   // (opposite of the definition in RRT)
@@ -41,9 +44,9 @@ std::vector<Action> GBPL::getActionSequenceReverse(PlannerClass &T,
   return action_sequence;
 }
 
-void GBPL::postProcessPath(std::vector<State> &state_sequence,
-                           std::vector<Action> &action_sequence,
-                           const PlannerConfig &planner_config) {
+void GBPL::postProcessPath(std::vector<State>& state_sequence,
+                           std::vector<Action>& action_sequence,
+                           const PlannerConfig& planner_config) {
   auto t_start = std::chrono::steady_clock::now();
 
   // Initialize first and last states
@@ -114,10 +117,10 @@ void GBPL::postProcessPath(std::vector<State> &state_sequence,
   std::chrono::duration<double> processing_time = t_end - t_start;
 }
 
-void GBPL::extractPath(PlannerClass &Ta, PlannerClass &Tb,
-                       std::vector<State> &state_sequence,
-                       std::vector<Action> &action_sequence,
-                       const PlannerConfig &planner_config) {
+void GBPL::extractPath(PlannerClass& Ta, PlannerClass& Tb,
+                       std::vector<State>& state_sequence,
+                       std::vector<Action>& action_sequence,
+                       const PlannerConfig& planner_config) {
   // Get both paths, remove the back of path_b and reverse it to align with path
   // a
   std::vector<int> path_a = pathFromStart(Ta, Ta.getNumVertices() - 1);
@@ -146,20 +149,21 @@ void GBPL::extractPath(PlannerClass &Ta, PlannerClass &Tb,
   postProcessPath(state_sequence, action_sequence, planner_config);
 }
 
-void GBPL::extractClosestPath(PlannerClass &Ta, const State &s_goal,
-                              std::vector<State> &state_sequence,
-                              std::vector<Action> &action_sequence,
-                              const PlannerConfig &planner_config) {
+void GBPL::extractClosestPath(PlannerClass& Ta, const State& s_goal,
+                              std::vector<State>& state_sequence,
+                              std::vector<Action>& action_sequence,
+                              const PlannerConfig& planner_config) {
   std::vector<int> path_a = pathFromStart(Ta, Ta.getNearestNeighbor(s_goal));
   state_sequence = getStateSequence(Ta, path_a);
   action_sequence = getActionSequence(Ta, path_a);
   postProcessPath(state_sequence, action_sequence, planner_config);
 }
 
-int GBPL::findPlan(const PlannerConfig &planner_config, State s_start,
-                   State s_goal, std::vector<State> &state_sequence,
-                   std::vector<Action> &action_sequence,
-                   rclcpp::Publisher<visualization_msgs::msg::MarkerArray>::SharedPtr &tree_pub) {
+int GBPL::findPlan(
+    const PlannerConfig& planner_config, State s_start, State s_goal,
+    std::vector<State>& state_sequence, std::vector<Action>& action_sequence,
+    rclcpp::Publisher<visualization_msgs::msg::MarkerArray>::SharedPtr&
+        tree_pub) {
   // Perform validity checking on start and goal states
   if (!isValidState(s_start, planner_config, LEAP_STANCE)) {
     return INVALID_START_STATE;

@@ -1,7 +1,7 @@
 #include "global_body_planner/planning_utils.hpp"
 namespace planning_utils {
 
-State fullStateToState(const FullState &full_state) {
+State fullStateToState(const FullState& full_state) {
   State state;
   state.pos = full_state.pos;
   state.vel = full_state.vel;
@@ -9,7 +9,7 @@ State fullStateToState(const FullState &full_state) {
   return state;
 }
 
-FullState stateToFullState(const State &state, double roll, double pitch,
+FullState stateToFullState(const State& state, double roll, double pitch,
                            double yaw, double roll_rate, double pitch_rate,
                            double yaw_rate) {
   FullState full_state;
@@ -32,7 +32,7 @@ FullState stateToFullState(const State &state, double roll, double pitch,
   return full_state;
 }
 
-void eigenToFullState(const Eigen::VectorXd &s_eig, FullState &s) {
+void eigenToFullState(const Eigen::VectorXd& s_eig, FullState& s) {
   if (s_eig.size() != 12) {
     std::cerr << "Eigen::VectorXd is incorrect size" << std::endl;
   }
@@ -42,7 +42,7 @@ void eigenToFullState(const Eigen::VectorXd &s_eig, FullState &s) {
   s.ang_vel = s_eig.segment(9, 3);
 }
 
-Eigen::VectorXd fullStateToEigen(const FullState &s) {
+Eigen::VectorXd fullStateToEigen(const FullState& s) {
   Eigen::VectorXd s_eig(12);
   s_eig.segment(0, 3) = s.pos;
   s_eig.segment(3, 3) = s.ang;
@@ -51,7 +51,7 @@ Eigen::VectorXd fullStateToEigen(const FullState &s) {
   return s_eig;
 }
 
-void vectorToFullState(const std::vector<double> &v, FullState &s) {
+void vectorToFullState(const std::vector<double>& v, FullState& s) {
   if (v.size() != 12) {
     std::cerr << "Error: std::vector<double> is incorrect size" << std::endl;
   }
@@ -69,9 +69,9 @@ void vectorToFullState(const std::vector<double> &v, FullState &s) {
   s.ang_vel[2] = v[11];
 }
 
-void flipDirection(State &state) { state.vel = -state.vel; }
+void flipDirection(State& state) { state.vel = -state.vel; }
 
-void flipDirection(Action &action) {
+void flipDirection(Action& action) {
   // Reverse ground reaction forces (works if GRF is symmetric)
   GRF temp_grf = action.grf_0;
   action.grf_0 = action.grf_f;
@@ -90,19 +90,19 @@ void flipDirection(Action &action) {
   }
 }
 
-void printState(const State &s) {
+void printState(const State& s) {
   std::cout << "STATE: pos = " << s.pos.transpose()
             << ", vel = " << s.vel.transpose() << std::endl;
 }
 
-void printFullState(const FullState &s) {
+void printFullState(const FullState& s) {
   std::cout << "STATE pos = " << s.pos.transpose()
             << ", vel = " << s.vel.transpose() << std::endl;
   std::cout << "ang = " << s.ang.transpose()
             << ", ang_vel = " << s.ang_vel.transpose() << std::endl;
 }
 
-void printAction(const Action &a) {
+void printAction(const Action& a) {
   std::cout << "ACTION: grf_0 = " << a.grf_0.transpose()
             << ", grf_f = " << a.grf_f.transpose() << std::endl;
   std::cout << "Phase durations = " << a.t_s_leap << ", " << a.t_f << ", "
@@ -110,42 +110,42 @@ void printAction(const Action &a) {
   std::cout << "Terminal velocities: " << a.dz_0 << ", " << a.dz_f << std::endl;
 }
 
-void printStateNewline(const State &s) {
+void printStateNewline(const State& s) {
   printState(s);
   std::cout << std::endl;
 }
 
-void printActionNewline(const Action &a) {
+void printActionNewline(const Action& a) {
   printAction(a);
   std::cout << std::endl;
 }
 
-void printStateSequence(const std::vector<State> &state_sequence) {
+void printStateSequence(const std::vector<State>& state_sequence) {
   for (State s : state_sequence) printState(s);
 }
 
-void printInterpStateSequence(const std::vector<State> &state_sequence,
-                              std::vector<double> &interp_t) {
+void printInterpStateSequence(const std::vector<State>& state_sequence,
+                              std::vector<double>& interp_t) {
   for (int i = 0; i < state_sequence.size(); i++) {
     std::cout << interp_t[i] << "\t";
     printStateNewline(state_sequence[i]);
   }
 }
 
-void printActionSequence(const std::vector<Action> &action_sequence) {
+void printActionSequence(const std::vector<Action>& action_sequence) {
   for (Action a : action_sequence) printActionNewline(a);
 }
 
-double poseDistance(const State &s1, const State &s2) {
+double poseDistance(const State& s1, const State& s2) {
   return (s1.pos - s2.pos).norm();
 }
 
-double poseDistance(const FullState &s1, const FullState &s2) {
+double poseDistance(const FullState& s1, const FullState& s2) {
   return (s1.pos - s2.pos).norm();
 }
 
-double poseDistance(const std::vector<double> &v1,
-                    const std::vector<double> &v2) {
+double poseDistance(const std::vector<double>& v1,
+                    const std::vector<double>& v2) {
   double sum = 0;
 
   if (v1.size() < 3 || v2.size() < 3) {
@@ -160,17 +160,17 @@ double poseDistance(const std::vector<double> &v1,
   return dist;
 }
 
-double stateDistance(const State &q1, const State &q2) {
+double stateDistance(const State& q1, const State& q2) {
   double w_pos = 1;
   double w_vel = 1;
 
   return ((q2.pos - q1.pos).norm() * w_pos + (q2.vel - q1.vel).norm() * w_vel);
 }
 
-void addFullStates(const FullState &start_state,
+void addFullStates(const FullState& start_state,
                    std::vector<State> interp_reduced_plan, double dt,
-                   std::vector<FullState> &interp_full_plan,
-                   const PlannerConfig &planner_config) {
+                   std::vector<FullState>& interp_full_plan,
+                   const PlannerConfig& planner_config) {
   int num_states = interp_reduced_plan.size();
 
   // Set roll and roll rate to zero
@@ -264,8 +264,8 @@ void addFullStates(const FullState &start_state,
   }
 }
 
-GRF getGRF(const Action &a, double t, int phase,
-           const PlannerConfig &planner_config) {
+GRF getGRF(const Action& a, double t, int phase,
+           const PlannerConfig& planner_config) {
   double m = planner_config.mass;
   double g = planner_config.g;
 
@@ -290,13 +290,13 @@ GRF getGRF(const Action &a, double t, int phase,
   return grf;
 }
 
-Eigen::Vector3d getAcceleration(const Action &a, double t, int phase,
-                                const PlannerConfig &planner_config) {
+Eigen::Vector3d getAcceleration(const Action& a, double t, int phase,
+                                const PlannerConfig& planner_config) {
   return (getGRF(a, t, phase, planner_config) / planner_config.mass +
           planner_config.g_vec);
 }
 
-double getPitchFromState(const State &s, const PlannerConfig &planner_config) {
+double getPitchFromState(const State& s, const PlannerConfig& planner_config) {
   Eigen::Vector3d surf_norm = getSurfaceNormalFiltered(s, planner_config);
 
   // Get magnitude of lateral velociy
@@ -311,7 +311,7 @@ double getPitchFromState(const State &s, const PlannerConfig &planner_config) {
   return atan2(v_proj, surf_norm[2]);
 }
 
-double getDzFromState(const State &s, const PlannerConfig &planner_config) {
+double getDzFromState(const State& s, const PlannerConfig& planner_config) {
   Eigen::Vector3d surf_norm = getSurfaceNormalFiltered(s, planner_config);
 
   return ((surf_norm[2] <= 0)
@@ -319,7 +319,7 @@ double getDzFromState(const State &s, const PlannerConfig &planner_config) {
               : -(s.vel.head<2>().dot(surf_norm.head<2>()) / surf_norm[2]));
 }
 
-void setDz(State &s, const PlannerConfig &planner_config) {
+void setDz(State& s, const PlannerConfig& planner_config) {
   Eigen::Vector3d surf_norm = getSurfaceNormalFiltered(s, planner_config);
 
   s.vel[2] = (surf_norm[2] <= 0)
@@ -327,19 +327,19 @@ void setDz(State &s, const PlannerConfig &planner_config) {
                  : -(s.vel.head<2>().dot(surf_norm.head<2>()) / surf_norm[2]);
 }
 
-void setDz(State &s, const Eigen::Vector3d &surf_norm) {
+void setDz(State& s, const Eigen::Vector3d& surf_norm) {
   s.vel[2] = (surf_norm[2] <= 0)
                  ? std::numeric_limits<double>::max()
                  : (s.vel.head<2>().dot(surf_norm.head<2>()) / surf_norm[2]);
 }
 
-State interpStateActionPair(const State &s_in, const Action &a, double t0,
-                            double dt, std::vector<State> &interp_reduced_plan,
-                            std::vector<GRF> &interp_GRF,
-                            std::vector<double> &interp_t,
-                            std::vector<int> &interp_primitive_id,
-                            std::vector<double> &interp_length,
-                            const PlannerConfig &planner_config) {
+State interpStateActionPair(const State& s_in, const Action& a, double t0,
+                            double dt, std::vector<State>& interp_reduced_plan,
+                            std::vector<GRF>& interp_GRF,
+                            std::vector<double>& interp_t,
+                            std::vector<int>& interp_primitive_id,
+                            std::vector<double>& interp_length,
+                            const PlannerConfig& planner_config) {
   double t_s = a.t_s_leap;
   double t_f = a.t_f;
   double t_s_land = a.t_s_land;
@@ -406,13 +406,13 @@ State interpStateActionPair(const State &s_in, const Action &a, double t0,
 }
 
 void getInterpPlan(FullState start_state,
-                   const std::vector<State> &state_sequence,
-                   const std::vector<Action> &action_sequence, double dt,
-                   double t0, std::vector<FullState> &interp_full_plan,
-                   std::vector<GRF> &interp_GRF, std::vector<double> &interp_t,
-                   std::vector<int> &interp_primitive_id,
-                   std::vector<double> &interp_length,
-                   const PlannerConfig &planner_config) {
+                   const std::vector<State>& state_sequence,
+                   const std::vector<Action>& action_sequence, double dt,
+                   double t0, std::vector<FullState>& interp_full_plan,
+                   std::vector<GRF>& interp_GRF, std::vector<double>& interp_t,
+                   std::vector<int>& interp_primitive_id,
+                   std::vector<double>& interp_length,
+                   const PlannerConfig& planner_config) {
   std::vector<State> interp_reduced_plan;
 
   // Loop through state action pairs, interp each and add to the path
@@ -439,8 +439,8 @@ void getInterpPlan(FullState start_state,
                 planner_config);
 }
 
-Eigen::Vector3d rotateGRF(const Eigen::Vector3d &surface_norm_eig,
-                          const Eigen::Vector3d &grf_eig) {
+Eigen::Vector3d rotateGRF(const Eigen::Vector3d& surface_norm_eig,
+                          const Eigen::Vector3d& grf_eig) {
   // Declare unit Z vector
   Eigen::Vector3d surface_norm_unit_eig, Zs;
   Zs << 0, 0, 1;
@@ -470,8 +470,8 @@ Eigen::Vector3d rotateGRF(const Eigen::Vector3d &surface_norm_eig,
   return grf_spatial_eig;
 }
 
-State applyStance(const State &s, const Action &a, double t, int phase,
-                  const PlannerConfig &planner_config) {
+State applyStance(const State& s, const Action& a, double t, int phase,
+                  const PlannerConfig& planner_config) {
   double g = planner_config.g;
   State s_new = s;
 
@@ -511,15 +511,15 @@ State applyStance(const State &s, const Action &a, double t, int phase,
   return s_new;
 }
 
-State applyStance(const State &s, const Action &a, int phase,
-                  const PlannerConfig &planner_config) {
+State applyStance(const State& s, const Action& a, int phase,
+                  const PlannerConfig& planner_config) {
   double t_s =
       (phase == CONNECT || phase == LEAP_STANCE) ? a.t_s_leap : a.t_s_land;
   return applyStance(s, a, t_s, phase, planner_config);
 }
 
-State applyFlight(const State &s, double t_f,
-                  const PlannerConfig &planner_config) {
+State applyFlight(const State& s, double t_f,
+                  const PlannerConfig& planner_config) {
   State s_new;
   s_new.pos = s.pos + s.vel * t_f + 0.5 * planner_config.g_vec * t_f * t_f;
   s_new.vel = s.vel + planner_config.g_vec * t_f;
@@ -527,8 +527,8 @@ State applyFlight(const State &s, double t_f,
   return s_new;
 }
 
-State applyAction(const State &s, const Action &a,
-                  const PlannerConfig &planner_config) {
+State applyAction(const State& s, const Action& a,
+                  const PlannerConfig& planner_config) {
   State s_new;
 
   if (a.t_f == 0) {
@@ -542,8 +542,8 @@ State applyAction(const State &s, const Action &a,
   return s_new;
 }
 
-bool getRandomLeapAction(const State &s, const Eigen::Vector3d &surf_norm,
-                         Action &a, const PlannerConfig &planner_config) {
+bool getRandomLeapAction(const State& s, const Eigen::Vector3d& surf_norm,
+                         Action& a, const PlannerConfig& planner_config) {
   // Declare variables;
   const double g = planner_config.g;
   const double m = planner_config.mass;
@@ -567,8 +567,8 @@ bool getRandomLeapAction(const State &s, const Eigen::Vector3d &surf_norm,
   return is_valid;
 }
 
-bool refineAction(const State &s, Action &a,
-                  const PlannerConfig &planner_config) {
+bool refineAction(const State& s, Action& a,
+                  const PlannerConfig& planner_config) {
   if (!refineStance(s, LEAP_STANCE, a, planner_config)) return false;
 
   State s_leap = applyStance(s, a, LEAP_STANCE, planner_config);
@@ -587,15 +587,15 @@ bool refineAction(const State &s, Action &a,
   return true;
 }
 
-bool refineStance(const State &s, int phase, Action &a,
-                  const PlannerConfig &planner_config) {
+bool refineStance(const State& s, int phase, Action& a,
+                  const PlannerConfig& planner_config) {
 #ifdef DEBUG_REFINE_STATE
   std::cout << "Starting stance refine, phase = " << phase << std::endl;
 #endif
 
   // Load parameters (use references for action params that may change)
-  double &t_s = (phase == LEAP_STANCE) ? a.t_s_leap : a.t_s_land;
-  GRF &grf_stance = (phase == LEAP_STANCE) ? a.grf_0 : a.grf_f;
+  double& t_s = (phase == LEAP_STANCE) ? a.t_s_leap : a.t_s_land;
+  GRF& grf_stance = (phase == LEAP_STANCE) ? a.grf_0 : a.grf_f;
   double dz_0 = (phase == LEAP_STANCE) ? a.dz_0 : s.vel[2];
   double g = planner_config.g;
 #ifdef DEBUG_REFINE_STATE
@@ -733,8 +733,8 @@ bool refineStance(const State &s, int phase, Action &a,
   return true;
 }
 
-bool refineFlight(const State &s, double &t_f,
-                  const PlannerConfig &planner_config) {
+bool refineFlight(const State& s, double& t_f,
+                  const PlannerConfig& planner_config) {
 #ifdef DEBUG_REFINE_STATE
   std::cout << "starting flight refine" << std::endl;
 #endif
@@ -770,7 +770,7 @@ bool refineFlight(const State &s, double &t_f,
   return is_valid;
 }
 
-bool isValidAction(const Action &a, const PlannerConfig &planner_config) {
+bool isValidAction(const Action& a, const PlannerConfig& planner_config) {
   if ((a.t_s_leap <= 0) || (a.t_f < 0)) return false;
 
   double m = planner_config.mass;
@@ -803,14 +803,14 @@ bool isValidAction(const Action &a, const PlannerConfig &planner_config) {
   return true;
 }
 
-bool isValidState(const State &s, const PlannerConfig &planner_config,
+bool isValidState(const State& s, const PlannerConfig& planner_config,
                   int phase) {
   double dummy_max_valid_z = 0;
   return isValidState(s, planner_config, phase, dummy_max_valid_z);
 }
 
-bool isValidState(const State &s, const PlannerConfig &planner_config,
-                  int phase, double &max_valid_z) {
+bool isValidState(const State& s, const PlannerConfig& planner_config,
+                  int phase, double& max_valid_z) {
   // Check elevation independent constraints first (out of range, velocity)
   if (!isInMap(s, planner_config)) {
 #ifdef DEBUG_INVALID_STATE
@@ -956,9 +956,9 @@ bool isValidState(const State &s, const PlannerConfig &planner_config,
   return true;
 }
 
-bool isValidStateActionPair(const State &s_in, const Action &a,
-                            StateActionResult &result,
-                            const PlannerConfig &planner_config) {
+bool isValidStateActionPair(const State& s_in, const Action& a,
+                            StateActionResult& result,
+                            const PlannerConfig& planner_config) {
   // Declare stance and flight times
   double t_s = a.t_s_leap;
   double t_f = a.t_f;
@@ -1081,11 +1081,13 @@ bool isValidStateActionPair(const State &s_in, const Action &a,
   return true;
 }
 
-void publishStateActionPair(const State &s, const Action &a,
-                            const State &s_goal,
-                            const PlannerConfig &planner_config,
-                            visualization_msgs::msg::MarkerArray &tree_viz_msg,
-                            rclcpp::Publisher<visualization_msgs::msg::MarkerArray>::SharedPtr &tree_pub, rclcpp::Node::SharedPtr &node) {
+void publishStateActionPair(
+    const State& s, const Action& a, const State& s_goal,
+    const PlannerConfig& planner_config,
+    visualization_msgs::msg::MarkerArray& tree_viz_msg,
+    rclcpp::Publisher<visualization_msgs::msg::MarkerArray>::SharedPtr&
+        tree_pub,
+    rclcpp::Node::SharedPtr& node) {
   // Confirm ros is ok
   if (!rclcpp::ok()) return;
 
@@ -1146,7 +1148,8 @@ void publishStateActionPair(const State &s, const Action &a,
       color.g = 25.0 / 255.0;
       color.b = 46.0 / 255.0;
     } else {
-      std::cerr << "Error: Invalid primitive ID received in planning utils" << std::endl;
+      std::cerr << "Error: Invalid primitive ID received in planning utils"
+                << std::endl;
     }
 
     // Add the point and the color

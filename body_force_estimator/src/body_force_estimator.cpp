@@ -11,30 +11,38 @@ double f_toe_MO[12];
 // Planned liftoff time
 double t_up[4];
 
-BodyForceEstimator::BodyForceEstimator(rclcpp::Node::SharedPtr node): node_(node) {
-
+BodyForceEstimator::BodyForceEstimator(rclcpp::Node::SharedPtr node)
+    : node_(node) {
   // Load rosparams from parameter server
   std::string robot_state_topic, body_force_topic, toe_force_topic,
       local_plan_topic;
-  quad_utils::loadROSParam(node_, "topics.state.ground_truth", robot_state_topic);
+  quad_utils::loadROSParam(node_, "topics.state.ground_truth",
+                           robot_state_topic);
   quad_utils::loadROSParam(node_, "topics.local_plan", local_plan_topic);
   quad_utils::loadROSParam(node_, "topics.body_force.joint_torques",
                            body_force_topic);
   quad_utils::loadROSParam(node_, "topics.body_force.toe_forces",
                            toe_force_topic);
-  quad_utils::loadROSParamDefault(node_, "body_force_estimator.update_rate", update_rate_, 250.0);
-  quad_utils::loadROSParamDefault(node_, "body_force_estimator.K_O", K_O_, 50.0);
-  quad_utils::loadROSParamDefault(node_, "body_force_estimator.cancel_friction", cancel_friction_, 1);
+  quad_utils::loadROSParamDefault(node_, "body_force_estimator.update_rate",
+                                  update_rate_, 250.0);
+  quad_utils::loadROSParamDefault(node_, "body_force_estimator.K_O", K_O_,
+                                  50.0);
+  quad_utils::loadROSParamDefault(node_, "body_force_estimator.cancel_friction",
+                                  cancel_friction_, 1);
 
   // Setup pubs and subs
   robot_state_sub_ = node_->create_subscription<quad_msgs::msg::RobotState>(
-      robot_state_topic, rclcpp::QoS(1).best_effort().durability_volatile(), 
-        std::bind(&BodyForceEstimator::robotStateCallback, this, std::placeholders::_1));
-  local_plan_sub_ = node_->create_subscription<quad_msgs::msg::RobotPlan>(local_plan_topic, 10,
-                                  std::bind(&BodyForceEstimator::localPlanCallback, this, std::placeholders::_1));
-  body_force_pub_ =
-      node_->create_publisher<quad_msgs::msg::BodyForceEstimate>(body_force_topic, 10);
-  toe_force_pub_ = node_->create_publisher<quad_msgs::msg::GRFArray>(toe_force_topic, 10);
+      robot_state_topic, rclcpp::QoS(1).best_effort().durability_volatile(),
+      std::bind(&BodyForceEstimator::robotStateCallback, this,
+                std::placeholders::_1));
+  local_plan_sub_ = node_->create_subscription<quad_msgs::msg::RobotPlan>(
+      local_plan_topic, 10,
+      std::bind(&BodyForceEstimator::localPlanCallback, this,
+                std::placeholders::_1));
+  body_force_pub_ = node_->create_publisher<quad_msgs::msg::BodyForceEstimate>(
+      body_force_topic, 10);
+  toe_force_pub_ =
+      node_->create_publisher<quad_msgs::msg::GRFArray>(toe_force_topic, 10);
 }
 
 void BodyForceEstimator::robotStateCallback(
@@ -73,37 +81,45 @@ void BodyForceEstimator::update() {
   // Interpolate the local plan to get the reference state
   quad_msgs::msg::RobotState ref_state_msg;
   rclcpp::Time t_first_state(last_local_plan_msg_->states.front().header.stamp);
-  double t_now = (node_->now() - rclcpp::Time(last_local_plan_msg_->state_timestamp))
-                     .seconds();  // Use time of state - RECOMMENDED
+  double t_now =
+      (node_->now() - rclcpp::Time(last_local_plan_msg_->state_timestamp))
+          .seconds();  // Use time of state - RECOMMENDED
   if ((t_now <
-       (rclcpp::Time(last_local_plan_msg_->states.front().header.stamp) - t_first_state)
+       (rclcpp::Time(last_local_plan_msg_->states.front().header.stamp) -
+        t_first_state)
            .seconds()) ||
-      (t_now >
-       (rclcpp::Time(last_local_plan_msg_->states.back().header.stamp) - t_first_state)
-           .seconds())) {
-    RCLCPP_ERROR(node_->get_logger(), "ID node couldn't find the correct ref state!");
-    std::cout << "t_now " << t_now << ", plan front "
-              << (rclcpp::Time(last_local_plan_msg_->states.front().header.stamp) -
-                  t_first_state)
-                     .seconds()
-              << ", plan back "
-              << (rclcpp::Time(last_local_plan_msg_->states.back().header.stamp) -
-                  t_first_state)
-                     .seconds()
-              << std::endl;
+      (t_now > (rclcpp::Time(last_local_plan_msg_->states.back().header.stamp) -
+                t_first_state)
+                   .seconds())) {
+    RCLCPP_ERROR(node_->get_logger(),
+                 "ID node couldn't find the correct ref state!");
+    std::cout
+        << "t_now " << t_now << ", plan front "
+        << (rclcpp::Time(last_local_plan_msg_->states.front().header.stamp) -
+            t_first_state)
+               .seconds()
+        << ", plan back "
+        << (rclcpp::Time(last_local_plan_msg_->states.back().header.stamp) -
+            t_first_state)
+               .seconds()
+        << std::endl;
   }
   for (size_t i = 0; i < last_local_plan_msg_->states.size() - 1; i++) {
-    if ((t_now >= (rclcpp::Time(last_local_plan_msg_->states[i].header.stamp) - t_first_state)
+    if ((t_now >= (rclcpp::Time(last_local_plan_msg_->states[i].header.stamp) -
+                   t_first_state)
                       .seconds()) &&
         (t_now <
-         (rclcpp::Time(last_local_plan_msg_->states[i + 1].header.stamp) - t_first_state)
+         (rclcpp::Time(last_local_plan_msg_->states[i + 1].header.stamp) -
+          t_first_state)
              .seconds())) {
       double t_interp =
-          (t_now -
-           (rclcpp::Time(last_local_plan_msg_->states[i].header.stamp) - t_first_state)
-               .seconds()) /
-          (rclcpp::Time(last_local_plan_msg_->states[i + 1].header.stamp).seconds() -
-           rclcpp::Time(last_local_plan_msg_->states[i].header.stamp).seconds());
+          (t_now - (rclcpp::Time(last_local_plan_msg_->states[i].header.stamp) -
+                    t_first_state)
+                       .seconds()) /
+          (rclcpp::Time(last_local_plan_msg_->states[i + 1].header.stamp)
+               .seconds() -
+           rclcpp::Time(last_local_plan_msg_->states[i].header.stamp)
+               .seconds());
 
       // Linearly interpolate between states
       quad_utils::interpRobotState(last_local_plan_msg_->states[i],

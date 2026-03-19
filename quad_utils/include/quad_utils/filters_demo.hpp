@@ -16,16 +16,14 @@
 #include <rclcpp/rclcpp.hpp>
 #include <string>
 
-namespace grid_map_demos
-{
+namespace grid_map_demos {
 
 /*!
  * Applies a chain of grid map filters to a topic and
  * republishes the resulting grid map.
  */
-class FiltersDemo : public rclcpp::Node
-{
-public:
+class FiltersDemo : public rclcpp::Node {
+ public:
   /*!
    * Constructor.
    */
@@ -48,7 +46,7 @@ public:
    */
   void callback(const grid_map_msgs::msg::GridMap::SharedPtr message);
 
-private:
+ private:
   //! Name of the input grid map topic.
   std::string inputTopic_;
 

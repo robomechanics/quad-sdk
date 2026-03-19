@@ -4,12 +4,13 @@
 #include <ament_index_cpp/get_package_share_directory.hpp>
 
 TEST(RVizInterface, testTrue) {
-  if (!rclcpp::ok()){
-    rclcpp::init(0,nullptr);
+  if (!rclcpp::ok()) {
+    rclcpp::init(0, nullptr);
   }
 
   // Load the Params Needed to Successfully Launch the Node
-  std::string pkg_share = ament_index_cpp::get_package_share_directory("quad_utils");
+  std::string pkg_share =
+      ament_index_cpp::get_package_share_directory("quad_utils");
   std::string params_file = pkg_share + "/config/rviz_visualization.yaml";
 
   rclcpp::NodeOptions options;

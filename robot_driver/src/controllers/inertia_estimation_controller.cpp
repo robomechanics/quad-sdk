@@ -1,15 +1,17 @@
 #include "robot_driver/controllers/inertia_estimation_controller.hpp"
 
-InertiaEstimationController::InertiaEstimationController(rclcpp::Node::SharedPtr node, const std::string& robot_ns,
-                                                        std::shared_ptr<quad_utils::QuadKD2> quadKD) : LegController(node, robot_ns, quadKD) {}
+InertiaEstimationController::InertiaEstimationController(
+    rclcpp::Node::SharedPtr node, const std::string& robot_ns,
+    std::shared_ptr<quad_utils::QuadKD2> quadKD)
+    : LegController(node, robot_ns, quadKD) {}
 
 bool InertiaEstimationController::computeLegCommandArray(
-    const quad_msgs::msg::RobotState &robot_state_msg,
-    quad_msgs::msg::LegCommandArray &leg_command_array_msg,
-    quad_msgs::msg::GRFArray &grf_array_msg) {
+    const quad_msgs::msg::RobotState& robot_state_msg,
+    quad_msgs::msg::LegCommandArray& leg_command_array_msg,
+    quad_msgs::msg::GRFArray& grf_array_msg) {
   if ((last_local_plan_msg_ == NULL) ||
-      ((node_->now() - rclcpp::Time(last_local_plan_msg_->header.stamp)).seconds() >=
-       0.1)) {
+      ((node_->now() - rclcpp::Time(last_local_plan_msg_->header.stamp))
+           .seconds() >= 0.1)) {
     return false;
   } else {
     leg_command_array_msg.leg_commands.resize(num_feet_);
@@ -36,36 +38,46 @@ bool InertiaEstimationController::computeLegCommandArray(
         tau_swing_leg_array(3 * num_feet_);
 
     // Get reference state and grf from local plan or traj + grf messages
-    rclcpp::Time t_first_state(last_local_plan_msg_->states.front().header.stamp);
-    double t_now = (node_->now() - rclcpp::Time(last_local_plan_msg_->state_timestamp))
-                       .seconds();  // Use time of state - RECOMMENDED
+    rclcpp::Time t_first_state(
+        last_local_plan_msg_->states.front().header.stamp);
+    double t_now =
+        (node_->now() - rclcpp::Time(last_local_plan_msg_->state_timestamp))
+            .seconds();  // Use time of state - RECOMMENDED
     // double t_now = (ros::Time::now() - last_local_plan_time_).toSec(); // Use
     // time of plan receipt double t_now = (ros::Time::now() -
     // t_first_state).toSec(); // Use time of first state in plan
 
     if ((t_now <
-         (rclcpp::Time(last_local_plan_msg_->states.front().header.stamp) - t_first_state)
+         (rclcpp::Time(last_local_plan_msg_->states.front().header.stamp) -
+          t_first_state)
              .seconds()) ||
         (t_now >
-         (rclcpp::Time(last_local_plan_msg_->states.back().header.stamp) - t_first_state)
+         (rclcpp::Time(last_local_plan_msg_->states.back().header.stamp) -
+          t_first_state)
              .seconds())) {
-      RCLCPP_ERROR(node_->get_logger(), "ID node couldn't find the correct ref state!");
+      RCLCPP_ERROR(node_->get_logger(),
+                   "ID node couldn't find the correct ref state!");
     }
 
     // Interpolate the local plan to get the reference state and ff GRF
     for (size_t i = 0; i < last_local_plan_msg_->states.size() - 1; i++) {
       if ((t_now >=
-           (rclcpp::Time(last_local_plan_msg_->states[i].header.stamp) - t_first_state)
+           (rclcpp::Time(last_local_plan_msg_->states[i].header.stamp) -
+            t_first_state)
                .seconds()) &&
           (t_now <
-           (rclcpp::Time(last_local_plan_msg_->states[i + 1].header.stamp) - t_first_state)
+           (rclcpp::Time(last_local_plan_msg_->states[i + 1].header.stamp) -
+            t_first_state)
                .seconds())) {
         double t_interp =
             (t_now -
-             (rclcpp::Time(last_local_plan_msg_->states[i].header.stamp) - t_first_state)
+             (rclcpp::Time(last_local_plan_msg_->states[i].header.stamp) -
+              t_first_state)
                  .seconds()) /
-            (rclcpp::Time(last_local_plan_msg_->states[i + 1].header.stamp).seconds() -
-             rclcpp::Time(last_local_plan_msg_->states[i].header.stamp).seconds());
+            (rclcpp::Time(last_local_plan_msg_->states[i + 1].header.stamp)
+                 .seconds() -
+             rclcpp::Time(last_local_plan_msg_->states[i].header.stamp)
+                 .seconds());
 
         // Linearly interpolate between states
         quad_utils::interpRobotState(last_local_plan_msg_->states[i],
@@ -132,19 +144,21 @@ bool InertiaEstimationController::computeLegCommandArray(
 
       leg_command_array_msg.leg_commands.at(i)
           .motor_commands.at(0)
-          .pos_setpoint = (0.2*sin(4*t)
-          +0.4*cos(15*sin(2.6*t)))*(sin(5.4*t) < 0.8)
-          +(sin(5.4*t) >= 0.8)*(0.5*sin(0.7*t));
+          .pos_setpoint = (0.2 * sin(4 * t) + 0.4 * cos(15 * sin(2.6 * t))) *
+                              (sin(5.4 * t) < 0.8) +
+                          (sin(5.4 * t) >= 0.8) * (0.5 * sin(0.7 * t));
       leg_command_array_msg.leg_commands.at(i)
           .motor_commands.at(1)
-          .pos_setpoint = (-1.0*cos(6*t)+0.3
-          -0.5*cos(20*sin(2.2*t)))*(sin(6.5*t) < 0.8)
-          +(sin(6.5*t) >= 0.8)*(sin(0.9*t)+0.5);
+          .pos_setpoint =
+          (-1.0 * cos(6 * t) + 0.3 - 0.5 * cos(20 * sin(2.2 * t))) *
+              (sin(6.5 * t) < 0.8) +
+          (sin(6.5 * t) >= 0.8) * (sin(0.9 * t) + 0.5);
       leg_command_array_msg.leg_commands.at(i)
           .motor_commands.at(2)
-          .pos_setpoint = (-0.8*cos(10*t)+1.3
-          -0.5*cos(25*sin(1.4*t)))*(sin(7*t) < 0.8)
-          +(sin(7*t) >= 0.8)*(0.7*sin(1.1*t)+0.7);
+          .pos_setpoint =
+          (-0.8 * cos(10 * t) + 1.3 - 0.5 * cos(25 * sin(1.4 * t))) *
+              (sin(7 * t) < 0.8) +
+          (sin(7 * t) >= 0.8) * (0.7 * sin(1.1 * t) + 0.7);
 
       for (int j = 0; j < 3; ++j) {
         leg_command_array_msg.leg_commands.at(i)

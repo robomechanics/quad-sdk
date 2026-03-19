@@ -16,9 +16,11 @@ class JointController : public LegController {
    * @brief Constructor for JointController
    * @return Constructed object of type JointController
    */
-  JointController(rclcpp::Node::SharedPtr node, const std::string &robot_ns, std::shared_ptr<quad_utils::QuadKD2> quadKD);
+  JointController(rclcpp::Node::SharedPtr node, const std::string& robot_ns,
+                  std::shared_ptr<quad_utils::QuadKD2> quadKD);
 
-  void updateSingleJointCommand(const geometry_msgs::msg::Vector3::SharedPtr &msg);
+  void updateSingleJointCommand(
+      const geometry_msgs::msg::Vector3::SharedPtr& msg);
 
   /**
    * @brief Compute the leg command array message for a given current state and
@@ -27,9 +29,10 @@ class JointController : public LegController {
    * dynamics and including reference setpoints for each joint
    * @param[out] grf_array_msg GRF command message
    */
-  bool computeLegCommandArray(const quad_msgs::msg::RobotState &robot_state_msg,
-                              quad_msgs::msg::LegCommandArray &leg_command_array_msg,
-                              quad_msgs::msg::GRFArray &grf_array_msg);
+  bool computeLegCommandArray(
+      const quad_msgs::msg::RobotState& robot_state_msg,
+      quad_msgs::msg::LegCommandArray& leg_command_array_msg,
+      quad_msgs::msg::GRFArray& grf_array_msg);
 
  private:
   /// Leg index for controlled joint

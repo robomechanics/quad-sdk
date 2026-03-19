@@ -240,7 +240,6 @@ void quadNLP::loadCasadiFuncs() {
 
   // Iterate through all functions and compute metadata
   for (int sys_id = 0; sys_id < num_sys_id_; sys_id++) {
-
     // Resize vector data
     iRow_mat_[sys_id].resize(num_func_id_);
     jCol_mat_[sys_id].resize(num_func_id_);
@@ -249,7 +248,6 @@ void quadNLP::loadCasadiFuncs() {
     relaxed_idx_in_full_sparse_[sys_id].resize(num_func_id_);
 
     for (int func_id = 0; func_id < num_func_id_; func_id++) {
-
       // Extract data
       const casadi_int* sp_i;
       sp_i = eval_sparsity_vec_[sys_id][func_id](0);
@@ -278,7 +276,7 @@ void quadNLP::loadCasadiFuncs() {
           if ((func_id == JAC) &&
               (row[j] >= relaxed_primal_constraint_idxs_in_element_(0)) &&
               (row[j] <=
-               relaxed_primal_constraint_idxs_in_element_[g_relaxed_ - 1])) { 
+               relaxed_primal_constraint_idxs_in_element_[g_relaxed_ - 1])) {
             iRow_mat_relaxed_[sys_id][func_id](idx_relaxed) =
                 row[j] - relaxed_primal_constraint_idxs_in_element_(0);
             jCol_mat_relaxed_[sys_id][func_id](idx_relaxed) = i;

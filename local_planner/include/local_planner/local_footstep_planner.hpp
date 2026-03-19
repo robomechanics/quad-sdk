@@ -47,8 +47,8 @@ class LocalFootstepPlanner {
    * timesteps
    */
   void setTemporalParams(double dt, int period, int horizon_length,
-                         const std::vector<double> &duty_cycles,
-                         const std::vector<double> &phase_offsets);
+                         const std::vector<double>& duty_cycles,
+                         const std::vector<double>& phase_offsets);
 
   /**
    * @brief Set the spatial parameters of this object
@@ -79,9 +79,9 @@ class LocalFootstepPlanner {
    * @param[in] foot_positions_world Foot positions in the world frame
    * @param[out] foot_positions_body Foot positions in the body frame
    */
-  void getFootPositionsBodyFrame(const Eigen::VectorXd &body_plan,
-                                 const Eigen::VectorXd &foot_positions_world,
-                                 Eigen::VectorXd &foot_positions_body);
+  void getFootPositionsBodyFrame(const Eigen::VectorXd& body_plan,
+                                 const Eigen::VectorXd& foot_positions_world,
+                                 Eigen::VectorXd& foot_positions_body);
 
   /**
    * @brief Transform the entire foot plan from the world to the body frame
@@ -89,21 +89,21 @@ class LocalFootstepPlanner {
    * @param[in] foot_positions_world Foot positions in the world frame
    * @param[out] foot_positions_body Foot positions in the body frame
    */
-  void getFootPositionsBodyFrame(const Eigen::MatrixXd &body_plan,
-                                 const Eigen::MatrixXd &foot_positions_world,
-                                 Eigen::MatrixXd &foot_positions_body);
+  void getFootPositionsBodyFrame(const Eigen::MatrixXd& body_plan,
+                                 const Eigen::MatrixXd& foot_positions_world,
+                                 Eigen::MatrixXd& foot_positions_body);
 
   /**
    * @brief Update the map of this object
    * @param[in] terrain The map of the terrain
    */
-  void updateMap(const FastTerrainMap &terrain);
+  void updateMap(const FastTerrainMap& terrain);
 
   /**
    * @brief Update the map of this object
    * @param[in] terrain The map of the terrain
    */
-  void updateMap(const grid_map::GridMap &terrain);
+  void updateMap(const grid_map::GridMap& terrain);
 
   /**
    * @brief Compute the contact schedule based on the current phase
@@ -114,10 +114,10 @@ class LocalFootstepPlanner {
    * @param[out] contact_schedule 2D array of contact states
    */
   void computeContactSchedule(int current_plan_index,
-                              const Eigen::MatrixXd &body_plan,
-                              const Eigen::VectorXi &ref_primitive_plan_,
+                              const Eigen::MatrixXd& body_plan,
+                              const Eigen::VectorXi& ref_primitive_plan_,
                               int control_mode,
-                              std::vector<std::vector<bool>> &contact_schedule);
+                              std::vector<std::vector<bool>>& contact_schedule);
 
   /**
    * @brief Update the discrete footstep plan with the current plan
@@ -137,17 +137,17 @@ class LocalFootstepPlanner {
    * @param[out] foot_accelerations Foot accelerations over the horizon
    */
   void computeFootPlan(int current_plan_index,
-                       const std::vector<std::vector<bool>> &contact_schedule,
-                       const Eigen::MatrixXd &body_plan,
-                       const Eigen::MatrixXd &grf_plan,
-                       const Eigen::MatrixXd &ref_body_plan,
-                       const Eigen::VectorXd &foot_positions_current,
-                       const Eigen::VectorXd &foot_velocities_current,
+                       const std::vector<std::vector<bool>>& contact_schedule,
+                       const Eigen::MatrixXd& body_plan,
+                       const Eigen::MatrixXd& grf_plan,
+                       const Eigen::MatrixXd& ref_body_plan,
+                       const Eigen::VectorXd& foot_positions_current,
+                       const Eigen::VectorXd& foot_velocities_current,
                        double first_element_duration,
-                       quad_msgs::msg::MultiFootState &past_footholds_msg,
-                       Eigen::MatrixXd &foot_positions,
-                       Eigen::MatrixXd &foot_velocities,
-                       Eigen::MatrixXd &foot_accelerations);
+                       quad_msgs::msg::MultiFootState& past_footholds_msg,
+                       Eigen::MatrixXd& foot_positions,
+                       Eigen::MatrixXd& foot_velocities,
+                       Eigen::MatrixXd& foot_accelerations);
 
   /**
    * @brief Convert the foot positions and contact schedule into ros messages
@@ -164,16 +164,16 @@ class LocalFootstepPlanner {
    * trajectories
    */
   void loadFootPlanMsgs(
-      const std::vector<std::vector<bool>> &contact_schedule,
+      const std::vector<std::vector<bool>>& contact_schedule,
       int current_plan_index, double first_element_duration,
-      const Eigen::MatrixXd &foot_positions,
-      const Eigen::MatrixXd &foot_velocities,
-      const Eigen::MatrixXd &foot_accelerations,
-      quad_msgs::msg::MultiFootPlanDiscrete &future_footholds_msg,
-      quad_msgs::msg::MultiFootPlanContinuous &foot_plan_continuous_msg);
+      const Eigen::MatrixXd& foot_positions,
+      const Eigen::MatrixXd& foot_velocities,
+      const Eigen::MatrixXd& foot_accelerations,
+      quad_msgs::msg::MultiFootPlanDiscrete& future_footholds_msg,
+      quad_msgs::msg::MultiFootPlanContinuous& foot_plan_continuous_msg);
 
   inline void printContactSchedule(
-      const std::vector<std::vector<bool>> &contact_schedule) {
+      const std::vector<std::vector<bool>>& contact_schedule) {
     for (size_t i = 0; i < contact_schedule.size(); i++) {
       for (size_t j = 0; j < contact_schedule.at(i).size(); j++) {
         if (contact_schedule[i][j]) {
@@ -210,8 +210,8 @@ class LocalFootstepPlanner {
     }
   }
 
-  inline void getTerrainSlope(double x, double y, double yaw, double &roll,
-                              double &pitch) {
+  inline void getTerrainSlope(double x, double y, double yaw, double& roll,
+                              double& pitch) {
     std::array<double, 3> surf_norm =
         this->terrain_.getSurfaceNormalFiltered(x, y);
 
@@ -234,14 +234,14 @@ class LocalFootstepPlanner {
     }
   }
 
-  inline void setTerrainMap(const grid_map::GridMap &grid_map) {
+  inline void setTerrainMap(const grid_map::GridMap& grid_map) {
     terrain_grid_ = grid_map;
   }
 
   // Compute future states by integrating linear states (hold orientation
   // states)
   inline Eigen::VectorXd computeFutureBodyPlan(
-      double step, const Eigen::VectorXd &body_plan) {
+      double step, const Eigen::VectorXd& body_plan) {
     // Initialize vector
     Eigen::VectorXd future_body_plan = body_plan;
 
@@ -272,7 +272,7 @@ class LocalFootstepPlanner {
    */
   void cubicHermiteSpline(double pos_prev, double vel_prev, double pos_next,
                           double vel_next, double phase, double duration,
-                          double &pos, double &vel, double &acc);
+                          double& pos, double& vel, double& acc);
 
   /**
    * @brief Search locally around foothold for optimal location
@@ -281,8 +281,8 @@ class LocalFootstepPlanner {
    * @return Optimized foothold
    */
   Eigen::Vector3d getNearestValidFoothold(
-      const Eigen::Vector3d &foot_position,
-      const Eigen::Vector3d &foot_position_prev_solve) const;
+      const Eigen::Vector3d& foot_position,
+      const Eigen::Vector3d& foot_position_prev_solve) const;
 
   /**
    * @brief Compute minimum covering circle problem using Welzl's algorithm
@@ -301,14 +301,14 @@ class LocalFootstepPlanner {
    * @param[in] foot_position_next Position of the next foothold
    * @return Apex height
    */
-  double computeSwingApex(int leg_idx, const Eigen::VectorXd &body_plan,
-                          const Eigen::Vector3d &foot_position_prev,
-                          const Eigen::Vector3d &foot_position_next);
+  double computeSwingApex(int leg_idx, const Eigen::VectorXd& body_plan,
+                          const Eigen::Vector3d& foot_position_prev,
+                          const Eigen::Vector3d& foot_position_next);
 
   /**
    * @brief Extract foot data from the matrix
    */
-  inline Eigen::Vector3d getFootData(const Eigen::MatrixXd &foot_state_vars,
+  inline Eigen::Vector3d getFootData(const Eigen::MatrixXd& foot_state_vars,
                                      int horizon_index, int foot_index) {
     return foot_state_vars.block<1, 3>(horizon_index, 3 * foot_index);
   }
@@ -316,7 +316,7 @@ class LocalFootstepPlanner {
   /**
    * @brief Check if a foot is in contact at a given index
    */
-  inline bool isContact(const std::vector<std::vector<bool>> &contact_schedule,
+  inline bool isContact(const std::vector<std::vector<bool>>& contact_schedule,
                         int horizon_index, int foot_index) {
     return (contact_schedule.at(horizon_index).at(foot_index));
   }
@@ -325,7 +325,7 @@ class LocalFootstepPlanner {
    * @brief Check if a foot is newly in contact at a given index
    */
   inline bool isNewContact(
-      const std::vector<std::vector<bool>> &contact_schedule, int horizon_index,
+      const std::vector<std::vector<bool>>& contact_schedule, int horizon_index,
       int foot_index) {
     if (horizon_index == 0) return false;
 
@@ -337,7 +337,7 @@ class LocalFootstepPlanner {
    * @brief Check if a foot is newly in swing at a given index
    */
   inline bool isNewLiftoff(
-      const std::vector<std::vector<bool>> &contact_schedule, int horizon_index,
+      const std::vector<std::vector<bool>>& contact_schedule, int horizon_index,
       int foot_index) {
     if (horizon_index == 0) return false;
 
@@ -350,7 +350,7 @@ class LocalFootstepPlanner {
    * return the last.
    */
   inline int getNextContactIndex(
-      const std::vector<std::vector<bool>> &contact_schedule, int horizon_index,
+      const std::vector<std::vector<bool>>& contact_schedule, int horizon_index,
       int foot_index) {
     // Loop through the rest of this contact schedule, if a new contact is found
     // return its index
@@ -370,7 +370,7 @@ class LocalFootstepPlanner {
    * return the last.
    */
   inline int getNextLiftoffIndex(
-      const std::vector<std::vector<bool>> &contact_schedule, int horizon_index,
+      const std::vector<std::vector<bool>>& contact_schedule, int horizon_index,
       int foot_index) {
     // Loop through the rest of this contact schedule, if a new liftoff is found
     // return its index
