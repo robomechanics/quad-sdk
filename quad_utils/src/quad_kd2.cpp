@@ -474,9 +474,6 @@ bool QuadKD2::worldToFootIKWorldFrame(int leg_index, Eigen::Vector3d body_pos,
     throw std::runtime_error("Leg index is outside valid range");
   }
 
-  // Assume that a Pinocchio update has been called
-  assert(updated_);
-
   // Calculate offsets
   Eigen::Vector3d legbase_offset = legbase_offsets_[leg_index];
   double l0 = l0_vec_[leg_index];

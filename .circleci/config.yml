@@ -35,7 +35,7 @@ jobs:
             ./setup.sh
 
             cd /root/ros2_ws
-            colcon build --executor sequential --parallel-workers 1 --cmake-args -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCMAKE_CXX_FLAGS="-O1" -DCMAKE_C_FLAGS="-O1"
+            colcon build --executor sequential --parallel-workers 1 --cmake-args -DCMAKE_BUILD_TYPE=Debug
 
       - run:
           name: Run tests
