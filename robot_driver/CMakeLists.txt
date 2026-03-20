@@ -27,7 +27,7 @@ find_package(std_msgs REQUIRED)
 find_package(tf2 REQUIRED)
 find_package(tf2_eigen REQUIRED)
 find_package(geometry_msgs REQUIRED)
-# find_package(unitree_sdk2 REQUIRED)
+find_package(unitree_sdk2 REQUIRED)
 
 # ONNX Runtime is optional — only needed for learned policy controller
 find_library(ONNXRUNTIME_LIB
@@ -76,6 +76,7 @@ set(ROBOT_DRIVER_SOURCES
   src/estimators/ekf_estimator.cpp
   src/hardware_interfaces/hardware_interface.cpp
   src/hardware_interfaces/spirit_interface.cpp
+  src/hardware_interfaces/unitree_interface.cpp
 )
 
 if(ONNXRUNTIME_LIB)
@@ -89,7 +90,7 @@ target_include_directories(robot_driver PUBLIC
   $<INSTALL_INTERFACE:include>
 )
 
-target_link_libraries(robot_driver ${GRMBLINK})
+target_link_libraries(robot_driver ${GRMBLINK} unitree_sdk2)
 
 if(ONNXRUNTIME_LIB)
   target_compile_definitions(robot_driver PUBLIC HAS_ONNXRUNTIME)

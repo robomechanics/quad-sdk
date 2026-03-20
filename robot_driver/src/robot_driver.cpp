@@ -157,6 +157,8 @@ RobotDriver::RobotDriver(std::shared_ptr<rclcpp::Node> node, int argc,
   if (is_hardware_) {
     if (robot_name == "spirit" || robot_name == "spirit_rotors") {
       hardware_interface_ = std::make_shared<SpiritInterface>();
+    } else if (robot_name == "go2") {
+      hardware_interface_ = std::make_shared<UnitreeInterface>();
     } else {
       RCLCPP_ERROR_STREAM(node_->get_logger(), "Invalid robot name "
                                                    << robot_name
