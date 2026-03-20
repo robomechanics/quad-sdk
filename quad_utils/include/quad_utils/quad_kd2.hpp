@@ -14,6 +14,8 @@
 #include <pinocchio/math/rpy.hpp>
 #include <pinocchio/multibody/joint/joint-revolute-unaligned.hpp>
 #include <pinocchio/multibody/joint/joint-revolute.hpp>
+#include <pinocchio/algorithm/crba.hpp>
+#include <pinocchio/algorithm/rnea.hpp>
 #include <chrono>
 #include <grid_map_core/GridMap.hpp>
 #include <random>
