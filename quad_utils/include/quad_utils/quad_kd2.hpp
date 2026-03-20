@@ -7,9 +7,10 @@
 #include <pinocchio/algorithm/kinematics.hpp>
 #include <pinocchio/algorithm/frames.hpp>
 #include <pinocchio/algorithm/jacobian.hpp>
-#include <pinocchio/algorithm/compute-all-terms.hpp>
 #include <pinocchio/multibody/model.hpp>
 #include <pinocchio/multibody/data.hpp>
+#include <pinocchio/algorithm/crba.hpp>
+#include <pinocchio/algorithm/rnea.hpp>
 #include <pinocchio/parsers/urdf.hpp>
 #include <pinocchio/math/rpy.hpp>
 #include <pinocchio/multibody/joint/joint-revolute-unaligned.hpp>
