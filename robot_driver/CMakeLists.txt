@@ -27,7 +27,8 @@ find_package(std_msgs REQUIRED)
 find_package(tf2 REQUIRED)
 find_package(tf2_eigen REQUIRED)
 find_package(geometry_msgs REQUIRED)
-find_package(unitree_sdk2 REQUIRED)
+# Unitree SDK2 setup
+set(UNITREE_SDK2_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../external/unitree_sdk2)
 
 # ONNX Runtime is optional — only needed for learned policy controller
 find_library(ONNXRUNTIME_LIB
@@ -90,7 +91,15 @@ target_include_directories(robot_driver PUBLIC
   $<INSTALL_INTERFACE:include>
 )
 
-target_link_libraries(robot_driver ${GRMBLINK} unitree_sdk2)
+target_include_directories(robot_driver PUBLIC
+  ${UNITREE_SDK2_DIR}/include
+  ${UNITREE_SDK2_DIR}/thirdparty/include
+  ${UNITREE_SDK2_DIR}/thirdparty/include/ddscxx)
+target_link_directories(robot_driver PUBLIC
+  ${UNITREE_SDK2_DIR}/lib/x86_64
+  ${UNITREE_SDK2_DIR}/thirdparty/lib/x86_64)
+target_link_libraries(robot_driver
+  ${GRMBLINK} unitree_sdk2 ddsc ddscxx pthread)
 
 if(ONNXRUNTIME_LIB)
   target_compile_definitions(robot_driver PUBLIC HAS_ONNXRUNTIME)
