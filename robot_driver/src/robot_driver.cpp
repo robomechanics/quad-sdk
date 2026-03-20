@@ -241,8 +241,14 @@ void RobotDriver::initLegController() {
     leg_controller_ = std::make_shared<InertiaEstimationController>(
         node_, robot_ns, quadKD2_);
   } else if (controller_id_ == "learned") {
+#ifdef HAS_ONNXRUNTIME
     leg_controller_ =
         std::make_shared<LearnedPolicy>(node_, robot_ns, quadKD2_);
+#else
+    RCLCPP_FATAL(node_->get_logger(),
+                 "Learned policy requested but built without ONNX Runtime");
+    leg_controller_ = nullptr;
+#endif
   } else {
     RCLCPP_ERROR(node_->get_logger(),
                  "Invalid controller id %s, returning nullptr",
@@ -390,10 +396,12 @@ void RobotDriver::cmdVelCallback(
                 cmd_vel_filter_const_ * cmd_vel_scale_ * msg->angular.z;
   last_cmd_vel_msg_ = *msg;
   // Record when this was last reached for safety
+#ifdef HAS_ONNXRUNTIME
   if (auto c = std::dynamic_pointer_cast<LearnedPolicy>(leg_controller_)) {
     last_cmd_vel_msg_time_ = node_->now();
     c->updateCmdVelMsg(cmd_vel_, last_cmd_vel_msg_time_);
   }
+#endif
 }
 
 void RobotDriver::checkMessagesForSafety() {

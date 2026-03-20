@@ -29,15 +29,20 @@ find_package(tf2_eigen REQUIRED)
 find_package(geometry_msgs REQUIRED)
 # find_package(unitree_sdk2 REQUIRED)
 
+# ONNX Runtime is optional — only needed for learned policy controller
 find_library(ONNXRUNTIME_LIB
   NAMES onnxruntime
-  PATHS /usr/local/lib /usr/local/lib64
-  REQUIRED)
-
-# Optional (GPU provider). Will link if present.
-find_library(ONNXRUNTIME_CUDA_PROVIDER
-  NAMES onnxruntime_providers_cuda
   PATHS /usr/local/lib /usr/local/lib64)
+
+if(ONNXRUNTIME_LIB)
+  message(STATUS "Found ONNX Runtime: ${ONNXRUNTIME_LIB}")
+  # Optional GPU provider
+  find_library(ONNXRUNTIME_CUDA_PROVIDER
+    NAMES onnxruntime_providers_cuda
+    PATHS /usr/local/lib /usr/local/lib64)
+else()
+  message(STATUS "ONNX Runtime not found — building without learned policy support")
+endif()
 
 # uncomment the following section in order to fill in
 # further dependencies manually.
@@ -57,7 +62,7 @@ endif()
 
 
 # Source files
-add_library(robot_driver SHARED
+set(ROBOT_DRIVER_SOURCES
   src/robot_driver.cpp
   src/robot_driver_utils.cpp
   src/controllers/leg_controller.cpp
@@ -66,7 +71,6 @@ add_library(robot_driver SHARED
   src/controllers/inertia_estimation_controller.cpp
   src/controllers/grf_pid_controller.cpp
   src/controllers/joint_controller.cpp
-  src/controllers/learned_policy.cpp
   src/estimators/state_estimator.cpp
   src/estimators/comp_filter_estimator.cpp
   src/estimators/ekf_estimator.cpp
@@ -74,24 +78,26 @@ add_library(robot_driver SHARED
   src/hardware_interfaces/spirit_interface.cpp
 )
 
+if(ONNXRUNTIME_LIB)
+  list(APPEND ROBOT_DRIVER_SOURCES src/controllers/learned_policy.cpp)
+endif()
+
+add_library(robot_driver SHARED ${ROBOT_DRIVER_SOURCES})
+
 target_include_directories(robot_driver PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
   $<INSTALL_INTERFACE:include>
 )
 
-target_include_directories(robot_driver PUBLIC /usr/local/include/onnxruntime)
-
-# target_link_libraries(robot_driver
-#   ${rclcpp_LIBRARIES}
-#   ${std_msgs_LIBRARIES}
-#   ${quad_msgs_LIBRARIES}
-#   ${quad_utils_LIBRARIES}
-#   Eigen3::Eigen
-# )
 target_link_libraries(robot_driver ${GRMBLINK})
-target_link_libraries(robot_driver ${ONNXRUNTIME_LIB})
-if(ONNXRUNTIME_CUDA_PROVIDER)
-  target_link_libraries(robot_driver ${ONNXRUNTIME_CUDA_PROVIDER})
+
+if(ONNXRUNTIME_LIB)
+  target_compile_definitions(robot_driver PUBLIC HAS_ONNXRUNTIME)
+  target_include_directories(robot_driver PUBLIC /usr/local/include/onnxruntime)
+  target_link_libraries(robot_driver ${ONNXRUNTIME_LIB})
+  if(ONNXRUNTIME_CUDA_PROVIDER)
+    target_link_libraries(robot_driver ${ONNXRUNTIME_CUDA_PROVIDER})
+  endif()
 endif()
 
 ament_target_dependencies(robot_driver

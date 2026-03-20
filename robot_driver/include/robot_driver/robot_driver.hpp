@@ -30,7 +30,9 @@
 #include "robot_driver/controllers/inertia_estimation_controller.hpp"
 #include "robot_driver/controllers/joint_controller.hpp"
 #include "robot_driver/controllers/leg_controller.hpp"
+#ifdef HAS_ONNXRUNTIME
 #include "robot_driver/controllers/learned_policy.hpp"
+#endif
 #include "robot_driver/estimators/comp_filter_estimator.hpp"
 #include "robot_driver/estimators/ekf_estimator.hpp"
 #include "robot_driver/estimators/state_estimator.hpp"
