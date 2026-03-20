@@ -3,7 +3,7 @@
 
 #include "quad_utils/function_timer.hpp"
 #include "quad_utils/math_utils.hpp"
-#include "quad_utils/quad_kd.hpp"
+#include "quad_utils/quad_kd2.hpp"
 #include "quad_utils/ros_utils.hpp"
 
 #include <quad_msgs/msg/robot_plan.hpp>

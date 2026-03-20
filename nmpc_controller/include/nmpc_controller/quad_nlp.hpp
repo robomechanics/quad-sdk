@@ -8,7 +8,6 @@
 #define __quadNLP_HPP__
 
 #include <sys/resource.h>
-#include <rbdl/rbdl.h>
 #include <Eigen/Dense>
 #include <Eigen/Sparse>
 
@@ -41,7 +40,6 @@
 #include "nmpc_controller/gen/eval_jac_g_leg_simple_to_complex.h"
 #include "nmpc_controller/gen/eval_jac_g_spirit.h"
 #include "quad_utils/function_timer.hpp"
-#include "quad_utils/quad_kd.hpp"
 #include "quad_utils/quad_kd2.hpp"
 #include <quad_msgs/msg/robot_plan_diagnostics.hpp>
 

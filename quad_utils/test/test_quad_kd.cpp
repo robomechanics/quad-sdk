@@ -1,4 +1,3 @@
-#include "quad_utils/quad_kd.hpp"
 #include "quad_utils/quad_kd2.hpp"
 #include "quad_utils/ros_utils.hpp"
 #include <gtest/gtest.h>

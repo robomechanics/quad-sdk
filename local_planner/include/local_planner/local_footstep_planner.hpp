@@ -2,7 +2,6 @@
 #define LOCAL_FOOTSTEP_PLANNER_H
 
 #include <tf2_eigen/tf2_eigen.hpp>
-#include <rbdl/rbdl.h>
 #include <local_planner/local_planner_modes.hpp>
 #include <nav_msgs/msg/path.hpp>
 #include <quad_msgs/msg/foot_plan_discrete.hpp>
@@ -15,7 +14,6 @@
 #include <quad_utils/fast_terrain_map.hpp>
 #include <quad_utils/function_timer.hpp>
 #include <quad_utils/math_utils.hpp>
-#include <quad_utils/quad_kd.hpp>
 #include <quad_utils/quad_kd2.hpp>
 #include <quad_utils/ros_utils.hpp>
 #include <rclcpp/rclcpp.hpp>

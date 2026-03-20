@@ -10,6 +10,7 @@ jobs:
 
     environment:
       DEBIAN_FRONTEND: noninteractive
+      MAKEFLAGS: "-j2"
 
     steps:
       - checkout
@@ -35,7 +36,7 @@ jobs:
             ./setup.sh
 
             cd /root/ros2_ws
-            colcon build --executor sequential --parallel-workers 1 --cmake-args -DCMAKE_BUILD_TYPE=Debug
+            colcon build --executor sequential --parallel-workers 1 --cmake-args -DCMAKE_BUILD_TYPE=RelWithDebInfo
 
       - run:
           name: Run tests

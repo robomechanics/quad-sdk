@@ -10,6 +10,7 @@
 #include <std_msgs/msg/header.hpp>
 
 #include "quad_utils/math_utils.hpp"
+#include "quad_utils/quad_kd2.hpp"
 
 namespace quad_utils {
 /**

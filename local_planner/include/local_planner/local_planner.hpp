@@ -2,7 +2,6 @@
 #define LOCAL_PLANNER_H
 
 #include <gtest/gtest_prod.h>
-#include <rbdl/rbdl.h>
 #include <local_planner/local_footstep_planner.hpp>
 #include <local_planner/local_planner_modes.hpp>
 #include <math.h>
@@ -11,7 +10,6 @@
 #include <quad_msgs/msg/multi_foot_plan_discrete.hpp>
 #include <quad_msgs/msg/robot_plan.hpp>
 #include <quad_msgs/msg/robot_state.hpp>
-#include <quad_utils/quad_kd.hpp>
 #include <quad_utils/ros_utils.hpp>
 #include <rclcpp/rclcpp.hpp>
 #include <tf2/LinearMath/Quaternion.h>

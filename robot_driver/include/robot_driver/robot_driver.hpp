@@ -12,6 +12,7 @@
 #include <quad_msgs/msg/body_force_estimate.hpp>
 #include <quad_utils/function_timer.hpp>
 #include <quad_utils/math_utils.hpp>
+#include <quad_utils/quad_kd2.hpp>
 #include <quad_utils/ros_utils.hpp>
 #include <rclcpp/rclcpp.hpp>
 #include <std_msgs/msg/bool.hpp>
@@ -376,10 +377,7 @@ class RobotDriver {
   /// Define path to Learned Policy ONNX File
   std::string model_path_;
 
-  /// QuadKD class
-  std::shared_ptr<quad_utils::QuadKD> quadKD_;
-
-  /// For Testing: QuadKD Pinocchio
+  /// QuadKD2 (Pinocchio-based kinematics)
   std::shared_ptr<quad_utils::QuadKD2> quadKD2_;
 
   bool debugger = true;

@@ -24,7 +24,7 @@
 #include <vector>
 #include <quad_utils/ros_utils.hpp>
 #include <quad_utils/math_utils.hpp>
-#include <quad_utils/quad_kd.hpp>
+#include <quad_utils/quad_kd2.hpp>
 #include <std_msgs/msg/string.hpp>
 
 namespace gz_plugins {

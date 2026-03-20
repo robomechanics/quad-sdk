@@ -2,7 +2,6 @@
 #define PLANNING_UTILS_H
 
 #include <math.h>
-#include <rbdl/rbdl.h>
 #include <quad_utils/fast_terrain_map.hpp>
 #include <quad_utils/math_utils.hpp>
 #include <quad_utils/ros_utils.hpp>

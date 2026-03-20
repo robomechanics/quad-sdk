@@ -151,7 +151,6 @@ RobotDriver::RobotDriver(std::shared_ptr<rclcpp::Node> node, int argc,
   }
 
   // Initialize kinematics object
-  quadKD_ = std::make_shared<quad_utils::QuadKD>(node_, robot_ns);
   quadKD2_ = std::make_shared<quad_utils::QuadKD2>(node_, robot_ns);
 
   // Initialize hardware interface

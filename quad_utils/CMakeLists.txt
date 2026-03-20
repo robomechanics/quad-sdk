@@ -33,20 +33,12 @@ find_package(pluginlib REQUIRED)
 find_package(filters REQUIRED)
 find_package(tf2_ros REQUIRED)
 
-# We need to add the project source path to the CMake module path so that
-# the FindRBDL.cmake script can be found.
-list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
-
-# Search for the RBDL include directory and library
-find_package(RBDL REQUIRED COMPONENTS URDFREADER)
-
 add_library(quad_utils
   src/rviz_interface.cpp
   src/fast_terrain_map.cpp
   src/mesh_to_grid_map_converter.cpp
   src/math_utils.cpp
   src/ros_utils.cpp
-  src/quad_kd.cpp
   src/quad_kd2.cpp
   # src/trajectory_publisher.cpp
 )
@@ -56,15 +48,7 @@ target_include_directories(quad_utils PUBLIC
   $<INSTALL_INTERFACE:include>
   ${PCL_INCLUDE_DIRS}
   ${EIGEN3_INCLUDE_DIRS}
-  ${RBDL_INCLUDE_DIR}
-  ${RBDL_URDFREADER_INCLUDE_DIR}
   ${PYTHON_INCLUDE_DIRS}
-)
-
-# Make sure Quad-Utils can access RBDL Libraries
-target_link_libraries(quad_utils
-  ${RBDL_LIBRARY}
-  ${RBDL_URDFREADER_LIBRARY}
 )
 
 add_executable(mesh_to_grid_map_node 
@@ -231,12 +215,8 @@ install(
   DESTINATION share/${PROJECT_NAME}/rviz
 )
 
-install(FILES cmake/FindRBDL.cmake 
-  DESTINATION share/${PROJECT_NAME}/cmake
-)
-
 ament_export_include_directories(include)
-ament_export_libraries(quad_utils ${RBDL_LIBRARY} ${RBDL_URDFREADER_LIBRARY})
+ament_export_libraries(quad_utils)
 ament_export_dependencies(
   rclcpp std_msgs nav_msgs nav2_msgs sensor_msgs geometry_msgs visualization_msgs
   grid_map_core grid_map_ros grid_map_pcl grid_map_msgs quad_msgs

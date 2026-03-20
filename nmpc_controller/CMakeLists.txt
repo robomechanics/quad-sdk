@@ -28,34 +28,26 @@ include_directories(
 
 link_directories(/usr/local/lib)
 
+# Collect generated CasADi source files
+file(GLOB NMPC_GEN_SOURCES src/gen/*.cpp)
+
 add_library(nmpc_controller
-  src/gen/eval_g_spirit.cpp
-  src/gen/eval_jac_g_spirit.cpp
-  src/gen/eval_hess_g_spirit.cpp
-  src/gen/eval_g_a1.cpp
-  src/gen/eval_jac_g_a1.cpp
-  src/gen/eval_hess_g_a1.cpp
-  src/gen/eval_g_go2.cpp
-  src/gen/eval_jac_g_go2.cpp
-  src/gen/eval_hess_g_go2.cpp
-  src/gen/eval_g_leg_simple.cpp
-  src/gen/eval_jac_g_leg_simple.cpp
-  src/gen/eval_hess_g_leg_simple.cpp
-  src/gen/eval_g_leg_complex.cpp
-  src/gen/eval_jac_g_leg_complex.cpp
-  src/gen/eval_hess_g_leg_complex.cpp
-  src/gen/eval_g_leg_simple_to_complex.cpp
-  src/gen/eval_jac_g_leg_simple_to_complex.cpp
-  src/gen/eval_hess_g_leg_simple_to_complex.cpp
-  src/gen/eval_g_leg_complex_to_simple.cpp
-  src/gen/eval_jac_g_leg_complex_to_simple.cpp
-  src/gen/eval_hess_g_leg_complex_to_simple.cpp
+  ${NMPC_GEN_SOURCES}
   src/quad_nlp_utils.cpp
   src/quad_nlp.cpp
-  src/quad_nlp_utils.cpp
   src/adaptive_complexity_utils.cpp
   src/nmpc_controller.cpp
 )
+
+# Cap generated CasADi files at -O1 to reduce compiler RAM usage.
+# These are straight-line math — -O1 is nearly as fast as -O2 at runtime
+# but uses far less memory during compilation (the hessian/jacobian files
+# are 20-40K lines each).
+if(CMAKE_BUILD_TYPE MATCHES "Release|RelWithDebInfo")
+  set_source_files_properties(${NMPC_GEN_SOURCES}
+    PROPERTIES COMPILE_OPTIONS "-O1"
+  )
+endif()
 
 target_link_libraries(nmpc_controller
   Eigen3::Eigen
