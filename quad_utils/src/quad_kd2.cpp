@@ -306,7 +306,16 @@ void QuadKD2::updateFromBodyJoints(const Eigen::VectorXd& body_state,
 void QuadKD2::updateFromPinocchio(const Eigen::VectorXd& q,
                                   const Eigen::VectorXd& v) {
   Eigen::VectorXd a = Eigen::VectorXd::Zero(nv_);
-  pinocchio::computeAllTerms(model_, data_, q, v);
+
+  // Compute only what we need instead of computeAllTerms (which also
+  // computes CoM, kinetic/potential energy, etc.)
+  pinocchio::crba(model_, data_, q);
+  // crba only fills the upper triangle of M; mirror it to get full symmetric M
+  data_.M.triangularView<Eigen::StrictlyLower>() =
+      data_.M.transpose().triangularView<Eigen::StrictlyLower>();
+  pinocchio::nonLinearEffects(model_, data_, q, v);
+
+  // 3-arg FK gives us accelerations needed by computeInverseDynamics
   pinocchio::forwardKinematics(model_, data_, q, v, a);
   pinocchio::computeJointJacobians(model_, data_, q);
   pinocchio::updateFramePlacements(model_, data_);
