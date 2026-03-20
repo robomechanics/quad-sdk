@@ -388,7 +388,9 @@ class RobotDriver {
   std::shared_ptr<LegController> leg_controller_;
 
   /// Leg Controller template class
+#ifdef HAS_ONNXRUNTIME
   std::shared_ptr<LearnedPolicy> leg_policy_;
+#endif
 
   /// State Estimator template class
   std::shared_ptr<StateEstimator> state_estimator_;
