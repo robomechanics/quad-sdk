@@ -1,5 +1,6 @@
 #include <gtest/gtest.h>
 #include <rclcpp/rclcpp.hpp>
+#include <ament_index_cpp/get_package_share_directory.hpp>
 
 #include "robot_driver/controllers/grf_pid_controller.hpp"
 #include "robot_driver/controllers/inverse_dynamics_controller.hpp"

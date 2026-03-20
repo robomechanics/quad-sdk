@@ -144,6 +144,7 @@ install(TARGETS
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)
   find_package(ament_cmake_gtest REQUIRED)
+  find_package(ament_index_cpp REQUIRED)
   set(ament_cmake_cpplint_FOUND TRUE)
   set(ament_cmake_uncrustify_FOUND TRUE)
   # the following line skips the linter which checks for copyrights
@@ -163,6 +164,7 @@ if(BUILD_TESTING)
   ament_target_dependencies(robot_driver_test
     rclcpp
     quad_utils
+    ament_index_cpp
   )
 endif()
 
