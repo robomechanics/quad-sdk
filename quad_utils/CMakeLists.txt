@@ -43,6 +43,14 @@ add_library(quad_utils
   # src/trajectory_publisher.cpp
 )
 
+# Cap Pinocchio-heavy files at -O1 to reduce compiler RAM usage.
+# Pinocchio + Eigen template expansion at -O2/-O3 can exceed 8GB per TU.
+if(CMAKE_BUILD_TYPE MATCHES "Release|RelWithDebInfo")
+  set_source_files_properties(src/quad_kd2.cpp
+    PROPERTIES COMPILE_OPTIONS "-O1"
+  )
+endif()
+
 target_include_directories(quad_utils PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
   $<INSTALL_INTERFACE:include>
