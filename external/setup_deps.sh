@@ -52,3 +52,10 @@ cd ../..
 
 # Setup and Build for Pinocchio
 sudo apt install -y ros-jazzy-pinocchio
+
+# Setup dependencies for mocap4ros2_optitrack
+# mocap4r2_msgs and mocap4r2 are submodules, built by colcon.
+# Install any system rosdeps they need:
+cd ..
+rosdep install --from-paths external/mocap4ros2_optitrack external/mocap4r2_msgs external/mocap4r2 --ignore-src -r -y
+cd external

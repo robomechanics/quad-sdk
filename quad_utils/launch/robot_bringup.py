@@ -169,66 +169,6 @@ def launch_robot_driver(context, *args, **kwargs):
         )
     return [robot_driver_node]
 
-
-# def launch_controller_manager(context, *args, **kwargs):
-#     namespace = LaunchConfiguration('namespace').perform(context)
-#     gazebo_scripts_path = FindPackageShare('gazebo_scripts').perform(context)
-
-#     controller_manager_node = Node(
-#         package='controller_manager',
-#         executable='ros2_control_node',
-#         name='controller_manager',
-#         parameters=[
-#             os.path.join(gazebo_scripts_path, 'config', 'quad_control.yaml')
-#         ],
-#         output='screen'
-#     )
-#     return [controller_manager_node]
-
-
-# def launch_robot_driver(namespace, robot_type, controller, urdf, context, *args, **kwargs):
-#     # namespace = LaunchConfiguration('namespace').perform(context)
-#     # robot_type = LaunchConfiguration('robot_type').perform(context)
-#     # controller = LaunchConfiguration('controller').perform(context)
-#     # urdf = LaunchConfiguration('robot_urdf').perform(context)
-#     # sdf = LaunchConfiguration('robot_sdf').perform(context)
-#     quad_utils_path = FindPackageShare('quad_utils').perform(context)
-
-#     robot_driver_node = IncludeLaunchDescription(
-#             PythonLaunchDescriptionSource(
-#                 os.path.join(quad_utils_path, 'launch', 'robot_driver.py')
-#             ),
-#             launch_arguments={
-#                 'robot_type': robot_type,
-#                 'controller': controller,
-#                 'mocap': 'false',
-#                 'is_hardware': 'false',
-#                 'namespace': namespace,
-#                 'robot_description': urdf
-#             }.items()
-#         )
-#     return [robot_driver_node]
-
-
-# def spawn_sdf_model_with_driver(context, *arg, **kwargs):
-#     [spawn_node] = spawn_sdf_model(context)
-#     namespace = LaunchConfiguration('namespace').perform(context)
-#     robot_type = LaunchConfiguration('robot_type').perform(context)
-#     controller = LaunchConfiguration('controller').perform(context)
-#     urdf = LaunchConfiguration('robot_urdf').perform(context)
-#     mocap = LaunchConfiguration('mocap').perform(context)
-#     is_hardware = LaunchConfiguration('is_hardware').perform(context)
-    
-#     return [
-#         spawn_node,
-#         RegisterEventHandler(
-#             OnProcessExit(
-#                 target_action=spawn_node,
-#                 on_exit=[OpaqueFunction(function=partial(launch_robot_driver, robot_type, controller, mocap, is_hardware, namespace, urdf))]
-#             )
-#         )
-#     ]
-
 def access_terrain_map(context, *args, **kwargs):
     namespace = LaunchConfiguration('namespace').perform(context)
 
@@ -380,7 +320,6 @@ def generate_launch_description():
         DeclareLaunchArgument('use_sim_time', default_value = 'true', description='Use Simulation Clock or Computer Clock'),
         OpaqueFunction(function=load_robot_params),
         OpaqueFunction(function=launch_robot_urdf_node),
-        # OpaqueFunction(function=launch_pinocchio_test_node)
         OpaqueFunction(function=spawn_sdf_model),
         OpaqueFunction(function=harmonic_ros_bridge),
         OpaqueFunction(function=access_terrain_map),

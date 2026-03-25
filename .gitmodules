@@ -4,3 +4,6 @@
 [submodule "external/unitree_sdk2"]
 	path = external/unitree_sdk2
 	url = https://github.com/unitreerobotics/unitree_sdk2.git
+[submodule "external/mocap4ros2_optitrack"]
+	path = external/mocap4ros2_optitrack
+	url = https://github.com/robomechanics/mocap4ros2_optitrack.git

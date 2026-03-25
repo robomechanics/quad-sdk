@@ -45,7 +45,8 @@ jobs:
             source /root/ros2_ws/install/setup.bash
 
             cd /root/ros2_ws
-            colcon test --event-handlers console_direct+ --parallel-workers 1
+            colcon test --event-handlers console_direct+ --parallel-workers 1 \
+              --packages-skip mocap4r2_control
             colcon test-result --verbose
 
       - run:
