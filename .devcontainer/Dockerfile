@@ -1,127 +1,23 @@
-# Legged Controls Dockerfile
-FROM nvcr.io/nvidia/cuda:12.8.1-cudnn-devel-ubuntu24.04
+FROM osrf/ros:jazzy-desktop-full
 
-ARG USERNAME=USERNAME
-ARG USER_UID=1000
-ARG USER_GID=$USER_UID
-ARG ONNX_VERSION=1.17.0
-ARG ONNXRUNTIME_VERSION=1.22.2
-ARG CMAKE_VERSION=4.0.0
-ARG NUM_JOBS=16
-
-# Delete user if it exists in container (e.g Ubuntu Noble: ubuntu)
-RUN if id -u $USER_UID ; then userdel `id -un $USER_UID` ; fi
-
-# Create the user
-RUN groupadd --gid $USER_GID $USERNAME \
-    && useradd --uid $USER_UID --gid $USER_GID -m $USERNAME \
-    #
-    # [Optional] Add sudo support. Omit if you don't need to install software after connecting.
-    && apt-get update \
-    && apt-get install -y sudo \
-    && echo $USERNAME ALL=\(root\) NOPASSWD:ALL > /etc/sudoers.d/$USERNAME \
-    && chmod 0440 /etc/sudoers.d/$USERNAME
-RUN apt-get update && apt-get upgrade -y
-RUN apt-get install -y python3-pip
-ENV SHELL /bin/bash
-
-ENV NVIDIA_VISIBLE_DEVICES \
-    ${NVIDIA_VISIBLE_DEVICES:-all}
-ENV NVIDIA_DRIVER_CAPABILITIES \
-    ${NVIDIA_DRIVER_CAPABILITIES:+$NVIDIA_DRIVER_CAPABILITIES,}graphics
 ENV DEBIAN_FRONTEND=noninteractive
 
-# Install package dependencies
 RUN apt-get update && apt-get install -y --no-install-recommends \
         build-essential \
-        software-properties-common \
-        autoconf \
-        automake \
-        libtool \
-        pkg-config \
-        ca-certificates \
-        locales \
-        locales-all \
-        python3-full \
-        wget \
-        sudo \
+        git \
+        python3-colcon-common-extensions \
+        python3-rosdep \
         vim \
         tmux \
-        curl \
-        less \
-        htop \
-        git && \
-    apt-get clean
+        wget \
+    && rm -rf /var/lib/apt/lists/*
 
-# System locale
-# Important for UTF-8
-ENV LC_ALL=en_US.UTF-8 LANG=en_US.UTF-8 LANGUAGE=en_US.UTF-8
-
-## Install CMake 4.0
-RUN cd /tmp && \
-    wget https://github.com/Kitware/CMake/releases/download/v${CMAKE_VERSION}/cmake-${CMAKE_VERSION}-linux-x86_64.sh && \
-    bash cmake-${CMAKE_VERSION}-linux-x86_64.sh --prefix=/usr/local --exclude-subdir --skip-license && \
-    rm -rf /tmp/*
-
-# Install ONNX Runtime (Policy Inference)
-# RUN pip install numpy==2.2.4 psutil==7.0.0 pytest==8.3.5 onnx==${ONNX_VERSION}
-RUN cd /tmp && \
-    git clone --recursive --branch v${ONNXRUNTIME_VERSION} https://github.com/Microsoft/onnxruntime
-RUN cd /tmp && \
-    cd onnxruntime && \
-    ./build.sh \
-        --allow_running_as_root \
-        --cuda_home /usr/local/cuda \
-        --cudnn_home /usr/lib/x86_64-linux-gnu/ \
-        --use_cuda \
-        # --use_tensorrt \
-        # --tensorrt_home /usr/lib/x86_64-linux-gnu/ \
-        --config RelWithDebInfo \
-        --build_shared_lib \
-        # Somehow --build_wheel cannot be used in Docker build because NumPy cannot be found.
-        # However, if this command is run in a Docker container, it works.
-        # --build_wheel \
-        --skip_tests \
-        --parallel ${NUM_JOBS} && \
-    cd build/Linux/RelWithDebInfo && \
-    make install && \
-    # pip install dist/* && \
-    rm -rf /tmp/*
-ENV LD_LIBRARY_PATH=/usr/local/lib:$LD_LIBRARY_PATH 
-
-# Install ROS2 Jazzy
-SHELL ["/bin/bash", "-lc"]
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    software-properties-common && \
-    add-apt-repository universe && \
-    curl -sSL https://raw.githubusercontent.com/ros/rosdistro/master/ros.key \
-      -o /usr/share/keyrings/ros-archive-keyring.gpg && \
-    sh -c 'echo "deb [signed-by=/usr/share/keyrings/ros-archive-keyring.gpg] \
-      http://packages.ros.org/ros2/ubuntu noble main" > \
-      /etc/apt/sources.list.d/ros2.list' && \
-    apt-get update && apt-get install -y --no-install-recommends \
-      ros-jazzy-desktop \
-      python3-rosdep python3-colcon-common-extensions \
-      && rm -rf /var/lib/apt/lists/*
-
-# Initialize rosdep (optional if you build workspaces later)
 RUN rosdep init || true && rosdep update
+
 RUN echo "source /opt/ros/jazzy/setup.bash" >> /etc/bash.bashrc
 
-# Install Livox SDK
-RUN which cmake && cmake --version
-RUN apt-get install -y cmake
-WORKDIR /root/
-RUN git clone https://github.com/liyufan/Livox-SDK2.git
-WORKDIR /root/Livox-SDK2
-RUN mkdir build
-WORKDIR /root/Livox-SDK2/build
-RUN cmake -DCMAKE_POLICY_VERSION_MINIMUM=3.5 .. && make -j2 && make install
-
-# Install Python
 WORKDIR /root/ros2_ws
 
-# Load ROS environment at each run
 COPY ./ros_entrypoint.sh /
 RUN chmod 755 /ros_entrypoint.sh
 ENTRYPOINT ["/ros_entrypoint.sh"]
