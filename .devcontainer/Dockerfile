@@ -1,5 +1,4 @@
-FROM osrf/ros:jazzy-desktop-full
-
+FROM arm64v8/ros:jazzy
 ENV DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
