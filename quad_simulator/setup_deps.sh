@@ -14,6 +14,8 @@ GZ_SIM_SYSTEM_PLUGIN_PATH_UPDATE="export GZ_SIM_SYSTEM_PLUGIN_PATH=$GZ_SIM_SYSTE
 
 QUAD_LOGGER_SRC ="export QUAD_LOGGER_SRC=$HOME/ros2_ws/src/quad-sdk/quad_logger/bags"
 
+LD_LIBRARY_PATH_UPDATE="export LD_LIBRARY_PATH=/usr/local/lib:\$LD_LIBRARY_PATH"
+
 if ! grep -Fxq "$GZ_SIM_RESOURCE_PATH_UPDATE" ~/.bashrc; then
    echo "Adding GZ_SIM_RESOURCE_PATH update to bashrc"
    echo "$GZ_SIM_RESOURCE_PATH_UPDATE" >> ~/.bashrc
@@ -26,6 +28,13 @@ if ! grep -Fxq "$GZ_SIM_SYSTEM_PLUGIN_PATH_UPDATE" ~/.bashrc; then
    echo "$GZ_SIM_SYSTEM_PLUGIN_PATH_UPDATE" >> ~/.bashrc
 else
    echo "bashrc already contains GZ_SIM_SYSTEM_PLUGIN_PATH update"
+fi
+
+if ! grep -Fxq "$LD_LIBRARY_PATH_UPDATE" ~/.bashrc; then
+   echo "Adding LD_LIBRARY_PATH update to bashrc"
+   echo "$LD_LIBRARY_PATH_UPDATE" >> ~/.bashrc
+else
+   echo "bashrc already contains LD_LIBRARY_PATH update"
 fi
 
 sudo apt-get update

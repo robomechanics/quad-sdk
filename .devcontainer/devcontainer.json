@@ -26,7 +26,9 @@
   "containerEnv": {
     "DISPLAY": "${localEnv:DISPLAY}",
     "ROS_AUTOMATIC_DISCOVERY_RANGE": "LOCALHOST",
-    "ROS_DOMAIN_ID": "42"
+    "ROS_DOMAIN_ID": "42",
+    "XDG_RUNTIME_DIR": "/tmp/runtime-root",
+    "QT_X11_NO_MITSHM": "1"
   },
 
   "runArgs": [
