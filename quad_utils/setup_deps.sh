@@ -9,6 +9,9 @@ sudo apt install -y ros-jazzy-gz-ros2-control
 sudo apt install -y ros-jazzy-ros2-controllers
 sudo apt install -y ros-jazzy-topic-tools
 sudo apt install -y cpplint
+sudo apt install -y chrony
+sudo apt install -y iw
+sudo apt install -y ros-jazzy-rmw-cyclonedds-cpp
 
 
 

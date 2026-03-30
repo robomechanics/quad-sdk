@@ -1,0 +1,15 @@
+<CycloneDDS>
+    <Domain>
+        <General>
+            <Interfaces>
+                <NetworkInterface address="192.168.8.18"/>
+            </Interfaces>
+        </General>
+        <Discovery>
+            <Peers>
+                <Peer address="192.168.8.103"/>
+            </Peers>
+            <ParticipantIndex>auto</ParticpantIndex>
+        </Discovery>
+    </Domain>
+</CycloneDDS>"
