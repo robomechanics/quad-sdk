@@ -445,6 +445,7 @@ bool RobotDriver::updateState() {
     } else {
       RCLCPP_WARN_THROTTLE(node_->get_logger(), *node_->get_clock(), 1000,
                            "No imu or joint state (robot) recieved");
+      return false;
     }
 
     if (last_mocap_msg_ != NULL) {
@@ -721,7 +722,15 @@ void RobotDriver::spin() {
     rclcpp::spin_some(node_);
 
     // Get the newest state information
-    updateState();
+    RCLCPP_INFO_ONCE(node_->get_logger(), "DEBUG: before updateState");
+    bool state_valid = updateState();
+    RCLCPP_INFO_ONCE(node_->get_logger(), "DEBUG: after updateState, valid=%d", state_valid);
+
+    if (!state_valid) {
+      publishHeartbeat();
+      r.sleep();
+      continue;
+    }
 
     testDynamics();
 

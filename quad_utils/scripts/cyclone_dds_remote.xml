@@ -9,7 +9,7 @@
             <Peers>
                 <Peer address="192.168.8.18"/>
             </Peers>
-            <ParticipantIndex>auto</ParticpantIndex>
+            <ParticipantIndex>auto</ParticipantIndex>
         </Discovery>
     </Domain>
 </CycloneDDS>

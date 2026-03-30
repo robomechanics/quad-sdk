@@ -5,13 +5,8 @@ constexpr int
 
 UnitreeInterface::UnitreeInterface() : HardwareInterface() {}
 
-void UnitreeInterface::loadInterface(int argc, char** argv) {
-  // argv[0] is the node name; the network interface (e.g. "eth0")
-  // should be passed as a command-line argument or default to "eth0".
+void UnitreeInterface::loadInterface(int /*argc*/, char** /*argv*/) {
   std::string net_iface = "eth0";
-  if (argc >= 2) {
-    net_iface = argv[1];
-  }
 
   unitree::robot::ChannelFactory::Instance()->Init(0,
                                                    net_iface);
