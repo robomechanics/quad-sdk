@@ -347,8 +347,9 @@ void RobotDriver::mocapCallback(
       }
     } else {
       RCLCPP_WARN_THROTTLE(
-          node_->get_logger(), *node_->get_clock(), 100,
-          "Mocap time diff exceeds max dropout threshold, hold the last value");
+          node_->get_logger(), *node_->get_clock(), 500,
+          "Mocap time diff exceeds max dropout threshold: t_diff=%.6f, expected=%.6f, threshold=%.6f",
+          t_diff_mocap_msg, 1.0 / mocap_rate_, mocap_dropout_threshold_);
     }
   } else {
     RCLCPP_WARN_THROTTLE(
@@ -722,9 +723,7 @@ void RobotDriver::spin() {
     rclcpp::spin_some(node_);
 
     // Get the newest state information
-    RCLCPP_INFO_ONCE(node_->get_logger(), "DEBUG: before updateState");
     bool state_valid = updateState();
-    RCLCPP_INFO_ONCE(node_->get_logger(), "DEBUG: after updateState, valid=%d", state_valid);
 
     if (!state_valid) {
       publishHeartbeat();

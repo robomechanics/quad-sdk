@@ -5,6 +5,7 @@
 
 #include <unitree/robot/channel/channel_publisher.hpp>
 #include <unitree/robot/channel/channel_subscriber.hpp>
+#include <unitree/robot/b2/motion_switcher/motion_switcher_client.hpp>
 #include <unitree/idl/go2/LowCmd_.hpp>
 #include <unitree/idl/go2/LowState_.hpp>
 

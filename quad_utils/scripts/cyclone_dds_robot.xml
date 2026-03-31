@@ -1,5 +1,6 @@
 <CycloneDDS>
-    <Domain>
+    <!-- ROS 2 domain: communicate with remote computer over eth1 -->
+    <Domain Id="42">
         <General>
             <Interfaces>
                 <NetworkInterface address="192.168.8.18"/>
@@ -9,6 +10,18 @@
             <Peers>
                 <Peer address="192.168.8.103"/>
             </Peers>
+            <ParticipantIndex>auto</ParticipantIndex>
+        </Discovery>
+    </Domain>
+
+    <!-- Unitree SDK domain: communicate with MCU over eth0 -->
+    <Domain Id="0">
+        <General>
+            <Interfaces>
+                <NetworkInterface address="192.168.123.222"/>
+            </Interfaces>
+        </General>
+        <Discovery>
             <ParticipantIndex>auto</ParticipantIndex>
         </Discovery>
     </Domain>

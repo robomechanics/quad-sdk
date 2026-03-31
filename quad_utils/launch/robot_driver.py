@@ -122,6 +122,7 @@ def generate_launch_description():
         package='robot_state_publisher',
         executable='robot_state_publisher',
         name='robot_state_publisher',
+        namespace=LaunchConfiguration('namespace'),
         parameters=[{
             'robot_description': ParameterValue(LaunchConfiguration('robot_description'), value_type=str),
             'use_sim_time': LaunchConfiguration('use_sim_time')
@@ -133,6 +134,7 @@ def generate_launch_description():
         package='robot_driver',
         executable='robot_driver_node',
         name='robot_driver',
+        namespace=LaunchConfiguration('namespace'),
         output='screen',
         parameters=[
             robot_driver_param_file,
