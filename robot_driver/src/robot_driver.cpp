@@ -141,7 +141,7 @@ RobotDriver::RobotDriver(std::shared_ptr<rclcpp::Node> node, int argc,
         robot_state_topic, 1);
     imu_pub_ = node_->create_publisher<sensor_msgs::msg::Imu>(imu_topic, 1);
     joint_state_pub_ = node_->create_publisher<sensor_msgs::msg::JointState>(
-        joint_state_topic, 1);
+        joint_state_topic, rclcpp::SensorDataQoS());
   } else {
     RCLCPP_INFO(node_->get_logger(), "Loading Sim Robot Driver");
     robot_state_sub_ = node_->create_subscription<quad_msgs::msg::RobotState>(
@@ -444,21 +444,29 @@ bool RobotDriver::updateState() {
     if (fully_populated) {
       state_estimator_->loadSensorMsg(last_imu_msg_, last_joint_state_msg_);
     } else {
-      RCLCPP_WARN_THROTTLE(node_->get_logger(), *node_->get_clock(), 1000,
-                           "No imu or joint state (robot) recieved");
+      RCLCPP_WARN_THROTTLE(node_->get_logger(), *node_->get_clock(), 500,
+                           "updateState returning false: recv() not fully populated");
       return false;
     }
 
     if (last_mocap_msg_ != NULL) {
       state_estimator_->loadMocapMsg(last_mocap_msg_);
+    } else {
+      RCLCPP_WARN_THROTTLE(node_->get_logger(), *node_->get_clock(), 500,
+                           "updateState: no mocap message received yet");
     }
 
     // update robot state using state estimator
     if (state_estimator_ != nullptr) {
-      return state_estimator_->updateOnce(last_robot_state_msg_);
+      bool result = state_estimator_->updateOnce(last_robot_state_msg_);
+      if (!result) {
+        RCLCPP_WARN_THROTTLE(node_->get_logger(), *node_->get_clock(), 500,
+                             "updateState returning false: estimator updateOnce failed");
+      }
+      return result;
     } else {
-      RCLCPP_WARN_THROTTLE(node_->get_logger(), *node_->get_clock(), 1000,
-                           "No state estimator is initialized");
+      RCLCPP_WARN_THROTTLE(node_->get_logger(), *node_->get_clock(), 500,
+                           "updateState returning false: no state estimator initialized");
       return false;
     }
   } else {
@@ -469,6 +477,7 @@ bool RobotDriver::updateState() {
 
 void RobotDriver::publishState() {
   if (is_hardware_) {
+    last_joint_state_msg_.header.stamp = node_->now();
     imu_pub_->publish(last_imu_msg_);
     joint_state_pub_->publish(last_joint_state_msg_);
     robot_state_pub_->publish(last_robot_state_msg_);
@@ -701,7 +710,7 @@ void RobotDriver::publishHeartbeat() {
 }
 
 void RobotDriver::testDynamics() {
-  if (debugger) {
+  if (!is_hardware_) {
     if (rclcpp::Time(last_robot_state_msg_.header.stamp).seconds() != 0) {
       quad_utils::updateDynamics(*quadKD2_, last_robot_state_msg_);
       // RCLCPP_INFO(node_->get_logger(), "Completed Dynamics State Update");
@@ -719,11 +728,15 @@ void RobotDriver::spin() {
   }
 
   while (rclcpp::ok()) {
+    rclcpp::Time t0 = node_->now();
     // Collect new messages on subscriber topics and publish heartbeat
     rclcpp::spin_some(node_);
+    double dt_spin = (node_->now() - t0).seconds();
 
     // Get the newest state information
+    rclcpp::Time t1 = node_->now();
     bool state_valid = updateState();
+    double dt_state = (node_->now() - t1).seconds();
 
     if (!state_valid) {
       publishHeartbeat();
@@ -731,17 +744,25 @@ void RobotDriver::spin() {
       continue;
     }
 
+    rclcpp::Time t2 = node_->now();
     testDynamics();
+    double dt_dynamics = (node_->now() - t2).seconds();
 
     // Compute the leg command and publish if valid
+    rclcpp::Time t3 = node_->now();
     bool is_valid = updateControl();
-    publishControl(is_valid);
+    double dt_control = (node_->now() - t3).seconds();
 
-    // Publish state and heartbeat
+    rclcpp::Time t4 = node_->now();
+    publishControl(is_valid);
     publishState();
     publishHeartbeat();
+    double dt_publish = (node_->now() - t4).seconds();
 
-    // Enforce update rate
+    double dt_total = (node_->now() - t0).seconds();
+    RCLCPP_INFO_THROTTLE(node_->get_logger(), *node_->get_clock(), 2000,
+        "Loop: total=%.4f spin=%.4f state=%.4f dyn=%.4f ctrl=%.4f pub=%.4f (%.1f Hz)",
+        dt_total, dt_spin, dt_state, dt_dynamics, dt_control, dt_publish, 1.0 / dt_total);
     r.sleep();
   }
 

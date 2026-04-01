@@ -62,11 +62,16 @@ class UnitreeInterface : public HardwareInterface {
   };
 
   // Joint names matching go2.yaml ordering
+//   std::vector<std::string> joint_names_ = {
+//       "FL_hip_joint",   "FL_thigh_joint",  "FL_calf_joint",
+//       "RL_hip_joint",   "RL_thigh_joint",  "RL_calf_joint",
+//       "FR_hip_joint",   "FR_thigh_joint",  "FR_calf_joint",
+//       "RR_hip_joint",   "RR_thigh_joint",  "RR_calf_joint"};
   std::vector<std::string> joint_names_ = {
-      "FL_hip_joint",   "FL_thigh_joint",  "FL_calf_joint",
-      "RL_hip_joint",   "RL_thigh_joint",  "RL_calf_joint",
-      "FR_hip_joint",   "FR_thigh_joint",  "FR_calf_joint",
-      "RR_hip_joint",   "RR_thigh_joint",  "RR_calf_joint"};
+      "8",   "0",  "1",
+      "9",   "2",  "3",
+      "10",   "4",  "5",
+      "11",   "6",  "7"};
 
   bool state_received_ = false;
 };

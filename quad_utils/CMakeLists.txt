@@ -43,11 +43,11 @@ add_library(quad_utils
   # src/trajectory_publisher.cpp
 )
 
-# Cap Pinocchio-heavy files at -O1 to reduce compiler RAM usage.
-# Pinocchio + Eigen template expansion at -O2/-O3 can exceed 8GB per TU.
+# Pinocchio + Eigen template expansion needs more RAM at higher optimization.
+# -O2 requires ~10-12GB; the Jetson Orin (16GB) can handle it.
 if(CMAKE_BUILD_TYPE MATCHES "Release|RelWithDebInfo")
   set_source_files_properties(src/quad_kd2.cpp
-    PROPERTIES COMPILE_OPTIONS "-O1"
+    PROPERTIES COMPILE_OPTIONS "-O2"
   )
 endif()
 

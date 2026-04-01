@@ -126,7 +126,15 @@ def generate_launch_description():
         parameters=[{
             'robot_description': ParameterValue(LaunchConfiguration('robot_description'), value_type=str),
             'use_sim_time': LaunchConfiguration('use_sim_time')
-        }]
+            # 'qos_overrides' : {
+            #     '/joint_states': {
+            #         'subscription' : {
+            #             'reliability': 'reliable'
+            #         }
+            #     }
+            # }
+        }],
+        remappings=[('joint_states', 'state/joints')]
     )
 
     # Main robot driver node
