@@ -20,5 +20,4 @@ docker run --privileged -it \
            --env="DISPLAY=$DISPLAY" \
            --env="ROS_DOMAIN_ID=42" \
            --env="ROS_AUTOMATIC_DISCOVERY_RANGE=SUBNET" \
-           --rm \
            "$IMAGE_NAME" /bin/bash
