@@ -4,6 +4,8 @@ from launch_ros.actions import PushRosNamespace, Node
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch.substitutions import LaunchConfiguration, PathJoinSubstitution
 from launch_ros.substitutions import FindPackageShare
+import os
+import xacro
 
 
 def launch_robot_mapping(context, *args, **kwargs):
@@ -43,6 +45,56 @@ def launch_visualization(context, *args, **kwargs):
         )
     ]
 
+def access_terrain_map(context, *args, **kwargs):
+    namespace = LaunchConfiguration('namespace').perform(context)
+    return [
+        Node(
+            package='topic_tools',
+            executable='relay',
+            name='terrain_map_relay',
+            arguments=['/mapping/terrain_map', f'/{namespace}/terrain_map'],
+            parameters=[{'use_sim_time': LaunchConfiguration('use_sim_time')}],
+        )
+    ]
+
+def launch_visualization_plugins(context, *args, **kwargs):
+    namespace = LaunchConfiguration('namespace').perform(context)
+    robot_type = LaunchConfiguration('robot_type').perform(context)
+
+    desc_pkg_map = {
+        'spirit': 'spirit_description',
+        'a1': 'a1_description',
+        'go2': 'go2_description',
+        'go2w': 'go2w_description',
+        'b2': 'b2_description',
+        'spot': 'spot_description',
+    }
+    desc_pkg = desc_pkg_map[robot_type]
+    desc_path = FindPackageShare(desc_pkg).perform(context)
+    urdf_path = os.path.join(desc_path, 'models', robot_type, 'urdf', f'{robot_type}.urdf.xacro')
+    urdf = xacro.process_file(urdf_path).toxml()
+
+    quad_utils_path = FindPackageShare('quad_utils').perform(context)
+    viz_launch = PythonLaunchDescriptionSource(
+        os.path.join(quad_utils_path, 'launch', 'visualization_plugins.py')
+    )
+
+    return [
+        GroupAction([
+            PushRosNamespace(namespace),
+            IncludeLaunchDescription(
+                viz_launch,
+                launch_arguments={
+                    'namespace': namespace,
+                    'robot_type': robot_type,
+                    'robot_description': urdf,
+                    'robot_urdf_path': urdf_path,
+                    'use_sim_time': 'false',
+                }.items()
+            )
+        ])
+    ]
+
 def generate_launch_description():
     declared_args = [
         DeclareLaunchArgument('logging', default_value = 'false', description='Whether to enable logging of the simulation data'),
@@ -50,9 +102,13 @@ def generate_launch_description():
         DeclareLaunchArgument('dash', default_value = 'false', description='Whether to enable the dashboard for visualizing the simulation data'),
         DeclareLaunchArgument('use_sim_time', default_value = 'false', description='Whether to use simulation time'),
         DeclareLaunchArgument('world', default_value = 'flat.sdf', description='SDF world file name to load into simulation'),
+        DeclareLaunchArgument('namespace', default_value = 'robot_1', description='Robot namespace'),
+        DeclareLaunchArgument('robot_type', default_value = 'go2', description='Robot type'),
     ]
-    
+
     return LaunchDescription(declared_args + [
         OpaqueFunction(function=launch_robot_mapping),
+        OpaqueFunction(function=access_terrain_map),
+        OpaqueFunction(function=launch_visualization_plugins),
         OpaqueFunction(function=launch_visualization)
     ])

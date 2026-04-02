@@ -30,7 +30,7 @@ void LearnedPolicy::init(const std::vector<double>& stance_kp,
   last_inference_time_ = node_->now();
 
   RCLCPP_INFO(node_->get_logger(),
-              "Loaded Learned Policy at %s (inference at %.1f Hz, PD tracking at main loop rate)",
+              "Loaded Learned Policy at %s (%.1f Hz)",
               model_path_.c_str(), policy_inference_rate_);
 }
 

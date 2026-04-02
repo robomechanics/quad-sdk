@@ -131,7 +131,6 @@ bool UnitreeInterface::recv(
   std::lock_guard<std::mutex> lock(state_mutex_);
 
   if (!state_received_) {
-    std::cout << "Not Receiving State Information from Unitree Robot" << std::endl;
     return false;
   }
 

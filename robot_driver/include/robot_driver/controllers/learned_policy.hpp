@@ -100,7 +100,7 @@ class LearnedPolicy : public LegController {
   Eigen::VectorXd actions_{Eigen::VectorXd::Zero(12)};
   Eigen::VectorXd raw_actions_{Eigen::VectorXd::Zero(12)};
 
-  /// Policy inference rate (Hz) — inference runs at this rate, PD tracking at main loop rate
+  /// Policy inference rate (Hz), PD tracking at loop rate
   double policy_inference_rate_ = 50.0;
 
   /// Timestamp of last inference run

@@ -143,7 +143,7 @@ RobotDriver::RobotDriver(std::shared_ptr<rclcpp::Node> node, int argc,
         robot_state_topic, 1);
     imu_pub_ = node_->create_publisher<sensor_msgs::msg::Imu>(imu_topic, 1);
     joint_state_pub_ = node_->create_publisher<sensor_msgs::msg::JointState>(
-        joint_state_topic, 1);
+        joint_state_topic, rclcpp::SensorDataQoS());
   } else {
     RCLCPP_INFO(node_->get_logger(), "Loading Sim Robot Driver");
     robot_state_sub_ = node_->create_subscription<quad_msgs::msg::RobotState>(
@@ -470,6 +470,7 @@ bool RobotDriver::updateState() {
 
 void RobotDriver::publishState() {
   if (is_hardware_) {
+    last_joint_state_msg_.header.stamp = node_->now();
     imu_pub_->publish(last_imu_msg_);
     joint_state_pub_->publish(last_joint_state_msg_);
     robot_state_pub_->publish(last_robot_state_msg_);
