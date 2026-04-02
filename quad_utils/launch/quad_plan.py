@@ -74,11 +74,11 @@ def generate_launch_description():
         DeclareLaunchArgument('logging', default_value='false', description='Rosbag Trial Run'),
         DeclareLaunchArgument('leaping', default_value='true', description='Enable Leaping in the Global Planner'),
         DeclareLaunchArgument('ac', default_value='false', description='Enable Adaptive Complexity Planner (Spirit ONLY)'),
-        DeclareLaunchArgument('use_sim_time', default_value='true', description='Use Simulation Clock or Computer Clock'),
+        DeclareLaunchArgument('use_sim_time', default_value='false', description='Use Simulation Clock or Computer Clock'),
         DeclareLaunchArgument('force_app', default_value='false', description='Launch Force Applicator Alongside Planning'),
         DeclareLaunchArgument(
             'robot_configs',
-            default_value='[{"name": "robot_1", "type": "go2", "controller_mode" : "inverse_dynamics", "reference": "gbpl", "twist_input": "none"}]',
+            default_value='[{"name": "robot_1", "type": "go2", "controller_mode" : "inverse_dynamics", "reference": "twist", "twist_input": "none"}]',
             description='A JSON List of robot configurations: MUST specifiy name, type, and controller_mode, reference'
         ),
         OpaqueFunction(function=launch_robot_group)
