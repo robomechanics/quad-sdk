@@ -12,7 +12,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         chrony \
     && rm -rf /var/lib/apt/lists/*
 
-RUN echo "server 192.168.8.103 iburst\nmakestep 0.1 3\nrtcsync" > /etc/chrony/chrony.conf
+RUN printf "server 192.168.8.103 iburst\nmakestep 0.1 3\nrtcsync\n" > /etc/chrony/chrony.conf
 
 RUN rosdep init || true && rosdep update
 
