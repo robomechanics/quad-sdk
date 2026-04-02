@@ -76,6 +76,8 @@ RobotDriver::RobotDriver(std::shared_ptr<rclcpp::Node> node, int argc,
                            sit_joint_angles_);
   quad_utils::loadROSParam(node_, "robot_driver.torque_limit", torque_limits_);
   quad_utils::loadROSParam(node_, "robot_driver.model_path", model_path_);
+  quad_utils::loadROSParamDefault(node_, "robot_driver.policy_inference_rate",
+                                  policy_inference_rate_, 50.0);
   quad_utils::loadROSParam(node_, "robot_driver.cmd_vel_filter_const",
                            cmd_vel_filter_const_);
   quad_utils::loadROSParam(node_, "robot_driver.cmd_vel_scale", cmd_vel_scale_);
@@ -262,7 +264,8 @@ void RobotDriver::initLegController() {
                           swing_kp_cart_, swing_kd_cart_);
   } else {
     leg_controller_->init(stance_kp_, stance_kd_, swing_kp_, swing_kd_,
-                          swing_kp_cart_, swing_kd_cart_, model_path_);
+                          swing_kp_cart_, swing_kd_cart_, model_path_,
+                          policy_inference_rate_);
   }
 }
 

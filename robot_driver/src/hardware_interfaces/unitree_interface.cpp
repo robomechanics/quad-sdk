@@ -9,9 +9,6 @@ void UnitreeInterface::loadInterface(int argc, char** argv) {
   // argv[0] is the node name; the network interface (e.g. "eth0")
   // should be passed as a command-line argument or default to "eth0".
   std::string net_iface = "eth0";
-  if (argc >= 2) {
-    net_iface = argv[1];
-  }
 
   unitree::robot::ChannelFactory::Instance()->Init(0,
                                                    net_iface);
@@ -134,6 +131,7 @@ bool UnitreeInterface::recv(
   std::lock_guard<std::mutex> lock(state_mutex_);
 
   if (!state_received_) {
+    std::cout << "Not Receiving State Information from Unitree Robot" << std::endl;
     return false;
   }
 

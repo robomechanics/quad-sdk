@@ -2,11 +2,13 @@
 
 echo "Syncing clock with remote computer"
 sudo iw dev wlan0 set power_save off
-sudo chronyc -a makestep
 
-echo "Syncing clock with remote computer"
-sudo systemctl restart chrony
-sleep 2
+# Start chronyd if not already running (systemctl not available in container)
+if ! chronyc tracking &>/dev/null; then
+    echo "Starting chronyd..."
+    sudo chronyd
+    sleep 2
+fi
 sudo chronyc -a makestep
 
 echo "Checking chrony status"

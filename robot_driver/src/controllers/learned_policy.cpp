@@ -11,7 +11,8 @@ void LearnedPolicy::init(const std::vector<double>& stance_kp,
                          const std::vector<double>& swing_kd,
                          const std::vector<double>& swing_kp_cart,
                          const std::vector<double>& swing_kd_cart,
-                         const std::string& model_path) {
+                         const std::string& model_path,
+                         double policy_inference_rate) {
   // Initalize the Path to the Model Onnx File
   stance_kp_ = stance_kp;
   stance_kd_ = stance_kd;
@@ -20,13 +21,17 @@ void LearnedPolicy::init(const std::vector<double>& stance_kp,
   swing_kp_cart_ = swing_kp_cart;
   swing_kd_cart_ = swing_kd_cart;
   model_path_ = model_path;
+  policy_inference_rate_ = policy_inference_rate;
+  first_inference_ = true;
   loadONNXModel();
   nominal_stance_pose_ << 0.0, 0.0, 0.0, 0.0, 0.8, 0.8, 0.8, 0.8, -1.5, -1.5,
       -1.5, -1.5;  // For Go2 Change this to a Param Later On, IsaacLab
   last_cmd_vel_msg_time_ = node_->now();
+  last_inference_time_ = node_->now();
 
-  RCLCPP_INFO(node_->get_logger(), "Loaded Learned Policy at %s",
-              model_path_.c_str());
+  RCLCPP_INFO(node_->get_logger(),
+              "Loaded Learned Policy at %s (inference at %.1f Hz, PD tracking at main loop rate)",
+              model_path_.c_str(), policy_inference_rate_);
 }
 
 void LearnedPolicy::loadONNXModel() {
@@ -231,35 +236,41 @@ bool LearnedPolicy::computeLegCommandArray(
     const quad_msgs::msg::RobotState& robot_state_msg,
     quad_msgs::msg::LegCommandArray& leg_command_array_msg,
     quad_msgs::msg::GRFArray& grf_array_msg) {
-  // Generate Leg Command Messages from Inferenced Actions and Clip them based
-  // on Joint Positional Limits
+  // Safety: return false if cmd_vel is stale
   if ((node_->now() - last_cmd_vel_msg_time_).seconds() >= 0.1) {
     return false;
-  } else {
-    leg_command_array_msg.leg_commands.resize(num_feet_);
+  }
+
+  // Run inference at policy_inference_rate_ (e.g. 50 Hz), not every tick
+  auto now = node_->now();
+  if (first_inference_ ||
+      (now - last_inference_time_).seconds() >= 1.0 / policy_inference_rate_) {
     computeObservations(robot_state_msg);
     runInference();
-
-    for (int i = 0; i < num_feet_; ++i) {
-      auto& leg = leg_command_array_msg.leg_commands.at(i);
-      leg.motor_commands.resize(3);
-
-      for (int j = 0; j < 3; ++j) {
-        const int idx = 3 * i + j;
-        auto& cmd = leg.motor_commands.at(j);
-
-        // Set Positional Setpoints
-        cmd.pos_setpoint = actions_(idx);
-        cmd.vel_setpoint = 0.0;
-        cmd.torque_ff = 0.0;
-
-        // Gain Switching Unecessary Here, Always use Stance Kp, Kd
-        cmd.kp = stance_kp_.at(j);
-        cmd.kd = stance_kd_.at(j);
-      }
-    }
-    return true;
+    last_inference_time_ = now;
+    first_inference_ = false;
   }
+
+  // PD tracking at full loop rate (500 Hz) using cached position targets
+  leg_command_array_msg.leg_commands.resize(num_feet_);
+  for (int i = 0; i < num_feet_; ++i) {
+    auto& leg = leg_command_array_msg.leg_commands.at(i);
+    leg.motor_commands.resize(3);
+
+    for (int j = 0; j < 3; ++j) {
+      const int idx = 3 * i + j;
+      auto& cmd = leg.motor_commands.at(j);
+
+      // Position targets from last inference, tracked by PD in robot_driver
+      cmd.pos_setpoint = actions_(idx);
+      cmd.vel_setpoint = 0.0;
+      cmd.torque_ff = 0.0;
+
+      cmd.kp = stance_kp_.at(j);
+      cmd.kd = stance_kd_.at(j);
+    }
+  }
+  return true;
 }
 
 void LearnedPolicy::updateCmdVelMsg(Eigen::VectorXd msg, rclcpp::Time& t_now) {

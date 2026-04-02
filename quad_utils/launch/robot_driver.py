@@ -83,39 +83,39 @@ def generate_launch_description():
 
 
     # Mocap optitrack lifecycle node (hardware only)
-    mocap_config = PathJoinSubstitution([
-        FindPackageShare('mocap4r2_optitrack_driver'),
-        'config', 'mocap4r2_optitrack_driver_params.yaml'
-    ])
+    # mocap_config = PathJoinSubstitution([
+    #     FindPackageShare('mocap4r2_optitrack_driver'),
+    #     'config', 'mocap4r2_optitrack_driver_params.yaml'
+    # ])
 
-    mocap_node = LifecycleNode(
-        name='mocap4r2_optitrack_driver_node',
-        namespace='',
-        package='mocap4r2_optitrack_driver',
-        executable='mocap4r2_optitrack_driver_main',
-        output='screen',
-        parameters=[mocap_config],
-    )
+    # mocap_node = LifecycleNode(
+    #     name='mocap4r2_optitrack_driver_node',
+    #     namespace='',
+    #     package='mocap4r2_optitrack_driver',
+    #     executable='mocap4r2_optitrack_driver_main',
+    #     output='screen',
+    #     parameters=[mocap_config],
+    # )
 
-    # Configure then activate the lifecycle node on startup
-    mocap_configure_event = EmitEvent(
-        event=ChangeState(
-            lifecycle_node_matcher=launch.events.matchers.matches_action(mocap_node),
-            transition_id=lifecycle_msgs.msg.Transition.TRANSITION_CONFIGURE,
-        )
-    )
+    # # Configure then activate the lifecycle node on startup
+    # mocap_configure_event = EmitEvent(
+    #     event=ChangeState(
+    #         lifecycle_node_matcher=launch.events.matchers.matches_action(mocap_node),
+    #         transition_id=lifecycle_msgs.msg.Transition.TRANSITION_CONFIGURE,
+    #     )
+    # )
 
-    mocap_activate_event = RegisterEventHandler(
-        OnProcessStart(
-            target_action=mocap_node,
-            on_start=[
-                EmitEvent(event=ChangeState(
-                    lifecycle_node_matcher=launch.events.matchers.matches_action(mocap_node),
-                    transition_id=lifecycle_msgs.msg.Transition.TRANSITION_ACTIVATE,
-                ))
-            ]
-        )
-    )
+    # mocap_activate_event = RegisterEventHandler(
+    #     OnProcessStart(
+    #         target_action=mocap_node,
+    #         on_start=[
+    #             EmitEvent(event=ChangeState(
+    #                 lifecycle_node_matcher=launch.events.matchers.matches_action(mocap_node),
+    #                 transition_id=lifecycle_msgs.msg.Transition.TRANSITION_ACTIVATE,
+    #             ))
+    #         ]
+    #     )
+    # )
 
     # Publish TF from URDF + joint states (needed for TF lookups and RViz)
     robot_state_publisher_node = Node(
@@ -174,10 +174,10 @@ def generate_launch_description():
         robot_driver_node,
 
         # Mocap: launch + auto-activate on hardware
-        GroupAction(
-            [mocap_node, mocap_configure_event, mocap_activate_event],
-            condition=IfCondition(LaunchConfiguration('is_hardware'))
-        ),
+        # GroupAction(
+        #     [mocap_node, mocap_configure_event, mocap_activate_event],
+        #     condition=IfCondition(LaunchConfiguration('is_hardware'))
+        # ),
 
         # Optional: logging
         GroupAction([

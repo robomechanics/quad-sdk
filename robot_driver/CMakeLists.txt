@@ -95,9 +95,22 @@ target_include_directories(robot_driver PUBLIC
   ${UNITREE_SDK2_DIR}/include
   ${UNITREE_SDK2_DIR}/thirdparty/include
   ${UNITREE_SDK2_DIR}/thirdparty/include/ddscxx)
+message(STATUS "Using architecture ${CMAKE_SYSTEM_PROCESSOR}")
+
+if(CMAKE_SYSTEM_PROCESSOR STREQUAL "aarch64" OR CMAKE_SYSTEM_PROCESSOR STREQUAL "arm")
+  # ARM64 robot
+  set(UNITREE_LIB_DIR ${UNITREE_SDK2_DIR}/lib/aarch64)
+  set(UNITREE_THIRD_PARTY_DIR ${UNITREE_SDK2_DIR}/thirdparty/lib/aarch64)
+else()
+  # x86 desktop / dev machine
+  set(UNITREE_LIB_DIR ${UNITREE_SDK2_DIR}/lib/x86_64)
+  set(UNITREE_THIRD_PARTY_DIR ${UNITREE_SDK2_DIR}/thirdparty/lib/x86_64)
+endif()
+
 target_link_directories(robot_driver PUBLIC
-  ${UNITREE_SDK2_DIR}/lib/x86_64
-  ${UNITREE_SDK2_DIR}/thirdparty/lib/x86_64)
+  ${UNITREE_LIB_DIR}
+  ${UNITREE_THIRD_PARTY_DIR}
+)
 target_link_libraries(robot_driver
   ${GRMBLINK} unitree_sdk2 ddsc ddscxx pthread)
 

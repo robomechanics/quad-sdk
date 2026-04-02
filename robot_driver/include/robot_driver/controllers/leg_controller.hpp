@@ -76,6 +76,8 @@ class LegController {
    * @param[in] swing_kp_cart Cartesian Swing phase proportional gains
    * @param[in] swing_kd_cart Cartesian Swing phase derivative gains
    * @param[in] model_path Absolute Path to ONNX Model Weights
+   * @param[in] policy_inference_rate Rate (Hz) at which learned policy runs
+   *            inference; PD tracking runs at the main loop rate
    */
   virtual void init(const std::vector<double>& stance_kp,
                     const std::vector<double>& stance_kd,
@@ -83,7 +85,8 @@ class LegController {
                     const std::vector<double>& swing_kd,
                     const std::vector<double>& swing_kp_cart,
                     const std::vector<double>& swing_kd_cart,
-                    const std::string& model_path);
+                    const std::string& model_path,
+                    double policy_inference_rate = 50.0);
 
   /**
    * @brief Compute the leg command array message for a given current state and

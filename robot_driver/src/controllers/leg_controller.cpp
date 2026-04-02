@@ -50,7 +50,8 @@ void LegController::init(const std::vector<double>& stance_kp,
                          const std::vector<double>& swing_kd,
                          const std::vector<double>& swing_kp_cart,
                          const std::vector<double>& swing_kd_cart,
-                         const std::string& model_path) {
+                         const std::string& model_path,
+                         double /*policy_inference_rate*/) {
   stance_kp_ = stance_kp;
   stance_kd_ = stance_kd;
   swing_kp_ = swing_kp;

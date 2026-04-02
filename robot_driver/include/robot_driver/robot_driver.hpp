@@ -380,6 +380,9 @@ class RobotDriver {
   /// Define path to Learned Policy ONNX File
   std::string model_path_;
 
+  /// Learned policy inference rate (Hz)
+  double policy_inference_rate_;
+
   /// QuadKD2 (Pinocchio-based kinematics)
   std::shared_ptr<quad_utils::QuadKD2> quadKD2_;
 
