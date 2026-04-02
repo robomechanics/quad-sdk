@@ -47,7 +47,8 @@ class LearnedPolicy : public LegController {
             const std::vector<double>& swing_kd,
             const std::vector<double>& swing_kp_cart,
             const std::vector<double>& swing_kd_cart,
-            const std::string& model_path);
+            const std::string& model_path,
+            double policy_inference_rate = 50.0);
 
   void loadONNXModel();
   /**
@@ -98,6 +99,15 @@ class LearnedPolicy : public LegController {
   Eigen::VectorXd obs_{Eigen::VectorXd::Zero(48)};
   Eigen::VectorXd actions_{Eigen::VectorXd::Zero(12)};
   Eigen::VectorXd raw_actions_{Eigen::VectorXd::Zero(12)};
+
+  /// Policy inference rate (Hz), PD tracking at loop rate
+  double policy_inference_rate_ = 50.0;
+
+  /// Timestamp of last inference run
+  rclcpp::Time last_inference_time_;
+
+  /// Whether first inference has been run yet
+  bool first_inference_ = true;
 
   double scale_factor_ = 0.25;  // Grabbed Directly From IsaacLab Repo
 

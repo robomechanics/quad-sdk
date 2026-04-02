@@ -61,17 +61,14 @@ class UnitreeInterface : public HardwareInterface {
       {6, 7, 8}     // leg_3 (RR) -> Unitree RR
   };
 
-  // Joint names matching go2.yaml ordering
-//   std::vector<std::string> joint_names_ = {
-//       "FL_hip_joint",   "FL_thigh_joint",  "FL_calf_joint",
-//       "RL_hip_joint",   "RL_thigh_joint",  "RL_calf_joint",
-//       "FR_hip_joint",   "FR_thigh_joint",  "FR_calf_joint",
-//       "RR_hip_joint",   "RR_thigh_joint",  "RR_calf_joint"};
+  // URDF joint names (matching go2.urdf.xacro revolute joints)
+  // Ordering follows quad-sdk convention: FL(hip,thigh,calf), RL, FR, RR
+  // Estimators/planners read by index, not by name, so URDF names are safe here
   std::vector<std::string> joint_names_ = {
-      "8",   "0",  "1",
-      "9",   "2",  "3",
-      "10",   "4",  "5",
-      "11",   "6",  "7"};
+      "8",  "0",  "1",    // FL: hip, thigh, calf
+      "9",  "2",  "3",    // RL: hip, thigh, calf
+      "10", "4",  "5",    // FR: hip, thigh, calf
+      "11", "6",  "7"};   // RR: hip, thigh, calf
 
   bool state_received_ = false;
 };
