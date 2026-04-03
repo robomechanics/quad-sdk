@@ -463,7 +463,62 @@ bool RobotDriver::updateState() {
       return false;
     }
   } else {
-    // State information coming through sim subscribers, not hardware interface
+    // State information coming through sim subscribers, not hardware interface.
+    // Optionally run EKF in parallel for testing (does not affect control).
+    if (debug_estimator_ && state_estimator_ != nullptr &&
+        rclcpp::Time(last_robot_state_msg_.header.stamp).seconds() != 0) {
+      // Initialize EKF once robot is in stand mode (control_mode_ == READY)
+      if (!ekf_initialized_) {
+        if (control_mode_ != READY) {
+          return true;  // Not standing yet, skip EKF
+        }
+        ekf_estimate_msg_ = last_robot_state_msg_;
+        ekf_initialized_ = true;
+        RCLCPP_INFO(node_->get_logger(),
+                    "EKF initialized from ground truth state (Z=%.3f)",
+                    last_robot_state_msg_.body.pose.position.z);
+      }
+
+      // Build IMU msg from ground truth state
+      sensor_msgs::msg::Imu imu_from_gt;
+      imu_from_gt.header = last_robot_state_msg_.header;
+      imu_from_gt.orientation = last_robot_state_msg_.body.pose.orientation;
+      imu_from_gt.angular_velocity = last_robot_state_msg_.body.twist.angular;
+
+      // Derive accelerometer reading from ground truth velocity.
+      // A real IMU measures specific force = (linear_accel - gravity) in body
+      // frame. We compute world-frame accel from finite differences, then
+      // convert to what an accelerometer would read:
+      //   accel_imu = R^T * (a_world - g)   but since a_world already excludes
+      //   gravity in Newton's law, the IMU actually reads
+      // R^T * (a_world + g_up)
+      //   i.e. R^T * (dv/dt + [0,0,9.81])
+      Eigen::Vector3d vel_world(last_robot_state_msg_.body.twist.linear.x,
+                                last_robot_state_msg_.body.twist.linear.y,
+                                last_robot_state_msg_.body.twist.linear.z);
+      double dt_gt = 1.0 / update_rate_;
+      Eigen::Vector3d accel_world = (vel_world - ekf_last_vel_) / dt_gt;
+      ekf_last_vel_ = vel_world;
+
+      // IMU reads specific force in body frame: R^T * (a + g)
+      Eigen::Quaterniond q_orient(
+          last_robot_state_msg_.body.pose.orientation.w,
+          last_robot_state_msg_.body.pose.orientation.x,
+          last_robot_state_msg_.body.pose.orientation.y,
+          last_robot_state_msg_.body.pose.orientation.z);
+      Eigen::Matrix3d R_world_body = q_orient.toRotationMatrix();
+      Eigen::Vector3d g_world(0.0, 0.0, 9.81);
+      Eigen::Vector3d accel_body = R_world_body.transpose() *
+                                   (accel_world + g_world);
+      imu_from_gt.linear_acceleration.x = accel_body.x();
+      imu_from_gt.linear_acceleration.y = accel_body.y();
+      imu_from_gt.linear_acceleration.z = accel_body.z();
+
+      // Feed ground truth sensor data to the estimator
+      state_estimator_->loadSensorMsg(imu_from_gt,
+        last_robot_state_msg_.joints);
+      state_estimator_->updateOnce(ekf_estimate_msg_);
+    }
     return true;
   }
 }
@@ -677,9 +732,10 @@ void RobotDriver::publishControl(bool is_valid) {
   msg.header.stamp = node_->now();
   msg.twist = last_cmd_vel_msg_;
   cmd_vel_stamped_pub_->publish(msg);
-  last_state_estimate_msg_ = last_robot_state_msg_;
-  last_state_estimate_msg_.header.stamp = node_->now();
-  state_estimate_pub_->publish(last_state_estimate_msg_);
+  if (debug_estimator_ && ekf_initialized_) {
+    ekf_estimate_msg_.header.stamp = node_->now();
+    state_estimate_pub_->publish(ekf_estimate_msg_);
+  }
 
   // Send command to the robot
   if (is_hardware_ && is_valid) {
@@ -703,11 +759,8 @@ void RobotDriver::publishHeartbeat() {
 }
 
 void RobotDriver::testDynamics() {
-  if (debugger) {
-    if (rclcpp::Time(last_robot_state_msg_.header.stamp).seconds() != 0) {
-      quad_utils::updateDynamics(*quadKD2_, last_robot_state_msg_);
-      // RCLCPP_INFO(node_->get_logger(), "Completed Dynamics State Update");
-    }
+  if (rclcpp::Time(last_robot_state_msg_.header.stamp).seconds() != 0) {
+    quad_utils::updateDynamics(*quadKD2_, last_robot_state_msg_);
   }
 }
 
