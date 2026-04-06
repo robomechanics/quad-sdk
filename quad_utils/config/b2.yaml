@@ -87,7 +87,7 @@
       safety_kd: [20.0, 20.0, 20.0]
       stand_joint_angles: [0.0, 0.67, 1.73]
       sit_joint_angles: [0.0, 0.0, 0.0]
-      torque_limit: [10000.0, 10000.0, 10000.0]
+      torque_limit: [1000.0, 1000.0, 1000.0]
 
 /**:
   ros__parameters:
