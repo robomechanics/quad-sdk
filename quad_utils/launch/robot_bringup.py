@@ -46,6 +46,11 @@ def load_robot_params(context, *args, **kwargs):
         urdf_file = 'spot.urdf.xacro'
         sdf_file = 'spot.sdf.xacro'
         config_file = 'spot.yaml'
+    elif robot_type == 'vision60':
+        desc_pkg = 'vision60_description'
+        urdf_file = 'vision60.urdf.xacro'
+        sdf_file = 'vision60.sdf.xacro'
+        config_file = 'vision60.yaml'
     else:
         raise RuntimeError(f"[robot_bringup] Unsupported robot type: {robot_type}")
 
