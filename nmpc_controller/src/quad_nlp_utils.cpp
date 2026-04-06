@@ -95,6 +95,75 @@ void quadNLP::loadCasadiFuncs() {
   eval_sparsity_vec_[GO2][JAC] = eval_jac_g_go2_sparsity_out;
   eval_sparsity_vec_[GO2][HESS] = eval_hess_g_go2_sparsity_out;
 
+  // Load basic leg controller functions for the B2 platform
+  eval_vec_[B2][FUNC] = eval_g_b2;
+  eval_vec_[B2][JAC] = eval_jac_g_b2;
+  eval_vec_[B2][HESS] = eval_hess_g_b2;
+  eval_work_vec_[B2][FUNC] = eval_g_b2_work;
+  eval_work_vec_[B2][JAC] = eval_jac_g_b2_work;
+  eval_work_vec_[B2][HESS] = eval_hess_g_b2_work;
+  eval_incref_vec_[B2][FUNC] = eval_g_b2_incref;
+  eval_incref_vec_[B2][JAC] = eval_jac_g_b2_incref;
+  eval_incref_vec_[B2][HESS] = eval_hess_g_b2_incref;
+  eval_decref_vec_[B2][FUNC] = eval_g_b2_decref;
+  eval_decref_vec_[B2][JAC] = eval_jac_g_b2_decref;
+  eval_decref_vec_[B2][HESS] = eval_hess_g_b2_decref;
+  eval_checkout_vec_[B2][FUNC] = eval_g_b2_checkout;
+  eval_checkout_vec_[B2][JAC] = eval_jac_g_b2_checkout;
+  eval_checkout_vec_[B2][HESS] = eval_hess_g_b2_checkout;
+  eval_release_vec_[B2][FUNC] = eval_g_b2_release;
+  eval_release_vec_[B2][JAC] = eval_jac_g_b2_release;
+  eval_release_vec_[B2][HESS] = eval_hess_g_b2_release;
+  eval_sparsity_vec_[B2][FUNC] = eval_g_b2_sparsity_out;
+  eval_sparsity_vec_[B2][JAC] = eval_jac_g_b2_sparsity_out;
+  eval_sparsity_vec_[B2][HESS] = eval_hess_g_b2_sparsity_out;
+
+  // Load basic leg controller functions for the VISION60 platform
+  eval_vec_[VISION60][FUNC] = eval_g_vision60;
+  eval_vec_[VISION60][JAC] = eval_jac_g_vision60;
+  eval_vec_[VISION60][HESS] = eval_hess_g_vision60;
+  eval_work_vec_[VISION60][FUNC] = eval_g_vision60_work;
+  eval_work_vec_[VISION60][JAC] = eval_jac_g_vision60_work;
+  eval_work_vec_[VISION60][HESS] = eval_hess_g_vision60_work;
+  eval_incref_vec_[VISION60][FUNC] = eval_g_vision60_incref;
+  eval_incref_vec_[VISION60][JAC] = eval_jac_g_vision60_incref;
+  eval_incref_vec_[VISION60][HESS] = eval_hess_g_vision60_incref;
+  eval_decref_vec_[VISION60][FUNC] = eval_g_vision60_decref;
+  eval_decref_vec_[VISION60][JAC] = eval_jac_g_vision60_decref;
+  eval_decref_vec_[VISION60][HESS] = eval_hess_g_vision60_decref;
+  eval_checkout_vec_[VISION60][FUNC] = eval_g_vision60_checkout;
+  eval_checkout_vec_[VISION60][JAC] = eval_jac_g_vision60_checkout;
+  eval_checkout_vec_[VISION60][HESS] = eval_hess_g_vision60_checkout;
+  eval_release_vec_[VISION60][FUNC] = eval_g_vision60_release;
+  eval_release_vec_[VISION60][JAC] = eval_jac_g_vision60_release;
+  eval_release_vec_[VISION60][HESS] = eval_hess_g_vision60_release;
+  eval_sparsity_vec_[VISION60][FUNC] = eval_g_vision60_sparsity_out;
+  eval_sparsity_vec_[VISION60][JAC] = eval_jac_g_vision60_sparsity_out;
+  eval_sparsity_vec_[VISION60][HESS] = eval_hess_g_vision60_sparsity_out;
+
+  // Load basic leg controller functions for the SPOT platform
+  eval_vec_[SPOT][FUNC] = eval_g_spot;
+  eval_vec_[SPOT][JAC] = eval_jac_g_spot;
+  eval_vec_[SPOT][HESS] = eval_hess_g_spot;
+  eval_work_vec_[SPOT][FUNC] = eval_g_spot_work;
+  eval_work_vec_[SPOT][JAC] = eval_jac_g_spot_work;
+  eval_work_vec_[SPOT][HESS] = eval_hess_g_spot_work;
+  eval_incref_vec_[SPOT][FUNC] = eval_g_spot_incref;
+  eval_incref_vec_[SPOT][JAC] = eval_jac_g_spot_incref;
+  eval_incref_vec_[SPOT][HESS] = eval_hess_g_spot_incref;
+  eval_decref_vec_[SPOT][FUNC] = eval_g_spot_decref;
+  eval_decref_vec_[SPOT][JAC] = eval_jac_g_spot_decref;
+  eval_decref_vec_[SPOT][HESS] = eval_hess_g_spot_decref;
+  eval_checkout_vec_[SPOT][FUNC] = eval_g_spot_checkout;
+  eval_checkout_vec_[SPOT][JAC] = eval_jac_g_spot_checkout;
+  eval_checkout_vec_[SPOT][HESS] = eval_hess_g_spot_checkout;
+  eval_release_vec_[SPOT][FUNC] = eval_g_spot_release;
+  eval_release_vec_[SPOT][JAC] = eval_jac_g_spot_release;
+  eval_release_vec_[SPOT][HESS] = eval_hess_g_spot_release;
+  eval_sparsity_vec_[SPOT][FUNC] = eval_g_spot_sparsity_out;
+  eval_sparsity_vec_[SPOT][JAC] = eval_jac_g_spot_sparsity_out;
+  eval_sparsity_vec_[SPOT][HESS] = eval_hess_g_spot_sparsity_out;
+
   // Load simple to simple functions - for adaptive complexity
   eval_vec_[SIMPLE_TO_SIMPLE][FUNC] = eval_g_leg_simple;
   eval_vec_[SIMPLE_TO_SIMPLE][JAC] = eval_jac_g_leg_simple;
