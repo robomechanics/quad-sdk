@@ -1,3 +1,4 @@
+# ARM, ROS2 Only (MPC Hardware Deployment on Robot)
 FROM arm64v8/ros:jazzy
 ENV DEBIAN_FRONTEND=noninteractive
 

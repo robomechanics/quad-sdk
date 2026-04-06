@@ -1,0 +1,80 @@
+services:
+  arm-mpc:
+    build:
+      context: .
+      dockerfile: Dockerfile.arm_mpc
+    image: quad-sdk:arm-mpc
+    container_name: quad-sdk-arm-mpc
+    privileged: true
+    network_mode: host
+    ipc: host
+    shm_size: 4gb
+    stdin_open: true
+    tty: true
+    volumes:
+      - ..:/root/ros2_ws/src/quad-sdk
+      - /tmp/.X11-unix:/tmp/.X11-unix:ro
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
+    environment:
+      - DISPLAY=${DISPLAY}
+      - ROS_AUTOMATIC_DISCOVERY_RANGE=SUBNET
+      - ROS_DOMAIN_ID=42
+      - XDG_RUNTIME_DIR=/tmp/runtime-root
+      - QT_X11_NO_MITSHM=1
+
+  x86:
+    build:
+      context: .
+      dockerfile: Dockerfile.x86
+    image: quad-sdk:x86
+    container_name: quad-sdk-x86
+    privileged: true
+    network_mode: host
+    ipc: host
+    shm_size: 4gb
+    stdin_open: true
+    tty: true
+    volumes:
+      - ..:/root/ros2_ws/src/quad-sdk
+      - /tmp/.X11-unix:/tmp/.X11-unix:ro
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
+    environment:
+      - DISPLAY=${DISPLAY}
+      - ROS_AUTOMATIC_DISCOVERY_RANGE=LOCALHOST
+      - ROS_DOMAIN_ID=42
+      - XDG_RUNTIME_DIR=/tmp/runtime-root
+      - QT_X11_NO_MITSHM=1
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+
+  arm-learned:
+    build:
+      context: .
+      dockerfile: Dockerfile.arm_learned
+    image: quad-sdk:arm-learned
+    container_name: quad-sdk-arm-learned
+    privileged: true
+    network_mode: host
+    ipc: host
+    shm_size: 4gb
+    stdin_open: true
+    tty: true
+    runtime: nvidia
+    volumes:
+      - ..:/root/ros2_ws/src/quad-sdk
+      - /tmp/.X11-unix:/tmp/.X11-unix:ro
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
+    environment:
+      - DISPLAY=${DISPLAY}
+      - ROS_AUTOMATIC_DISCOVERY_RANGE=SUBNET
+      - ROS_DOMAIN_ID=42
+      - XDG_RUNTIME_DIR=/tmp/runtime-root
+      - QT_X11_NO_MITSHM=1
