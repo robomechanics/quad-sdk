@@ -133,6 +133,12 @@ void LocalPlanner::initLocalBodyPlanner() {
     type = A1;
   } else if (robot_name_ == "go2") {
     type = GO2;
+  } else if (robot_name_ == "b2") {
+    type = B2;
+  } else if (robot_name_ == "spot") {
+    type = SPOT;
+  } else if (robot_name_ == "vision60") {
+    type = VISION60;
   } else {
     RCLCPP_WARN(node_->get_logger(), "WRONG ROBOT TYPE: '%s'",
                 robot_name_.c_str());

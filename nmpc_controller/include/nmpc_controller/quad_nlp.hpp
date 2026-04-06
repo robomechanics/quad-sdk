@@ -203,7 +203,7 @@ class quadNLP : public TNLP {
   double mu_;
 
   /// Mass of the platform (set to zero to ignore nominal ff)
-  const double mass_ = 13.3;
+  const double mass_ = 60.0;
 
   /// Mass of the feet (as modeled in casadi)
   const double foot_mass_ = 0.01;
