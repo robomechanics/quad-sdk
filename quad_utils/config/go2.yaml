@@ -15,9 +15,16 @@
 
 /**/local_planner:
   ros__parameters:
+    local_planner:
+        desired_height: 0.22 # m
+        toe_radius: 0.022 # m
     local_footstep_planner:
         hip_clearance: 0.1
         foothold_search_radius: 0.25
+        period: 0.36 # s
+        ground_clearance: 0.07 # tune
+        duty_cycles: [0.5, 0.5, 0.5, 0.5]
+        phase_offsets: [0.0, 0.5, 0.5, 0.0] 
     nmpc_controller:
       body:
         x_dim: 12.0
@@ -61,7 +68,8 @@
         u_ub: [0.0]
         g_lb: [!!float -2e19, !!float -2e19,  !!float -2e19,  !!float -2e19, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, !!float -2e19, !!float -2e19,  !!float -2e19,  !!float -2e19, !!float -2e19, !!float -2e19,  !!float -2e19,  !!float -2e19,  !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19]
         g_ub: [!!float 2e19, !!float 2e19,  !!float 2e19,  !!float 2e19, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, !!float 2e19, !!float 2e19,  !!float 2e19,  !!float 2e19, !!float 2e19, !!float 2e19,  !!float 2e19,  !!float 2e19,  !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19]
-        
+      friction_coefficient: 0.6
+       
 /**/robot_driver:
   ros__parameters:    
     robot_driver:

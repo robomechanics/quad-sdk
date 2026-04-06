@@ -1,0 +1,833 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright (c) 2023 Boston Dynamics, Inc.  All rights reserved.
+
+Downloading, reproducing, distributing or otherwise using the SDK Software
+is subject to the terms and conditions of the Boston Dynamics Software
+Development Kit License (20191101-BDSDK-SL).
+-->
+<robot name="spot" xmlns:xacro="http://www.ros.org/wiki/xacro">
+  <!-- Define materials -->
+  <material name="gray">
+    <color rgba="0.2 0.2 0.2 1.0"/>
+  </material>
+  <material name="gold"> 
+    <color rgba="1 0.8431 0 1"/>
+  </material>    
+  <material name="darkgray">
+    <color rgba="0.1 0.1 0.1 1.0"/>
+  </material>
+  <material name="silver">
+    <color rgba="0.3 0.3 0.3 1.0"/>
+  </material>
+  <material name="red">
+    <color rgba="0.8 0.0 0.2 1.0"/>
+  </material>
+  <material name="scots-rose">
+    <color rgba="0.937 0.2 0.251 1.0"/>
+  </material>
+  <!-- Robot Base Link -->
+  <link name="body">
+    <visual>
+      <geometry>
+        <mesh filename="package://spot_description/models/spot/meshes/base_link_0_geom_visual_mesh.stl"/>
+      </geometry>
+      <material name="gold" />
+    </visual>
+    <collision>
+      <origin xyz="0.0 0.0 -0.015"/>
+      <geometry>
+        <box size="0.85 0.24 0.18"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <origin xyz="0 0 -0.00496172"/>
+      <mass value="16.70765207"/>
+      <inertia ixx="0.081543792" ixy="0.0" ixz="0.0" iyy="0.549231154" iyz="0.0" izz="0.569454373"/>
+    </inertial>
+  </link>
+  <gazebo reference="body">
+    <gravity>true</gravity>
+    <sensor name="imu_sensor" type="imu">
+      <always_on>true</always_on>
+      <visualize>true</visualize>
+      <topic>__default_topic_</topic>
+      <plugin filename="libgazebo_ros_imu_sensor.so" name="imu_plugin">
+        <topicName>imu</topicName>
+        <bodyName>body</bodyName>
+        <updateRateHZ>500.0</updateRateHZ>
+        <gaussianNoise>0.0</gaussianNoise>
+        <xyzOffset>0 0 0</xyzOffset>
+        <rpyOffset>0 0 0</rpyOffset>
+        <frameName>body</frameName>
+        <initialOrientationAsReference>true</initialOrientationAsReference>
+      </plugin>
+      <pose>0 0 0 0 0 0</pose>
+    </sensor>
+  </gazebo>
+
+  <!-- Hip Links -->
+  <link name="hip0">
+    <visual>
+      <geometry>
+        <mesh filename="package://spot_description/models/spot/meshes/fl_hip_0_geom_visual_mesh.stl"/>
+      </geometry>
+      <material name="gray" />
+    </visual>
+    <inertial>
+      <origin xyz="-0.01586739 0.00855842 0.00000903"/>
+      <inertia ixx="0.00122166" ixy="-0.00017754" ixz="0.00000043" iyy="0.00158957" iyz="-0.00000049" izz="0.00172903"/>
+      <mass value="1.13688339"/>
+    </inertial>
+  </link>
+  <gazebo reference="hip0">
+    <gravity>true</gravity>
+    <material>Gazebo/Gray</material>
+  </gazebo>
+
+  <joint name="8" type="revolute">
+    <parent link="body"/>
+    <child link="hip0"/>
+    <origin xyz="0.29785 0.05500 0.00000" rpy="0 0 0"/>
+    <axis xyz="1 0 0"/>
+    <limit effort="1000" velocity="1000.00" lower="-0.78539816339744827899" upper="0.78539816339744827899"/>
+    <dynamics damping="0" friction="0"/>
+  </joint>
+  <transmission name="transmission_8">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="8">
+      <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="motor_8">
+      <hardwareInterface>EffortJointInterface</hardwareInterface>
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+  </transmission>
+
+  <link name="upper0">
+    <visual>
+      <geometry>
+        <mesh filename="package://spot_description/models/spot/meshes/l_uleg_0_geom_visual_mesh.stl"/>
+      </geometry>
+      <material name="gold"/>
+    </visual>
+    <collision>
+      <origin xyz="0.0 0.0 -0.115"/>
+      <geometry>
+        <cylinder radius="0.045" length="0.35"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <origin xyz="0.00214442 -0.01110184 -0.07881204"/>
+      <inertia ixx="0.02692501" ixy="-0.00008782" ixz="0.00054873" iyy="0.02583907" iyz="0.00207146" izz="0.00318737"/>
+      <mass value="2.25620359"/>
+    </inertial>
+  </link>
+  <gazebo reference="upper0">
+    <gravity>true</gravity>
+    <material>Gazebo/Gold</material>
+  </gazebo>
+
+  <joint name="0" type="revolute">
+    <parent link="hip0"/>
+    <child link="upper0"/>
+    <origin xyz="0.0 0.110945 0.0" rpy="0 0 0"/>
+    <axis xyz="0 1 0"/>
+    <limit effort="1000" velocity="1000.00" lower="-0.89884456477707963539" upper="2.2951079663725435509"/>
+    <dynamics damping="0" friction="0"/>
+  </joint>
+  <transmission name="transmission_0">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="0">
+      <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="motor_0">
+      <hardwareInterface>EffortJointInterface</hardwareInterface>
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+  </transmission>
+
+  <link name="lower0">
+    <visual>
+      <geometry>
+        <mesh filename="package://spot_description/models/spot/meshes/lleg_0_geom_visual_mesh.stl"/>
+      </geometry>
+      <material name="gray" />
+    </visual>
+    <collision>
+      <origin rpy="1.5708 0.0 0.0" xyz="0.0 0.0 -0.33532"/>
+      <geometry>
+        <cylinder radius="0.033" length="0.03"/>
+      </geometry>
+    </collision>
+    <!-- <collision>
+      <origin rpy="0.0 -0.045 0.0" xyz="0.0105 0.0 -0.15"/>
+      <geometry>
+        <cylinder radius="0.015" length="0.35"/>
+      </geometry>
+    </collision> -->
+    <inertial>
+      <origin xyz="0.00597360 0.0 -0.17466427"/>
+      <inertia ixx="0.00701356" ixy="0.0" ixz="0.00006600" iyy="0.00709946" iyz="0.0" izz="0.00014529"/>
+      <mass value="0.330"/>
+    </inertial>
+  </link>
+  <gazebo reference="lower0">
+    <gravity>true</gravity>
+    <material>Gazebo/Black</material>
+  </gazebo>
+
+  <joint name="1" type="revolute">
+    <parent link="upper0"/>
+    <child link="lower0"/>
+    <origin xyz="0.025 0.000 -0.3205" rpy="0 0 0"/> 
+    <axis xyz="0 1 0"/>
+    <limit effort="1000" velocity="1000.00" lower="-2.7929" upper="-0.254402"/>
+    <dynamics damping="0" friction="0"/>
+  </joint>
+  <transmission name="transmission_1">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="1">
+      <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="motor_1">
+      <hardwareInterface>EffortJointInterface</hardwareInterface>
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+  </transmission>
+  <!-- Toe -->
+  <link
+    name="toe0">
+    <inertial>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <mass
+        value="0.015" />
+      <inertia
+        ixx="9.6e-06"
+        ixy="0"
+        ixz="0"
+        iyy="9.6e-06"
+        iyz="0"
+        izz="9.6e-06" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <sphere radius="0.02"/>
+      </geometry>
+      <material name="darkgray"/>
+    </visual>
+    <collision>
+      <origin rpy="0 0 0" xyz="0 0 0" />
+      <geometry>
+        <sphere radius="0.02" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="jtoe0"
+    type="fixed" dont_collapse="true">
+    <origin
+      xyz="0 0 -0.31532"
+      rpy="0 0 0" />
+    <parent
+      link="lower0" />
+    <child
+      link="toe0" />
+    <axis
+      xyz="0 0 0" />
+  </joint>
+
+  <link name="hip1">
+    <visual>
+      <geometry>
+        <mesh filename="package://spot_description/models/spot/meshes/hl_hip_0_geom_visual_mesh.stl"/>
+      </geometry>
+      <material name="gray" />
+    </visual>
+    <inertial>
+      <origin xyz="0.01586739 0.00855842 0.00000903"/>
+      <inertia ixx="0.00122166" ixy="0.00017754" ixz="-0.00000043" iyy="0.00158957" iyz="-0.00000049" izz="0.00172903"/>
+      <mass value="1.13688339"/>
+    </inertial>
+  </link>
+  <gazebo reference="hip1">
+    <gravity>true</gravity>
+    <material>Gazebo/Gray</material>
+  </gazebo>
+  
+  <joint name="9" type="revolute">
+    <parent link="body"/>
+    <child link="hip1"/>
+    <origin xyz="-0.29785 0.05500 0.00000" rpy="0 0 0"/>
+    <axis xyz="1 0 0"/>
+    <limit effort="1000" velocity="1000.00" lower="-0.78539816339744827899" upper="0.78539816339744827899"/>
+    <dynamics damping="0" friction="0"/>
+  </joint>
+  <transmission name="transmission_9">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="9">
+      <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="motor_9">
+      <hardwareInterface>EffortJointInterface</hardwareInterface>
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+  </transmission>
+
+  <link name="upper1">
+    <visual>
+      <geometry>
+        <mesh filename="package://spot_description/models/spot/meshes/l_uleg_0_geom_visual_mesh.stl"/>
+      </geometry>
+      <material name="gold" />
+    </visual>
+    <collision>
+      <origin xyz="0.0 0.0 -0.115"/>
+      <geometry>
+        <cylinder radius="0.045" length="0.35"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <origin xyz="0.00214442 -0.01110184 -0.07881204"/>
+      <inertia ixx="0.02692501" ixy="-0.00008782" ixz="0.00054873" iyy="0.02583907" iyz="0.00207146" izz="0.00318737"/>
+      <mass value="2.25620359"/>
+    </inertial>
+  </link>
+  <gazebo reference="upper1">
+    <gravity>true</gravity>
+    <material>Gazebo/Gold</material>
+  </gazebo>
+  <joint name="2" type="revolute">
+    <parent link="hip1"/>
+    <child link="upper1"/>
+    <origin xyz="0.0 0.110945 0.0" rpy="0 0 0"/> 
+    <axis xyz="0 1 0"/>
+    <limit effort="1000" velocity="1000.00" lower="-0.898845" upper="2.24363"/>
+    <dynamics damping="0" friction="0"/>
+  </joint>
+  <transmission name="transmission_2">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="2">
+      <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="motor_2">
+      <hardwareInterface>EffortJointInterface</hardwareInterface>
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+  </transmission>
+  
+  <link name="lower1">
+    <visual>
+      <geometry>
+        <mesh filename="package://spot_description/models/spot/meshes/lleg_0_geom_visual_mesh.stl"/>
+      </geometry>
+      <material name="gray" />
+    </visual>
+    <collision>
+      <origin rpy="1.5708 0.0 0.0" xyz="0.0 0.0 -0.33532"/>
+      <geometry>
+        <cylinder radius="0.033" length="0.03"/>
+      </geometry>
+    </collision>
+    <!-- <collision>
+      <origin rpy="0.0 -0.045 0.0" xyz="0.0105 0.0 -0.15"/>
+      <geometry>
+        <cylinder radius="0.015" length="0.35"/>
+      </geometry>
+    </collision> -->
+    <inertial>
+      <origin xyz="0.00597360 0.0 -0.17466427"/>
+      <inertia ixx="0.00701356" ixy="0.0" ixz="0.00006600" iyy="0.00709946" iyz="0.0" izz="0.00014529"/>
+      <mass value="0.330"/>
+    </inertial>
+  </link>
+  <gazebo reference="lower1">
+    <gravity>true</gravity>
+    <material>Gazebo/Black</material>
+  </gazebo>
+  <joint name="3" type="revolute">
+    <parent link="upper1"/>
+    <child link="lower1"/>
+    <origin xyz="0.025 0.000 -0.3205" rpy="0 0 0"/> 
+    <axis xyz="0 1 0"/>
+    <limit effort="1000" velocity="1000.00" lower="-2.7929" upper="-0.255648"/>
+    <dynamics damping="0" friction="0"/>
+  </joint>
+  <transmission name="transmission_3">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="3">
+      <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="motor_3">
+      <hardwareInterface>EffortJointInterface</hardwareInterface>
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+  </transmission>
+  
+  <!-- Toe -->
+  <link
+    name="toe1">
+    <inertial>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <mass
+        value="0.015" />
+      <inertia
+        ixx="9.6e-06"
+        ixy="0"
+        ixz="0"
+        iyy="9.6e-06"
+        iyz="0"
+        izz="9.6e-06" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <sphere radius="0.02"/>
+      </geometry>
+      <material name="darkgray"/>
+    </visual>
+    <collision>
+      <origin rpy="0 0 0" xyz="0 0 0" />
+      <geometry>
+        <sphere radius="0.02" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="jtoe1"
+    type="fixed" dont_collapse="true">
+    <origin
+      xyz="0 0 -0.31532"
+      rpy="0 0 0" />
+    <parent
+      link="lower1" />
+    <child
+      link="toe1" />
+    <axis
+      xyz="0 0 0" />
+  </joint>
+               
+  <link name="hip2">
+    <visual>
+      <geometry>
+        <mesh filename="package://spot_description/models/spot/meshes/fr_hip_0_geom_visual_mesh.stl"/>
+      </geometry>
+      <material name="gray" />
+    </visual>
+    <inertial>
+      <origin xyz="-0.01586739 -0.00855842 0.00000903"/>
+      <inertia ixx="0.00122166" ixy="0.00017754" ixz="0.00000043" iyy="0.00158957" iyz="0.00000049" izz="0.00172903"/>
+      <mass value="1.13688339"/>
+    </inertial>
+  </link>
+  <gazebo reference="hip2">
+    <gravity>true</gravity>
+    <material>Gazebo/Gray</material>
+  </gazebo>
+  <joint name="10" type="revolute">
+    <parent link="body"/>
+    <child link="hip2"/>
+    <origin xyz="0.29785 -0.05500 0.00000" rpy="0 0 0"/>
+    <axis xyz="1 0 0"/>
+    <limit effort="1000" velocity="1000.00" lower="-0.78539816339744827899" upper="0.78539816339744827899"/>
+    <dynamics damping="0" friction="0"/>
+  </joint>
+  <transmission name="transmission_10">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="10">
+      <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="motor_10">
+      <hardwareInterface>EffortJointInterface</hardwareInterface>
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+  </transmission>
+  
+  <link name="upper2">
+    <visual>
+      <geometry>
+        <mesh filename="package://spot_description/models/spot/meshes/r_uleg_0_geom_visual_mesh.stl"/>
+      </geometry>
+      <material name="gold" />
+    </visual>
+    <collision>
+      <origin xyz="0.0 0.0 -0.115"/>
+      <geometry>
+        <cylinder radius="0.045" length="0.35"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <origin xyz="0.00214442 0.01110184 -0.07881204"/>
+      <inertia ixx="0.02692501" ixy="0.00008782" ixz="0.00054873" iyy="0.02583907" iyz="-0.00207146" izz="0.00318737"/>
+      <mass value="2.25620359"/>
+    </inertial>
+  </link>
+  <gazebo reference="upper2">
+    <gravity>true</gravity>
+    <material>Gazebo/Gold</material>
+  </gazebo>
+  <joint name="4" type="revolute">
+    <parent link="hip2"/>
+    <child link="upper2"/>
+    <origin xyz="0.0 -0.110945 0.0" rpy="0 0 0"/>
+    <axis xyz="0 1 0"/>
+    <limit effort="1000" velocity="1000.00" lower="-0.89884456477707963539" upper="2.2951079663725435509"/>
+    <dynamics damping="0" friction="0"/>
+  </joint>
+  <transmission name="transmission_4">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="4">
+      <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="motor_4">
+      <hardwareInterface>EffortJointInterface</hardwareInterface>
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+  </transmission>
+  
+  <link name="lower2">
+    <visual>
+      <geometry>
+        <mesh filename="package://spot_description/models/spot/meshes/lleg_0_geom_visual_mesh.stl"/>
+      </geometry>
+      <material name="gray" />
+    </visual>
+    <collision>
+      <origin rpy="1.5708 0.0 0.0" xyz="0.0 0.0 -0.33532"/>
+      <geometry>
+        <cylinder radius="0.033" length="0.03"/>
+      </geometry>
+    </collision>
+    <!-- <collision>
+      <origin rpy="0.0 -0.045 0.0" xyz="0.0105 0.0 -0.15"/>
+      <geometry>
+        <cylinder radius="0.015" length="0.35"/>
+      </geometry>
+    </collision> -->
+    <inertial>
+      <origin xyz="0.00597360 0.0 -0.17466427"/>
+      <inertia ixx="0.00701356" ixy="0.0" ixz="0.00006600" iyy="0.00709946" iyz="0.0" izz="0.00014529"/>
+      <mass value="0.330"/>
+    </inertial>
+  </link>
+  <gazebo reference="lower2">
+    <gravity>true</gravity>
+    <material>Gazebo/Black</material>
+  </gazebo>
+  <joint name="5" type="revolute">
+    <parent link="upper2"/>
+    <child link="lower2"/>
+    <origin xyz="0.025 0.000 -0.3205" rpy="0 0 0"/>
+    <axis xyz="0 1 0"/>
+    <limit effort="1000" velocity="1000.00" lower="-2.7929" upper="-0.247067"/>
+    <dynamics damping="0" friction="0"/>
+  </joint>
+  <transmission name="transmission_5">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="5">
+      <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="motor_5">
+      <hardwareInterface>EffortJointInterface</hardwareInterface>
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+  </transmission>
+
+  <!-- Toe -->
+  <link
+    name="toe2">
+    <inertial>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <mass
+        value="0.015" />
+      <inertia
+        ixx="9.6e-06"
+        ixy="0"
+        ixz="0"
+        iyy="9.6e-06"
+        iyz="0"
+        izz="9.6e-06" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <sphere radius="0.02"/>
+      </geometry>
+      <material name="darkgray"/>
+    </visual>
+    <collision>
+      <origin rpy="0 0 0" xyz="0 0 0" />
+      <geometry>
+        <sphere radius="0.02" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="jtoe2"
+    type="fixed" dont_collapse="true">
+    <origin
+      xyz="0 0 -0.31532"
+      rpy="0 0 0" />
+    <parent
+      link="lower2" />
+    <child
+      link="toe2" />
+    <axis
+      xyz="0 0 0" />
+  </joint>
+
+  <link name="hip3">
+    <visual>
+      <geometry>
+        <mesh filename="package://spot_description/models/spot/meshes/hr_hip_0_geom_visual_mesh.stl"/>
+      </geometry>
+      <material name="gray" />
+    </visual>
+    <inertial>
+      <origin xyz="0.01586739 -0.00855842 0.00000903"/>
+      <inertia ixx="0.00122166" ixy="-0.00017754" ixz="-0.00000043" iyy="0.00158957" iyz="0.00000049" izz="0.00172903"/>
+      <mass value="1.13688339"/>
+    </inertial>
+  </link>
+  <gazebo reference="hip3">
+    <gravity>true</gravity>
+    <material>Gazebo/Gray</material>
+  </gazebo>
+
+  <joint name="11" type="revolute">
+    <parent link="body"/>
+    <child link="hip3"/>
+    <origin xyz="-0.29785 -0.05500 0.00000" rpy="0 0 0"/>
+    <axis xyz="1 0 0"/>
+    <limit effort="1000" velocity="1000.00" lower="-0.78539816339744827899" upper="0.78539816339744827899"/>
+    <dynamics damping="0" friction="0"/>
+  </joint>
+  <transmission name="transmission_11">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="11">
+      <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="motor_11">
+      <hardwareInterface>EffortJointInterface</hardwareInterface>
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+  </transmission>
+
+  <link name="upper3">
+    <visual>
+      <geometry>
+        <mesh filename="package://spot_description/models/spot/meshes/r_uleg_0_geom_visual_mesh.stl"/>
+      </geometry>
+      <material name="gold" />
+    </visual>
+    <collision>
+      <origin xyz="0.0 0.0 -0.115"/>
+      <geometry>
+        <cylinder radius="0.045" length="0.35"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <origin xyz="0.00214442 0.01110184 -0.07881204"/>
+      <inertia ixx="0.02692501" ixy="0.00008782" ixz="0.00054873" iyy="0.02583907" iyz="-0.00207146" izz="0.00318737"/>
+      <mass value="2.25620359"/>
+    </inertial>
+  </link>
+  <gazebo reference="upper3">
+    <gravity>true</gravity>
+    <material>Gazebo/Gold</material>
+  </gazebo>
+
+  <joint name="6" type="revolute">
+    <parent link="hip3"/>
+    <child link="upper3"/>
+    <origin xyz="0.0 -0.110945 0.0" rpy="0 0 0"/> 
+    <axis xyz="0 1 0"/>
+    <limit effort="1000" velocity="1000.00" lower="-0.89884456477707963539" upper="2.2951079663725435509"/>
+    <dynamics damping="0" friction="0"/>
+  </joint>
+  <transmission name="transmission_6">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="6">
+      <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="motor_6">
+      <hardwareInterface>EffortJointInterface</hardwareInterface>
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+  </transmission>
+
+  <link name="lower3">
+    <visual>
+      <geometry>
+        <mesh filename="package://spot_description/models/spot/meshes/lleg_0_geom_visual_mesh.stl"/>
+      </geometry>
+      <material name="gray" />
+    </visual>
+    <collision>
+      <origin rpy="1.5708 0.0 0.0" xyz="0.0 0.0 -0.33532"/>
+      <geometry>
+        <cylinder radius="0.033" length="0.03"/>
+      </geometry>
+    </collision>
+    <!-- <collision>
+      <origin rpy="0.0 -0.045 0.0" xyz="0.0105 0.0 -0.15"/>
+      <geometry>
+        <cylinder radius="0.015" length="0.35"/>
+      </geometry>
+    </collision> -->
+    <inertial>
+      <origin xyz="0.00597360 0.0 -0.17466427"/>
+      <inertia ixx="0.00701356" ixy="0.0" ixz="0.00006600" iyy="0.00709946" iyz="0.0" izz="0.00014529"/>
+      <mass value="0.330"/>
+    </inertial>
+  </link>
+  <gazebo reference="lower3">
+    <gravity>true</gravity>
+    <material>Gazebo/Black</material>
+  </gazebo>
+  <joint name="7" type="revolute">
+    <parent link="upper3"/>
+    <child link="lower3"/>
+    <origin xyz="0.025 0.000 -0.3205" rpy="0 0 0"/> 
+    <axis xyz="0 1 0"/>
+    <limit effort="1000" velocity="1000.00" lower="-2.7929" upper="-0.248282"/>
+    <dynamics damping="0" friction="0"/>
+  </joint>
+  <transmission name="transmission_7">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="7">
+      <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="motor_7">
+      <hardwareInterface>EffortJointInterface</hardwareInterface>
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+  </transmission>
+
+  <!-- Toe -->
+  <link
+    name="toe3">
+    <inertial>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <mass
+        value="0.015" />
+      <inertia
+        ixx="9.6e-06"
+        ixy="0"
+        ixz="0"
+        iyy="9.6e-06"
+        iyz="0"
+        izz="9.6e-06" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <sphere radius="0.02"/>
+      </geometry>
+      <material name="darkgray"/>
+    </visual>
+    <collision>
+      <origin rpy="0 0 0" xyz="0 0 0" />
+      <geometry>
+        <sphere radius="0.02" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="jtoe3"
+    type="fixed" dont_collapse="true">
+    <origin
+      xyz="0 0 -0.31532"
+      rpy="0 0 0" />
+    <parent
+      link="lower3" />
+    <child
+      link="toe3" />
+    <axis
+      xyz="0 0 0" />
+  </joint>
+
+  <ros2_control name="GazeboSimSystem" type="system">
+    <hardware>
+      <plugin>gz_ros2_control/GazeboSimSystem</plugin>
+    </hardware>
+    <joint name="0">
+      <command_interface name="effort" />
+      <state_interface name="velocity" />
+      <state_interface name="position" />
+    </joint>
+    <joint name="1">
+      <command_interface name="effort" />
+      <state_interface name="velocity" />
+      <state_interface name="position" />
+    </joint>
+    <joint name="2">
+      <command_interface name="effort" />
+      <state_interface name="velocity" />
+      <state_interface name="position" />
+    </joint>
+    <joint name="3">
+      <command_interface name="effort" />
+      <state_interface name="velocity" />
+      <state_interface name="position" />
+    </joint>
+    <joint name="4">
+      <command_interface name="effort" />
+      <state_interface name="velocity" />
+      <state_interface name="position" />
+    </joint>
+    <joint name="5">
+      <command_interface name="effort" />
+      <state_interface name="velocity" />
+      <state_interface name="position" />
+    </joint>
+    <joint name="6">
+      <command_interface name="effort" />
+      <state_interface name="velocity" />
+      <state_interface name="position" />
+    </joint>
+    <joint name="7">
+      <command_interface name="effort" />
+      <state_interface name="velocity" />
+      <state_interface name="position" />
+    </joint>
+    <joint name="8">
+      <command_interface name="effort" />
+      <state_interface name="velocity" />
+      <state_interface name="position" />
+    </joint>
+    <joint name="9">
+      <command_interface name="effort" />
+      <state_interface name="velocity" />
+      <state_interface name="position" />
+    </joint>
+    <joint name="10">
+      <command_interface name="effort" />
+      <state_interface name="velocity" />
+      <state_interface name="position" />
+    </joint>
+    <joint name="11">
+      <command_interface name="effort" />
+      <state_interface name="velocity" />
+      <state_interface name="position" />
+    </joint>
+  </ros2_control>
+
+</robot>

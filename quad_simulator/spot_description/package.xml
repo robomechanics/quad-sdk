@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<package format="2">
+  <name>spot_description</name>
+  <version>1.1.0</version>
+  <description>The spot_description package</description>
+
+  <maintainer email="michal@robots.ox.ac.uk">Michal Staniaszek</maintainer>
+
+  <license>BSD</license>
+
+  <buildtool_depend>ament_cmake</buildtool_depend>
+
+  <test_depend>ament_lint_auto</test_depend>
+  <test_depend>ament_lint_common</test_depend>
+
+  <export>
+    <build_type>ament_cmake</build_type>
+  </export>
+</package>

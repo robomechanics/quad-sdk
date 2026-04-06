@@ -32,8 +32,8 @@
         # torque_lims: [33.5, 33.5, 33.5] # For A1
         # speed_lims: [21.0, 21.0, 21.0] # For A1
 
-        torque_lims: [23.7, 23.7, 45.0] # For Go2/ Go2W
-        speed_lims: [30.0, 30.0, 15.7] # For Go2/ Go2W
+        # torque_lims: [23.7, 23.7, 45.0] # For Go2/ Go2W
+        # speed_lims: [30.0, 30.0, 15.7] # For Go2/ Go2W
 
-        # torque_lims: [200.0, 200.0, 320.0] # For B2
-        # speed_lims: [23.0, 23.0, 14.0] # For B2
+        torque_lims: [1000.0, 1000.0, 1000.0] # For B2
+        speed_lims: [23.0, 23.0, 14.0] # For B2

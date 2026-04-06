@@ -67,16 +67,16 @@ controller_interface::CallbackReturn QuadController::on_init() {
   leg_map_[11] = std::make_pair(3, 0);  // abd3
 
   // Torque saturation (could change to linear model in future)
-  torque_lims_ = {21, 21, 32};
-  speed_lims_ = {37.7, 37.7, 25.1};
+  torque_lims_ = {1000.0, 1000.0, 1000.0};
+  speed_lims_ = {50.0, 50.0, 50.0};
 
   node_ = get_node();
   node_->declare_parameter<std::vector<std::string>>("joints");
   node_->declare_parameter<std::string>("topics.control.joint_command");
   node_->declare_parameter<std::vector<double>>("torque_lims",
-                                                {21.0, 21.0, 32.0});
+                                                {1000.0, 1000.0, 1000.0});
   node_->declare_parameter<std::vector<double>>("speed_lims",
-                                                {37.7, 37.7, 25.1});
+                                                {50.0, 50.0, 50.0});
 
   return controller_interface::CallbackReturn::SUCCESS;
 }
