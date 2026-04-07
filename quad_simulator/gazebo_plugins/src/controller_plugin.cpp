@@ -203,7 +203,33 @@ controller_interface::return_type QuadController::update(
     const rclcpp::Time& time, const rclcpp::Duration& period) {
   BufferType& commands = *commands_buffer_.readFromRT();
 
-  // Check if message is populated
+  // Before any command has ever been received, hold sitting pose with
+  // PD control so the robot doesn't freefall after activation.
+  // Once a real command arrives, this path is never entered again.
+  static bool first_command_received = false;
+  if (!first_command_received) {
+    if (commands.empty() || commands.front().motor_commands.empty()) {
+      static const double sit_angles[3] = {0.0, 1.36, -2.65};
+      static const double hold_kp = 40.0;
+      static const double hold_kd = 2.0;
+      for (unsigned int i = 0; i < n_joints_; i++) {
+        std::pair<int, int> ind = leg_map_[i];
+        double target = sit_angles[ind.second];
+        auto pos_opt = joint_pos_handles_[i].get_optional();
+        auto vel_opt = joint_vel_handles_[i].get_optional();
+        double pos = pos_opt.has_value() ? pos_opt.value() : 0.0;
+        double vel = vel_opt.has_value() ? vel_opt.value() : 0.0;
+        double torque = hold_kp * (target - pos) + hold_kd * (0.0 - vel);
+        double torque_lim = torque_lims_[ind.second];
+        torque = std::min(std::max(torque, -torque_lim), torque_lim);
+        joint_cmd_handles_[i].set_value(torque);
+      }
+      return controller_interface::return_type::OK;
+    }
+    first_command_received = true;
+  }
+
+  // Check if message is populated (original behavior after first command)
   if (commands.empty() || commands.front().motor_commands.empty()) {
     return controller_interface::return_type::OK;
   }

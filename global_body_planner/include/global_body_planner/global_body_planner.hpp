@@ -8,6 +8,7 @@
 #include <rclcpp/rclcpp.hpp>
 #include <tf2/LinearMath/Quaternion.h>
 #include <tf2_geometry_msgs/tf2_geometry_msgs.hpp>
+#include <std_msgs/msg/bool.hpp>
 #include <visualization_msgs/msg/marker_array.hpp>
 
 #include <grid_map_core/grid_map_core.hpp>
@@ -147,6 +148,9 @@ class GlobalBodyPlanner {
 
   /// Publisher for the planning tree
   rclcpp::Publisher<visualization_msgs::msg::MarkerArray>::SharedPtr tree_pub_;
+
+  /// Publisher for goal reached signal
+  rclcpp::Publisher<std_msgs::msg::Bool>::SharedPtr goal_reached_pub_;
 
   /// Topic name for terrain map (needed to ensure data has been received)
   std::string terrain_map_topic_;

@@ -51,6 +51,8 @@ LocalPlanner::LocalPlanner(rclcpp::Node::SharedPtr node)
   foot_plan_continuous_pub_ =
       node_->create_publisher<quad_msgs::msg::MultiFootPlanContinuous>(
           foot_plan_continuous_topic, 10);
+  planner_failed_pub_ =
+      node_->create_publisher<std_msgs::msg::Bool>("planner_failed", 10);
   // Load system parameters from parameter server
   quad_utils::loadROSParam(node_, "local_planner.update_rate", update_rate_);
   quad_utils::loadROSParam(node_, "local_planner.timestep", dt_);
@@ -640,9 +642,21 @@ void LocalPlanner::spin() {
     // structures
     getReference();
     // Compute the local plan and publish if it solved successfully,
-    // otherwise just sleep
+    // otherwise track consecutive failures
     if (computeLocalPlan()) {
+      consecutive_failures_ = 0;
       publishLocalPlan();
+    } else {
+      consecutive_failures_++;
+      if (consecutive_failures_ >= failure_threshold_) {
+        auto msg = std_msgs::msg::Bool();
+        msg.data = true;
+        planner_failed_pub_->publish(msg);
+        RCLCPP_WARN(node_->get_logger(),
+                    "Local planner failed %d consecutive times, "
+                    "publishing failure signal",
+                    consecutive_failures_);
+      }
     }
 
     r.sleep();

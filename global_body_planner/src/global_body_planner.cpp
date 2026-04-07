@@ -53,6 +53,8 @@ GlobalBodyPlanner::GlobalBodyPlanner(rclcpp::Node::SharedPtr node)
       discrete_body_plan_topic, 10);
   tree_pub_ = node_->create_publisher<visualization_msgs::msg::MarkerArray>(
       body_plan_tree_topic, 10);
+  goal_reached_pub_ =
+      node_->create_publisher<std_msgs::msg::Bool>("goal_reached", 10);
 
   // Load planner config
   bool enable_leaping;
@@ -244,6 +246,9 @@ bool GlobalBodyPlanner::callPlanner() {
       } else if (plan_status == INVALID_START_GOAL_EQUAL) {
         RCLCPP_WARN_THROTTLE(node_->get_logger(), *node_->get_clock(), 1000,
                              "Start is sufficiently close to goal, exiting");
+        auto msg = std_msgs::msg::Bool();
+        msg.data = true;
+        goal_reached_pub_->publish(msg);
       } else if (plan_status == UNSOLVED) {
         RCLCPP_WARN_THROTTLE(node_->get_logger(), *node_->get_clock(), 1000,
                              "Planner was unable to make any progress, start "

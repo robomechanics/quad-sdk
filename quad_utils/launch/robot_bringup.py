@@ -122,15 +122,19 @@ def spawn_controller_broadcasters(context, *args, **kwargs):
             'ros2', 'run', 'controller_manager', 'spawner',
             'joint_state_broadcaster',
             '--controller-manager', f'/{namespace}/controller_manager',
+            '--controller-manager-timeout', '30',
+            '--switch-timeout', '60',
         ],
         # output='screen'
-    ) 
+    )
 
     spawn_joint_controller = ExecuteProcess(
         cmd=[
             'ros2', 'run', 'controller_manager', 'spawner',
             'joint_controller',
-            '--controller-manager', f'/{namespace}/controller_manager'
+            '--controller-manager', f'/{namespace}/controller_manager',
+            '--controller-manager-timeout', '30',
+            '--switch-timeout', '60',
         ],
         # output='screen'
     )

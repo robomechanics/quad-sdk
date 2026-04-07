@@ -18,8 +18,12 @@ def launch_ignition_world(context, *args, **kwargs):
     world_path = os.path.join(pkg_share, 'worlds', f"{world_name}")  
     model_path = os.path.join(pkg_share, 'models')
 
+    paused = LaunchConfiguration('paused').perform(context).lower() == 'true'
+
     # Build the command for `ign gazebo`
-    cmd = ['gz', 'sim', world_path, '-r']
+    cmd = ['gz', 'sim', world_path]
+    if not paused:
+        cmd.append('-r')
     if not gui:
         cmd.append('-s')
     if verbose:
@@ -139,6 +143,7 @@ def launch_visualization(context, *args, **kwargs):
             launch_arguments={
                 'live_plot' : LaunchConfiguration('live_plot'),
                 'dash' : LaunchConfiguration('dash'),
+                'rviz' : LaunchConfiguration('rviz'),
                 'use_sim_time': LaunchConfiguration('use_sim_time')
             }.items(),
         )
@@ -169,6 +174,7 @@ def generate_launch_description():
         DeclareLaunchArgument('live_plot', default_value='false', description='Launch Plot Juggler'),
         DeclareLaunchArgument('dash', default_value='false', description='Launch RQT Dashboard'),
         DeclareLaunchArgument('logging', default_value='false', description='Enable/Disable ROS2 Logging' ),
+        DeclareLaunchArgument('rviz', default_value='true', description='Launch RViz'),
         DeclareLaunchArgument('use_sim_time', default_value='true', description='Whether to use Computer Clock or Sim Clock'),
         DeclareLaunchArgument(
             'robot_configs',

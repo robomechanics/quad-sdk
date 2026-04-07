@@ -13,7 +13,9 @@ def generate_launch_description():
         DeclareLaunchArgument(
             'live_plot', default_value='false', description="Launch Plot Juggler on Startup"),
         DeclareLaunchArgument(
-            'dash', default_value='false', description="Launch the RQT Dashboard") ,
+            'dash', default_value='false', description="Launch the RQT Dashboard"),
+        DeclareLaunchArgument(
+            'rviz', default_value='true', description="Launch RViz"),
     ]
 
     # Launch PlotJuggler
@@ -65,12 +67,17 @@ def generate_launch_description():
         'quad_viewer.rviz'
     ])
     
-    rviz2_node = Node(
-        package='rviz2',
-        executable='rviz2',
-        name='rviz2',
-        # output='screen',
-        arguments=['-d', rviz_config_file]
+    rviz2_node = GroupAction(
+        condition=IfCondition(LaunchConfiguration('rviz')),
+        actions=[
+            Node(
+                package='rviz2',
+                executable='rviz2',
+                name='rviz2',
+                # output='screen',
+                arguments=['-d', rviz_config_file]
+            )
+        ]
     )
 
     # static_tf = Node(

@@ -1230,7 +1230,7 @@
       <plugin 
           filename="libgz_ros2_control-system.so"
           name="gz_ros2_control::GazeboSimROS2ControlPlugin">
-          <controlPeriod>0.002</controlPeriod>
+          <controlPeriod>0.001</controlPeriod>
           <parameters>$(arg controller_config_path)</parameters>
               <ros>
                 <namespace>$(arg namespace)</namespace>

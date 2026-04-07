@@ -11,6 +11,7 @@
 #include <quad_msgs/msg/robot_plan.hpp>
 #include <quad_msgs/msg/robot_state.hpp>
 #include <quad_utils/ros_utils.hpp>
+#include <std_msgs/msg/bool.hpp>
 #include <rclcpp/rclcpp.hpp>
 #include <tf2/LinearMath/Quaternion.h>
 #include <tf2_geometry_msgs/tf2_geometry_msgs.hpp>
@@ -126,6 +127,15 @@ class LocalPlanner {
   /// ROS publisher for continuous foot plan
   rclcpp::Publisher<quad_msgs::msg::MultiFootPlanContinuous>::SharedPtr
       foot_plan_continuous_pub_;
+
+  /// ROS publisher for planner failure signal
+  rclcpp::Publisher<std_msgs::msg::Bool>::SharedPtr planner_failed_pub_;
+
+  /// Count of consecutive MPC solve failures
+  int consecutive_failures_ = 0;
+
+  /// Threshold of consecutive failures before publishing
+  int failure_threshold_ = 10;
 
   /// Define map frame
   std::string map_frame_;
