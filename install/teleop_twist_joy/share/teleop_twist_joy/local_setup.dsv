@@ -1,0 +1,3 @@
+source;share/teleop_twist_joy/environment/ament_prefix_path.sh
+source;share/teleop_twist_joy/environment/library_path.sh
+source;share/teleop_twist_joy/environment/path.sh

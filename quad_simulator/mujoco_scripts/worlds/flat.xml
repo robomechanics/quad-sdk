@@ -1,0 +1,25 @@
+<mujoco>
+  <asset>
+    <mesh name="terrain" file="../models/flat/meshes/flat.stl"/>
+  </asset>
+  <worldbody>
+    <geom type="mesh" mesh="terrain"/>
+  </worldbody>
+</mujoco>
+
+<!-- <mujoco>
+    <compiler 
+        meshdir="/home/rml/ros2_ws/install/go2_description/share/go2_description/models/go2/go2_mjc/assets/" 
+        strippath="false" />  
+
+    <asset>
+        <mesh name="terrain" file="/home/rml/ros2_ws/install/mujoco_scripts/share/mujoco_scripts/worlds/flat.stl"/>
+    </asset>
+    
+    <worldbody>
+        <light directional="true" diffuse=".8 .8 .8" pos="0 0 10"/>
+        <geom type="mesh" mesh="terrain" name="floor"/>
+    </worldbody>
+
+    <include file="/home/rml/ros2_ws/install/go2_description/share/go2_description/models/go2/go2_mjc/go2.xml"/>
+</mujoco> -->

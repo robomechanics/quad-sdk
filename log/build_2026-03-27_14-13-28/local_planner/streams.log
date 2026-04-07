@@ -1,0 +1,188 @@
+[0.000s] Invoking command in '/home/rml/ros2_ws/src/quad-sdk/build/local_planner': AMENT_PREFIX_PATH=/home/rml/ros2_ws/src/quad-sdk/install/nmpc_controller:/home/rml/ros2_ws/src/quad-sdk/install/quad_utils:/home/rml/ros2_ws/src/quad-sdk/install/quad_msgs:${AMENT_PREFIX_PATH} CMAKE_MODULE_PATH=/home/rml/ros2_ws/src/quad-sdk/install/quad_utils/share/quad_utils/cmake CMAKE_PREFIX_PATH=/home/rml/ros2_ws/src/quad-sdk/install/nmpc_controller:/home/rml/ros2_ws/src/quad-sdk/install/quad_utils:/home/rml/ros2_ws/src/quad-sdk/install/quad_msgs:/opt/ros/jazzy/opt/gz_sim_vendor:/opt/ros/jazzy/opt/gz_sensors_vendor:/opt/ros/jazzy/opt/gz_physics_vendor:/opt/ros/jazzy/opt/sdformat_vendor:/opt/ros/jazzy/opt/gz_gui_vendor:/opt/ros/jazzy/opt/gz_transport_vendor:/opt/ros/jazzy/opt/gz_rendering_vendor:/opt/ros/jazzy/opt/gz_plugin_vendor:/opt/ros/jazzy/opt/gz_fuel_tools_vendor:/opt/ros/jazzy/opt/gz_msgs_vendor:/opt/ros/jazzy/opt/gz_common_vendor:/opt/ros/jazzy/opt/gz_math_vendor:/opt/ros/jazzy/opt/gz_utils_vendor:/opt/ros/jazzy/opt/gz_tools_vendor:/opt/ros/jazzy/opt/gz_ogre_next_vendor:/opt/ros/jazzy/opt/gz_dartsim_vendor:/opt/ros/jazzy/opt/gz_cmake_vendor:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com LD_LIBRARY_PATH=/home/rml/ros2_ws/src/quad-sdk/install/quad_utils/lib:/home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/lib:${LD_LIBRARY_PATH} PYTHONPATH=/home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/lib/python3.12/site-packages:${PYTHONPATH} /usr/bin/cmake /home/rml/ros2_ws/src/quad-sdk/local_planner -DCMAKE_BUILD_TYPE=Release -DCMAKE_BUILD_PARALLEL_LEVEL=1 -DCMAKE_INSTALL_PREFIX=/home/rml/ros2_ws/src/quad-sdk/install/local_planner
+[0.004s] -- Found ament_cmake: 2.5.5 (/opt/ros/jazzy/share/ament_cmake/cmake)
+[0.020s] -- Found Python3: /usr/bin/python3 (found version "3.12.3") found components: Interpreter 
+[0.069s] -- Found rclcpp: 28.1.16 (/opt/ros/jazzy/share/rclcpp/cmake)
+[0.085s] -- Found rosidl_generator_c: 4.6.7 (/opt/ros/jazzy/share/rosidl_generator_c/cmake)
+[0.090s] -- Found rosidl_generator_cpp: 4.6.7 (/opt/ros/jazzy/share/rosidl_generator_cpp/cmake)
+[0.097s] -- Using all available rosidl_typesupport_c: rosidl_typesupport_fastrtps_c;rosidl_typesupport_introspection_c
+[0.104s] -- Using all available rosidl_typesupport_cpp: rosidl_typesupport_fastrtps_cpp;rosidl_typesupport_introspection_cpp
+[0.140s] -- Found rmw_implementation_cmake: 7.3.3 (/opt/ros/jazzy/share/rmw_implementation_cmake/cmake)
+[0.141s] -- Found rmw_fastrtps_cpp: 8.4.3 (/opt/ros/jazzy/share/rmw_fastrtps_cpp/cmake)
+[0.175s] -- Using RMW implementation 'rmw_fastrtps_cpp' as default
+[0.213s] -- Found std_msgs: 5.3.6 (/opt/ros/jazzy/share/std_msgs/cmake)
+[0.221s] -- Found quad_msgs: 0.0.0 (/home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/share/quad_msgs/cmake)
+[0.275s] -- Found quad_utils: 0.0.0 (/home/rml/ros2_ws/src/quad-sdk/install/quad_utils/share/quad_utils/cmake)
+[0.410s] -- Setting yaml-cpp_DIR to: '/opt/ros/jazzy/share/yaml_cpp_vendor/cmake/../../../opt/yaml_cpp_vendor/share/cmake/yaml-cpp'
+[0.453s] [33mCMake Warning (dev) at /usr/lib/x86_64-linux-gnu/cmake/pcl/Modules/FindFLANN.cmake:45 (find_package):
+[0.453s]   Policy CMP0144 is not set: find_package uses upper-case <PACKAGENAME>_ROOT
+[0.453s]   variables.  Run "cmake --help-policy CMP0144" for policy details.  Use the
+[0.453s]   cmake_policy command to set the policy and suppress this warning.
+[0.453s] 
+[0.453s]   CMake variable FLANN_ROOT is set to:
+[0.453s] 
+[0.453s]     /usr
+[0.453s] 
+[0.453s]   For compatibility, find_package is ignoring the variable, but code in a
+[0.453s]   .cmake module might still use it.
+[0.453s] Call Stack (most recent call first):
+[0.453s]   /usr/lib/x86_64-linux-gnu/cmake/pcl/PCLConfig.cmake:261 (find_package)
+[0.453s]   /usr/lib/x86_64-linux-gnu/cmake/pcl/PCLConfig.cmake:306 (find_flann)
+[0.453s]   /usr/lib/x86_64-linux-gnu/cmake/pcl/PCLConfig.cmake:570 (find_external_library)
+[0.454s]   /opt/ros/jazzy/share/pcl_conversions/cmake/ament_cmake_export_dependencies-extras.cmake:21 (find_package)
+[0.454s]   /opt/ros/jazzy/share/pcl_conversions/cmake/pcl_conversionsConfig.cmake:41 (include)
+[0.454s]   /home/rml/ros2_ws/src/quad-sdk/install/quad_utils/share/quad_utils/cmake/ament_cmake_export_dependencies-extras.cmake:21 (find_package)
+[0.454s]   /home/rml/ros2_ws/src/quad-sdk/install/quad_utils/share/quad_utils/cmake/quad_utilsConfig.cmake:41 (include)
+[0.454s]   CMakeLists.txt:13 (find_package)
+[0.454s] This warning is for project developers.  Use -Wno-dev to suppress it.
+[0.454s] [0m
+[0.454s] -- Found flann version 1.9.2
+[0.687s] -- OpenNI found (version: 1.5.4.0, include: /usr/include/ni, lib: /usr/lib/libOpenNI.so;libusb::libusb)
+[0.689s] -- OpenNI2 found (version: 2.2.0.33, include: /usr/include/openni2, lib: /usr/lib/x86_64-linux-gnu/libOpenNI2.so;libusb::libusb)
+[0.691s] -- Could NOT find Pcap (missing: PCAP_LIBRARIES PCAP_INCLUDE_DIRS) 
+[0.917s] -- OpenNI found (version: 1.5.4.0, include: /usr/include/ni, lib: /usr/lib/libOpenNI.so;libusb::libusb)
+[0.919s] -- OpenNI2 found (version: 2.2.0.33, include: /usr/include/openni2, lib: /usr/lib/x86_64-linux-gnu/libOpenNI2.so;libusb::libusb)
+[1.121s] -- Found Qhull version 8.0.2
+[1.329s] -- OpenNI found (version: 1.5.4.0, include: /usr/include/ni, lib: /usr/lib/libOpenNI.so;libusb::libusb)
+[1.543s] -- Found eigen3_cmake_module: 0.3.0 (/opt/ros/jazzy/share/eigen3_cmake_module/cmake)
+[1.544s] -- Ensuring Eigen3 include directory is part of orocos-kdl CMake target
+[1.591s] -- pinocchio_default FOUND. pinocchio_default at /opt/ros/jazzy/lib/x86_64-linux-gnu/libpinocchio_default.so
+[1.591s] -- pinocchio_parsers FOUND. pinocchio_parsers at /opt/ros/jazzy/lib/x86_64-linux-gnu/libpinocchio_parsers.so
+[1.592s] -- boost_filesystem FOUND. boost_filesystem at /lib/x86_64-linux-gnu/libboost_filesystem.so
+[1.598s] -- eigenpy FOUND. eigenpy at /opt/ros/jazzy/lib/x86_64-linux-gnu/libeigenpy.so
+[1.610s] -- Checking for NumPy
+[1.722s] --   NUMPY_INCLUDE_DIRS=/usr/lib/python3/dist-packages/numpy/core/include
+[1.767s] --   NUMPY_VERSION=1.26.4
+[1.871s] -- Found Python3: /usr/bin/python3 (found version "3.12.3") found components: Interpreter Development.Module NumPy 
+[1.871s] -- PythonLibraryDirs: 
+[1.871s] -- PythonLibVersionString: 3.12.3
+[1.880s] -- Python site lib: lib/python3.12/site-packages
+[1.880s] -- Python include dirs: /usr/include/python3.12
+[1.899s] -- Checking for NumPy
+[1.944s] --   NUMPY_INCLUDE_DIRS=/usr/lib/python3/dist-packages/numpy/core/include
+[1.989s] --   NUMPY_VERSION=1.26.4
+[1.989s] -- NumPy include dir: /usr/lib/python3/dist-packages/numpy/core/include
+[2.135s] -- Default C++ standard: 201703
+[2.135s] -- C++ standard sufficient: Minimal required 14, currently defined: 17
+[2.135s] -- CMAKE_CXX_STANDARD was not set: automatically set to currently defined standard 17
+[2.136s] -- hpp-fcl FOUND. hpp-fcl at /opt/ros/jazzy/lib/x86_64-linux-gnu/libhpp-fcl.so
+[2.140s] -- C++ standard sufficient: Minimal required 14, currently defined: 17
+[2.141s] -- C++ standard sufficient: Minimal required 14, currently defined: 17
+[2.142s] -- Found tf2_eigen: 0.36.19 (/opt/ros/jazzy/share/tf2_eigen/cmake)
+[2.144s] -- Found nmpc_controller: 0.0.0 (/home/rml/ros2_ws/src/quad-sdk/install/nmpc_controller/share/nmpc_controller/cmake)
+[2.146s] [33mCMake Warning (dev) at CMakeLists.txt:20 (find_package):
+[2.146s]   Policy CMP0148 is not set: The FindPythonInterp and FindPythonLibs modules
+[2.146s]   are removed.  Run "cmake --help-policy CMP0148" for policy details.  Use
+[2.146s]   the cmake_policy command to set the policy and suppress this warning.
+[2.146s] 
+[2.146s] This warning is for project developers.  Use -Wno-dev to suppress it.
+[2.146s] [0m
+[2.225s] -- Found ament_lint_auto: 0.17.4 (/opt/ros/jazzy/share/ament_lint_auto/cmake)
+[2.274s] -- Configuring done (2.3s)
+[2.335s] -- Generating done (0.0s)
+[2.336s] [33mCMake Warning:
+[2.336s]   Manually-specified variables were not used by the project:
+[2.336s] 
+[2.336s]     CMAKE_BUILD_PARALLEL_LEVEL
+[2.336s] 
+[2.336s] [0m
+[2.340s] -- Build files have been written to: /home/rml/ros2_ws/src/quad-sdk/build/local_planner
+[2.351s] Invoked command in '/home/rml/ros2_ws/src/quad-sdk/build/local_planner' returned '0': AMENT_PREFIX_PATH=/home/rml/ros2_ws/src/quad-sdk/install/nmpc_controller:/home/rml/ros2_ws/src/quad-sdk/install/quad_utils:/home/rml/ros2_ws/src/quad-sdk/install/quad_msgs:${AMENT_PREFIX_PATH} CMAKE_MODULE_PATH=/home/rml/ros2_ws/src/quad-sdk/install/quad_utils/share/quad_utils/cmake CMAKE_PREFIX_PATH=/home/rml/ros2_ws/src/quad-sdk/install/nmpc_controller:/home/rml/ros2_ws/src/quad-sdk/install/quad_utils:/home/rml/ros2_ws/src/quad-sdk/install/quad_msgs:/opt/ros/jazzy/opt/gz_sim_vendor:/opt/ros/jazzy/opt/gz_sensors_vendor:/opt/ros/jazzy/opt/gz_physics_vendor:/opt/ros/jazzy/opt/sdformat_vendor:/opt/ros/jazzy/opt/gz_gui_vendor:/opt/ros/jazzy/opt/gz_transport_vendor:/opt/ros/jazzy/opt/gz_rendering_vendor:/opt/ros/jazzy/opt/gz_plugin_vendor:/opt/ros/jazzy/opt/gz_fuel_tools_vendor:/opt/ros/jazzy/opt/gz_msgs_vendor:/opt/ros/jazzy/opt/gz_common_vendor:/opt/ros/jazzy/opt/gz_math_vendor:/opt/ros/jazzy/opt/gz_utils_vendor:/opt/ros/jazzy/opt/gz_tools_vendor:/opt/ros/jazzy/opt/gz_ogre_next_vendor:/opt/ros/jazzy/opt/gz_dartsim_vendor:/opt/ros/jazzy/opt/gz_cmake_vendor:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com LD_LIBRARY_PATH=/home/rml/ros2_ws/src/quad-sdk/install/quad_utils/lib:/home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/lib:${LD_LIBRARY_PATH} PYTHONPATH=/home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/lib/python3.12/site-packages:${PYTHONPATH} /usr/bin/cmake /home/rml/ros2_ws/src/quad-sdk/local_planner -DCMAKE_BUILD_TYPE=Release -DCMAKE_BUILD_PARALLEL_LEVEL=1 -DCMAKE_INSTALL_PREFIX=/home/rml/ros2_ws/src/quad-sdk/install/local_planner
+[2.352s] Invoking command in '/home/rml/ros2_ws/src/quad-sdk/build/local_planner': AMENT_PREFIX_PATH=/home/rml/ros2_ws/src/quad-sdk/install/nmpc_controller:/home/rml/ros2_ws/src/quad-sdk/install/quad_utils:/home/rml/ros2_ws/src/quad-sdk/install/quad_msgs:${AMENT_PREFIX_PATH} CMAKE_MODULE_PATH=/home/rml/ros2_ws/src/quad-sdk/install/quad_utils/share/quad_utils/cmake CMAKE_PREFIX_PATH=/home/rml/ros2_ws/src/quad-sdk/install/nmpc_controller:/home/rml/ros2_ws/src/quad-sdk/install/quad_utils:/home/rml/ros2_ws/src/quad-sdk/install/quad_msgs:/opt/ros/jazzy/opt/gz_sim_vendor:/opt/ros/jazzy/opt/gz_sensors_vendor:/opt/ros/jazzy/opt/gz_physics_vendor:/opt/ros/jazzy/opt/sdformat_vendor:/opt/ros/jazzy/opt/gz_gui_vendor:/opt/ros/jazzy/opt/gz_transport_vendor:/opt/ros/jazzy/opt/gz_rendering_vendor:/opt/ros/jazzy/opt/gz_plugin_vendor:/opt/ros/jazzy/opt/gz_fuel_tools_vendor:/opt/ros/jazzy/opt/gz_msgs_vendor:/opt/ros/jazzy/opt/gz_common_vendor:/opt/ros/jazzy/opt/gz_math_vendor:/opt/ros/jazzy/opt/gz_utils_vendor:/opt/ros/jazzy/opt/gz_tools_vendor:/opt/ros/jazzy/opt/gz_ogre_next_vendor:/opt/ros/jazzy/opt/gz_dartsim_vendor:/opt/ros/jazzy/opt/gz_cmake_vendor:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com LD_LIBRARY_PATH=/home/rml/ros2_ws/src/quad-sdk/install/quad_utils/lib:/home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/lib:${LD_LIBRARY_PATH} PYTHONPATH=/home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/lib/python3.12/site-packages:${PYTHONPATH} /usr/bin/cmake --build /home/rml/ros2_ws/src/quad-sdk/build/local_planner -- -j16 -l16
+[2.395s] [ 20%] [32mBuilding CXX object CMakeFiles/local_planner.dir/src/local_planner.cpp.o[0m
+[2.396s] [ 40%] [32mBuilding CXX object CMakeFiles/local_planner.dir/src/local_footstep_planner.cpp.o[0m
+[5.795s] [01m[K/home/rml/ros2_ws/src/quad-sdk/local_planner/src/local_footstep_planner.cpp:[m[K In member function ‘[01m[Kvoid LocalFootstepPlanner::[01;32m[KcomputeContactSchedule[m[K(int, const Eigen::MatrixXd&, const Eigen::VectorXi&, int, std::vector<std::vector<bool, std::allocator<bool> > >&)[m[K’:
+[5.795s] [01m[K/home/rml/ros2_ws/src/quad-sdk/local_planner/src/local_footstep_planner.cpp:86:52:[m[K [01;35m[Kwarning: [m[Kunused parameter ‘[01m[Kbody_plan[m[K’ [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wunused-parameter-Wunused-parameter]8;;[m[K]
+[5.795s]    86 |     int current_plan_index, [01;35m[Kconst Eigen::MatrixXd& body_plan[m[K,
+[5.795s]       |                             [01;35m[K~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~[m[K
+[5.796s] [01m[K/home/rml/ros2_ws/src/quad-sdk/local_planner/src/local_footstep_planner.cpp:[m[K In member function ‘[01m[Kvoid LocalFootstepPlanner::[01;32m[KcomputeFootPlan[m[K(int, const std::vector<std::vector<bool, std::allocator<bool> > >&, const Eigen::MatrixXd&, const Eigen::MatrixXd&, const Eigen::MatrixXd&, const Eigen::VectorXd&, const Eigen::VectorXd&, double, quad_msgs::msg::MultiFootState&, Eigen::MatrixXd&, Eigen::MatrixXd&, Eigen::MatrixXd&)[m[K’:
+[5.796s] [01m[K/home/rml/ros2_ws/src/quad-sdk/local_planner/src/local_footstep_planner.cpp:207:46:[m[K [01;35m[Kwarning: [m[Kcomparison of integer expressions of different signedness: ‘[01m[Ksize_t[m[K’ {aka ‘[01m[Klong unsigned int[m[K’} and ‘[01m[Kint[m[K’ [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wsign-compare-Wsign-compare]8;;[m[K]
+[5.796s]   207 |           for (size_t k = horizon_length_; [01;35m[Kk < end_of_stance[m[K; k++) {
+[5.796s]       |                                            [01;35m[K~~^~~~~~~~~~~~~~~[m[K
+[5.796s] [01m[K/home/rml/ros2_ws/src/quad-sdk/local_planner/src/local_footstep_planner.cpp:217:30:[m[K [01;35m[Kwarning: [m[Kcomparison of integer expressions of different signedness: ‘[01m[Ksize_t[m[K’ {aka ‘[01m[Klong unsigned int[m[K’} and ‘[01m[Kint[m[K’ [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wsign-compare-Wsign-compare]8;;[m[K]
+[5.796s]   217 |         for (size_t k = i; [01;35m[Kk < end_of_stance[m[K; k++) {
+[5.796s]       |                            [01;35m[K~~^~~~~~~~~~~~~~~[m[K
+[5.826s] [01m[K/home/rml/ros2_ws/src/quad-sdk/local_planner/src/local_footstep_planner.cpp:353:23:[m[K [01;35m[Kwarning: [m[Kcomparison of integer expressions of different signedness: ‘[01m[Kint[m[K’ and ‘[01m[Kstd::vector<std::vector<bool, std::allocator<bool> > >::size_type[m[K’ {aka ‘[01m[Klong unsigned int[m[K’} [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wsign-compare-Wsign-compare]8;;[m[K]
+[5.826s]   353 |     for (int i = 0; [01;35m[Ki < contact_schedule.size()[m[K; i++) {
+[5.826s]       |                     [01;35m[K~~^~~~~~~~~~~~~~~~~~~~~~~~~[m[K
+[5.831s] [01m[K/home/rml/ros2_ws/src/quad-sdk/local_planner/src/local_footstep_planner.cpp:442:16:[m[K [01;35m[Kwarning: [m[Kunused variable ‘[01m[Kswing_idx_current[m[K’ [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wunused-variable-Wunused-variable]8;;[m[K]
+[5.831s]   442 |         double [01;35m[Kswing_idx_current[m[K =
+[5.831s]       |                [01;35m[K^~~~~~~~~~~~~~~~~[m[K
+[5.832s] [01m[K/home/rml/ros2_ws/src/quad-sdk/local_planner/src/local_footstep_planner.cpp:168:62:[m[K [01;35m[Kwarning: [m[Kunused parameter ‘[01m[Kgrf_plan[m[K’ [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wunused-parameter-Wunused-parameter]8;;[m[K]
+[5.832s]   168 |     const Eigen::MatrixXd& body_plan, [01;35m[Kconst Eigen::MatrixXd& grf_plan[m[K,
+[5.832s]       |                                       [01;35m[K~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~[m[K
+[5.832s] [01m[K/home/rml/ros2_ws/src/quad-sdk/local_planner/src/local_footstep_planner.cpp:170:28:[m[K [01;35m[Kwarning: [m[Kunused parameter ‘[01m[Kfoot_positions_current[m[K’ [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wunused-parameter-Wunused-parameter]8;;[m[K]
+[5.832s]   170 |     [01;35m[Kconst Eigen::VectorXd& foot_positions_current[m[K,
+[5.832s]       |     [01;35m[K~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~[m[K
+[5.832s] [01m[K/home/rml/ros2_ws/src/quad-sdk/local_planner/src/local_footstep_planner.cpp:171:28:[m[K [01;35m[Kwarning: [m[Kunused parameter ‘[01m[Kfoot_velocities_current[m[K’ [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wunused-parameter-Wunused-parameter]8;;[m[K]
+[5.832s]   171 |     [01;35m[Kconst Eigen::VectorXd& foot_velocities_current[m[K,
+[5.832s]       |     [01;35m[K~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~[m[K
+[5.832s] [01m[K/home/rml/ros2_ws/src/quad-sdk/local_planner/src/local_footstep_planner.cpp:[m[K In member function ‘[01m[Kvoid LocalFootstepPlanner::[01;32m[KloadFootPlanMsgs[m[K(const std::vector<std::vector<bool, std::allocator<bool> > >&, int, double, const Eigen::MatrixXd&, const Eigen::MatrixXd&, const Eigen::MatrixXd&, quad_msgs::msg::MultiFootPlanDiscrete&, quad_msgs::msg::MultiFootPlanContinuous&)[m[K’:
+[5.832s] [01m[K/home/rml/ros2_ws/src/quad-sdk/local_planner/src/local_footstep_planner.cpp:534:23:[m[K [01;35m[Kwarning: [m[Kcomparison of integer expressions of different signedness: ‘[01m[Kint[m[K’ and ‘[01m[Kstd::vector<std::vector<bool, std::allocator<bool> > >::size_type[m[K’ {aka ‘[01m[Klong unsigned int[m[K’} [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wsign-compare-Wsign-compare]8;;[m[K]
+[5.832s]   534 |     for (int i = 0; [01;35m[Ki < contact_schedule.size()[m[K; i++) {
+[5.832s]       |                     [01;35m[K~~^~~~~~~~~~~~~~~~~~~~~~~~~[m[K
+[13.349s] In file included from [01m[K/usr/include/c++/13/bits/alloc_traits.h:33[m[K,
+[13.349s]                  from [01m[K/usr/include/c++/13/ext/alloc_traits.h:34[m[K,
+[13.349s]                  from [01m[K/usr/include/c++/13/bits/basic_string.h:39[m[K,
+[13.349s]                  from [01m[K/usr/include/c++/13/string:54[m[K,
+[13.349s]                  from [01m[K/usr/include/c++/13/bits/locale_classes.h:40[m[K,
+[13.349s]                  from [01m[K/usr/include/c++/13/bits/ios_base.h:41[m[K,
+[13.349s]                  from [01m[K/usr/include/c++/13/ios:44[m[K,
+[13.349s]                  from [01m[K/usr/include/c++/13/istream:40[m[K,
+[13.349s]                  from [01m[K/usr/include/c++/13/sstream:40[m[K,
+[13.349s]                  from [01m[K/usr/include/c++/13/complex:45[m[K,
+[13.349s]                  from [01m[K/usr/include/eigen3/Eigen/Core:50[m[K,
+[13.349s]                  from [01m[K/usr/include/eigen3/Eigen/Geometry:11[m[K,
+[13.349s]                  from [01m[K/opt/ros/jazzy/include/tf2_eigen/tf2_eigen/tf2_eigen.hpp:34[m[K,
+[13.349s]                  from [01m[K/home/rml/ros2_ws/src/quad-sdk/local_planner/include/local_planner/local_footstep_planner.hpp:4[m[K,
+[13.350s]                  from [01m[K/home/rml/ros2_ws/src/quad-sdk/local_planner/include/local_planner/local_planner.hpp:5[m[K,
+[13.350s]                  from [01m[K/home/rml/ros2_ws/src/quad-sdk/local_planner/src/local_planner.cpp:1[m[K:
+[13.350s] In function ‘[01m[Kvoid std::[01;32m[K_Construct[m[K(_Tp*, _Args&& ...) [35m[K[with _Tp = NMPCController; _Args = {shared_ptr<rclcpp::Node>&, SystemID&, __cxx11::basic_string<char, char_traits<char>, allocator<char> >&}][m[K[m[K’,
+[13.350s]     inlined from ‘[01m[Kstatic void std::allocator_traits<std::allocator<void> >::[01;32m[Kconstruct[m[K(allocator_type&, _Up*, _Args&& ...) [35m[K[with _Up = NMPCController; _Args = {std::shared_ptr<rclcpp::Node>&, SystemID&, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >&}][m[K[m[K’ at [01m[K/usr/include/c++/13/bits/alloc_traits.h:661:19[m[K,
+[13.350s]     inlined from ‘[01m[Kstd::_Sp_counted_ptr_inplace<_Tp, _Alloc, _Lp>::[01;32m[K_Sp_counted_ptr_inplace[m[K(_Alloc, _Args&& ...) [35m[K[with _Args = {std::shared_ptr<rclcpp::Node>&, SystemID&, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >&}; _Tp = NMPCController; _Alloc = std::allocator<void>; __gnu_cxx::_Lock_policy _Lp = __gnu_cxx::_S_atomic][m[K[m[K’ at [01m[K/usr/include/c++/13/bits/shared_ptr_base.h:604:39[m[K,
+[13.350s]     inlined from ‘[01m[Kstd::__shared_count<_Lp>::[01;32m[K__shared_count[m[K(_Tp*&, std::_Sp_alloc_shared_tag<_Alloc>, _Args&& ...) [35m[K[with _Tp = NMPCController; _Alloc = std::allocator<void>; _Args = {std::shared_ptr<rclcpp::Node>&, SystemID&, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >&}; __gnu_cxx::_Lock_policy _Lp = __gnu_cxx::_S_atomic][m[K[m[K’ at [01m[K/usr/include/c++/13/bits/shared_ptr_base.h:971:16[m[K,
+[13.350s]     inlined from ‘[01m[Kstd::__shared_ptr<_Tp, _Lp>::[01;32m[K__shared_ptr[m[K(std::_Sp_alloc_shared_tag<_Tp>, _Args&& ...) [35m[K[with _Alloc = std::allocator<void>; _Args = {std::shared_ptr<rclcpp::Node>&, SystemID&, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >&}; _Tp = NMPCController; __gnu_cxx::_Lock_policy _Lp = __gnu_cxx::_S_atomic][m[K[m[K’ at [01m[K/usr/include/c++/13/bits/shared_ptr_base.h:1712:14[m[K,
+[13.350s]     inlined from ‘[01m[Kstd::shared_ptr<_Tp>::[01;32m[Kshared_ptr[m[K(std::_Sp_alloc_shared_tag<_Tp>, _Args&& ...) [35m[K[with _Alloc = std::allocator<void>; _Args = {std::shared_ptr<rclcpp::Node>&, SystemID&, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >&}; _Tp = NMPCController][m[K[m[K’ at [01m[K/usr/include/c++/13/bits/shared_ptr.h:464:59[m[K,
+[13.350s]     inlined from ‘[01m[Kstd::shared_ptr<typename std::enable_if<(! std::is_array< <template-parameter-1-1> >::value), _Tp>::type> std::[01;32m[Kmake_shared[m[K(_Args&& ...) [35m[K[with _Tp = NMPCController; _Args = {shared_ptr<rclcpp::Node>&, SystemID&, __cxx11::basic_string<char, char_traits<char>, allocator<char> >&}][m[K[m[K’ at [01m[K/usr/include/c++/13/bits/shared_ptr.h:1010:39[m[K,
+[13.350s]     inlined from ‘[01m[Kvoid LocalPlanner::[01;32m[KinitLocalBodyPlanner[m[K()[m[K’ at [01m[K/home/rml/ros2_ws/src/quad-sdk/local_planner/src/local_planner.cpp:139:39[m[K:
+[13.350s] [01m[K/usr/include/c++/13/bits/stl_construct.h:119:7:[m[K [01;35m[Kwarning: [m[K‘[01m[Ktype[m[K’ may be used uninitialized [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wmaybe-uninitialized-Wmaybe-uninitialized]8;;[m[K]
+[13.350s]   119 |       [01;35m[K::new((void*)__p) _Tp(std::forward<_Args>(__args)...)[m[K;
+[13.350s]       |       [01;35m[K^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[m[K
+[13.350s] [01m[K/home/rml/ros2_ws/src/quad-sdk/local_planner/src/local_planner.cpp:[m[K In member function ‘[01m[Kvoid LocalPlanner::[01;32m[KinitLocalBodyPlanner[m[K()[m[K’:
+[13.350s] [01m[K/home/rml/ros2_ws/src/quad-sdk/local_planner/src/local_planner.cpp:127:12:[m[K [01;36m[Knote: [m[K‘[01m[Ktype[m[K’ was declared here
+[13.350s]   127 |   SystemID [01;36m[Ktype[m[K;
+[13.350s]       |            [01;36m[K^~~~[m[K
+[19.590s] [ 60%] [32m[1mLinking CXX static library liblocal_planner.a[0m
+[19.619s] [ 60%] Built target local_planner
+[19.642s] [ 80%] [32mBuilding CXX object CMakeFiles/local_planner_node.dir/src/local_planner_node.cpp.o[0m
+[25.240s] [100%] [32m[1mLinking CXX executable local_planner_node[0m
+[25.777s] [100%] Built target local_planner_node
+[25.782s] Invoked command in '/home/rml/ros2_ws/src/quad-sdk/build/local_planner' returned '0': AMENT_PREFIX_PATH=/home/rml/ros2_ws/src/quad-sdk/install/nmpc_controller:/home/rml/ros2_ws/src/quad-sdk/install/quad_utils:/home/rml/ros2_ws/src/quad-sdk/install/quad_msgs:${AMENT_PREFIX_PATH} CMAKE_MODULE_PATH=/home/rml/ros2_ws/src/quad-sdk/install/quad_utils/share/quad_utils/cmake CMAKE_PREFIX_PATH=/home/rml/ros2_ws/src/quad-sdk/install/nmpc_controller:/home/rml/ros2_ws/src/quad-sdk/install/quad_utils:/home/rml/ros2_ws/src/quad-sdk/install/quad_msgs:/opt/ros/jazzy/opt/gz_sim_vendor:/opt/ros/jazzy/opt/gz_sensors_vendor:/opt/ros/jazzy/opt/gz_physics_vendor:/opt/ros/jazzy/opt/sdformat_vendor:/opt/ros/jazzy/opt/gz_gui_vendor:/opt/ros/jazzy/opt/gz_transport_vendor:/opt/ros/jazzy/opt/gz_rendering_vendor:/opt/ros/jazzy/opt/gz_plugin_vendor:/opt/ros/jazzy/opt/gz_fuel_tools_vendor:/opt/ros/jazzy/opt/gz_msgs_vendor:/opt/ros/jazzy/opt/gz_common_vendor:/opt/ros/jazzy/opt/gz_math_vendor:/opt/ros/jazzy/opt/gz_utils_vendor:/opt/ros/jazzy/opt/gz_tools_vendor:/opt/ros/jazzy/opt/gz_ogre_next_vendor:/opt/ros/jazzy/opt/gz_dartsim_vendor:/opt/ros/jazzy/opt/gz_cmake_vendor:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com LD_LIBRARY_PATH=/home/rml/ros2_ws/src/quad-sdk/install/quad_utils/lib:/home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/lib:${LD_LIBRARY_PATH} PYTHONPATH=/home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/lib/python3.12/site-packages:${PYTHONPATH} /usr/bin/cmake --build /home/rml/ros2_ws/src/quad-sdk/build/local_planner -- -j16 -l16
+[25.783s] Invoking command in '/home/rml/ros2_ws/src/quad-sdk/build/local_planner': AMENT_PREFIX_PATH=/home/rml/ros2_ws/src/quad-sdk/install/nmpc_controller:/home/rml/ros2_ws/src/quad-sdk/install/quad_utils:/home/rml/ros2_ws/src/quad-sdk/install/quad_msgs:${AMENT_PREFIX_PATH} CMAKE_MODULE_PATH=/home/rml/ros2_ws/src/quad-sdk/install/quad_utils/share/quad_utils/cmake CMAKE_PREFIX_PATH=/home/rml/ros2_ws/src/quad-sdk/install/nmpc_controller:/home/rml/ros2_ws/src/quad-sdk/install/quad_utils:/home/rml/ros2_ws/src/quad-sdk/install/quad_msgs:/opt/ros/jazzy/opt/gz_sim_vendor:/opt/ros/jazzy/opt/gz_sensors_vendor:/opt/ros/jazzy/opt/gz_physics_vendor:/opt/ros/jazzy/opt/sdformat_vendor:/opt/ros/jazzy/opt/gz_gui_vendor:/opt/ros/jazzy/opt/gz_transport_vendor:/opt/ros/jazzy/opt/gz_rendering_vendor:/opt/ros/jazzy/opt/gz_plugin_vendor:/opt/ros/jazzy/opt/gz_fuel_tools_vendor:/opt/ros/jazzy/opt/gz_msgs_vendor:/opt/ros/jazzy/opt/gz_common_vendor:/opt/ros/jazzy/opt/gz_math_vendor:/opt/ros/jazzy/opt/gz_utils_vendor:/opt/ros/jazzy/opt/gz_tools_vendor:/opt/ros/jazzy/opt/gz_ogre_next_vendor:/opt/ros/jazzy/opt/gz_dartsim_vendor:/opt/ros/jazzy/opt/gz_cmake_vendor:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com LD_LIBRARY_PATH=/home/rml/ros2_ws/src/quad-sdk/install/quad_utils/lib:/home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/lib:${LD_LIBRARY_PATH} PYTHONPATH=/home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/lib/python3.12/site-packages:${PYTHONPATH} /usr/bin/cmake --install /home/rml/ros2_ws/src/quad-sdk/build/local_planner
+[25.786s] -- Install configuration: "Release"
+[25.786s] -- Installing: /home/rml/ros2_ws/src/quad-sdk/install/local_planner/lib/local_planner/liblocal_planner.a
+[25.788s] -- Installing: /home/rml/ros2_ws/src/quad-sdk/install/local_planner/lib/local_planner/local_planner_node
+[25.790s] -- Set non-toolchain portion of runtime path of "/home/rml/ros2_ws/src/quad-sdk/install/local_planner/lib/local_planner/local_planner_node" to ""
+[25.790s] -- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/local_planner/share/local_planner/config
+[25.790s] -- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/local_planner/share/local_planner/config/local_planner_topics.yaml
+[25.790s] -- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/local_planner/share/local_planner/config/local_planner.yaml
+[25.790s] -- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/local_planner/include
+[25.790s] -- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/local_planner/include/local_planner
+[25.790s] -- Installing: /home/rml/ros2_ws/src/quad-sdk/install/local_planner/include/local_planner/local_planner.hpp
+[25.790s] -- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/local_planner/include/local_planner/local_planner_modes.hpp
+[25.790s] -- Installing: /home/rml/ros2_ws/src/quad-sdk/install/local_planner/include/local_planner/local_footstep_planner.hpp
+[25.790s] -- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/local_planner/share/ament_index/resource_index/package_run_dependencies/local_planner
+[25.791s] -- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/local_planner/share/ament_index/resource_index/parent_prefix_path/local_planner
+[25.791s] -- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/local_planner/share/local_planner/environment/ament_prefix_path.sh
+[25.791s] -- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/local_planner/share/local_planner/environment/ament_prefix_path.dsv
+[25.791s] -- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/local_planner/share/local_planner/environment/path.sh
+[25.791s] -- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/local_planner/share/local_planner/environment/path.dsv
+[25.791s] -- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/local_planner/share/local_planner/local_setup.bash
+[25.791s] -- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/local_planner/share/local_planner/local_setup.sh
+[25.791s] -- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/local_planner/share/local_planner/local_setup.zsh
+[25.791s] -- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/local_planner/share/local_planner/local_setup.dsv
+[25.791s] -- Installing: /home/rml/ros2_ws/src/quad-sdk/install/local_planner/share/local_planner/package.dsv
+[25.791s] -- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/local_planner/share/ament_index/resource_index/packages/local_planner
+[25.791s] -- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/local_planner/share/local_planner/cmake/local_plannerConfig.cmake
+[25.791s] -- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/local_planner/share/local_planner/cmake/local_plannerConfig-version.cmake
+[25.791s] -- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/local_planner/share/local_planner/package.xml
+[25.791s] Invoked command in '/home/rml/ros2_ws/src/quad-sdk/build/local_planner' returned '0': AMENT_PREFIX_PATH=/home/rml/ros2_ws/src/quad-sdk/install/nmpc_controller:/home/rml/ros2_ws/src/quad-sdk/install/quad_utils:/home/rml/ros2_ws/src/quad-sdk/install/quad_msgs:${AMENT_PREFIX_PATH} CMAKE_MODULE_PATH=/home/rml/ros2_ws/src/quad-sdk/install/quad_utils/share/quad_utils/cmake CMAKE_PREFIX_PATH=/home/rml/ros2_ws/src/quad-sdk/install/nmpc_controller:/home/rml/ros2_ws/src/quad-sdk/install/quad_utils:/home/rml/ros2_ws/src/quad-sdk/install/quad_msgs:/opt/ros/jazzy/opt/gz_sim_vendor:/opt/ros/jazzy/opt/gz_sensors_vendor:/opt/ros/jazzy/opt/gz_physics_vendor:/opt/ros/jazzy/opt/sdformat_vendor:/opt/ros/jazzy/opt/gz_gui_vendor:/opt/ros/jazzy/opt/gz_transport_vendor:/opt/ros/jazzy/opt/gz_rendering_vendor:/opt/ros/jazzy/opt/gz_plugin_vendor:/opt/ros/jazzy/opt/gz_fuel_tools_vendor:/opt/ros/jazzy/opt/gz_msgs_vendor:/opt/ros/jazzy/opt/gz_common_vendor:/opt/ros/jazzy/opt/gz_math_vendor:/opt/ros/jazzy/opt/gz_utils_vendor:/opt/ros/jazzy/opt/gz_tools_vendor:/opt/ros/jazzy/opt/gz_ogre_next_vendor:/opt/ros/jazzy/opt/gz_dartsim_vendor:/opt/ros/jazzy/opt/gz_cmake_vendor:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com LD_LIBRARY_PATH=/home/rml/ros2_ws/src/quad-sdk/install/quad_utils/lib:/home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/lib:${LD_LIBRARY_PATH} PYTHONPATH=/home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/lib/python3.12/site-packages:${PYTHONPATH} /usr/bin/cmake --install /home/rml/ros2_ws/src/quad-sdk/build/local_planner

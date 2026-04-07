@@ -1,0 +1,6 @@
+---
+- ros_topic_name: "/robot_1/joint_states"
+  gz_topic_name: "/world/default/model/robot_1/joint_state"
+  ros_type_name: "sensor_msgs/msg/JointState"
+  gz_type_name: "gz.msgs.Model"
+  direction: GZ_TO_ROS

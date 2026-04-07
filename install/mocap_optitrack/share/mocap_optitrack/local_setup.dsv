@@ -1,0 +1,2 @@
+source;share/mocap_optitrack/environment/ament_prefix_path.sh
+source;share/mocap_optitrack/environment/path.sh

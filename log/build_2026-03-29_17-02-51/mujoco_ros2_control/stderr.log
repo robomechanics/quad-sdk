@@ -1,0 +1,4 @@
+[31mCMake Error at CMakeLists.txt:48 (message):
+  Failed to find binary in /home/rml/anaconda3/envs/mujoco
+
+[0m

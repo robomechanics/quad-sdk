@@ -1,0 +1,27 @@
+// generated from rosidl_adapter/resource/msg.idl.em
+// with input from quad_msgs/msg/GRFArray.msg
+// generated code does not contain a copyright notice
+
+#include "geometry_msgs/msg/Point.idl"
+#include "geometry_msgs/msg/Vector3.idl"
+#include "std_msgs/msg/Header.idl"
+
+module quad_msgs {
+  module msg {
+    @verbatim (language="comment", text=
+      "This is a message to hold an array of ground reaction forces and their points of application" "\n"
+      "" "\n"
+      "Accurate timing information is stored in the header.")
+    struct GRFArray {
+      std_msgs::msg::Header header;
+
+      sequence<geometry_msgs::msg::Vector3> vectors;
+
+      sequence<geometry_msgs::msg::Point> points;
+
+      sequence<boolean> contact_states;
+
+      uint32 traj_index;
+    };
+  };
+};

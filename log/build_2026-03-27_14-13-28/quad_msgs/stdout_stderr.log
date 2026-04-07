@@ -1,0 +1,698 @@
+-- Found ament_cmake: 2.5.5 (/opt/ros/jazzy/share/ament_cmake/cmake)
+-- Found Python3: /usr/bin/python3 (found version "3.12.3") found components: Interpreter 
+-- Found rosidl_default_generators: 1.6.0 (/opt/ros/jazzy/share/rosidl_default_generators/cmake)
+-- Using all available rosidl_typesupport_c: rosidl_typesupport_fastrtps_c;rosidl_typesupport_introspection_c
+-- Using all available rosidl_typesupport_cpp: rosidl_typesupport_fastrtps_cpp;rosidl_typesupport_introspection_cpp
+-- Found rosidl_adapter: 4.6.7 (/opt/ros/jazzy/share/rosidl_adapter/cmake)
+-- Found std_msgs: 5.3.6 (/opt/ros/jazzy/share/std_msgs/cmake)
+-- Found sensor_msgs: 5.3.6 (/opt/ros/jazzy/share/sensor_msgs/cmake)
+-- Found nav_msgs: 5.3.6 (/opt/ros/jazzy/share/nav_msgs/cmake)
+-- Found ament_cmake_ros: 0.12.0 (/opt/ros/jazzy/share/ament_cmake_ros/cmake)
+-- Using all available rosidl_typesupport_c: rosidl_typesupport_fastrtps_c;rosidl_typesupport_introspection_c
+-- Using all available rosidl_typesupport_cpp: rosidl_typesupport_fastrtps_cpp;rosidl_typesupport_introspection_cpp
+-- Found python_cmake_module: 0.11.1 (/opt/ros/jazzy/share/python_cmake_module/cmake)
+-- Found Python3: /usr/bin/python3 (found version "3.12.3") found components: Interpreter Development NumPy Development.Module Development.Embed 
+-- Found ament_lint_auto: 0.17.4 (/opt/ros/jazzy/share/ament_lint_auto/cmake)
+-- Configuring done (0.7s)
+-- Generating done (0.0s)
+[33mCMake Warning:
+  Manually-specified variables were not used by the project:
+
+    CMAKE_BUILD_PARALLEL_LEVEL
+
+[0m
+-- Build files have been written to: /home/rml/ros2_ws/src/quad-sdk/build/quad_msgs
+[  1%] Built target quad_msgs__rosidl_generator_type_description
+[  1%] Built target ament_cmake_python_copy_quad_msgs
+[  1%] Built target quad_msgs__cpp
+[  1%] [32mBuilding C object CMakeFiles/quad_msgs__rosidl_generator_c.dir/rosidl_generator_c/quad_msgs/msg/detail/robot_state__functions.c.o[0m
+[  2%] [32mBuilding C object CMakeFiles/quad_msgs__rosidl_generator_c.dir/rosidl_generator_c/quad_msgs/msg/detail/robot_state__description.c.o[0m
+[  2%] [32mBuilding C object CMakeFiles/quad_msgs__rosidl_generator_c.dir/rosidl_generator_c/quad_msgs/msg/detail/body_state__description.c.o[0m
+[  3%] [32mBuilding C object CMakeFiles/quad_msgs__rosidl_generator_c.dir/rosidl_generator_c/quad_msgs/msg/detail/body_state__functions.c.o[0m
+[  4%] [32mBuilding C object CMakeFiles/quad_msgs__rosidl_generator_c.dir/rosidl_generator_c/quad_msgs/msg/detail/grf_array__description.c.o[0m
+[  5%] [32mBuilding C object CMakeFiles/quad_msgs__rosidl_generator_c.dir/rosidl_generator_c/quad_msgs/msg/detail/grf_array__type_support.c.o[0m
+[  5%] [32mBuilding C object CMakeFiles/quad_msgs__rosidl_generator_c.dir/rosidl_generator_c/quad_msgs/msg/detail/grf_array__functions.c.o[0m
+[  6%] [32mBuilding C object CMakeFiles/quad_msgs__rosidl_generator_c.dir/rosidl_generator_c/quad_msgs/msg/detail/robot_plan__description.c.o[0m
+[  7%] [32mBuilding C object CMakeFiles/quad_msgs__rosidl_generator_c.dir/rosidl_generator_c/quad_msgs/msg/detail/robot_plan_diagnostics__functions.c.o[0m
+[  8%] [32mBuilding C object CMakeFiles/quad_msgs__rosidl_generator_c.dir/rosidl_generator_c/quad_msgs/msg/detail/robot_plan__type_support.c.o[0m
+[  9%] [32mBuilding C object CMakeFiles/quad_msgs__rosidl_generator_c.dir/rosidl_generator_c/quad_msgs/msg/detail/robot_state__type_support.c.o[0m
+[  9%] [32mBuilding C object CMakeFiles/quad_msgs__rosidl_generator_c.dir/rosidl_generator_c/quad_msgs/msg/detail/robot_plan__functions.c.o[0m
+[  9%] [32mBuilding C object CMakeFiles/quad_msgs__rosidl_generator_c.dir/rosidl_generator_c/quad_msgs/msg/detail/robot_plan_diagnostics__type_support.c.o[0m
+[  9%] [32mBuilding C object CMakeFiles/quad_msgs__rosidl_generator_c.dir/rosidl_generator_c/quad_msgs/msg/detail/body_state__type_support.c.o[0m
+[  9%] [32mBuilding C object CMakeFiles/quad_msgs__rosidl_generator_c.dir/rosidl_generator_c/quad_msgs/msg/detail/robot_plan_diagnostics__description.c.o[0m
+[ 10%] [32mBuilding C object CMakeFiles/quad_msgs__rosidl_generator_c.dir/rosidl_generator_c/quad_msgs/msg/detail/foot_state__functions.c.o[0m
+[ 10%] [32mBuilding C object CMakeFiles/quad_msgs__rosidl_generator_c.dir/rosidl_generator_c/quad_msgs/msg/detail/foot_state__description.c.o[0m
+[ 10%] [32mBuilding C object CMakeFiles/quad_msgs__rosidl_generator_c.dir/rosidl_generator_c/quad_msgs/msg/detail/multi_foot_state__description.c.o[0m
+[ 11%] [32mBuilding C object CMakeFiles/quad_msgs__rosidl_generator_c.dir/rosidl_generator_c/quad_msgs/msg/detail/foot_state__type_support.c.o[0m
+[ 12%] [32mBuilding C object CMakeFiles/quad_msgs__rosidl_generator_c.dir/rosidl_generator_c/quad_msgs/msg/detail/multi_foot_state__functions.c.o[0m
+[ 13%] [32mBuilding C object CMakeFiles/quad_msgs__rosidl_generator_c.dir/rosidl_generator_c/quad_msgs/msg/detail/multi_foot_state__type_support.c.o[0m
+[ 13%] [32mBuilding C object CMakeFiles/quad_msgs__rosidl_generator_c.dir/rosidl_generator_c/quad_msgs/msg/detail/multi_foot_plan_continuous__description.c.o[0m
+[ 14%] [32mBuilding C object CMakeFiles/quad_msgs__rosidl_generator_c.dir/rosidl_generator_c/quad_msgs/msg/detail/multi_foot_plan_continuous__functions.c.o[0m
+[ 14%] [32mBuilding C object CMakeFiles/quad_msgs__rosidl_generator_c.dir/rosidl_generator_c/quad_msgs/msg/detail/multi_foot_plan_continuous__type_support.c.o[0m
+[ 15%] [32mBuilding C object CMakeFiles/quad_msgs__rosidl_generator_c.dir/rosidl_generator_c/quad_msgs/msg/detail/foot_plan_discrete__description.c.o[0m
+[ 15%] [32mBuilding C object CMakeFiles/quad_msgs__rosidl_generator_c.dir/rosidl_generator_c/quad_msgs/msg/detail/foot_plan_discrete__functions.c.o[0m
+[ 16%] [32mBuilding C object CMakeFiles/quad_msgs__rosidl_generator_c.dir/rosidl_generator_c/quad_msgs/msg/detail/foot_plan_discrete__type_support.c.o[0m
+[ 16%] [32mBuilding C object CMakeFiles/quad_msgs__rosidl_generator_c.dir/rosidl_generator_c/quad_msgs/msg/detail/multi_foot_plan_discrete__description.c.o[0m
+[ 17%] [32mBuilding C object CMakeFiles/quad_msgs__rosidl_generator_c.dir/rosidl_generator_c/quad_msgs/msg/detail/multi_foot_plan_discrete__functions.c.o[0m
+[ 17%] [32mBuilding C object CMakeFiles/quad_msgs__rosidl_generator_c.dir/rosidl_generator_c/quad_msgs/msg/detail/multi_foot_plan_discrete__type_support.c.o[0m
+[ 18%] [32mBuilding C object CMakeFiles/quad_msgs__rosidl_generator_c.dir/rosidl_generator_c/quad_msgs/msg/detail/leg_contact_mode__description.c.o[0m
+[ 19%] [32mBuilding C object CMakeFiles/quad_msgs__rosidl_generator_c.dir/rosidl_generator_c/quad_msgs/msg/detail/leg_contact_mode__functions.c.o[0m
+[ 19%] [32mBuilding C object CMakeFiles/quad_msgs__rosidl_generator_c.dir/rosidl_generator_c/quad_msgs/msg/detail/leg_contact_mode__type_support.c.o[0m
+[ 20%] [32mBuilding C object CMakeFiles/quad_msgs__rosidl_generator_c.dir/rosidl_generator_c/quad_msgs/msg/detail/contact_mode__description.c.o[0m
+[ 21%] [32mBuilding C object CMakeFiles/quad_msgs__rosidl_generator_c.dir/rosidl_generator_c/quad_msgs/msg/detail/contact_mode__type_support.c.o[0m
+[ 21%] [32mBuilding C object CMakeFiles/quad_msgs__rosidl_generator_c.dir/rosidl_generator_c/quad_msgs/msg/detail/contact_mode__functions.c.o[0m
+[ 21%] [32mBuilding C object CMakeFiles/quad_msgs__rosidl_generator_c.dir/rosidl_generator_c/quad_msgs/msg/detail/motor_command__description.c.o[0m
+[ 21%] [32mBuilding C object CMakeFiles/quad_msgs__rosidl_generator_c.dir/rosidl_generator_c/quad_msgs/msg/detail/motor_command__type_support.c.o[0m
+[ 21%] [32mBuilding C object CMakeFiles/quad_msgs__rosidl_generator_c.dir/rosidl_generator_c/quad_msgs/msg/detail/leg_command__functions.c.o[0m
+[ 22%] [32mBuilding C object CMakeFiles/quad_msgs__rosidl_generator_c.dir/rosidl_generator_c/quad_msgs/msg/detail/leg_command__description.c.o[0m
+[ 23%] [32mBuilding C object CMakeFiles/quad_msgs__rosidl_generator_c.dir/rosidl_generator_c/quad_msgs/msg/detail/leg_command__type_support.c.o[0m
+[ 24%] [32mBuilding C object CMakeFiles/quad_msgs__rosidl_generator_c.dir/rosidl_generator_c/quad_msgs/msg/detail/motor_command__functions.c.o[0m
+[ 25%] [32mBuilding C object CMakeFiles/quad_msgs__rosidl_generator_c.dir/rosidl_generator_c/quad_msgs/msg/detail/leg_command_array__description.c.o[0m
+[ 25%] [32mBuilding C object CMakeFiles/quad_msgs__rosidl_generator_c.dir/rosidl_generator_c/quad_msgs/msg/detail/leg_command_array__functions.c.o[0m
+[ 26%] [32mBuilding C object CMakeFiles/quad_msgs__rosidl_generator_c.dir/rosidl_generator_c/quad_msgs/msg/detail/leg_command_array__type_support.c.o[0m
+[ 27%] [32mBuilding C object CMakeFiles/quad_msgs__rosidl_generator_c.dir/rosidl_generator_c/quad_msgs/msg/detail/body_force_estimate__functions.c.o[0m
+[ 27%] [32mBuilding C object CMakeFiles/quad_msgs__rosidl_generator_c.dir/rosidl_generator_c/quad_msgs/msg/detail/body_force_estimate__description.c.o[0m
+[ 27%] [32mBuilding C object CMakeFiles/quad_msgs__rosidl_generator_c.dir/rosidl_generator_c/quad_msgs/msg/detail/body_force_estimate__type_support.c.o[0m
+running egg_info
+writing quad_msgs.egg-info/PKG-INFO
+writing dependency_links to quad_msgs.egg-info/dependency_links.txt
+writing top-level names to quad_msgs.egg-info/top_level.txt
+reading manifest file 'quad_msgs.egg-info/SOURCES.txt'
+writing manifest file 'quad_msgs.egg-info/SOURCES.txt'
+[ 28%] [32m[1mLinking C shared library libquad_msgs__rosidl_generator_c.so[0m
+[ 28%] Built target ament_cmake_python_build_quad_msgs_egg
+[ 28%] Built target quad_msgs__rosidl_generator_c
+[ 29%] [32mBuilding C object CMakeFiles/quad_msgs__rosidl_typesupport_introspection_c.dir/rosidl_typesupport_introspection_c/quad_msgs/msg/detail/robot_state__type_support.c.o[0m
+[ 30%] [32mBuilding CXX object CMakeFiles/quad_msgs__rosidl_typesupport_c.dir/rosidl_typesupport_c/quad_msgs/msg/robot_state__type_support.cpp.o[0m
+[ 31%] [32mBuilding CXX object CMakeFiles/quad_msgs__rosidl_typesupport_c.dir/rosidl_typesupport_c/quad_msgs/msg/grf_array__type_support.cpp.o[0m
+[ 31%] [32mBuilding CXX object CMakeFiles/quad_msgs__rosidl_typesupport_c.dir/rosidl_typesupport_c/quad_msgs/msg/body_state__type_support.cpp.o[0m
+[ 32%] [32mBuilding C object CMakeFiles/quad_msgs__rosidl_typesupport_introspection_c.dir/rosidl_typesupport_introspection_c/quad_msgs/msg/detail/grf_array__type_support.c.o[0m
+[ 32%] [32mBuilding C object CMakeFiles/quad_msgs__rosidl_typesupport_introspection_c.dir/rosidl_typesupport_introspection_c/quad_msgs/msg/detail/body_state__type_support.c.o[0m
+[ 32%] [32mBuilding CXX object CMakeFiles/quad_msgs__rosidl_typesupport_c.dir/rosidl_typesupport_c/quad_msgs/msg/robot_plan__type_support.cpp.o[0m
+[ 33%] [32mBuilding CXX object CMakeFiles/quad_msgs__rosidl_typesupport_c.dir/rosidl_typesupport_c/quad_msgs/msg/robot_plan_diagnostics__type_support.cpp.o[0m
+[ 33%] [32mBuilding C object CMakeFiles/quad_msgs__rosidl_typesupport_introspection_c.dir/rosidl_typesupport_introspection_c/quad_msgs/msg/detail/robot_plan__type_support.c.o[0m
+[ 33%] [32mBuilding CXX object CMakeFiles/quad_msgs__rosidl_typesupport_c.dir/rosidl_typesupport_c/quad_msgs/msg/foot_state__type_support.cpp.o[0m
+[ 34%] [32mBuilding C object CMakeFiles/quad_msgs__rosidl_typesupport_introspection_c.dir/rosidl_typesupport_introspection_c/quad_msgs/msg/detail/robot_plan_diagnostics__type_support.c.o[0m
+[ 34%] [32mBuilding C object CMakeFiles/quad_msgs__rosidl_typesupport_introspection_c.dir/rosidl_typesupport_introspection_c/quad_msgs/msg/detail/foot_state__type_support.c.o[0m
+[ 35%] [32mBuilding CXX object CMakeFiles/quad_msgs__rosidl_typesupport_cpp.dir/rosidl_typesupport_cpp/quad_msgs/msg/robot_state__type_support.cpp.o[0m
+[ 35%] [32mBuilding CXX object CMakeFiles/quad_msgs__rosidl_typesupport_introspection_cpp.dir/rosidl_typesupport_introspection_cpp/quad_msgs/msg/detail/robot_state__type_support.cpp.o[0m
+[ 35%] [32mBuilding CXX object CMakeFiles/quad_msgs__rosidl_typesupport_fastrtps_c.dir/rosidl_typesupport_fastrtps_c/quad_msgs/msg/detail/robot_state__type_support_c.cpp.o[0m
+[ 36%] [32mBuilding CXX object CMakeFiles/quad_msgs__rosidl_typesupport_fastrtps_cpp.dir/rosidl_typesupport_fastrtps_cpp/quad_msgs/msg/detail/dds_fastrtps/robot_state__type_support.cpp.o[0m
+[ 38%] [32mBuilding CXX object CMakeFiles/quad_msgs__rosidl_typesupport_fastrtps_cpp.dir/rosidl_typesupport_fastrtps_cpp/quad_msgs/msg/detail/dds_fastrtps/body_state__type_support.cpp.o[0m
+[ 38%] [32mBuilding CXX object CMakeFiles/quad_msgs__rosidl_typesupport_introspection_cpp.dir/rosidl_typesupport_introspection_cpp/quad_msgs/msg/detail/body_state__type_support.cpp.o[0m
+[ 38%] [32mBuilding C object CMakeFiles/quad_msgs__rosidl_typesupport_introspection_c.dir/rosidl_typesupport_introspection_c/quad_msgs/msg/detail/multi_foot_state__type_support.c.o[0m
+[ 39%] [32mBuilding CXX object CMakeFiles/quad_msgs__rosidl_typesupport_cpp.dir/rosidl_typesupport_cpp/quad_msgs/msg/body_state__type_support.cpp.o[0m
+[ 40%] [32mBuilding CXX object CMakeFiles/quad_msgs__rosidl_typesupport_c.dir/rosidl_typesupport_c/quad_msgs/msg/multi_foot_state__type_support.cpp.o[0m
+[ 40%] [32mBuilding CXX object CMakeFiles/quad_msgs__rosidl_typesupport_fastrtps_cpp.dir/rosidl_typesupport_fastrtps_cpp/quad_msgs/msg/detail/dds_fastrtps/grf_array__type_support.cpp.o[0m
+[ 41%] [32mBuilding CXX object CMakeFiles/quad_msgs__rosidl_typesupport_introspection_cpp.dir/rosidl_typesupport_introspection_cpp/quad_msgs/msg/detail/grf_array__type_support.cpp.o[0m
+[ 41%] [32mBuilding CXX object CMakeFiles/quad_msgs__rosidl_typesupport_c.dir/rosidl_typesupport_c/quad_msgs/msg/multi_foot_plan_continuous__type_support.cpp.o[0m
+[ 42%] [32mBuilding CXX object CMakeFiles/quad_msgs__rosidl_typesupport_fastrtps_cpp.dir/rosidl_typesupport_fastrtps_cpp/quad_msgs/msg/detail/dds_fastrtps/robot_plan__type_support.cpp.o[0m
+[ 42%] [32mBuilding CXX object CMakeFiles/quad_msgs__rosidl_typesupport_introspection_cpp.dir/rosidl_typesupport_introspection_cpp/quad_msgs/msg/detail/robot_plan__type_support.cpp.o[0m
+[ 43%] [32mBuilding CXX object CMakeFiles/quad_msgs__rosidl_typesupport_fastrtps_c.dir/rosidl_typesupport_fastrtps_c/quad_msgs/msg/detail/body_state__type_support_c.cpp.o[0m
+[ 44%] [32mBuilding CXX object CMakeFiles/quad_msgs__rosidl_typesupport_introspection_cpp.dir/rosidl_typesupport_introspection_cpp/quad_msgs/msg/detail/robot_plan_diagnostics__type_support.cpp.o[0m
+[ 44%] [32mBuilding CXX object CMakeFiles/quad_msgs__rosidl_typesupport_introspection_cpp.dir/rosidl_typesupport_introspection_cpp/quad_msgs/msg/detail/foot_state__type_support.cpp.o[0m
+[ 45%] [32mBuilding C object CMakeFiles/quad_msgs__rosidl_typesupport_introspection_c.dir/rosidl_typesupport_introspection_c/quad_msgs/msg/detail/multi_foot_plan_continuous__type_support.c.o[0m
+[ 46%] [32mBuilding CXX object CMakeFiles/quad_msgs__rosidl_typesupport_c.dir/rosidl_typesupport_c/quad_msgs/msg/foot_plan_discrete__type_support.cpp.o[0m
+[ 47%] [32mBuilding C object CMakeFiles/quad_msgs__rosidl_typesupport_introspection_c.dir/rosidl_typesupport_introspection_c/quad_msgs/msg/detail/foot_plan_discrete__type_support.c.o[0m
+[ 47%] [32mBuilding CXX object CMakeFiles/quad_msgs__rosidl_typesupport_c.dir/rosidl_typesupport_c/quad_msgs/msg/multi_foot_plan_discrete__type_support.cpp.o[0m
+[ 47%] [32mBuilding CXX object CMakeFiles/quad_msgs__rosidl_typesupport_c.dir/rosidl_typesupport_c/quad_msgs/msg/leg_contact_mode__type_support.cpp.o[0m
+[ 48%] [32mBuilding C object CMakeFiles/quad_msgs__rosidl_typesupport_introspection_c.dir/rosidl_typesupport_introspection_c/quad_msgs/msg/detail/multi_foot_plan_discrete__type_support.c.o[0m
+[ 49%] [32mBuilding CXX object CMakeFiles/quad_msgs__rosidl_typesupport_c.dir/rosidl_typesupport_c/quad_msgs/msg/contact_mode__type_support.cpp.o[0m
+[ 49%] [32mBuilding C object CMakeFiles/quad_msgs__rosidl_typesupport_introspection_c.dir/rosidl_typesupport_introspection_c/quad_msgs/msg/detail/leg_contact_mode__type_support.c.o[0m
+[ 49%] [32mBuilding CXX object CMakeFiles/quad_msgs__rosidl_typesupport_c.dir/rosidl_typesupport_c/quad_msgs/msg/motor_command__type_support.cpp.o[0m
+[ 50%] [32mBuilding CXX object CMakeFiles/quad_msgs__rosidl_typesupport_cpp.dir/rosidl_typesupport_cpp/quad_msgs/msg/grf_array__type_support.cpp.o[0m
+[ 50%] [32mBuilding CXX object CMakeFiles/quad_msgs__rosidl_typesupport_fastrtps_cpp.dir/rosidl_typesupport_fastrtps_cpp/quad_msgs/msg/detail/dds_fastrtps/robot_plan_diagnostics__type_support.cpp.o[0m
+[ 51%] [32mBuilding C object CMakeFiles/quad_msgs__rosidl_typesupport_introspection_c.dir/rosidl_typesupport_introspection_c/quad_msgs/msg/detail/contact_mode__type_support.c.o[0m
+[ 51%] [32mBuilding CXX object CMakeFiles/quad_msgs__rosidl_typesupport_fastrtps_c.dir/rosidl_typesupport_fastrtps_c/quad_msgs/msg/detail/grf_array__type_support_c.cpp.o[0m
+[ 52%] [32mBuilding CXX object CMakeFiles/quad_msgs__rosidl_typesupport_c.dir/rosidl_typesupport_c/quad_msgs/msg/leg_command__type_support.cpp.o[0m
+[ 52%] [32mBuilding C object CMakeFiles/quad_msgs__rosidl_typesupport_introspection_c.dir/rosidl_typesupport_introspection_c/quad_msgs/msg/detail/motor_command__type_support.c.o[0m
+[ 52%] [32mBuilding CXX object CMakeFiles/quad_msgs__rosidl_typesupport_c.dir/rosidl_typesupport_c/quad_msgs/msg/leg_command_array__type_support.cpp.o[0m
+[ 53%] [32mBuilding C object CMakeFiles/quad_msgs__rosidl_typesupport_introspection_c.dir/rosidl_typesupport_introspection_c/quad_msgs/msg/detail/leg_command__type_support.c.o[0m
+[ 53%] [32mBuilding CXX object CMakeFiles/quad_msgs__rosidl_typesupport_cpp.dir/rosidl_typesupport_cpp/quad_msgs/msg/robot_plan__type_support.cpp.o[0m
+[ 54%] [32mBuilding CXX object CMakeFiles/quad_msgs__rosidl_typesupport_cpp.dir/rosidl_typesupport_cpp/quad_msgs/msg/robot_plan_diagnostics__type_support.cpp.o[0m
+[ 54%] [32mBuilding C object CMakeFiles/quad_msgs__rosidl_typesupport_introspection_c.dir/rosidl_typesupport_introspection_c/quad_msgs/msg/detail/leg_command_array__type_support.c.o[0m
+[ 55%] [32mBuilding C object CMakeFiles/quad_msgs__rosidl_typesupport_introspection_c.dir/rosidl_typesupport_introspection_c/quad_msgs/msg/detail/body_force_estimate__type_support.c.o[0m
+[ 56%] [32mBuilding CXX object CMakeFiles/quad_msgs__rosidl_typesupport_c.dir/rosidl_typesupport_c/quad_msgs/msg/body_force_estimate__type_support.cpp.o[0m
+[ 57%] [32mBuilding CXX object CMakeFiles/quad_msgs__rosidl_typesupport_fastrtps_cpp.dir/rosidl_typesupport_fastrtps_cpp/quad_msgs/msg/detail/dds_fastrtps/foot_state__type_support.cpp.o[0m
+[ 57%] [32mBuilding CXX object CMakeFiles/quad_msgs__rosidl_typesupport_cpp.dir/rosidl_typesupport_cpp/quad_msgs/msg/foot_state__type_support.cpp.o[0m
+[ 57%] [32m[1mLinking CXX shared library libquad_msgs__rosidl_typesupport_c.so[0m
+[ 57%] [32mBuilding CXX object CMakeFiles/quad_msgs__rosidl_typesupport_fastrtps_cpp.dir/rosidl_typesupport_fastrtps_cpp/quad_msgs/msg/detail/dds_fastrtps/multi_foot_state__type_support.cpp.o[0m
+[ 58%] [32mBuilding CXX object CMakeFiles/quad_msgs__rosidl_typesupport_introspection_cpp.dir/rosidl_typesupport_introspection_cpp/quad_msgs/msg/detail/multi_foot_state__type_support.cpp.o[0m
+[ 59%] [32m[1mLinking C shared library libquad_msgs__rosidl_typesupport_introspection_c.so[0m
+[ 59%] [32mBuilding CXX object CMakeFiles/quad_msgs__rosidl_typesupport_cpp.dir/rosidl_typesupport_cpp/quad_msgs/msg/multi_foot_state__type_support.cpp.o[0m
+[ 59%] [32mBuilding CXX object CMakeFiles/quad_msgs__rosidl_typesupport_cpp.dir/rosidl_typesupport_cpp/quad_msgs/msg/multi_foot_plan_continuous__type_support.cpp.o[0m
+[ 59%] Built target quad_msgs__rosidl_typesupport_c
+[ 59%] [32mBuilding CXX object CMakeFiles/quad_msgs__rosidl_typesupport_introspection_cpp.dir/rosidl_typesupport_introspection_cpp/quad_msgs/msg/detail/multi_foot_plan_continuous__type_support.cpp.o[0m
+[ 59%] Built target quad_msgs__rosidl_typesupport_introspection_c
+[ 60%] [32mBuilding CXX object CMakeFiles/quad_msgs__rosidl_typesupport_fastrtps_cpp.dir/rosidl_typesupport_fastrtps_cpp/quad_msgs/msg/detail/dds_fastrtps/multi_foot_plan_continuous__type_support.cpp.o[0m
+[ 61%] [32mBuilding CXX object CMakeFiles/quad_msgs__rosidl_typesupport_fastrtps_c.dir/rosidl_typesupport_fastrtps_c/quad_msgs/msg/detail/robot_plan__type_support_c.cpp.o[0m
+[ 61%] [32mBuilding CXX object CMakeFiles/quad_msgs__rosidl_typesupport_fastrtps_cpp.dir/rosidl_typesupport_fastrtps_cpp/quad_msgs/msg/detail/dds_fastrtps/foot_plan_discrete__type_support.cpp.o[0m
+[ 62%] [32mBuilding CXX object CMakeFiles/quad_msgs__rosidl_typesupport_introspection_cpp.dir/rosidl_typesupport_introspection_cpp/quad_msgs/msg/detail/foot_plan_discrete__type_support.cpp.o[0m
+[ 63%] [32mBuilding CXX object CMakeFiles/quad_msgs__rosidl_typesupport_cpp.dir/rosidl_typesupport_cpp/quad_msgs/msg/foot_plan_discrete__type_support.cpp.o[0m
+[ 63%] [32mBuilding CXX object CMakeFiles/quad_msgs__rosidl_typesupport_fastrtps_c.dir/rosidl_typesupport_fastrtps_c/quad_msgs/msg/detail/robot_plan_diagnostics__type_support_c.cpp.o[0m
+[ 63%] [32mBuilding CXX object CMakeFiles/quad_msgs__rosidl_typesupport_introspection_cpp.dir/rosidl_typesupport_introspection_cpp/quad_msgs/msg/detail/multi_foot_plan_discrete__type_support.cpp.o[0m
+[ 64%] [32mBuilding CXX object CMakeFiles/quad_msgs__rosidl_typesupport_fastrtps_c.dir/rosidl_typesupport_fastrtps_c/quad_msgs/msg/detail/foot_state__type_support_c.cpp.o[0m
+[ 65%] [32mBuilding CXX object CMakeFiles/quad_msgs__rosidl_typesupport_fastrtps_cpp.dir/rosidl_typesupport_fastrtps_cpp/quad_msgs/msg/detail/dds_fastrtps/multi_foot_plan_discrete__type_support.cpp.o[0m
+[ 66%] [32mBuilding CXX object CMakeFiles/quad_msgs__rosidl_typesupport_introspection_cpp.dir/rosidl_typesupport_introspection_cpp/quad_msgs/msg/detail/leg_contact_mode__type_support.cpp.o[0m
+[ 66%] [32mBuilding CXX object CMakeFiles/quad_msgs__rosidl_typesupport_fastrtps_cpp.dir/rosidl_typesupport_fastrtps_cpp/quad_msgs/msg/detail/dds_fastrtps/leg_contact_mode__type_support.cpp.o[0m
+[ 66%] [32mBuilding CXX object CMakeFiles/quad_msgs__rosidl_typesupport_cpp.dir/rosidl_typesupport_cpp/quad_msgs/msg/multi_foot_plan_discrete__type_support.cpp.o[0m
+[ 66%] [32mBuilding CXX object CMakeFiles/quad_msgs__rosidl_typesupport_fastrtps_c.dir/rosidl_typesupport_fastrtps_c/quad_msgs/msg/detail/multi_foot_state__type_support_c.cpp.o[0m
+[ 67%] [32mBuilding CXX object CMakeFiles/quad_msgs__rosidl_typesupport_fastrtps_c.dir/rosidl_typesupport_fastrtps_c/quad_msgs/msg/detail/multi_foot_plan_continuous__type_support_c.cpp.o[0m
+[ 68%] [32mBuilding CXX object CMakeFiles/quad_msgs__rosidl_typesupport_fastrtps_cpp.dir/rosidl_typesupport_fastrtps_cpp/quad_msgs/msg/detail/dds_fastrtps/contact_mode__type_support.cpp.o[0m
+[ 69%] [32mBuilding CXX object CMakeFiles/quad_msgs__rosidl_typesupport_cpp.dir/rosidl_typesupport_cpp/quad_msgs/msg/leg_contact_mode__type_support.cpp.o[0m
+[ 70%] [32mBuilding CXX object CMakeFiles/quad_msgs__rosidl_typesupport_introspection_cpp.dir/rosidl_typesupport_introspection_cpp/quad_msgs/msg/detail/contact_mode__type_support.cpp.o[0m
+[ 71%] [32mBuilding CXX object CMakeFiles/quad_msgs__rosidl_typesupport_fastrtps_cpp.dir/rosidl_typesupport_fastrtps_cpp/quad_msgs/msg/detail/dds_fastrtps/motor_command__type_support.cpp.o[0m
+[ 71%] [32mBuilding CXX object CMakeFiles/quad_msgs__rosidl_typesupport_cpp.dir/rosidl_typesupport_cpp/quad_msgs/msg/contact_mode__type_support.cpp.o[0m
+[ 72%] [32mBuilding CXX object CMakeFiles/quad_msgs__rosidl_typesupport_fastrtps_c.dir/rosidl_typesupport_fastrtps_c/quad_msgs/msg/detail/foot_plan_discrete__type_support_c.cpp.o[0m
+[ 72%] [32mBuilding CXX object CMakeFiles/quad_msgs__rosidl_typesupport_fastrtps_cpp.dir/rosidl_typesupport_fastrtps_cpp/quad_msgs/msg/detail/dds_fastrtps/leg_command__type_support.cpp.o[0m
+[ 73%] [32mBuilding CXX object CMakeFiles/quad_msgs__rosidl_typesupport_fastrtps_cpp.dir/rosidl_typesupport_fastrtps_cpp/quad_msgs/msg/detail/dds_fastrtps/body_force_estimate__type_support.cpp.o[0m
+[ 73%] [32mBuilding CXX object CMakeFiles/quad_msgs__rosidl_typesupport_introspection_cpp.dir/rosidl_typesupport_introspection_cpp/quad_msgs/msg/detail/motor_command__type_support.cpp.o[0m
+[ 73%] [32mBuilding CXX object CMakeFiles/quad_msgs__rosidl_typesupport_cpp.dir/rosidl_typesupport_cpp/quad_msgs/msg/motor_command__type_support.cpp.o[0m
+[ 74%] [32mBuilding CXX object CMakeFiles/quad_msgs__rosidl_typesupport_fastrtps_cpp.dir/rosidl_typesupport_fastrtps_cpp/quad_msgs/msg/detail/dds_fastrtps/leg_command_array__type_support.cpp.o[0m
+[ 74%] [32mBuilding CXX object CMakeFiles/quad_msgs__rosidl_typesupport_fastrtps_c.dir/rosidl_typesupport_fastrtps_c/quad_msgs/msg/detail/multi_foot_plan_discrete__type_support_c.cpp.o[0m
+[ 75%] [32mBuilding CXX object CMakeFiles/quad_msgs__rosidl_typesupport_introspection_cpp.dir/rosidl_typesupport_introspection_cpp/quad_msgs/msg/detail/leg_command__type_support.cpp.o[0m
+[ 75%] [32mBuilding CXX object CMakeFiles/quad_msgs__rosidl_typesupport_cpp.dir/rosidl_typesupport_cpp/quad_msgs/msg/leg_command__type_support.cpp.o[0m
+[ 76%] [32mBuilding CXX object CMakeFiles/quad_msgs__rosidl_typesupport_fastrtps_c.dir/rosidl_typesupport_fastrtps_c/quad_msgs/msg/detail/leg_contact_mode__type_support_c.cpp.o[0m
+[ 76%] [32mBuilding CXX object CMakeFiles/quad_msgs__rosidl_typesupport_fastrtps_c.dir/rosidl_typesupport_fastrtps_c/quad_msgs/msg/detail/contact_mode__type_support_c.cpp.o[0m
+[ 76%] [32mBuilding CXX object CMakeFiles/quad_msgs__rosidl_typesupport_introspection_cpp.dir/rosidl_typesupport_introspection_cpp/quad_msgs/msg/detail/leg_command_array__type_support.cpp.o[0m
+[ 77%] [32mBuilding CXX object CMakeFiles/quad_msgs__rosidl_typesupport_fastrtps_c.dir/rosidl_typesupport_fastrtps_c/quad_msgs/msg/detail/motor_command__type_support_c.cpp.o[0m
+[ 78%] [32mBuilding CXX object CMakeFiles/quad_msgs__rosidl_typesupport_introspection_cpp.dir/rosidl_typesupport_introspection_cpp/quad_msgs/msg/detail/body_force_estimate__type_support.cpp.o[0m
+[ 79%] [32mBuilding CXX object CMakeFiles/quad_msgs__rosidl_typesupport_cpp.dir/rosidl_typesupport_cpp/quad_msgs/msg/leg_command_array__type_support.cpp.o[0m
+[ 80%] [32mBuilding CXX object CMakeFiles/quad_msgs__rosidl_typesupport_cpp.dir/rosidl_typesupport_cpp/quad_msgs/msg/body_force_estimate__type_support.cpp.o[0m
+[ 80%] [32mBuilding CXX object CMakeFiles/quad_msgs__rosidl_typesupport_fastrtps_c.dir/rosidl_typesupport_fastrtps_c/quad_msgs/msg/detail/leg_command__type_support_c.cpp.o[0m
+[ 81%] [32mBuilding CXX object CMakeFiles/quad_msgs__rosidl_typesupport_fastrtps_c.dir/rosidl_typesupport_fastrtps_c/quad_msgs/msg/detail/leg_command_array__type_support_c.cpp.o[0m
+[ 81%] [32mBuilding CXX object CMakeFiles/quad_msgs__rosidl_typesupport_fastrtps_c.dir/rosidl_typesupport_fastrtps_c/quad_msgs/msg/detail/body_force_estimate__type_support_c.cpp.o[0m
+[ 82%] [32m[1mLinking CXX shared library libquad_msgs__rosidl_typesupport_fastrtps_cpp.so[0m
+[ 82%] [32m[1mLinking CXX shared library libquad_msgs__rosidl_typesupport_cpp.so[0m
+[ 82%] [32m[1mLinking CXX shared library libquad_msgs__rosidl_typesupport_introspection_cpp.so[0m
+[ 82%] Built target quad_msgs__rosidl_typesupport_fastrtps_cpp
+[ 83%] Built target quad_msgs__rosidl_typesupport_cpp
+[ 84%] Built target quad_msgs__rosidl_typesupport_introspection_cpp
+[ 85%] [32m[1mLinking CXX shared library libquad_msgs__rosidl_typesupport_fastrtps_c.so[0m
+[ 86%] Built target quad_msgs__rosidl_typesupport_fastrtps_c
+[ 86%] Built target quad_msgs
+[ 87%] Built target quad_msgs__py
+[ 88%] [32mBuilding C object CMakeFiles/quad_msgs__rosidl_generator_py.dir/rosidl_generator_py/quad_msgs/msg/_grf_array_s.c.o[0m
+[ 88%] [32mBuilding C object CMakeFiles/quad_msgs__rosidl_generator_py.dir/rosidl_generator_py/quad_msgs/msg/_body_state_s.c.o[0m
+[ 89%] [32mBuilding C object CMakeFiles/quad_msgs__rosidl_generator_py.dir/rosidl_generator_py/quad_msgs/msg/_robot_plan_s.c.o[0m
+[ 90%] [32mBuilding C object CMakeFiles/quad_msgs__rosidl_generator_py.dir/rosidl_generator_py/quad_msgs/msg/_foot_state_s.c.o[0m
+[ 91%] [32mBuilding C object CMakeFiles/quad_msgs__rosidl_generator_py.dir/rosidl_generator_py/quad_msgs/msg/_multi_foot_state_s.c.o[0m
+[ 91%] [32mBuilding C object CMakeFiles/quad_msgs__rosidl_generator_py.dir/rosidl_generator_py/quad_msgs/msg/_robot_plan_diagnostics_s.c.o[0m
+[ 91%] [32mBuilding C object CMakeFiles/quad_msgs__rosidl_generator_py.dir/rosidl_generator_py/quad_msgs/msg/_multi_foot_plan_continuous_s.c.o[0m
+[ 92%] [32mBuilding C object CMakeFiles/quad_msgs__rosidl_generator_py.dir/rosidl_generator_py/quad_msgs/msg/_foot_plan_discrete_s.c.o[0m
+[ 92%] [32mBuilding C object CMakeFiles/quad_msgs__rosidl_generator_py.dir/rosidl_generator_py/quad_msgs/msg/_multi_foot_plan_discrete_s.c.o[0m
+[ 93%] [32mBuilding C object CMakeFiles/quad_msgs__rosidl_generator_py.dir/rosidl_generator_py/quad_msgs/msg/_leg_contact_mode_s.c.o[0m
+[ 93%] [32mBuilding C object CMakeFiles/quad_msgs__rosidl_generator_py.dir/rosidl_generator_py/quad_msgs/msg/_robot_state_s.c.o[0m
+[ 93%] [32mBuilding C object CMakeFiles/quad_msgs__rosidl_generator_py.dir/rosidl_generator_py/quad_msgs/msg/_contact_mode_s.c.o[0m
+[ 94%] [32mBuilding C object CMakeFiles/quad_msgs__rosidl_generator_py.dir/rosidl_generator_py/quad_msgs/msg/_motor_command_s.c.o[0m
+[ 95%] [32mBuilding C object CMakeFiles/quad_msgs__rosidl_generator_py.dir/rosidl_generator_py/quad_msgs/msg/_leg_command_array_s.c.o[0m
+[ 95%] [32mBuilding C object CMakeFiles/quad_msgs__rosidl_generator_py.dir/rosidl_generator_py/quad_msgs/msg/_body_force_estimate_s.c.o[0m
+[ 95%] [32mBuilding C object CMakeFiles/quad_msgs__rosidl_generator_py.dir/rosidl_generator_py/quad_msgs/msg/_leg_command_s.c.o[0m
+[ 96%] [32m[1mLinking C shared library libquad_msgs__rosidl_generator_py.so[0m
+[ 96%] Built target quad_msgs__rosidl_generator_py
+[ 97%] [32mBuilding C object CMakeFiles/quad_msgs_s__rosidl_typesupport_introspection_c.dir/rosidl_generator_py/quad_msgs/_quad_msgs_s.ep.rosidl_typesupport_introspection_c.c.o[0m
+[ 98%] [32mBuilding C object CMakeFiles/quad_msgs_s__rosidl_typesupport_fastrtps_c.dir/rosidl_generator_py/quad_msgs/_quad_msgs_s.ep.rosidl_typesupport_fastrtps_c.c.o[0m
+[ 99%] [32mBuilding C object CMakeFiles/quad_msgs_s__rosidl_typesupport_c.dir/rosidl_generator_py/quad_msgs/_quad_msgs_s.ep.rosidl_typesupport_c.c.o[0m
+[100%] [32m[1mLinking C shared module rosidl_generator_py/quad_msgs/quad_msgs_s__rosidl_typesupport_c.so[0m
+[100%] [32m[1mLinking C shared module rosidl_generator_py/quad_msgs/quad_msgs_s__rosidl_typesupport_introspection_c.so[0m
+[100%] [32m[1mLinking C shared module rosidl_generator_py/quad_msgs/quad_msgs_s__rosidl_typesupport_fastrtps_c.so[0m
+[100%] Built target quad_msgs_s__rosidl_typesupport_c
+[100%] Built target quad_msgs_s__rosidl_typesupport_introspection_c
+[100%] Built target quad_msgs_s__rosidl_typesupport_fastrtps_c
+-- Install configuration: "Release"
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/share/ament_index/resource_index/rosidl_interfaces/quad_msgs
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/share/quad_msgs/msg/RobotState.json
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/share/quad_msgs/msg/BodyState.json
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/share/quad_msgs/msg/GRFArray.json
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/share/quad_msgs/msg/RobotPlan.json
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/share/quad_msgs/msg/RobotPlanDiagnostics.json
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/share/quad_msgs/msg/FootState.json
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/share/quad_msgs/msg/MultiFootState.json
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/share/quad_msgs/msg/MultiFootPlanContinuous.json
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/share/quad_msgs/msg/FootPlanDiscrete.json
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/share/quad_msgs/msg/MultiFootPlanDiscrete.json
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/share/quad_msgs/msg/LegContactMode.json
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/share/quad_msgs/msg/ContactMode.json
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/share/quad_msgs/msg/MotorCommand.json
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/share/quad_msgs/msg/LegCommand.json
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/share/quad_msgs/msg/LegCommandArray.json
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/share/quad_msgs/msg/BodyForceEstimate.json
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/contact_mode.h
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/body_force_estimate.h
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/leg_command.h
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/body_state.h
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/foot_state.h
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/foot_plan_discrete.h
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/multi_foot_plan_continuous.h
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/multi_foot_state.h
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/robot_plan.h
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/multi_foot_plan_discrete.h
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/leg_command_array.h
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/robot_plan_diagnostics.h
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/robot_state.h
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/rosidl_generator_c__visibility_control.h
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/motor_command.h
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/leg_contact_mode.h
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail
+-- Installing: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/leg_command_array__type_support.c
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/multi_foot_plan_discrete__struct.h
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/body_force_estimate__functions.c
+-- Installing: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/robot_state__type_support.c
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/leg_command__struct.h
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/leg_command_array__type_support.h
+-- Installing: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/leg_command__type_support.c
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/multi_foot_plan_continuous__functions.h
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/robot_state__description.c
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/body_force_estimate__type_support.h
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/multi_foot_plan_discrete__functions.h
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/leg_command__functions.c
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/multi_foot_plan_discrete__functions.c
+-- Installing: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/body_force_estimate__type_support.c
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/robot_state__functions.c
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/leg_command_array__functions.c
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/contact_mode__functions.c
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/motor_command__type_support.h
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/leg_contact_mode__struct.h
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/multi_foot_state__functions.c
+-- Installing: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/multi_foot_plan_discrete__type_support.c
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/grf_array__type_support.h
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/leg_contact_mode__description.c
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/multi_foot_plan_discrete__description.c
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/multi_foot_state__struct.h
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/motor_command__functions.c
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/body_state__type_support.h
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/robot_plan__struct.h
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/body_state__functions.c
+-- Installing: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/leg_contact_mode__type_support.c
+-- Installing: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/foot_state__type_support.c
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/foot_state__description.c
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/multi_foot_plan_discrete__type_support.h
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/foot_state__functions.h
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/leg_contact_mode__functions.h
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/robot_plan_diagnostics__functions.h
+-- Installing: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/body_state__type_support.c
+-- Installing: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/multi_foot_plan_continuous__type_support.c
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/foot_plan_discrete__description.c
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/robot_state__functions.h
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/body_state__struct.h
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/foot_plan_discrete__struct.h
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/body_force_estimate__struct.h
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/grf_array__description.c
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/multi_foot_plan_continuous__functions.c
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/contact_mode__type_support.h
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/robot_plan__functions.c
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/motor_command__struct.h
+-- Installing: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/robot_plan__type_support.c
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/foot_state__struct.h
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/leg_contact_mode__functions.c
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/grf_array__struct.h
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/grf_array__functions.h
+-- Installing: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/contact_mode__type_support.c
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/body_force_estimate__description.c
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/multi_foot_plan_continuous__description.c
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/robot_plan__description.c
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/foot_plan_discrete__type_support.h
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/motor_command__description.c
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/contact_mode__struct.h
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/leg_contact_mode__type_support.h
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/contact_mode__description.c
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/multi_foot_state__type_support.h
+-- Installing: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/foot_plan_discrete__type_support.c
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/robot_plan_diagnostics__type_support.h
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/robot_state__struct.h
+-- Installing: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/multi_foot_state__type_support.c
+-- Installing: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/motor_command__type_support.c
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/body_state__description.c
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/leg_command__description.c
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/multi_foot_state__description.c
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/multi_foot_plan_continuous__struct.h
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/leg_command__type_support.h
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/foot_plan_discrete__functions.h
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/robot_plan__functions.h
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/leg_command_array__functions.h
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/leg_command__functions.h
+-- Installing: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/grf_array__type_support.c
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/body_force_estimate__functions.h
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/robot_plan__type_support.h
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/robot_plan_diagnostics__struct.h
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/foot_state__type_support.h
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/contact_mode__functions.h
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/multi_foot_plan_continuous__type_support.h
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/robot_state__type_support.h
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/motor_command__functions.h
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/leg_command_array__description.c
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/foot_state__functions.c
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/multi_foot_state__functions.h
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/body_state__functions.h
+-- Installing: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/robot_plan_diagnostics__type_support.c
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/leg_command_array__struct.h
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/grf_array__functions.c
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/robot_plan_diagnostics__functions.c
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/robot_plan_diagnostics__description.c
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/foot_plan_discrete__functions.c
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/grf_array.h
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/share/quad_msgs/environment/library_path.sh
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/share/quad_msgs/environment/library_path.dsv
+-- Installing: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/lib/libquad_msgs__rosidl_generator_c.so
+-- Set non-toolchain portion of runtime path of "/home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/lib/libquad_msgs__rosidl_generator_c.so" to ""
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/body_state__rosidl_typesupport_fastrtps_c.h
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/leg_command_array__rosidl_typesupport_fastrtps_c.h
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/foot_state__rosidl_typesupport_fastrtps_c.h
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/multi_foot_state__rosidl_typesupport_fastrtps_c.h
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/contact_mode__rosidl_typesupport_fastrtps_c.h
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/robot_plan_diagnostics__rosidl_typesupport_fastrtps_c.h
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/robot_state__rosidl_typesupport_fastrtps_c.h
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/robot_plan__rosidl_typesupport_fastrtps_c.h
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/motor_command__rosidl_typesupport_fastrtps_c.h
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/leg_contact_mode__rosidl_typesupport_fastrtps_c.h
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/foot_plan_discrete__rosidl_typesupport_fastrtps_c.h
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/body_force_estimate__rosidl_typesupport_fastrtps_c.h
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/multi_foot_plan_discrete__rosidl_typesupport_fastrtps_c.h
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/grf_array__rosidl_typesupport_fastrtps_c.h
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/multi_foot_plan_continuous__rosidl_typesupport_fastrtps_c.h
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/leg_command__rosidl_typesupport_fastrtps_c.h
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/rosidl_typesupport_fastrtps_c__visibility_control.h
+-- Installing: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/lib/libquad_msgs__rosidl_typesupport_fastrtps_c.so
+-- Set non-toolchain portion of runtime path of "/home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/lib/libquad_msgs__rosidl_typesupport_fastrtps_c.so" to ""
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/rosidl_typesupport_introspection_c__visibility_control.h
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail
+-- Installing: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/leg_command_array__type_support.c
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/robot_state__rosidl_typesupport_introspection_c.h
+-- Installing: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/robot_state__type_support.c
+-- Installing: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/leg_command__type_support.c
+-- Installing: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/body_force_estimate__type_support.c
+-- Installing: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/multi_foot_plan_discrete__type_support.c
+-- Installing: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/leg_contact_mode__type_support.c
+-- Installing: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/foot_state__type_support.c
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/motor_command__rosidl_typesupport_introspection_c.h
+-- Installing: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/body_state__type_support.c
+-- Installing: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/multi_foot_plan_continuous__type_support.c
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/multi_foot_state__rosidl_typesupport_introspection_c.h
+-- Installing: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/robot_plan__type_support.c
+-- Installing: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/contact_mode__type_support.c
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/leg_contact_mode__rosidl_typesupport_introspection_c.h
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/multi_foot_plan_continuous__rosidl_typesupport_introspection_c.h
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/foot_plan_discrete__rosidl_typesupport_introspection_c.h
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/contact_mode__rosidl_typesupport_introspection_c.h
+-- Installing: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/foot_plan_discrete__type_support.c
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/multi_foot_plan_discrete__rosidl_typesupport_introspection_c.h
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/grf_array__rosidl_typesupport_introspection_c.h
+-- Installing: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/multi_foot_state__type_support.c
+-- Installing: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/motor_command__type_support.c
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/robot_plan_diagnostics__rosidl_typesupport_introspection_c.h
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/leg_command__rosidl_typesupport_introspection_c.h
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/body_force_estimate__rosidl_typesupport_introspection_c.h
+-- Installing: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/grf_array__type_support.c
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/body_state__rosidl_typesupport_introspection_c.h
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/robot_plan__rosidl_typesupport_introspection_c.h
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/foot_state__rosidl_typesupport_introspection_c.h
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/leg_command_array__rosidl_typesupport_introspection_c.h
+-- Installing: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/robot_plan_diagnostics__type_support.c
+-- Installing: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/lib/libquad_msgs__rosidl_typesupport_introspection_c.so
+-- Set non-toolchain portion of runtime path of "/home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/lib/libquad_msgs__rosidl_typesupport_introspection_c.so" to ""
+-- Installing: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/lib/libquad_msgs__rosidl_typesupport_c.so
+-- Set non-toolchain portion of runtime path of "/home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/lib/libquad_msgs__rosidl_typesupport_c.so" to ""
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/multi_foot_plan_discrete.hpp
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/foot_state.hpp
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/foot_plan_discrete.hpp
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/leg_contact_mode.hpp
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/leg_command_array.hpp
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/contact_mode.hpp
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/rosidl_generator_cpp__visibility_control.hpp
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/leg_command.hpp
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/robot_plan_diagnostics.hpp
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/multi_foot_plan_continuous.hpp
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/robot_plan.hpp
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/grf_array.hpp
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/robot_state.hpp
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/multi_foot_state.hpp
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/motor_command.hpp
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/multi_foot_plan_continuous__struct.hpp
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/foot_plan_discrete__traits.hpp
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/multi_foot_plan_discrete__traits.hpp
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/contact_mode__builder.hpp
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/leg_contact_mode__struct.hpp
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/foot_state__builder.hpp
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/body_state__traits.hpp
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/grf_array__builder.hpp
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/leg_command__struct.hpp
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/contact_mode__type_support.hpp
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/robot_plan__builder.hpp
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/multi_foot_plan_continuous__builder.hpp
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/multi_foot_plan_discrete__builder.hpp
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/foot_plan_discrete__builder.hpp
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/multi_foot_plan_discrete__type_support.hpp
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/motor_command__builder.hpp
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/multi_foot_state__struct.hpp
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/grf_array__traits.hpp
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/leg_command_array__type_support.hpp
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/multi_foot_plan_continuous__traits.hpp
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/leg_command_array__struct.hpp
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/multi_foot_state__traits.hpp
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/robot_plan__type_support.hpp
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/leg_command_array__builder.hpp
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/body_force_estimate__struct.hpp
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/grf_array__struct.hpp
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/body_force_estimate__builder.hpp
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/body_force_estimate__traits.hpp
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/leg_command_array__traits.hpp
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/foot_plan_discrete__type_support.hpp
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/multi_foot_state__type_support.hpp
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/robot_plan_diagnostics__type_support.hpp
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/multi_foot_state__builder.hpp
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/robot_state__builder.hpp
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/robot_plan_diagnostics__struct.hpp
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/leg_command__traits.hpp
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/motor_command__struct.hpp
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/multi_foot_plan_discrete__struct.hpp
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/leg_command__builder.hpp
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/robot_state__type_support.hpp
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/body_force_estimate__type_support.hpp
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/leg_contact_mode__type_support.hpp
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/motor_command__traits.hpp
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/multi_foot_plan_continuous__type_support.hpp
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/robot_plan__struct.hpp
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/body_state__builder.hpp
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/leg_contact_mode__traits.hpp
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/leg_contact_mode__builder.hpp
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/robot_plan_diagnostics__builder.hpp
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/grf_array__type_support.hpp
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/robot_state__traits.hpp
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/foot_plan_discrete__struct.hpp
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/foot_state__type_support.hpp
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/foot_state__struct.hpp
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/robot_plan_diagnostics__traits.hpp
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/body_state__struct.hpp
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/contact_mode__traits.hpp
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/motor_command__type_support.hpp
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/body_state__type_support.hpp
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/robot_state__struct.hpp
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/leg_command__type_support.hpp
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/foot_state__traits.hpp
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/robot_plan__traits.hpp
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/contact_mode__struct.hpp
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/body_force_estimate.hpp
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/body_state.hpp
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/rosidl_typesupport_fastrtps_cpp__visibility_control.h
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/multi_foot_plan_continuous__rosidl_typesupport_fastrtps_cpp.hpp
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/multi_foot_plan_discrete__rosidl_typesupport_fastrtps_cpp.hpp
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/leg_command_array__rosidl_typesupport_fastrtps_cpp.hpp
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/motor_command__rosidl_typesupport_fastrtps_cpp.hpp
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/multi_foot_state__rosidl_typesupport_fastrtps_cpp.hpp
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/leg_contact_mode__rosidl_typesupport_fastrtps_cpp.hpp
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/grf_array__rosidl_typesupport_fastrtps_cpp.hpp
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/body_force_estimate__rosidl_typesupport_fastrtps_cpp.hpp
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/robot_state__rosidl_typesupport_fastrtps_cpp.hpp
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/robot_plan_diagnostics__rosidl_typesupport_fastrtps_cpp.hpp
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/dds_fastrtps
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/foot_state__rosidl_typesupport_fastrtps_cpp.hpp
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/contact_mode__rosidl_typesupport_fastrtps_cpp.hpp
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/leg_command__rosidl_typesupport_fastrtps_cpp.hpp
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/robot_plan__rosidl_typesupport_fastrtps_cpp.hpp
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/foot_plan_discrete__rosidl_typesupport_fastrtps_cpp.hpp
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/body_state__rosidl_typesupport_fastrtps_cpp.hpp
+-- Installing: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/lib/libquad_msgs__rosidl_typesupport_fastrtps_cpp.so
+-- Set non-toolchain portion of runtime path of "/home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/lib/libquad_msgs__rosidl_typesupport_fastrtps_cpp.so" to ""
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/motor_command__rosidl_typesupport_introspection_cpp.hpp
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/foot_plan_discrete__rosidl_typesupport_introspection_cpp.hpp
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/leg_contact_mode__type_support.cpp
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/multi_foot_plan_discrete__rosidl_typesupport_introspection_cpp.hpp
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/leg_command__rosidl_typesupport_introspection_cpp.hpp
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/leg_command__type_support.cpp
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/leg_contact_mode__rosidl_typesupport_introspection_cpp.hpp
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/body_state__rosidl_typesupport_introspection_cpp.hpp
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/foot_state__rosidl_typesupport_introspection_cpp.hpp
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/leg_command_array__type_support.cpp
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/multi_foot_plan_continuous__rosidl_typesupport_introspection_cpp.hpp
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/body_state__type_support.cpp
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/multi_foot_state__rosidl_typesupport_introspection_cpp.hpp
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/robot_state__type_support.cpp
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/body_force_estimate__rosidl_typesupport_introspection_cpp.hpp
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/multi_foot_plan_discrete__type_support.cpp
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/robot_plan__rosidl_typesupport_introspection_cpp.hpp
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/body_force_estimate__type_support.cpp
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/grf_array__rosidl_typesupport_introspection_cpp.hpp
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/robot_state__rosidl_typesupport_introspection_cpp.hpp
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/motor_command__type_support.cpp
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/foot_state__type_support.cpp
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/robot_plan__type_support.cpp
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/contact_mode__rosidl_typesupport_introspection_cpp.hpp
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/multi_foot_plan_continuous__type_support.cpp
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/multi_foot_state__type_support.cpp
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/robot_plan_diagnostics__rosidl_typesupport_introspection_cpp.hpp
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/leg_command_array__rosidl_typesupport_introspection_cpp.hpp
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/robot_plan_diagnostics__type_support.cpp
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/foot_plan_discrete__type_support.cpp
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/grf_array__type_support.cpp
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/include/quad_msgs/quad_msgs/msg/detail/contact_mode__type_support.cpp
+-- Installing: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/lib/libquad_msgs__rosidl_typesupport_introspection_cpp.so
+-- Set non-toolchain portion of runtime path of "/home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/lib/libquad_msgs__rosidl_typesupport_introspection_cpp.so" to ""
+-- Installing: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/lib/libquad_msgs__rosidl_typesupport_cpp.so
+-- Set non-toolchain portion of runtime path of "/home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/lib/libquad_msgs__rosidl_typesupport_cpp.so" to ""
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/share/quad_msgs/environment/pythonpath.sh
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/share/quad_msgs/environment/pythonpath.dsv
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/lib/python3.12/site-packages/quad_msgs-0.0.0-py3.12.egg-info
+-- Installing: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/lib/python3.12/site-packages/quad_msgs-0.0.0-py3.12.egg-info/top_level.txt
+-- Installing: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/lib/python3.12/site-packages/quad_msgs-0.0.0-py3.12.egg-info/SOURCES.txt
+-- Installing: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/lib/python3.12/site-packages/quad_msgs-0.0.0-py3.12.egg-info/dependency_links.txt
+-- Installing: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/lib/python3.12/site-packages/quad_msgs-0.0.0-py3.12.egg-info/PKG-INFO
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/lib/python3.12/site-packages/quad_msgs
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/lib/python3.12/site-packages/quad_msgs/_quad_msgs_s.ep.rosidl_typesupport_fastrtps_c.c
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/lib/python3.12/site-packages/quad_msgs/_quad_msgs_s.ep.rosidl_typesupport_c.c
+-- Installing: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/lib/python3.12/site-packages/quad_msgs/__init__.py
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/lib/python3.12/site-packages/quad_msgs/_quad_msgs_s.ep.rosidl_typesupport_introspection_c.c
+-- Installing: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/lib/python3.12/site-packages/quad_msgs/quad_msgs_s__rosidl_typesupport_c.so
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/lib/python3.12/site-packages/quad_msgs/msg
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/lib/python3.12/site-packages/quad_msgs/msg/_robot_plan_diagnostics_s.c
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/lib/python3.12/site-packages/quad_msgs/msg/_leg_command_s.c
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/lib/python3.12/site-packages/quad_msgs/msg/_robot_state.py
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/lib/python3.12/site-packages/quad_msgs/msg/_grf_array_s.c
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/lib/python3.12/site-packages/quad_msgs/msg/_robot_state_s.c
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/lib/python3.12/site-packages/quad_msgs/msg/_multi_foot_state.py
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/lib/python3.12/site-packages/quad_msgs/msg/_body_force_estimate.py
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/lib/python3.12/site-packages/quad_msgs/msg/_body_force_estimate_s.c
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/lib/python3.12/site-packages/quad_msgs/msg/_contact_mode.py
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/lib/python3.12/site-packages/quad_msgs/msg/_multi_foot_plan_discrete.py
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/lib/python3.12/site-packages/quad_msgs/msg/__init__.py
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/lib/python3.12/site-packages/quad_msgs/msg/_motor_command_s.c
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/lib/python3.12/site-packages/quad_msgs/msg/_robot_plan_diagnostics.py
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/lib/python3.12/site-packages/quad_msgs/msg/_motor_command.py
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/lib/python3.12/site-packages/quad_msgs/msg/_multi_foot_plan_continuous.py
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/lib/python3.12/site-packages/quad_msgs/msg/_multi_foot_plan_continuous_s.c
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/lib/python3.12/site-packages/quad_msgs/msg/_grf_array.py
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/lib/python3.12/site-packages/quad_msgs/msg/_leg_command_array.py
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/lib/python3.12/site-packages/quad_msgs/msg/_leg_contact_mode_s.c
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/lib/python3.12/site-packages/quad_msgs/msg/_foot_state_s.c
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/lib/python3.12/site-packages/quad_msgs/msg/_foot_plan_discrete_s.c
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/lib/python3.12/site-packages/quad_msgs/msg/_leg_command.py
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/lib/python3.12/site-packages/quad_msgs/msg/_leg_command_array_s.c
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/lib/python3.12/site-packages/quad_msgs/msg/_body_state.py
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/lib/python3.12/site-packages/quad_msgs/msg/_multi_foot_plan_discrete_s.c
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/lib/python3.12/site-packages/quad_msgs/msg/_contact_mode_s.c
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/lib/python3.12/site-packages/quad_msgs/msg/_leg_contact_mode.py
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/lib/python3.12/site-packages/quad_msgs/msg/_multi_foot_state_s.c
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/lib/python3.12/site-packages/quad_msgs/msg/_body_state_s.c
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/lib/python3.12/site-packages/quad_msgs/msg/_robot_plan_s.c
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/lib/python3.12/site-packages/quad_msgs/msg/_foot_plan_discrete.py
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/lib/python3.12/site-packages/quad_msgs/msg/_foot_state.py
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/lib/python3.12/site-packages/quad_msgs/msg/_robot_plan.py
+-- Installing: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/lib/python3.12/site-packages/quad_msgs/quad_msgs_s__rosidl_typesupport_introspection_c.so
+-- Installing: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/lib/python3.12/site-packages/quad_msgs/quad_msgs_s__rosidl_typesupport_fastrtps_c.so
+Listing '/home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/lib/python3.12/site-packages/quad_msgs'...
+Compiling '/home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/lib/python3.12/site-packages/quad_msgs/__init__.py'...
+Listing '/home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/lib/python3.12/site-packages/quad_msgs/msg'...
+-- Installing: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/lib/python3.12/site-packages/quad_msgs/quad_msgs_s__rosidl_typesupport_fastrtps_c.so
+-- Set non-toolchain portion of runtime path of "/home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/lib/python3.12/site-packages/quad_msgs/quad_msgs_s__rosidl_typesupport_fastrtps_c.so" to ""
+-- Installing: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/lib/python3.12/site-packages/quad_msgs/quad_msgs_s__rosidl_typesupport_introspection_c.so
+-- Set non-toolchain portion of runtime path of "/home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/lib/python3.12/site-packages/quad_msgs/quad_msgs_s__rosidl_typesupport_introspection_c.so" to ""
+-- Installing: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/lib/python3.12/site-packages/quad_msgs/quad_msgs_s__rosidl_typesupport_c.so
+-- Set non-toolchain portion of runtime path of "/home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/lib/python3.12/site-packages/quad_msgs/quad_msgs_s__rosidl_typesupport_c.so" to ""
+-- Installing: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/lib/libquad_msgs__rosidl_generator_py.so
+-- Set non-toolchain portion of runtime path of "/home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/lib/libquad_msgs__rosidl_generator_py.so" to ""
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/share/quad_msgs/msg/RobotState.idl
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/share/quad_msgs/msg/BodyState.idl
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/share/quad_msgs/msg/GRFArray.idl
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/share/quad_msgs/msg/RobotPlan.idl
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/share/quad_msgs/msg/RobotPlanDiagnostics.idl
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/share/quad_msgs/msg/FootState.idl
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/share/quad_msgs/msg/MultiFootState.idl
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/share/quad_msgs/msg/MultiFootPlanContinuous.idl
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/share/quad_msgs/msg/FootPlanDiscrete.idl
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/share/quad_msgs/msg/MultiFootPlanDiscrete.idl
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/share/quad_msgs/msg/LegContactMode.idl
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/share/quad_msgs/msg/ContactMode.idl
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/share/quad_msgs/msg/MotorCommand.idl
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/share/quad_msgs/msg/LegCommand.idl
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/share/quad_msgs/msg/LegCommandArray.idl
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/share/quad_msgs/msg/BodyForceEstimate.idl
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/share/quad_msgs/msg/RobotState.msg
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/share/quad_msgs/msg/BodyState.msg
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/share/quad_msgs/msg/GRFArray.msg
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/share/quad_msgs/msg/RobotPlan.msg
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/share/quad_msgs/msg/RobotPlanDiagnostics.msg
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/share/quad_msgs/msg/FootState.msg
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/share/quad_msgs/msg/MultiFootState.msg
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/share/quad_msgs/msg/MultiFootPlanContinuous.msg
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/share/quad_msgs/msg/FootPlanDiscrete.msg
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/share/quad_msgs/msg/MultiFootPlanDiscrete.msg
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/share/quad_msgs/msg/LegContactMode.msg
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/share/quad_msgs/msg/ContactMode.msg
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/share/quad_msgs/msg/MotorCommand.msg
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/share/quad_msgs/msg/LegCommand.msg
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/share/quad_msgs/msg/LegCommandArray.msg
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/share/quad_msgs/msg/BodyForceEstimate.msg
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/share/ament_index/resource_index/package_run_dependencies/quad_msgs
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/share/ament_index/resource_index/parent_prefix_path/quad_msgs
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/share/quad_msgs/environment/ament_prefix_path.sh
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/share/quad_msgs/environment/ament_prefix_path.dsv
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/share/quad_msgs/environment/path.sh
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/share/quad_msgs/environment/path.dsv
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/share/quad_msgs/local_setup.bash
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/share/quad_msgs/local_setup.sh
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/share/quad_msgs/local_setup.zsh
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/share/quad_msgs/local_setup.dsv
+-- Installing: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/share/quad_msgs/package.dsv
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/share/ament_index/resource_index/packages/quad_msgs
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/share/quad_msgs/cmake/export_quad_msgs__rosidl_generator_cExport.cmake
+-- Installing: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/share/quad_msgs/cmake/export_quad_msgs__rosidl_generator_cExport-release.cmake
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/share/quad_msgs/cmake/export_quad_msgs__rosidl_typesupport_fastrtps_cExport.cmake
+-- Installing: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/share/quad_msgs/cmake/export_quad_msgs__rosidl_typesupport_fastrtps_cExport-release.cmake
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/share/quad_msgs/cmake/quad_msgs__rosidl_typesupport_introspection_cExport.cmake
+-- Installing: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/share/quad_msgs/cmake/quad_msgs__rosidl_typesupport_introspection_cExport-release.cmake
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/share/quad_msgs/cmake/quad_msgs__rosidl_typesupport_cExport.cmake
+-- Installing: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/share/quad_msgs/cmake/quad_msgs__rosidl_typesupport_cExport-release.cmake
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/share/quad_msgs/cmake/export_quad_msgs__rosidl_generator_cppExport.cmake
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/share/quad_msgs/cmake/export_quad_msgs__rosidl_typesupport_fastrtps_cppExport.cmake
+-- Installing: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/share/quad_msgs/cmake/export_quad_msgs__rosidl_typesupport_fastrtps_cppExport-release.cmake
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/share/quad_msgs/cmake/quad_msgs__rosidl_typesupport_introspection_cppExport.cmake
+-- Installing: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/share/quad_msgs/cmake/quad_msgs__rosidl_typesupport_introspection_cppExport-release.cmake
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/share/quad_msgs/cmake/quad_msgs__rosidl_typesupport_cppExport.cmake
+-- Installing: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/share/quad_msgs/cmake/quad_msgs__rosidl_typesupport_cppExport-release.cmake
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/share/quad_msgs/cmake/export_quad_msgs__rosidl_generator_pyExport.cmake
+-- Installing: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/share/quad_msgs/cmake/export_quad_msgs__rosidl_generator_pyExport-release.cmake
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/share/quad_msgs/cmake/rosidl_cmake-extras.cmake
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/share/quad_msgs/cmake/ament_cmake_export_dependencies-extras.cmake
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/share/quad_msgs/cmake/ament_cmake_export_include_directories-extras.cmake
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/share/quad_msgs/cmake/ament_cmake_export_libraries-extras.cmake
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/share/quad_msgs/cmake/ament_cmake_export_targets-extras.cmake
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/share/quad_msgs/cmake/rosidl_cmake_export_typesupport_targets-extras.cmake
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/share/quad_msgs/cmake/rosidl_cmake_export_typesupport_libraries-extras.cmake
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/share/quad_msgs/cmake/quad_msgsConfig.cmake
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/share/quad_msgs/cmake/quad_msgsConfig-version.cmake
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/share/quad_msgs/package.xml

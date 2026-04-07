@@ -1,0 +1,6 @@
+Invoking command in '/home/rml/ros2_ws/src/quad-sdk/build/RBDL': DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake /home/rml/ros2_ws/src/quad-sdk/external/rbdl-orb -DCMAKE_BUILD_TYPE=Release -DCMAKE_BUILD_PARALLEL_LEVEL=1 -DCMAKE_INSTALL_PREFIX=/home/rml/ros2_ws/src/quad-sdk/install/RBDL
+Invoked command in '/home/rml/ros2_ws/src/quad-sdk/build/RBDL' returned '0': DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake /home/rml/ros2_ws/src/quad-sdk/external/rbdl-orb -DCMAKE_BUILD_TYPE=Release -DCMAKE_BUILD_PARALLEL_LEVEL=1 -DCMAKE_INSTALL_PREFIX=/home/rml/ros2_ws/src/quad-sdk/install/RBDL
+Invoking command in '/home/rml/ros2_ws/src/quad-sdk/build/RBDL': DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake --build /home/rml/ros2_ws/src/quad-sdk/build/RBDL -- -j16 -l16
+Invoked command in '/home/rml/ros2_ws/src/quad-sdk/build/RBDL' returned '0': DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake --build /home/rml/ros2_ws/src/quad-sdk/build/RBDL -- -j16 -l16
+Invoking command in '/home/rml/ros2_ws/src/quad-sdk/build/RBDL': DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake --install /home/rml/ros2_ws/src/quad-sdk/build/RBDL
+Invoked command in '/home/rml/ros2_ws/src/quad-sdk/build/RBDL' returned '0': DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake --install /home/rml/ros2_ws/src/quad-sdk/build/RBDL

@@ -1,0 +1,73 @@
+-- Found ament_cmake: 2.5.5 (/opt/ros/jazzy/share/ament_cmake/cmake)
+-- Found geometry_msgs: 5.3.6 (/opt/ros/jazzy/share/geometry_msgs/cmake)
+-- Found rosidl_generator_c: 4.6.7 (/opt/ros/jazzy/share/rosidl_generator_c/cmake)
+-- Found rosidl_generator_cpp: 4.6.7 (/opt/ros/jazzy/share/rosidl_generator_cpp/cmake)
+-- Using all available rosidl_typesupport_c: rosidl_typesupport_fastrtps_c;rosidl_typesupport_introspection_c
+-- Using all available rosidl_typesupport_cpp: rosidl_typesupport_fastrtps_cpp;rosidl_typesupport_introspection_cpp
+-- Found rclcpp: 28.1.16 (/opt/ros/jazzy/share/rclcpp/cmake)
+-- Found rmw_implementation_cmake: 7.3.3 (/opt/ros/jazzy/share/rmw_implementation_cmake/cmake)
+-- Found rmw_fastrtps_cpp: 8.4.3 (/opt/ros/jazzy/share/rmw_fastrtps_cpp/cmake)
+-- Using RMW implementation 'rmw_fastrtps_cpp' as default
+-- Found rclcpp_components: 28.1.16 (/opt/ros/jazzy/share/rclcpp_components/cmake)
+-- Found sensor_msgs: 5.3.6 (/opt/ros/jazzy/share/sensor_msgs/cmake)
+-- Found ament_lint_auto: 0.17.4 (/opt/ros/jazzy/share/ament_lint_auto/cmake)
+-- Found launch_testing_ament_cmake: 3.4.10 (/opt/ros/jazzy/share/launch_testing_ament_cmake/cmake)
+-- Found python_cmake_module: 0.11.1 (/opt/ros/jazzy/share/python_cmake_module/cmake)
+-- Configuring done (0.4s)
+-- Generating done (0.0s)
+[33mCMake Warning:
+  Manually-specified variables were not used by the project:
+
+    CMAKE_BUILD_PARALLEL_LEVEL
+
+[0m
+-- Build files have been written to: /home/rml/ros2_ws/src/quad-sdk/build/teleop_twist_joy
+[ 25%] [32mBuilding CXX object CMakeFiles/teleop_twist_joy.dir/src/teleop_twist_joy.cpp.o[0m
+[ 50%] [32m[1mLinking CXX shared library libteleop_twist_joy.so[0m
+[ 50%] Built target teleop_twist_joy
+[ 75%] [32mBuilding CXX object CMakeFiles/teleop_twist_joy_node.dir/src/teleop_node.cpp.o[0m
+[100%] [32m[1mLinking CXX executable teleop_node[0m
+[100%] Built target teleop_twist_joy_node
+-- Install configuration: "Release"
+-- Installing: /home/rml/ros2_ws/src/quad-sdk/install/teleop_twist_joy/lib/libteleop_twist_joy.so
+-- Set non-toolchain portion of runtime path of "/home/rml/ros2_ws/src/quad-sdk/install/teleop_twist_joy/lib/libteleop_twist_joy.so" to ""
+-- Installing: /home/rml/ros2_ws/src/quad-sdk/install/teleop_twist_joy/lib/teleop_twist_joy/teleop_node
+-- Set non-toolchain portion of runtime path of "/home/rml/ros2_ws/src/quad-sdk/install/teleop_twist_joy/lib/teleop_twist_joy/teleop_node" to ""
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/teleop_twist_joy/include/teleop_twist_joy
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/teleop_twist_joy/include/teleop_twist_joy/teleop_twist_joy
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/teleop_twist_joy/include/teleop_twist_joy/teleop_twist_joy/teleop_twist_joy.hpp
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/teleop_twist_joy/include/teleop_twist_joy/teleop_twist_joy/teleop_twist_joy_export.h
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/teleop_twist_joy/share/teleop_twist_joy/launch
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/teleop_twist_joy/share/teleop_twist_joy/launch/teleop-launch.py
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/teleop_twist_joy/share/teleop_twist_joy/config
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/teleop_twist_joy/share/teleop_twist_joy/config/pdp.config.yaml
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/teleop_twist_joy/share/teleop_twist_joy/config/atk3.config.yaml
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/teleop_twist_joy/share/teleop_twist_joy/config/rml-ps3-holonomic.config.yaml
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/teleop_twist_joy/share/teleop_twist_joy/config/ps5.config.yaml
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/teleop_twist_joy/share/teleop_twist_joy/config/xd3.config.yaml
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/teleop_twist_joy/share/teleop_twist_joy/config/ps3.config.yaml
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/teleop_twist_joy/share/teleop_twist_joy/config/xbox.config.yaml
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/teleop_twist_joy/share/teleop_twist_joy/config/ps3-holonomic.config.yaml
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/teleop_twist_joy/share/teleop_twist_joy/environment/library_path.sh
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/teleop_twist_joy/share/teleop_twist_joy/environment/library_path.dsv
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/teleop_twist_joy/share/ament_index/resource_index/package_run_dependencies/teleop_twist_joy
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/teleop_twist_joy/share/ament_index/resource_index/parent_prefix_path/teleop_twist_joy
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/teleop_twist_joy/share/teleop_twist_joy/environment/ament_prefix_path.sh
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/teleop_twist_joy/share/teleop_twist_joy/environment/ament_prefix_path.dsv
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/teleop_twist_joy/share/teleop_twist_joy/environment/path.sh
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/teleop_twist_joy/share/teleop_twist_joy/environment/path.dsv
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/teleop_twist_joy/share/teleop_twist_joy/local_setup.bash
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/teleop_twist_joy/share/teleop_twist_joy/local_setup.sh
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/teleop_twist_joy/share/teleop_twist_joy/local_setup.zsh
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/teleop_twist_joy/share/teleop_twist_joy/local_setup.dsv
+-- Installing: /home/rml/ros2_ws/src/quad-sdk/install/teleop_twist_joy/share/teleop_twist_joy/package.dsv
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/teleop_twist_joy/share/ament_index/resource_index/packages/teleop_twist_joy
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/teleop_twist_joy/share/ament_index/resource_index/rclcpp_components/teleop_twist_joy
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/teleop_twist_joy/share/teleop_twist_joy/cmake/export_teleop_twist_joyExport.cmake
+-- Installing: /home/rml/ros2_ws/src/quad-sdk/install/teleop_twist_joy/share/teleop_twist_joy/cmake/export_teleop_twist_joyExport-release.cmake
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/teleop_twist_joy/share/teleop_twist_joy/cmake/ament_cmake_export_include_directories-extras.cmake
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/teleop_twist_joy/share/teleop_twist_joy/cmake/ament_cmake_export_libraries-extras.cmake
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/teleop_twist_joy/share/teleop_twist_joy/cmake/ament_cmake_export_targets-extras.cmake
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/teleop_twist_joy/share/teleop_twist_joy/cmake/teleop_twist_joyConfig.cmake
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/teleop_twist_joy/share/teleop_twist_joy/cmake/teleop_twist_joyConfig-version.cmake
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/teleop_twist_joy/share/teleop_twist_joy/package.xml

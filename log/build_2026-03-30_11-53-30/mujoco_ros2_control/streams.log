@@ -1,0 +1,22 @@
+[0.004s] Invoking command in '/home/rml/ros2_ws/src/quad-sdk/build/mujoco_ros2_control': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/rml/ros2_ws/src/quad-sdk/install/teleop_twist_keyboard:/opt/ros/jazzy CONDA_PROMPT_MODIFIER=(mujoco) DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake /home/rml/ros2_ws/src/quad-sdk/mujoco_ros2_control/mujoco_ros2_control -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/home/rml/ros2_ws/src/quad-sdk/install/mujoco_ros2_control
+[0.011s] -- Found ament_cmake: 2.5.5 (/opt/ros/jazzy/share/ament_cmake/cmake)
+[0.106s] -- Found rclcpp: 28.1.16 (/opt/ros/jazzy/share/rclcpp/cmake)
+[0.119s] -- Found rosidl_generator_c: 4.6.7 (/opt/ros/jazzy/share/rosidl_generator_c/cmake)
+[0.123s] -- Found rosidl_generator_cpp: 4.6.7 (/opt/ros/jazzy/share/rosidl_generator_cpp/cmake)
+[0.128s] -- Using all available rosidl_typesupport_c: rosidl_typesupport_fastrtps_c;rosidl_typesupport_introspection_c
+[0.134s] -- Using all available rosidl_typesupport_cpp: rosidl_typesupport_fastrtps_cpp;rosidl_typesupport_introspection_cpp
+[0.163s] -- Found rmw_implementation_cmake: 7.3.3 (/opt/ros/jazzy/share/rmw_implementation_cmake/cmake)
+[0.164s] -- Found rmw_fastrtps_cpp: 8.4.3 (/opt/ros/jazzy/share/rmw_fastrtps_cpp/cmake)
+[0.194s] -- Using RMW implementation 'rmw_fastrtps_cpp' as default
+[0.225s] -- Found hardware_interface: 4.42.2 (/opt/ros/jazzy/share/hardware_interface/cmake)
+[0.344s] -- Found controller_manager: 4.42.2 (/opt/ros/jazzy/share/controller_manager/cmake)
+[0.390s] -- Found control_toolbox: 4.9.0 (/opt/ros/jazzy/share/control_toolbox/cmake)
+[0.405s] -- Found eigen3_cmake_module: 0.3.0 (/opt/ros/jazzy/share/eigen3_cmake_module/cmake)
+[0.406s] -- Ensuring Eigen3 include directory is part of orocos-kdl CMake target
+[0.451s] -- Mujoco build from source has not been found. Attempting to find the binary in /home/rml/anaconda3/envs/mujoco instead.
+[0.452s] [31mCMake Error at CMakeLists.txt:48 (message):
+[0.452s]   Failed to find binary in /home/rml/anaconda3/envs/mujoco
+[0.452s] 
+[0.452s] [0m
+[0.452s] -- Configuring incomplete, errors occurred!
+[0.456s] Invoked command in '/home/rml/ros2_ws/src/quad-sdk/build/mujoco_ros2_control' returned '1': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/rml/ros2_ws/src/quad-sdk/install/teleop_twist_keyboard:/opt/ros/jazzy CONDA_PROMPT_MODIFIER=(mujoco) DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake /home/rml/ros2_ws/src/quad-sdk/mujoco_ros2_control/mujoco_ros2_control -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/home/rml/ros2_ws/src/quad-sdk/install/mujoco_ros2_control

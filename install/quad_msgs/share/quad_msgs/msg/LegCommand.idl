@@ -1,0 +1,22 @@
+// generated from rosidl_adapter/resource/msg.idl.em
+// with input from quad_msgs/msg/LegCommand.msg
+// generated code does not contain a copyright notice
+
+#include "quad_msgs/msg/MotorCommand.idl"
+#include "std_msgs/msg/Header.idl"
+
+module quad_msgs {
+  module msg {
+    @verbatim (language="comment", text=
+      "This is a message of motor commands for each joint on a quad leg." "\n"
+      "" "\n"
+      "Accurate timing information is stored in the header")
+    struct LegCommand {
+      std_msgs::msg::Header header;
+
+      @verbatim (language="comment", text=
+        "Stored as Abd, Hip, Knee")
+      sequence<quad_msgs::msg::MotorCommand> motor_commands;
+    };
+  };
+};

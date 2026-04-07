@@ -1,0 +1,22 @@
+[100%] Built target mocap_optitrack_mocap_node
+-- Install configuration: "Release"
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/mocap_optitrack/share/mocap_optitrack//launch
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/mocap_optitrack/share/mocap_optitrack//launch/mocap.launch.py
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/mocap_optitrack/share/mocap_optitrack//config
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/mocap_optitrack/share/mocap_optitrack//config/mocap.yaml
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/mocap_optitrack/share/ament_index/resource_index/package_run_dependencies/mocap_optitrack
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/mocap_optitrack/share/ament_index/resource_index/parent_prefix_path/mocap_optitrack
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/mocap_optitrack/share/mocap_optitrack/environment/ament_prefix_path.sh
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/mocap_optitrack/share/mocap_optitrack/environment/ament_prefix_path.dsv
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/mocap_optitrack/share/mocap_optitrack/environment/path.sh
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/mocap_optitrack/share/mocap_optitrack/environment/path.dsv
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/mocap_optitrack/share/mocap_optitrack/local_setup.bash
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/mocap_optitrack/share/mocap_optitrack/local_setup.sh
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/mocap_optitrack/share/mocap_optitrack/local_setup.zsh
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/mocap_optitrack/share/mocap_optitrack/local_setup.dsv
+-- Installing: /home/rml/ros2_ws/src/quad-sdk/install/mocap_optitrack/share/mocap_optitrack/package.dsv
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/mocap_optitrack/share/ament_index/resource_index/packages/mocap_optitrack
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/mocap_optitrack/share/mocap_optitrack/cmake/mocap_optitrackConfig.cmake
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/mocap_optitrack/share/mocap_optitrack/cmake/mocap_optitrackConfig-version.cmake
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/mocap_optitrack/share/mocap_optitrack/package.xml
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/mocap_optitrack/lib/mocap_optitrack/mocap_node

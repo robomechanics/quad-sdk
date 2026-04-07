@@ -1,0 +1,30 @@
+[0.004s] Invoking command in '/home/rml/ros2_ws/src/quad-sdk/build/RBDL': DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake --build /home/rml/ros2_ws/src/quad-sdk/build/RBDL -- -j16 -l16
+[0.029s] [100%] Built target rbdl
+[0.034s] Invoked command in '/home/rml/ros2_ws/src/quad-sdk/build/RBDL' returned '0': DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake --build /home/rml/ros2_ws/src/quad-sdk/build/RBDL -- -j16 -l16
+[0.037s] Invoking command in '/home/rml/ros2_ws/src/quad-sdk/build/RBDL': DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake --install /home/rml/ros2_ws/src/quad-sdk/build/RBDL
+[0.040s] -- Install configuration: "Release"
+[0.040s] -- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/RBDL/lib/librbdl.so.3.1.3
+[0.041s] -- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/RBDL/lib/librbdl.so
+[0.041s] -- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/RBDL/include/rbdl/rbdl_config.h
+[0.041s] -- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/RBDL/include/rbdl/Body.h
+[0.041s] -- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/RBDL/include/rbdl/Constraint.h
+[0.041s] -- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/RBDL/include/rbdl/Constraint_Contact.h
+[0.041s] -- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/RBDL/include/rbdl/Constraint_Loop.h
+[0.041s] -- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/RBDL/include/rbdl/Constraints.h
+[0.041s] -- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/RBDL/include/rbdl/Dynamics.h
+[0.041s] -- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/RBDL/include/rbdl/Joint.h
+[0.041s] -- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/RBDL/include/rbdl/Kinematics.h
+[0.041s] -- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/RBDL/include/rbdl/Logging.h
+[0.041s] -- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/RBDL/include/rbdl/Model.h
+[0.041s] -- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/RBDL/include/rbdl/Quaternion.h
+[0.041s] -- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/RBDL/include/rbdl/SpatialAlgebraOperators.h
+[0.041s] -- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/RBDL/include/rbdl/compileassert.h
+[0.041s] -- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/RBDL/include/rbdl/rbdl.h
+[0.041s] -- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/RBDL/include/rbdl/rbdl_eigenmath.h
+[0.041s] -- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/RBDL/include/rbdl/rbdl_errors.h
+[0.041s] -- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/RBDL/include/rbdl/rbdl_math.h
+[0.041s] -- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/RBDL/include/rbdl/rbdl_mathutils.h
+[0.041s] -- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/RBDL/include/rbdl/rbdl_utils.h
+[0.041s] -- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/RBDL/lib/pkgconfig/rbdl.pc
+[0.041s] -- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/RBDL/lib/cmake/RBDL/RBDLConfig.cmake
+[0.041s] Invoked command in '/home/rml/ros2_ws/src/quad-sdk/build/RBDL' returned '0': DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake --install /home/rml/ros2_ws/src/quad-sdk/build/RBDL

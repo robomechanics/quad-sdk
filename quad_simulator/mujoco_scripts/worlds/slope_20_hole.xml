@@ -1,0 +1,8 @@
+<mujoco>
+  <asset>
+    <mesh name="terrain" file="../models/slope_20_hole/meshes/slope_20_hole.stl"/>
+  </asset>
+  <worldbody>
+    <geom type="mesh" mesh="terrain"/>
+  </worldbody>
+</mujoco>

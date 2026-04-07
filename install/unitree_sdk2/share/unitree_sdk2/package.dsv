@@ -1,0 +1,6 @@
+source;share/unitree_sdk2/hook/cmake_prefix_path.ps1
+source;share/unitree_sdk2/hook/cmake_prefix_path.dsv
+source;share/unitree_sdk2/hook/cmake_prefix_path.sh
+source;share/unitree_sdk2/hook/ld_library_path_lib.ps1
+source;share/unitree_sdk2/hook/ld_library_path_lib.dsv
+source;share/unitree_sdk2/hook/ld_library_path_lib.sh

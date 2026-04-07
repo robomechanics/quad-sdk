@@ -1,0 +1,6 @@
+[31mCMake Error at CMakeLists.txt:52 (message):
+  Failed to find mujoco with find_package.
+
+    Either build and install mujoco from source or set the MUJOCO_DIR environment variable to tell CMake where to find the binary install. 
+
+[0m

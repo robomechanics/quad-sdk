@@ -9,8 +9,7 @@ from launch_ros.substitutions import FindPackageShare
 def generate_launch_description():
     # Declare all launch arguments
     declared_arguments = [
-        DeclareLaunchArgument('input_type', default_value='grid',
-            description='Input used to generate terrain data'),
+        DeclareLaunchArgument('input_type', default_value='grid', description='Input used to generate terrain data'),
         DeclareLaunchArgument('frame_id_mesh_loaded', default_value='map'),
         DeclareLaunchArgument('grid_map_layer_name', default_value='z'),
         DeclareLaunchArgument('grid_map_resolution', default_value='0.05'),

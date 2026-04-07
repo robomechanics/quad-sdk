@@ -1,0 +1,8 @@
+<mujoco>
+  <asset>
+    <mesh name="terrain" file="../models/rough_25cm/meshes/rough_25cm.stl"/>
+  </asset>
+  <worldbody>
+    <geom type="mesh" mesh="terrain"/>
+  </worldbody>
+</mujoco>

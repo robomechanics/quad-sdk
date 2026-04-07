@@ -1,0 +1,11 @@
+source;share/teleop_twist_joy/hook/cmake_prefix_path.ps1
+source;share/teleop_twist_joy/hook/cmake_prefix_path.dsv
+source;share/teleop_twist_joy/hook/cmake_prefix_path.sh
+source;share/teleop_twist_joy/hook/ld_library_path_lib.ps1
+source;share/teleop_twist_joy/hook/ld_library_path_lib.dsv
+source;share/teleop_twist_joy/hook/ld_library_path_lib.sh
+source;share/teleop_twist_joy/local_setup.bash
+source;share/teleop_twist_joy/local_setup.dsv
+source;share/teleop_twist_joy/local_setup.ps1
+source;share/teleop_twist_joy/local_setup.sh
+source;share/teleop_twist_joy/local_setup.zsh

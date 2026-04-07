@@ -1,0 +1,51 @@
+[0.004s] Invoking command in '/home/rml/ros2_ws/src/quad-sdk/build/mocap_optitrack': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/rml/ros2_ws/src/quad-sdk/install/teleop_twist_keyboard:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake /home/rml/ros2_ws/src/quad-sdk/external/mocap_optitrack -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/home/rml/ros2_ws/src/quad-sdk/install/mocap_optitrack
+[0.009s] -- Found ament_cmake: 2.5.5 (/opt/ros/jazzy/share/ament_cmake/cmake)
+[0.104s] -- Found rclcpp: 28.1.16 (/opt/ros/jazzy/share/rclcpp/cmake)
+[0.116s] -- Found rosidl_generator_c: 4.6.7 (/opt/ros/jazzy/share/rosidl_generator_c/cmake)
+[0.120s] -- Found rosidl_generator_cpp: 4.6.7 (/opt/ros/jazzy/share/rosidl_generator_cpp/cmake)
+[0.125s] -- Using all available rosidl_typesupport_c: rosidl_typesupport_fastrtps_c;rosidl_typesupport_introspection_c
+[0.131s] -- Using all available rosidl_typesupport_cpp: rosidl_typesupport_fastrtps_cpp;rosidl_typesupport_introspection_cpp
+[0.160s] -- Found rmw_implementation_cmake: 7.3.3 (/opt/ros/jazzy/share/rmw_implementation_cmake/cmake)
+[0.161s] -- Found rmw_fastrtps_cpp: 8.4.3 (/opt/ros/jazzy/share/rmw_fastrtps_cpp/cmake)
+[0.189s] -- Using RMW implementation 'rmw_fastrtps_cpp' as default
+[0.221s] -- Found tf2_ros: 0.36.19 (/opt/ros/jazzy/share/tf2_ros/cmake)
+[0.292s] -- Found nav_msgs: 5.3.6 (/opt/ros/jazzy/share/nav_msgs/cmake)
+[0.308s] -- Found ament_lint_auto: 0.17.4 (/opt/ros/jazzy/share/ament_lint_auto/cmake)
+[0.352s] -- Added test 'cppcheck' to perform static code analysis on C / C++ code
+[0.353s] -- Configured cppcheck include dirs: /home/rml/ros2_ws/src/quad-sdk/external/mocap_optitrack/include
+[0.353s] -- Configured cppcheck exclude dirs and/or files: 
+[0.353s] -- Added test 'flake8' to check Python code syntax and style conventions
+[0.353s] -- Configured 'flake8' exclude dirs and/or files: 
+[0.353s] -- Added test 'lint_cmake' to check CMake code style
+[0.353s] -- Added test 'pep257' to check Python code against some of the docstring style conventions in PEP 257
+[0.354s] -- Added test 'xmllint' to check XML markup files
+[0.354s] -- Configuring done (0.3s)
+[0.450s] -- Generating done (0.1s)
+[0.457s] -- Build files have been written to: /home/rml/ros2_ws/src/quad-sdk/build/mocap_optitrack
+[0.462s] Invoked command in '/home/rml/ros2_ws/src/quad-sdk/build/mocap_optitrack' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/rml/ros2_ws/src/quad-sdk/install/teleop_twist_keyboard:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake /home/rml/ros2_ws/src/quad-sdk/external/mocap_optitrack -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/home/rml/ros2_ws/src/quad-sdk/install/mocap_optitrack
+[0.463s] Invoking command in '/home/rml/ros2_ws/src/quad-sdk/build/mocap_optitrack': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/rml/ros2_ws/src/quad-sdk/install/teleop_twist_keyboard:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake --build /home/rml/ros2_ws/src/quad-sdk/build/mocap_optitrack -- -j16 -l16
+[0.504s] [100%] Built target mocap_optitrack_mocap_node
+[0.508s] Invoked command in '/home/rml/ros2_ws/src/quad-sdk/build/mocap_optitrack' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/rml/ros2_ws/src/quad-sdk/install/teleop_twist_keyboard:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake --build /home/rml/ros2_ws/src/quad-sdk/build/mocap_optitrack -- -j16 -l16
+[0.508s] Invoking command in '/home/rml/ros2_ws/src/quad-sdk/build/mocap_optitrack': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/rml/ros2_ws/src/quad-sdk/install/teleop_twist_keyboard:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake --install /home/rml/ros2_ws/src/quad-sdk/build/mocap_optitrack
+[0.512s] -- Install configuration: "Release"
+[0.512s] -- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/mocap_optitrack/share/mocap_optitrack//launch
+[0.512s] -- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/mocap_optitrack/share/mocap_optitrack//launch/mocap.launch.py
+[0.512s] -- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/mocap_optitrack/share/mocap_optitrack//config
+[0.512s] -- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/mocap_optitrack/share/mocap_optitrack//config/mocap.yaml
+[0.512s] -- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/mocap_optitrack/share/ament_index/resource_index/package_run_dependencies/mocap_optitrack
+[0.512s] -- Installing: /home/rml/ros2_ws/src/quad-sdk/install/mocap_optitrack/share/ament_index/resource_index/parent_prefix_path/mocap_optitrack
+[0.512s] -- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/mocap_optitrack/share/mocap_optitrack/environment/ament_prefix_path.sh
+[0.512s] -- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/mocap_optitrack/share/mocap_optitrack/environment/ament_prefix_path.dsv
+[0.512s] -- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/mocap_optitrack/share/mocap_optitrack/environment/path.sh
+[0.512s] -- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/mocap_optitrack/share/mocap_optitrack/environment/path.dsv
+[0.512s] -- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/mocap_optitrack/share/mocap_optitrack/local_setup.bash
+[0.512s] -- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/mocap_optitrack/share/mocap_optitrack/local_setup.sh
+[0.512s] -- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/mocap_optitrack/share/mocap_optitrack/local_setup.zsh
+[0.512s] -- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/mocap_optitrack/share/mocap_optitrack/local_setup.dsv
+[0.512s] -- Installing: /home/rml/ros2_ws/src/quad-sdk/install/mocap_optitrack/share/mocap_optitrack/package.dsv
+[0.512s] -- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/mocap_optitrack/share/ament_index/resource_index/packages/mocap_optitrack
+[0.512s] -- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/mocap_optitrack/share/mocap_optitrack/cmake/mocap_optitrackConfig.cmake
+[0.512s] -- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/mocap_optitrack/share/mocap_optitrack/cmake/mocap_optitrackConfig-version.cmake
+[0.512s] -- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/mocap_optitrack/share/mocap_optitrack/package.xml
+[0.512s] -- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/mocap_optitrack/lib/mocap_optitrack/mocap_node
+[0.513s] Invoked command in '/home/rml/ros2_ws/src/quad-sdk/build/mocap_optitrack' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/rml/ros2_ws/src/quad-sdk/install/teleop_twist_keyboard:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake --install /home/rml/ros2_ws/src/quad-sdk/build/mocap_optitrack

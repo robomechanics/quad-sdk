@@ -1,0 +1,60 @@
+[0.003s] Invoking command in '/home/rml/ros2_ws/src/quad-sdk/build/objects_description': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake /home/rml/ros2_ws/src/quad-sdk/quad_simulator/other/objects_description -DCMAKE_BUILD_TYPE=Release -DCMAKE_BUILD_PARALLEL_LEVEL=1 -DCMAKE_INSTALL_PREFIX=/home/rml/ros2_ws/src/quad-sdk/install/objects_description
+[0.008s] -- Found ament_cmake: 2.5.5 (/opt/ros/jazzy/share/ament_cmake/cmake)
+[0.102s] -- Found ament_lint_auto: 0.17.4 (/opt/ros/jazzy/share/ament_lint_auto/cmake)
+[0.143s] -- Configuring done (0.1s)
+[0.144s] -- Generating done (0.0s)
+[0.145s] [33mCMake Warning:
+[0.145s]   Manually-specified variables were not used by the project:
+[0.145s] 
+[0.145s]     CMAKE_BUILD_PARALLEL_LEVEL
+[0.145s] 
+[0.145s] [0m
+[0.145s] -- Build files have been written to: /home/rml/ros2_ws/src/quad-sdk/build/objects_description
+[0.146s] Invoked command in '/home/rml/ros2_ws/src/quad-sdk/build/objects_description' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake /home/rml/ros2_ws/src/quad-sdk/quad_simulator/other/objects_description -DCMAKE_BUILD_TYPE=Release -DCMAKE_BUILD_PARALLEL_LEVEL=1 -DCMAKE_INSTALL_PREFIX=/home/rml/ros2_ws/src/quad-sdk/install/objects_description
+[0.147s] Invoking command in '/home/rml/ros2_ws/src/quad-sdk/build/objects_description': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake --build /home/rml/ros2_ws/src/quad-sdk/build/objects_description -- -j16 -l16
+[0.162s] Invoked command in '/home/rml/ros2_ws/src/quad-sdk/build/objects_description' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake --build /home/rml/ros2_ws/src/quad-sdk/build/objects_description -- -j16 -l16
+[0.162s] Invoking command in '/home/rml/ros2_ws/src/quad-sdk/build/objects_description': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake --install /home/rml/ros2_ws/src/quad-sdk/build/objects_description
+[0.165s] -- Install configuration: "Release"
+[0.165s] -- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/objects_description/share/objects_description/models
+[0.165s] -- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/objects_description/share/objects_description/models/custom_ground_plane
+[0.165s] -- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/objects_description/share/objects_description/models/custom_ground_plane/model.config
+[0.165s] -- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/objects_description/share/objects_description/models/custom_ground_plane/model.sdf
+[0.165s] -- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/objects_description/share/objects_description/models/cmu_text
+[0.165s] -- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/objects_description/share/objects_description/models/cmu_text/meshes
+[0.165s] -- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/objects_description/share/objects_description/models/cmu_text/meshes/Spirit40_CMU_Text.stl
+[0.165s] -- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/objects_description/share/objects_description/models/cmu_text/meshes/Spirit40_CMU_Text_transformed.stl
+[0.166s] -- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/objects_description/share/objects_description/models/cmu_text/model.config
+[0.166s] -- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/objects_description/share/objects_description/models/cmu_text/model.sdf
+[0.166s] -- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/objects_description/share/objects_description/models/mesh_terrain
+[0.166s] -- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/objects_description/share/objects_description/models/mesh_terrain/model.config
+[0.166s] -- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/objects_description/share/objects_description/models/mesh_terrain/model.sdf
+[0.166s] -- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/objects_description/share/objects_description/models/box
+[0.166s] -- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/objects_description/share/objects_description/models/box/box.sdf
+[0.166s] -- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/objects_description/share/objects_description/models/box/model.config
+[0.166s] -- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/objects_description/share/objects_description/models/custom_sun
+[0.166s] -- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/objects_description/share/objects_description/models/custom_sun/model.config
+[0.166s] -- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/objects_description/share/objects_description/models/custom_sun/model.sdf
+[0.166s] -- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/objects_description/share/objects_description/models/bars
+[0.166s] -- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/objects_description/share/objects_description/models/bars/materials
+[0.166s] -- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/objects_description/share/objects_description/models/bars/materials/textures
+[0.166s] -- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/objects_description/share/objects_description/models/bars/materials/textures/frame.jpg
+[0.166s] -- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/objects_description/share/objects_description/models/bars/materials/scripts
+[0.166s] -- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/objects_description/share/objects_description/models/bars/materials/scripts/bars.material
+[0.166s] -- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/objects_description/share/objects_description/models/bars/model.config
+[0.166s] -- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/objects_description/share/objects_description/models/bars/bars.sdf
+[0.166s] -- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/objects_description/share/ament_index/resource_index/package_run_dependencies/objects_description
+[0.166s] -- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/objects_description/share/ament_index/resource_index/parent_prefix_path/objects_description
+[0.166s] -- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/objects_description/share/objects_description/environment/ament_prefix_path.sh
+[0.166s] -- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/objects_description/share/objects_description/environment/ament_prefix_path.dsv
+[0.166s] -- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/objects_description/share/objects_description/environment/path.sh
+[0.166s] -- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/objects_description/share/objects_description/environment/path.dsv
+[0.166s] -- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/objects_description/share/objects_description/local_setup.bash
+[0.166s] -- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/objects_description/share/objects_description/local_setup.sh
+[0.166s] -- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/objects_description/share/objects_description/local_setup.zsh
+[0.166s] -- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/objects_description/share/objects_description/local_setup.dsv
+[0.166s] -- Installing: /home/rml/ros2_ws/src/quad-sdk/install/objects_description/share/objects_description/package.dsv
+[0.166s] -- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/objects_description/share/ament_index/resource_index/packages/objects_description
+[0.166s] -- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/objects_description/share/objects_description/cmake/objects_descriptionConfig.cmake
+[0.166s] -- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/objects_description/share/objects_description/cmake/objects_descriptionConfig-version.cmake
+[0.166s] -- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/objects_description/share/objects_description/package.xml
+[0.167s] Invoked command in '/home/rml/ros2_ws/src/quad-sdk/build/objects_description' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake --install /home/rml/ros2_ws/src/quad-sdk/build/objects_description

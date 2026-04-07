@@ -1,0 +1,37 @@
+[0.003s] Invoking command in '/home/rml/ros2_ws/src/quad-sdk/build/sensor_description': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake /home/rml/ros2_ws/src/quad-sdk/quad_simulator/other/sensor_description -DCMAKE_BUILD_TYPE=Release -DCMAKE_BUILD_PARALLEL_LEVEL=1 -DCMAKE_INSTALL_PREFIX=/home/rml/ros2_ws/src/quad-sdk/install/sensor_description
+[0.008s] -- Found ament_cmake: 2.5.5 (/opt/ros/jazzy/share/ament_cmake/cmake)
+[0.103s] -- Found ament_lint_auto: 0.17.4 (/opt/ros/jazzy/share/ament_lint_auto/cmake)
+[0.144s] -- Configuring done (0.1s)
+[0.146s] -- Generating done (0.0s)
+[0.146s] [33mCMake Warning:
+[0.146s]   Manually-specified variables were not used by the project:
+[0.146s] 
+[0.146s]     CMAKE_BUILD_PARALLEL_LEVEL
+[0.146s] 
+[0.146s] [0m
+[0.147s] -- Build files have been written to: /home/rml/ros2_ws/src/quad-sdk/build/sensor_description
+[0.148s] Invoked command in '/home/rml/ros2_ws/src/quad-sdk/build/sensor_description' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake /home/rml/ros2_ws/src/quad-sdk/quad_simulator/other/sensor_description -DCMAKE_BUILD_TYPE=Release -DCMAKE_BUILD_PARALLEL_LEVEL=1 -DCMAKE_INSTALL_PREFIX=/home/rml/ros2_ws/src/quad-sdk/install/sensor_description
+[0.149s] Invoking command in '/home/rml/ros2_ws/src/quad-sdk/build/sensor_description': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake --build /home/rml/ros2_ws/src/quad-sdk/build/sensor_description -- -j16 -l16
+[0.168s] Invoked command in '/home/rml/ros2_ws/src/quad-sdk/build/sensor_description' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake --build /home/rml/ros2_ws/src/quad-sdk/build/sensor_description -- -j16 -l16
+[0.168s] Invoking command in '/home/rml/ros2_ws/src/quad-sdk/build/sensor_description': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake --install /home/rml/ros2_ws/src/quad-sdk/build/sensor_description
+[0.173s] -- Install configuration: "Release"
+[0.173s] -- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/sensor_description/share/sensor_description/models
+[0.173s] -- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/sensor_description/share/sensor_description/models/imu
+[0.173s] -- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/sensor_description/share/sensor_description/models/imu/model.config
+[0.173s] -- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/sensor_description/share/sensor_description/models/imu/model.sdf
+[0.173s] -- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/sensor_description/share/ament_index/resource_index/package_run_dependencies/sensor_description
+[0.173s] -- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/sensor_description/share/ament_index/resource_index/parent_prefix_path/sensor_description
+[0.173s] -- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/sensor_description/share/sensor_description/environment/ament_prefix_path.sh
+[0.173s] -- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/sensor_description/share/sensor_description/environment/ament_prefix_path.dsv
+[0.173s] -- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/sensor_description/share/sensor_description/environment/path.sh
+[0.173s] -- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/sensor_description/share/sensor_description/environment/path.dsv
+[0.173s] -- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/sensor_description/share/sensor_description/local_setup.bash
+[0.173s] -- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/sensor_description/share/sensor_description/local_setup.sh
+[0.173s] -- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/sensor_description/share/sensor_description/local_setup.zsh
+[0.173s] -- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/sensor_description/share/sensor_description/local_setup.dsv
+[0.173s] -- Installing: /home/rml/ros2_ws/src/quad-sdk/install/sensor_description/share/sensor_description/package.dsv
+[0.173s] -- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/sensor_description/share/ament_index/resource_index/packages/sensor_description
+[0.173s] -- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/sensor_description/share/sensor_description/cmake/sensor_descriptionConfig.cmake
+[0.173s] -- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/sensor_description/share/sensor_description/cmake/sensor_descriptionConfig-version.cmake
+[0.173s] -- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/sensor_description/share/sensor_description/package.xml
+[0.174s] Invoked command in '/home/rml/ros2_ws/src/quad-sdk/build/sensor_description' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake --install /home/rml/ros2_ws/src/quad-sdk/build/sensor_description

@@ -1,0 +1,17 @@
+[31mCMake Error at CMakeLists.txt:6 (find_package):
+  By not providing "Findmujoco_ros2_control.cmake" in CMAKE_MODULE_PATH this
+  project has asked CMake to find a package configuration file provided by
+  "mujoco_ros2_control", but CMake did not find one.
+
+  Could not find a package configuration file provided by
+  "mujoco_ros2_control" with any of the following names:
+
+    mujoco_ros2_controlConfig.cmake
+    mujoco_ros2_control-config.cmake
+
+  Add the installation prefix of "mujoco_ros2_control" to CMAKE_PREFIX_PATH
+  or set "mujoco_ros2_control_DIR" to a directory containing one of the above
+  files.  If "mujoco_ros2_control" provides a separate development package or
+  SDK, be sure it has been installed.
+
+[0m

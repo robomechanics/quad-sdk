@@ -1,0 +1,747 @@
+-- Found ament_cmake: 2.5.5 (/opt/ros/jazzy/share/ament_cmake/cmake)
+-- Found Python3: /usr/bin/python3 (found version "3.12.3") found components: Interpreter 
+-- Found rclcpp: 28.1.16 (/opt/ros/jazzy/share/rclcpp/cmake)
+-- Found rosidl_generator_c: 4.6.7 (/opt/ros/jazzy/share/rosidl_generator_c/cmake)
+-- Found rosidl_generator_cpp: 4.6.7 (/opt/ros/jazzy/share/rosidl_generator_cpp/cmake)
+-- Using all available rosidl_typesupport_c: rosidl_typesupport_fastrtps_c;rosidl_typesupport_introspection_c
+-- Using all available rosidl_typesupport_cpp: rosidl_typesupport_fastrtps_cpp;rosidl_typesupport_introspection_cpp
+-- Found rmw_implementation_cmake: 7.3.3 (/opt/ros/jazzy/share/rmw_implementation_cmake/cmake)
+-- Found rmw_fastrtps_cpp: 8.4.3 (/opt/ros/jazzy/share/rmw_fastrtps_cpp/cmake)
+-- Using RMW implementation 'rmw_fastrtps_cpp' as default
+-- Found std_msgs: 5.3.6 (/opt/ros/jazzy/share/std_msgs/cmake)
+-- Found quad_msgs: 0.0.0 (/home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/share/quad_msgs/cmake)
+-- Found quad_utils: 0.0.0 (/home/rml/ros2_ws/src/quad-sdk/install/quad_utils/share/quad_utils/cmake)
+-- Setting yaml-cpp_DIR to: '/opt/ros/jazzy/share/yaml_cpp_vendor/cmake/../../../opt/yaml_cpp_vendor/share/cmake/yaml-cpp'
+[33mCMake Warning (dev) at /usr/lib/x86_64-linux-gnu/cmake/pcl/Modules/FindFLANN.cmake:45 (find_package):
+  Policy CMP0144 is not set: find_package uses upper-case <PACKAGENAME>_ROOT
+  variables.  Run "cmake --help-policy CMP0144" for policy details.  Use the
+  cmake_policy command to set the policy and suppress this warning.
+
+  CMake variable FLANN_ROOT is set to:
+
+    /usr
+
+  For compatibility, find_package is ignoring the variable, but code in a
+  .cmake module might still use it.
+Call Stack (most recent call first):
+  /usr/lib/x86_64-linux-gnu/cmake/pcl/PCLConfig.cmake:261 (find_package)
+  /usr/lib/x86_64-linux-gnu/cmake/pcl/PCLConfig.cmake:306 (find_flann)
+  /usr/lib/x86_64-linux-gnu/cmake/pcl/PCLConfig.cmake:570 (find_external_library)
+  /opt/ros/jazzy/share/pcl_conversions/cmake/ament_cmake_export_dependencies-extras.cmake:21 (find_package)
+  /opt/ros/jazzy/share/pcl_conversions/cmake/pcl_conversionsConfig.cmake:41 (include)
+  /home/rml/ros2_ws/src/quad-sdk/install/quad_utils/share/quad_utils/cmake/ament_cmake_export_dependencies-extras.cmake:21 (find_package)
+  /home/rml/ros2_ws/src/quad-sdk/install/quad_utils/share/quad_utils/cmake/quad_utilsConfig.cmake:41 (include)
+  CMakeLists.txt:13 (find_package)
+This warning is for project developers.  Use -Wno-dev to suppress it.
+[0m
+-- Found flann version 1.9.2
+-- OpenNI found (version: 1.5.4.0, include: /usr/include/ni, lib: /usr/lib/libOpenNI.so;libusb::libusb)
+-- OpenNI2 found (version: 2.2.0.33, include: /usr/include/openni2, lib: /usr/lib/x86_64-linux-gnu/libOpenNI2.so;libusb::libusb)
+-- Could NOT find Pcap (missing: PCAP_LIBRARIES PCAP_INCLUDE_DIRS) 
+-- OpenNI found (version: 1.5.4.0, include: /usr/include/ni, lib: /usr/lib/libOpenNI.so;libusb::libusb)
+-- OpenNI2 found (version: 2.2.0.33, include: /usr/include/openni2, lib: /usr/lib/x86_64-linux-gnu/libOpenNI2.so;libusb::libusb)
+-- Found Qhull version 8.0.2
+-- OpenNI found (version: 1.5.4.0, include: /usr/include/ni, lib: /usr/lib/libOpenNI.so;libusb::libusb)
+-- Found eigen3_cmake_module: 0.3.0 (/opt/ros/jazzy/share/eigen3_cmake_module/cmake)
+-- Ensuring Eigen3 include directory is part of orocos-kdl CMake target
+-- pinocchio_default FOUND. pinocchio_default at /opt/ros/jazzy/lib/x86_64-linux-gnu/libpinocchio_default.so
+-- pinocchio_parsers FOUND. pinocchio_parsers at /opt/ros/jazzy/lib/x86_64-linux-gnu/libpinocchio_parsers.so
+-- boost_filesystem FOUND. boost_filesystem at /lib/x86_64-linux-gnu/libboost_filesystem.so
+-- eigenpy FOUND. eigenpy at /opt/ros/jazzy/lib/x86_64-linux-gnu/libeigenpy.so
+-- Checking for NumPy
+--   NUMPY_INCLUDE_DIRS=/usr/lib/python3/dist-packages/numpy/core/include
+--   NUMPY_VERSION=1.26.4
+-- Found Python3: /usr/bin/python3 (found version "3.12.3") found components: Interpreter Development.Module NumPy 
+-- PythonLibraryDirs: 
+-- PythonLibVersionString: 3.12.3
+-- Python site lib: lib/python3.12/site-packages
+-- Python include dirs: /usr/include/python3.12
+-- Checking for NumPy
+--   NUMPY_INCLUDE_DIRS=/usr/lib/python3/dist-packages/numpy/core/include
+--   NUMPY_VERSION=1.26.4
+-- NumPy include dir: /usr/lib/python3/dist-packages/numpy/core/include
+-- Default C++ standard: 201703
+-- C++ standard sufficient: Minimal required 14, currently defined: 17
+-- CMAKE_CXX_STANDARD was not set: automatically set to currently defined standard 17
+-- hpp-fcl FOUND. hpp-fcl at /opt/ros/jazzy/lib/x86_64-linux-gnu/libhpp-fcl.so
+-- C++ standard sufficient: Minimal required 14, currently defined: 17
+-- C++ standard sufficient: Minimal required 14, currently defined: 17
+-- Found tf2_eigen: 0.36.19 (/opt/ros/jazzy/share/tf2_eigen/cmake)
+-- Found ament_lint_auto: 0.17.4 (/opt/ros/jazzy/share/ament_lint_auto/cmake)
+-- Configuring done (2.1s)
+-- Generating done (0.0s)
+[33mCMake Warning:
+  Manually-specified variables were not used by the project:
+
+    CMAKE_BUILD_PARALLEL_LEVEL
+
+[0m
+-- Build files have been written to: /home/rml/ros2_ws/src/quad-sdk/build/nmpc_controller
+[  7%] [32mBuilding CXX object CMakeFiles/nmpc_controller.dir/src/gen/eval_g_leg_complex.cpp.o[0m
+[  7%] [32mBuilding CXX object CMakeFiles/nmpc_controller.dir/src/gen/eval_g_a1.cpp.o[0m
+[ 15%] [32mBuilding CXX object CMakeFiles/nmpc_controller.dir/src/gen/eval_g_go2.cpp.o[0m
+[ 15%] [32mBuilding CXX object CMakeFiles/nmpc_controller.dir/src/gen/eval_g_leg_simple_to_complex.cpp.o[0m
+[ 23%] [32mBuilding CXX object CMakeFiles/nmpc_controller.dir/src/gen/eval_hess_g_a1.cpp.o[0m
+[ 23%] [32mBuilding CXX object CMakeFiles/nmpc_controller.dir/src/gen/eval_g_spirit.cpp.o[0m
+[ 26%] [32mBuilding CXX object CMakeFiles/nmpc_controller.dir/src/gen/eval_g_leg_simple.cpp.o[0m
+[ 34%] [32mBuilding CXX object CMakeFiles/nmpc_controller.dir/src/gen/eval_hess_g_leg_complex_to_simple.cpp.o[0m
+[ 34%] [32mBuilding CXX object CMakeFiles/nmpc_controller.dir/src/gen/eval_hess_g_go2.cpp.o[0m
+[ 38%] [32mBuilding CXX object CMakeFiles/nmpc_controller.dir/src/gen/eval_hess_g_leg_complex.cpp.o[0m
+[ 42%] [32mBuilding CXX object CMakeFiles/nmpc_controller.dir/src/gen/eval_hess_g_leg_simple.cpp.o[0m
+[ 46%] [32mBuilding CXX object CMakeFiles/nmpc_controller.dir/src/gen/eval_jac_g_a1.cpp.o[0m
+[ 50%] [32mBuilding CXX object CMakeFiles/nmpc_controller.dir/src/gen/eval_g_leg_complex_to_simple.cpp.o[0m
+[ 53%] [32mBuilding CXX object CMakeFiles/nmpc_controller.dir/src/gen/eval_hess_g_leg_simple_to_complex.cpp.o[0m
+[ 57%] [32mBuilding CXX object CMakeFiles/nmpc_controller.dir/src/gen/eval_jac_g_go2.cpp.o[0m
+[ 61%] [32mBuilding CXX object CMakeFiles/nmpc_controller.dir/src/gen/eval_hess_g_spirit.cpp.o[0m
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/gen/eval_g_leg_simple.cpp:[m[K In function ‘[01m[Kint[01;32m[K eval_g_leg_simple_f0[m[K(const double**, double**, long long int*, double*, int)[m[K’:
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/gen/eval_g_leg_simple.cpp:51:78:[m[K [01;35m[Kwarning: [m[Kunused parameter ‘[01m[Kiw[m[K’ [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wunused-parameter-Wunused-parameter]8;;[m[K]
+   51 | static int casadi_f0(const casadi_real** arg, casadi_real** res, casadi_int* [01;35m[Ki[m[Kw, casadi_real* w, int mem) {
+      |                                                                              [01;35m[K^[m[K
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/gen/eval_g_leg_simple.cpp:51:95:[m[K [01;35m[Kwarning: [m[Kunused parameter ‘[01m[Kw[m[K’ [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wunused-parameter-Wunused-parameter]8;;[m[K]
+   51 | static int casadi_f0(const casadi_real** arg, casadi_real** res, casadi_int* iw, casadi_real* [01;35m[Kw[m[K, int mem) {
+      |                                                                                               [01;35m[K^[m[K
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/gen/eval_g_leg_simple.cpp:51:102:[m[K [01;35m[Kwarning: [m[Kunused parameter ‘[01m[Kmem[m[K’ [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wunused-parameter-Wunused-parameter]8;;[m[K]
+   51 | static int casadi_f0(const casadi_real** arg, casadi_real** res, casadi_int* iw, casadi_real* w, [01;35m[Kint mem[m[K) {
+      |                                                                                                  [01;35m[K~~~~^~~[m[K
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/gen/eval_g_go2.cpp:[m[K In function ‘[01m[Kint[01;32m[K eval_g_go2_f0[m[K(const double**, double**, long long int*, double*, int)[m[K’:
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/gen/eval_g_go2.cpp:56:78:[m[K [01;35m[Kwarning: [m[Kunused parameter ‘[01m[Kiw[m[K’ [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wunused-parameter-Wunused-parameter]8;;[m[K]
+   56 | static int casadi_f0(const casadi_real** arg, casadi_real** res, casadi_int* [01;35m[Ki[m[Kw, casadi_real* w, int mem) {
+      |                                                                              [01;35m[K^[m[K
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/gen/eval_g_go2.cpp:56:95:[m[K [01;35m[Kwarning: [m[Kunused parameter ‘[01m[Kw[m[K’ [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wunused-parameter-Wunused-parameter]8;;[m[K]
+   56 | static int casadi_f0(const casadi_real** arg, casadi_real** res, casadi_int* iw, casadi_real* [01;35m[Kw[m[K, int mem) {
+      |                                                                                               [01;35m[K^[m[K
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/gen/eval_g_go2.cpp:56:102:[m[K [01;35m[Kwarning: [m[Kunused parameter ‘[01m[Kmem[m[K’ [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wunused-parameter-Wunused-parameter]8;;[m[K]
+   56 | static int casadi_f0(const casadi_real** arg, casadi_real** res, casadi_int* iw, casadi_real* w, [01;35m[Kint mem[m[K) {
+      |                                                                                                  [01;35m[K~~~~^~~[m[K
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/gen/eval_g_leg_simple.cpp:[m[K In function ‘[01m[Kint[01;32m[K eval_g_leg_simple_init_mem[m[K(int)[m[K’:
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/gen/eval_g_leg_simple.cpp:460:68:[m[K [01;35m[Kwarning: [m[Kunused parameter ‘[01m[Kmem[m[K’ [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wunused-parameter-Wunused-parameter]8;;[m[K]
+  460 | extern "C" CASADI_SYMBOL_EXPORT int eval_g_leg_simple_init_mem([01;35m[Kint mem[m[K) {
+      |                                                                [01;35m[K~~~~^~~[m[K
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/gen/eval_g_leg_simple.cpp:[m[K In function ‘[01m[Kvoid[01;32m[K eval_g_leg_simple_free_mem[m[K(int)[m[K’:
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/gen/eval_g_leg_simple.cpp:464:69:[m[K [01;35m[Kwarning: [m[Kunused parameter ‘[01m[Kmem[m[K’ [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wunused-parameter-Wunused-parameter]8;;[m[K]
+  464 | extern "C" CASADI_SYMBOL_EXPORT void eval_g_leg_simple_free_mem([01;35m[Kint mem[m[K) {
+      |                                                                 [01;35m[K~~~~^~~[m[K
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/gen/eval_g_leg_simple.cpp:[m[K In function ‘[01m[Kvoid[01;32m[K eval_g_leg_simple_release[m[K(int)[m[K’:
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/gen/eval_g_leg_simple.cpp:471:68:[m[K [01;35m[Kwarning: [m[Kunused parameter ‘[01m[Kmem[m[K’ [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wunused-parameter-Wunused-parameter]8;;[m[K]
+  471 | extern "C" CASADI_SYMBOL_EXPORT void eval_g_leg_simple_release([01;35m[Kint mem[m[K) {
+      |                                                                [01;35m[K~~~~^~~[m[K
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/gen/eval_g_spirit.cpp:[m[K In function ‘[01m[Kint[01;32m[K eval_g_spirit_f0[m[K(const double**, double**, long long int*, double*, int)[m[K’:
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/gen/eval_g_spirit.cpp:48:78:[m[K [01;35m[Kwarning: [m[Kunused parameter ‘[01m[Kiw[m[K’ [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wunused-parameter-Wunused-parameter]8;;[m[K]
+   48 | static int casadi_f0(const casadi_real** arg, casadi_real** res, casadi_int* [01;35m[Ki[m[Kw, casadi_real* w, int mem) {
+      |                                                                              [01;35m[K^[m[K
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/gen/eval_g_spirit.cpp:48:95:[m[K [01;35m[Kwarning: [m[Kunused parameter ‘[01m[Kw[m[K’ [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wunused-parameter-Wunused-parameter]8;;[m[K]
+   48 | static int casadi_f0(const casadi_real** arg, casadi_real** res, casadi_int* iw, casadi_real* [01;35m[Kw[m[K, int mem) {
+      |                                                                                               [01;35m[K^[m[K
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/gen/eval_g_spirit.cpp:48:102:[m[K [01;35m[Kwarning: [m[Kunused parameter ‘[01m[Kmem[m[K’ [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wunused-parameter-Wunused-parameter]8;;[m[K]
+   48 | static int casadi_f0(const casadi_real** arg, casadi_real** res, casadi_int* iw, casadi_real* w, [01;35m[Kint mem[m[K) {
+      |                                                                                                  [01;35m[K~~~~^~~[m[K
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/gen/eval_g_go2.cpp:[m[K In function ‘[01m[Kint[01;32m[K eval_g_go2_init_mem[m[K(int)[m[K’:
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/gen/eval_g_go2.cpp:563:61:[m[K [01;35m[Kwarning: [m[Kunused parameter ‘[01m[Kmem[m[K’ [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wunused-parameter-Wunused-parameter]8;;[m[K]
+  563 | extern "C" CASADI_SYMBOL_EXPORT int eval_g_go2_init_mem([01;35m[Kint mem[m[K) {
+      |                                                         [01;35m[K~~~~^~~[m[K
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/gen/eval_g_spirit.cpp:[m[K In function ‘[01m[Kint[01;32m[K eval_g_spirit_init_mem[m[K(int)[m[K’:
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/gen/eval_g_spirit.cpp:433:64:[m[K [01;35m[Kwarning: [m[Kunused parameter ‘[01m[Kmem[m[K’ [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wunused-parameter-Wunused-parameter]8;;[m[K]
+  433 | extern "C" CASADI_SYMBOL_EXPORT int eval_g_spirit_init_mem([01;35m[Kint mem[m[K) {
+      |                                                            [01;35m[K~~~~^~~[m[K
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/gen/eval_g_go2.cpp:[m[K In function ‘[01m[Kvoid[01;32m[K eval_g_go2_free_mem[m[K(int)[m[K’:
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/gen/eval_g_go2.cpp:567:62:[m[K [01;35m[Kwarning: [m[Kunused parameter ‘[01m[Kmem[m[K’ [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wunused-parameter-Wunused-parameter]8;;[m[K]
+  567 | extern "C" CASADI_SYMBOL_EXPORT void eval_g_go2_free_mem([01;35m[Kint mem[m[K) {
+      |                                                          [01;35m[K~~~~^~~[m[K
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/gen/eval_g_spirit.cpp:[m[K In function ‘[01m[Kvoid[01;32m[K eval_g_spirit_free_mem[m[K(int)[m[K’:
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/gen/eval_g_spirit.cpp:437:65:[m[K [01;35m[Kwarning: [m[Kunused parameter ‘[01m[Kmem[m[K’ [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wunused-parameter-Wunused-parameter]8;;[m[K]
+  437 | extern "C" CASADI_SYMBOL_EXPORT void eval_g_spirit_free_mem([01;35m[Kint mem[m[K) {
+      |                                                             [01;35m[K~~~~^~~[m[K
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/gen/eval_g_go2.cpp:[m[K In function ‘[01m[Kvoid[01;32m[K eval_g_go2_release[m[K(int)[m[K’:
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/gen/eval_g_go2.cpp:574:61:[m[K [01;35m[Kwarning: [m[Kunused parameter ‘[01m[Kmem[m[K’ [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wunused-parameter-Wunused-parameter]8;;[m[K]
+  574 | extern "C" CASADI_SYMBOL_EXPORT void eval_g_go2_release([01;35m[Kint mem[m[K) {
+      |                                                         [01;35m[K~~~~^~~[m[K
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/gen/eval_g_spirit.cpp:[m[K In function ‘[01m[Kvoid[01;32m[K eval_g_spirit_release[m[K(int)[m[K’:
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/gen/eval_g_spirit.cpp:444:64:[m[K [01;35m[Kwarning: [m[Kunused parameter ‘[01m[Kmem[m[K’ [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wunused-parameter-Wunused-parameter]8;;[m[K]
+  444 | extern "C" CASADI_SYMBOL_EXPORT void eval_g_spirit_release([01;35m[Kint mem[m[K) {
+      |                                                            [01;35m[K~~~~^~~[m[K
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/gen/eval_hess_g_leg_complex_to_simple.cpp:[m[K In function ‘[01m[Kint[01;32m[K eval_hess_g_leg_complex_to_simple_f0[m[K(const double**, double**, long long int*, double*, int)[m[K’:
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/gen/eval_hess_g_leg_complex_to_simple.cpp:75:78:[m[K [01;35m[Kwarning: [m[Kunused parameter ‘[01m[Kiw[m[K’ [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wunused-parameter-Wunused-parameter]8;;[m[K]
+   75 | static int casadi_f0(const casadi_real** arg, casadi_real** res, casadi_int* [01;35m[Ki[m[Kw,
+      |                                                                              [01;35m[K^[m[K
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/gen/eval_hess_g_leg_complex_to_simple.cpp:76:35:[m[K [01;35m[Kwarning: [m[Kunused parameter ‘[01m[Kw[m[K’ [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wunused-parameter-Wunused-parameter]8;;[m[K]
+   76 |                      casadi_real* [01;35m[Kw[m[K, int mem) {
+      |                                   [01;35m[K^[m[K
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/gen/eval_hess_g_leg_complex_to_simple.cpp:76:42:[m[K [01;35m[Kwarning: [m[Kunused parameter ‘[01m[Kmem[m[K’ [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wunused-parameter-Wunused-parameter]8;;[m[K]
+   76 |                      casadi_real* w, [01;35m[Kint mem[m[K) {
+      |                                      [01;35m[K~~~~^~~[m[K
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/gen/eval_g_a1.cpp:[m[K In function ‘[01m[Kint[01;32m[K eval_g_a1_f0[m[K(const double**, double**, long long int*, double*, int)[m[K’:
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/gen/eval_g_a1.cpp:51:78:[m[K [01;35m[Kwarning: [m[Kunused parameter ‘[01m[Kiw[m[K’ [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wunused-parameter-Wunused-parameter]8;;[m[K]
+   51 | _f0(const casadi_real** arg, casadi_real** res, casadi_int* [01;35m[Ki[m[Kw, casadi_real* w, int mem) {
+      |                                                             [01;35m[K^[m[K
+
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/gen/eval_g_a1.cpp:51:95:[m[K [01;35m[Kwarning: [m[Kunused parameter ‘[01m[Kw[m[K’ [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wunused-parameter-Wunused-parameter]8;;[m[K]
+   51 | real** arg, casadi_real** res, casadi_int* iw, casadi_real* [01;35m[Kw[m[K, int mem) {
+      |                                                             [01;35m[K^[m[K
+
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/gen/eval_g_a1.cpp:51:102:[m[K [01;35m[Kwarning: [m[Kunused parameter ‘[01m[Kmem[m[K’ [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wunused-parameter-Wunused-parameter]8;;[m[K]
+   51 | al** arg, casadi_real** res, casadi_int* iw, casadi_real* w, [01;35m[Kint mem[m[K) {
+      |                                                              [01;35m[K~~~~^~~[m[K
+
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/gen/eval_hess_g_leg_complex_to_simple.cpp:[m[K In function ‘[01m[Kint[01;32m[K eval_hess_g_leg_complex_to_simple_init_mem[m[K(int)[m[K’:
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/gen/eval_hess_g_leg_complex_to_simple.cpp:829:9:[m[K [01;35m[Kwarning: [m[Kunused parameter ‘[01m[Kmem[m[K’ [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wunused-parameter-Wunused-parameter]8;;[m[K]
+  829 |     [01;35m[Kint mem[m[K) {
+      |     [01;35m[K~~~~^~~[m[K
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/gen/eval_hess_g_leg_complex_to_simple.cpp:[m[K In function ‘[01m[Kvoid[01;32m[K eval_hess_g_leg_complex_to_simple_free_mem[m[K(int)[m[K’:
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/gen/eval_hess_g_leg_complex_to_simple.cpp:834:9:[m[K [01;35m[Kwarning: [m[Kunused parameter ‘[01m[Kmem[m[K’ [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wunused-parameter-Wunused-parameter]8;;[m[K]
+  834 |     [01;35m[Kint mem[m[K) {}
+      |     [01;35m[K~~~~^~~[m[K
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/gen/eval_hess_g_leg_complex_to_simple.cpp:[m[K In function ‘[01m[Kvoid[01;32m[K eval_hess_g_leg_complex_to_simple_release[m[K(int)[m[K’:
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/gen/eval_hess_g_leg_complex_to_simple.cpp:842:9:[m[K [01;35m[Kwarning: [m[Kunused parameter ‘[01m[Kmem[m[K’ [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wunused-parameter-Wunused-parameter]8;;[m[K]
+  842 |     [01;35m[Kint mem[m[K) {}
+      |     [01;35m[K~~~~^~~[m[K
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/gen/eval_g_a1.cpp:[m[K In function ‘[01m[Kint[01;32m[K eval_g_a1_init_mem[m[K(int)[m[K’:
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/gen/eval_g_a1.cpp:558:60:[m[K [01;35m[Kwarning: [m[Kunused parameter ‘[01m[Kmem[m[K’ [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wunused-parameter-Wunused-parameter]8;;[m[K]
+  558 | extern "C" CASADI_SYMBOL_EXPORT int eval_g_a1_init_mem([01;35m[Kint mem[m[K) {
+      |                                                        [01;35m[K~~~~^~~[m[K
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/gen/eval_g_a1.cpp:[m[K In function ‘[01m[Kvoid[01;32m[K eval_g_a1_free_mem[m[K(int)[m[K’:
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/gen/eval_g_a1.cpp:562:61:[m[K [01;35m[Kwarning: [m[Kunused parameter ‘[01m[Kmem[m[K’ [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wunused-parameter-Wunused-parameter]8;;[m[K]
+  562 | extern "C" CASADI_SYMBOL_EXPORT void eval_g_a1_free_mem([01;35m[Kint mem[m[K) {
+      |                                                         [01;35m[K~~~~^~~[m[K
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/gen/eval_g_a1.cpp:[m[K In function ‘[01m[Kvoid[01;32m[K eval_g_a1_release[m[K(int)[m[K’:
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/gen/eval_g_a1.cpp:569:60:[m[K [01;35m[Kwarning: [m[Kunused parameter ‘[01m[Kmem[m[K’ [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wunused-parameter-Wunused-parameter]8;;[m[K]
+  569 | extern "C" CASADI_SYMBOL_EXPORT void eval_g_a1_release([01;35m[Kint mem[m[K) {
+      |                                                        [01;35m[K~~~~^~~[m[K
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/gen/eval_g_leg_complex_to_simple.cpp:[m[K In function ‘[01m[Kint[01;32m[K eval_g_leg_complex_to_simple_f0[m[K(const double**, double**, long long int*, double*, int)[m[K’:
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/gen/eval_g_leg_complex_to_simple.cpp:65:78:[m[K [01;35m[Kwarning: [m[Kunused parameter ‘[01m[Kiw[m[K’ [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wunused-parameter-Wunused-parameter]8;;[m[K]
+   65 | static int casadi_f0(const casadi_real** arg, casadi_real** res, casadi_int* [01;35m[Ki[m[Kw,
+      |                                                                              [01;35m[K^[m[K
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/gen/eval_g_leg_complex_to_simple.cpp:66:35:[m[K [01;35m[Kwarning: [m[Kunused parameter ‘[01m[Kw[m[K’ [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wunused-parameter-Wunused-parameter]8;;[m[K]
+   66 |                      casadi_real* [01;35m[Kw[m[K, int mem) {
+      |                                   [01;35m[K^[m[K
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/gen/eval_g_leg_complex_to_simple.cpp:66:42:[m[K [01;35m[Kwarning: [m[Kunused parameter ‘[01m[Kmem[m[K’ [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wunused-parameter-Wunused-parameter]8;;[m[K]
+   66 |                      casadi_real* w, [01;35m[Kint mem[m[K) {
+      |                                      [01;35m[K~~~~^~~[m[K
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/gen/eval_g_leg_complex_to_simple.cpp:[m[K In function ‘[01m[Kint[01;32m[K eval_g_leg_complex_to_simple_init_mem[m[K(int)[m[K’:
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/gen/eval_g_leg_complex_to_simple.cpp:852:9:[m[K [01;35m[Kwarning: [m[Kunused parameter ‘[01m[Kmem[m[K’ [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wunused-parameter-Wunused-parameter]8;;[m[K]
+  852 |     [01;35m[Kint mem[m[K) {
+      |     [01;35m[K~~~~^~~[m[K
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/gen/eval_g_leg_complex_to_simple.cpp:[m[K In function ‘[01m[Kvoid[01;32m[K eval_g_leg_complex_to_simple_free_mem[m[K(int)[m[K’:
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/gen/eval_g_leg_complex_to_simple.cpp:857:9:[m[K [01;35m[Kwarning: [m[Kunused parameter ‘[01m[Kmem[m[K’ [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wunused-parameter-Wunused-parameter]8;;[m[K]
+  857 |     [01;35m[Kint mem[m[K) {}
+      |     [01;35m[K~~~~^~~[m[K
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/gen/eval_g_leg_complex_to_simple.cpp:[m[K In function ‘[01m[Kvoid[01;32m[K eval_g_leg_complex_to_simple_release[m[K(int)[m[K’:
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/gen/eval_g_leg_complex_to_simple.cpp:865:9:[m[K [01;35m[Kwarning: [m[Kunused parameter ‘[01m[Kmem[m[K’ [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wunused-parameter-Wunused-parameter]8;;[m[K]
+  865 |     [01;35m[Kint mem[m[K) {}
+      |     [01;35m[K~~~~^~~[m[K
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/gen/eval_hess_g_spirit.cpp:[m[K In function ‘[01m[Kint[01;32m[K eval_hess_g_spirit_f0[m[K(const double**, double**, long long int*, double*, int)[m[K’:
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/gen/eval_hess_g_spirit.cpp:50:78:[m[K [01;35m[Kwarning: [m[Kunused parameter ‘[01m[Kiw[m[K’ [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wunused-parameter-Wunused-parameter]8;;[m[K]
+   50 | static int casadi_f0(const casadi_real** arg, casadi_real** res, casadi_int* [01;35m[Ki[m[Kw, casadi_real* w, int mem) {
+      |                                                                              [01;35m[K^[m[K
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/gen/eval_hess_g_spirit.cpp:50:95:[m[K [01;35m[Kwarning: [m[Kunused parameter ‘[01m[Kw[m[K’ [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wunused-parameter-Wunused-parameter]8;;[m[K]
+   50 | static int casadi_f0(const casadi_real** arg, casadi_real** res, casadi_int* iw, casadi_real* [01;35m[Kw[m[K, int mem) {
+      |                                                                                               [01;35m[K^[m[K
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/gen/eval_hess_g_spirit.cpp:50:102:[m[K [01;35m[Kwarning: [m[Kunused parameter ‘[01m[Kmem[m[K’ [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wunused-parameter-Wunused-parameter]8;;[m[K]
+   50 | static int casadi_f0(const casadi_real** arg, casadi_real** res, casadi_int* iw, casadi_real* w, [01;35m[Kint mem[m[K) {
+      |                                                                                                  [01;35m[K~~~~^~~[m[K
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/gen/eval_hess_g_leg_simple.cpp:[m[K In function ‘[01m[Kint[01;32m[K eval_hess_g_leg_simple_f0[m[K(const double**, double**, long long int*, double*, int)[m[K’:
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/gen/eval_hess_g_leg_simple.cpp:50:78:[m[K [01;35m[Kwarning: [m[Kunused parameter ‘[01m[Kiw[m[K’ [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wunused-parameter-Wunused-parameter]8;;[m[K]
+   50 | static int casadi_f0(const casadi_real** arg, casadi_real** res, casadi_int* [01;35m[Ki[m[Kw, casadi_real* w, int mem) {
+      |                                                                              [01;35m[K^[m[K
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/gen/eval_hess_g_leg_simple.cpp:50:95:[m[K [01;35m[Kwarning: [m[Kunused parameter ‘[01m[Kw[m[K’ [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wunused-parameter-Wunused-parameter]8;;[m[K]
+   50 | static int casadi_f0(const casadi_real** arg, casadi_real** res, casadi_int* iw, casadi_real* [01;35m[Kw[m[K, int mem) {
+      |                                                                                               [01;35m[K^[m[K
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/gen/eval_hess_g_go2.cpp:[m[K In function ‘[01m[Kint[01;32m[K eval_hess_g_go2_f0[m[K(const double**, double**, long long int*, double*, int)[m[K’:
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/gen/eval_hess_g_go2.cpp:58:78:[m[K [01;35m[Kwarning: [m[Kunused parameter ‘[01m[Kiw[m[K’ [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wunused-parameter-Wunused-parameter]8;;[m[K]
+   58 | static int casadi_f0(const casadi_real** arg, casadi_real** res, casadi_int* [01;35m[Ki[m[Kw, casadi_real* w, int mem) {
+      |                                                                              [01;35m[K^[m[K
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/gen/eval_hess_g_go2.cpp:58:95:[m[K [01;35m[Kwarning: [m[Kunused parameter ‘[01m[Kw[m[K’ [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wunused-parameter-Wunused-parameter]8;;[m[K]
+   58 | static int casadi_f0(const casadi_real** arg, casadi_real** res, casadi_int* iw, casadi_real* [01;35m[Kw[m[K, int mem) {
+      |                                                                                               [01;35m[K^[m[K
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/gen/eval_hess_g_spirit.cpp:[m[K In function ‘[01m[Kint[01;32m[K eval_hess_g_spirit_init_mem[m[K(int)[m[K’:
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/gen/eval_hess_g_spirit.cpp:794:69:[m[K [01;35m[Kwarning: [m[Kunused parameter ‘[01m[Kmem[m[K’ [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wunused-parameter-Wunused-parameter]8;;[m[K]
+  794 | extern "C" CASADI_SYMBOL_EXPORT int eval_hess_g_spirit_init_mem([01;35m[Kint mem[m[K) {
+      |                                                                 [01;35m[K~~~~^~~[m[K
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/gen/eval_hess_g_go2.cpp:58:102:[m[K [01;35m[Kwarning: [m[Kunused parameter ‘[01m[Kmem[m[K’ [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wunused-parameter-Wunused-parameter]8;;[m[K]
+   58 | static int casadi_f0(const casadi_real** arg, casadi_real** res, casadi_int* iw, casadi_real* w, [01;35m[Kint mem[m[K) {
+      |                                                                                                  [01;35m[K~~~~^~~[m[K
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/gen/eval_hess_g_spirit.cpp:[m[K In function ‘[01m[Kvoid[01;32m[K eval_hess_g_spirit_free_mem[m[K(int)[m[K’:
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/gen/eval_hess_g_spirit.cpp:798:70:[m[K [01;35m[Kwarning: [m[Kunused parameter ‘[01m[Kmem[m[K’ [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wunused-parameter-Wunused-parameter]8;;[m[K]
+  798 | extern "C" CASADI_SYMBOL_EXPORT void eval_hess_g_spirit_free_mem([01;35m[Kint mem[m[K) {
+      |                                                                  [01;35m[K~~~~^~~[m[K
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/gen/eval_hess_g_spirit.cpp:[m[K In function ‘[01m[Kvoid[01;32m[K eval_hess_g_spirit_release[m[K(int)[m[K’:
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/gen/eval_hess_g_spirit.cpp:805:69:[m[K [01;35m[Kwarning: [m[Kunused parameter ‘[01m[Kmem[m[K’ [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wunused-parameter-Wunused-parameter]8;;[m[K]
+  805 | extern "C" CASADI_SYMBOL_EXPORT void eval_hess_g_spirit_release([01;35m[Kint mem[m[K) {
+      |                                                                 [01;35m[K~~~~^~~[m[K
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/gen/eval_hess_g_leg_simple.cpp:50:102:[m[K [01;35m[Kwarning: [m[Kunused parameter ‘[01m[Kmem[m[K’ [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wunused-parameter-Wunused-parameter]8;;[m[K]
+   50 | static int casadi_f0(const casadi_real** arg, casadi_real** res, casadi_int* iw, casadi_real* w, [01;35m[Kint mem[m[K) {
+      |                                                                                                  [01;35m[K~~~~^~~[m[K
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/gen/eval_hess_g_leg_simple.cpp:[m[K In function ‘[01m[Kint[01;32m[K eval_hess_g_leg_simple_init_mem[m[K(int)[m[K’:
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/gen/eval_hess_g_leg_simple.cpp:794:73:[m[K [01;35m[Kwarning: [m[Kunused parameter ‘[01m[Kmem[m[K’ [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wunused-parameter-Wunused-parameter]8;;[m[K]
+  794 | extern "C" CASADI_SYMBOL_EXPORT int eval_hess_g_leg_simple_init_mem([01;35m[Kint mem[m[K) {
+      |                                                                     [01;35m[K~~~~^~~[m[K
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/gen/eval_hess_g_go2.cpp:[m[K In function ‘[01m[Kint[01;32m[K eval_hess_g_go2_init_mem[m[K(int)[m[K’:
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/gen/eval_hess_g_go2.cpp:1196:66:[m[K [01;35m[Kwarning: [m[Kunused parameter ‘[01m[Kmem[m[K’ [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wunused-parameter-Wunused-parameter]8;;[m[K]
+ 1196 | extern "C" CASADI_SYMBOL_EXPORT int eval_hess_g_go2_init_mem([01;35m[Kint mem[m[K) {
+      |                                                              [01;35m[K~~~~^~~[m[K
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/gen/eval_hess_g_leg_simple.cpp:[m[K In function ‘[01m[Kvoid[01;32m[K eval_hess_g_leg_simple_free_mem[m[K(int)[m[K’:
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/gen/eval_hess_g_leg_simple.cpp:798:74:[m[K [01;35m[Kwarning: [m[Kunused parameter ‘[01m[Kmem[m[K’ [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wunused-parameter-Wunused-parameter]8;;[m[K]
+  798 | extern "C" CASADI_SYMBOL_EXPORT void eval_hess_g_leg_simple_free_mem([01;35m[Kint mem[m[K) {
+      |                                                                      [01;35m[K~~~~^~~[m[K
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/gen/eval_hess_g_go2.cpp:[m[K In function ‘[01m[Kvoid[01;32m[K eval_hess_g_go2_free_mem[m[K(int)[m[K’:
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/gen/eval_hess_g_go2.cpp:1200:67:[m[K [01;35m[Kwarning: [m[Kunused parameter ‘[01m[Kmem[m[K’ [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wunused-parameter-Wunused-parameter]8;;[m[K]
+ 1200 | extern "C" CASADI_SYMBOL_EXPORT void eval_hess_g_go2_free_mem([01;35m[Kint mem[m[K) {
+      |                                                               [01;35m[K~~~~^~~[m[K
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/gen/eval_hess_g_leg_simple.cpp:[m[K In function ‘[01m[Kvoid[01;32m[K eval_hess_g_leg_simple_release[m[K(int)[m[K’:
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/gen/eval_hess_g_leg_simple.cpp:805:73:[m[K [01;35m[Kwarning: [m[Kunused parameter ‘[01m[Kmem[m[K’ [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wunused-parameter-Wunused-parameter]8;;[m[K]
+  805 | extern "C" CASADI_SYMBOL_EXPORT void eval_hess_g_leg_simple_release([01;35m[Kint mem[m[K) {
+      |                                                                     [01;35m[K~~~~^~~[m[K
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/gen/eval_hess_g_go2.cpp:[m[K In function ‘[01m[Kvoid[01;32m[K eval_hess_g_go2_release[m[K(int)[m[K’:
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/gen/eval_hess_g_go2.cpp:1207:66:[m[K [01;35m[Kwarning: [m[Kunused parameter ‘[01m[Kmem[m[K’ [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wunused-parameter-Wunused-parameter]8;;[m[K]
+ 1207 | extern "C" CASADI_SYMBOL_EXPORT void eval_hess_g_go2_release([01;35m[Kint mem[m[K) {
+      |                                                              [01;35m[K~~~~^~~[m[K
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/gen/eval_hess_g_a1.cpp:[m[K In function ‘[01m[Kint[01;32m[K eval_hess_g_a1_f0[m[K(const double**, double**, long long int*, double*, int)[m[K’:
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/gen/eval_hess_g_a1.cpp:53:78:[m[K [01;35m[Kwarning: [m[Kunused parameter ‘[01m[Kiw[m[K’ [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wunused-parameter-Wunused-parameter]8;;[m[K]
+   53 | static int casadi_f0(const casadi_real** arg, casadi_real** res, casadi_int* [01;35m[Ki[m[Kw, casadi_real* w, int mem) {
+      |                                                                              [01;35m[K^[m[K
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/gen/eval_hess_g_a1.cpp:53:95:[m[K [01;35m[Kwarning: [m[Kunused parameter ‘[01m[Kw[m[K’ [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wunused-parameter-Wunused-parameter]8;;[m[K]
+   53 | static int casadi_f0(const casadi_real** arg, casadi_real** res, casadi_int* iw, casadi_real* [01;35m[Kw[m[K, int mem) {
+      |                                                                                               [01;35m[K^[m[K
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/gen/eval_hess_g_a1.cpp:53:102:[m[K [01;35m[Kwarning: [m[Kunused parameter ‘[01m[Kmem[m[K’ [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wunused-parameter-Wunused-parameter]8;;[m[K]
+   53 | static int casadi_f0(const casadi_real** arg, casadi_real** res, casadi_int* iw, casadi_real* w, [01;35m[Kint mem[m[K) {
+      |                                                                                                  [01;35m[K~~~~^~~[m[K
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/gen/eval_hess_g_a1.cpp:[m[K In function ‘[01m[Kint[01;32m[K eval_hess_g_a1_init_mem[m[K(int)[m[K’:
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/gen/eval_hess_g_a1.cpp:1188:65:[m[K [01;35m[Kwarning: [m[Kunused parameter ‘[01m[Kmem[m[K’ [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wunused-parameter-Wunused-parameter]8;;[m[K]
+ 1188 | extern "C" CASADI_SYMBOL_EXPORT int eval_hess_g_a1_init_mem([01;35m[Kint mem[m[K) {
+      |                                                             [01;35m[K~~~~^~~[m[K
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/gen/eval_hess_g_a1.cpp:[m[K In function ‘[01m[Kvoid[01;32m[K eval_hess_g_a1_free_mem[m[K(int)[m[K’:
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/gen/eval_hess_g_a1.cpp:1192:66:[m[K [01;35m[Kwarning: [m[Kunused parameter ‘[01m[Kmem[m[K’ [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wunused-parameter-Wunused-parameter]8;;[m[K]
+ 1192 | extern "C" CASADI_SYMBOL_EXPORT void eval_hess_g_a1_free_mem([01;35m[Kint mem[m[K) {
+      |                                                              [01;35m[K~~~~^~~[m[K
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/gen/eval_hess_g_a1.cpp:[m[K In function ‘[01m[Kvoid[01;32m[K eval_hess_g_a1_release[m[K(int)[m[K’:
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/gen/eval_hess_g_a1.cpp:1199:65:[m[K [01;35m[Kwarning: [m[Kunused parameter ‘[01m[Kmem[m[K’ [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wunused-parameter-Wunused-parameter]8;;[m[K]
+ 1199 | extern "C" CASADI_SYMBOL_EXPORT void eval_hess_g_a1_release([01;35m[Kint mem[m[K) {
+      |                                                             [01;35m[K~~~~^~~[m[K
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/gen/eval_jac_g_a1.cpp:[m[K In function ‘[01m[Kint[01;32m[K eval_jac_g_a1_f0[m[K(const double**, double**, long long int*, double*, int)[m[K’:
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/gen/eval_jac_g_a1.cpp:51:78:[m[K [01;35m[Kwarning: [m[Kunused parameter ‘[01m[Kiw[m[K’ [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wunused-parameter-Wunused-parameter]8;;[m[K]
+   51 | static int casadi_f0(const casadi_real** arg, casadi_real** res, casadi_int* [01;35m[Ki[m[Kw, casadi_real* w, int mem) {
+      |                                                                              [01;35m[K^[m[K
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/gen/eval_jac_g_a1.cpp:51:95:[m[K [01;35m[Kwarning: [m[Kunused parameter ‘[01m[Kw[m[K’ [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wunused-parameter-Wunused-parameter]8;;[m[K]
+   51 | static int casadi_f0(const casadi_real** arg, casadi_real** res, casadi_int* iw, casadi_real* [01;35m[Kw[m[K, int mem) {
+      |                                                                                               [01;35m[K^[m[K
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/gen/eval_jac_g_a1.cpp:51:102:[m[K [01;35m[Kwarning: [m[Kunused parameter ‘[01m[Kmem[m[K’ [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wunused-parameter-Wunused-parameter]8;;[m[K]
+   51 | static int casadi_f0(const casadi_real** arg, casadi_real** res, casadi_int* iw, casadi_real* w, [01;35m[Kint mem[m[K) {
+      |                                                                                                  [01;35m[K~~~~^~~[m[K
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/gen/eval_jac_g_a1.cpp:[m[K In function ‘[01m[Kint[01;32m[K eval_jac_g_a1_init_mem[m[K(int)[m[K’:
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/gen/eval_jac_g_a1.cpp:945:64:[m[K [01;35m[Kwarning: [m[Kunused parameter ‘[01m[Kmem[m[K’ [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wunused-parameter-Wunused-parameter]8;;[m[K]
+  945 | extern "C" CASADI_SYMBOL_EXPORT int eval_jac_g_a1_init_mem([01;35m[Kint mem[m[K) {
+      |                                                            [01;35m[K~~~~^~~[m[K
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/gen/eval_jac_g_a1.cpp:[m[K In function ‘[01m[Kvoid[01;32m[K eval_jac_g_a1_free_mem[m[K(int)[m[K’:
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/gen/eval_jac_g_a1.cpp:949:65:[m[K [01;35m[Kwarning: [m[Kunused parameter ‘[01m[Kmem[m[K’ [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wunused-parameter-Wunused-parameter]8;;[m[K]
+  949 | extern "C" CASADI_SYMBOL_EXPORT void eval_jac_g_a1_free_mem([01;35m[Kint mem[m[K) {
+      |                                                             [01;35m[K~~~~^~~[m[K
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/gen/eval_jac_g_a1.cpp:[m[K In function ‘[01m[Kvoid[01;32m[K eval_jac_g_a1_release[m[K(int)[m[K’:
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/gen/eval_jac_g_a1.cpp:956:64:[m[K [01;35m[Kwarning: [m[Kunused parameter ‘[01m[Kmem[m[K’ [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wunused-parameter-Wunused-parameter]8;;[m[K]
+  956 | extern "C" CASADI_SYMBOL_EXPORT void eval_jac_g_a1_release([01;35m[Kint mem[m[K) {
+      |                                                            [01;35m[K~~~~^~~[m[K
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/gen/eval_jac_g_go2.cpp:[m[K In function ‘[01m[Kint[01;32m[K eval_jac_g_go2_f0[m[K(const double**, double**, long long int*, double*, int)[m[K’:
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/gen/eval_jac_g_go2.cpp:56:78:[m[K [01;35m[Kwarning: [m[Kunused parameter ‘[01m[Kiw[m[K’ [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wunused-parameter-Wunused-parameter]8;;[m[K]
+   56 | static int casadi_f0(const casadi_real** arg, casadi_real** res, casadi_int* [01;35m[Ki[m[Kw, casadi_real* w, int mem) {
+      |                                                                              [01;35m[K^[m[K
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/gen/eval_jac_g_go2.cpp:56:95:[m[K [01;35m[Kwarning: [m[Kunused parameter ‘[01m[Kw[m[K’ [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wunused-parameter-Wunused-parameter]8;;[m[K]
+   56 | static int casadi_f0(const casadi_real** arg, casadi_real** res, casadi_int* iw, casadi_real* [01;35m[Kw[m[K, int mem) {
+      |                                                                                               [01;35m[K^[m[K
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/gen/eval_jac_g_go2.cpp:56:102:[m[K [01;35m[Kwarning: [m[Kunused parameter ‘[01m[Kmem[m[K’ [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wunused-parameter-Wunused-parameter]8;;[m[K]
+   56 | static int casadi_f0(const casadi_real** arg, casadi_real** res, casadi_int* iw, casadi_real* w, [01;35m[Kint mem[m[K) {
+      |                                                                                                  [01;35m[K~~~~^~~[m[K
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/gen/eval_jac_g_go2.cpp:[m[K In function ‘[01m[Kint[01;32m[K eval_jac_g_go2_init_mem[m[K(int)[m[K’:
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/gen/eval_jac_g_go2.cpp:956:65:[m[K [01;35m[Kwarning: [m[Kunused parameter ‘[01m[Kmem[m[K’ [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wunused-parameter-Wunused-parameter]8;;[m[K]
+  956 | extern "C" CASADI_SYMBOL_EXPORT int eval_jac_g_go2_init_mem([01;35m[Kint mem[m[K) {
+      |                                                             [01;35m[K~~~~^~~[m[K
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/gen/eval_jac_g_go2.cpp:[m[K In function ‘[01m[Kvoid[01;32m[K eval_jac_g_go2_free_mem[m[K(int)[m[K’:
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/gen/eval_jac_g_go2.cpp:960:66:[m[K [01;35m[Kwarning: [m[Kunused parameter ‘[01m[Kmem[m[K’ [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wunused-parameter-Wunused-parameter]8;;[m[K]
+  960 | extern "C" CASADI_SYMBOL_EXPORT void eval_jac_g_go2_free_mem([01;35m[Kint mem[m[K) {
+      |                                                              [01;35m[K~~~~^~~[m[K
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/gen/eval_jac_g_go2.cpp:[m[K In function ‘[01m[Kvoid[01;32m[K eval_jac_g_go2_release[m[K(int)[m[K’:
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/gen/eval_jac_g_go2.cpp:967:65:[m[K [01;35m[Kwarning: [m[Kunused parameter ‘[01m[Kmem[m[K’ [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wunused-parameter-Wunused-parameter]8;;[m[K]
+  967 | extern "C" CASADI_SYMBOL_EXPORT void eval_jac_g_go2_release([01;35m[Kint mem[m[K) {
+      |                                                             [01;35m[K~~~~^~~[m[K
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/gen/eval_g_leg_simple_to_complex.cpp:[m[K In function ‘[01m[Kint[01;32m[K eval_g_leg_simple_to_complex_f0[m[K(const double**, double**, long long int*, double*, int)[m[K’:
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/gen/eval_g_leg_simple_to_complex.cpp:67:78:[m[K [01;35m[Kwarning: [m[Kunused parameter ‘[01m[Kiw[m[K’ [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wunused-parameter-Wunused-parameter]8;;[m[K]
+   67 | static int casadi_f0(const casadi_real** arg, casadi_real** res, casadi_int* [01;35m[Ki[m[Kw,
+      |                                                                              [01;35m[K^[m[K
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/gen/eval_g_leg_simple_to_complex.cpp:68:35:[m[K [01;35m[Kwarning: [m[Kunused parameter ‘[01m[Kw[m[K’ [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wunused-parameter-Wunused-parameter]8;;[m[K]
+   68 |                      casadi_real* [01;35m[Kw[m[K, int mem) {
+      |                                   [01;35m[K^[m[K
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/gen/eval_g_leg_simple_to_complex.cpp:68:42:[m[K [01;35m[Kwarning: [m[Kunused parameter ‘[01m[Kmem[m[K’ [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wunused-parameter-Wunused-parameter]8;;[m[K]
+   68 |                      casadi_real* w, [01;35m[Kint mem[m[K) {
+      |                                      [01;35m[K~~~~^~~[m[K
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/gen/eval_g_leg_simple_to_complex.cpp:[m[K In function ‘[01m[Kint[01;32m[K eval_g_leg_simple_to_complex_init_mem[m[K(int)[m[K’:
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/gen/eval_g_leg_simple_to_complex.cpp:5734:9:[m[K [01;35m[Kwarning: [m[Kunused parameter ‘[01m[Kmem[m[K’ [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wunused-parameter-Wunused-parameter]8;;[m[K]
+ 5734 |     [01;35m[Kint mem[m[K) {
+      |     [01;35m[K~~~~^~~[m[K
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/gen/eval_g_leg_simple_to_complex.cpp:[m[K In function ‘[01m[Kvoid[01;32m[K eval_g_leg_simple_to_complex_free_mem[m[K(int)[m[K’:
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/gen/eval_g_leg_simple_to_complex.cpp:5739:9:[m[K [01;35m[Kwarning: [m[Kunused parameter ‘[01m[Kmem[m[K’ [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wunused-parameter-Wunused-parameter]8;;[m[K]
+ 5739 |     [01;35m[Kint mem[m[K) {}
+      |     [01;35m[K~~~~^~~[m[K
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/gen/eval_g_leg_simple_to_complex.cpp:[m[K In function ‘[01m[Kvoid[01;32m[K eval_g_leg_simple_to_complex_release[m[K(int)[m[K’:
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/gen/eval_g_leg_simple_to_complex.cpp:5747:9:[m[K [01;35m[Kwarning: [m[Kunused parameter ‘[01m[Kmem[m[K’ [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wunused-parameter-Wunused-parameter]8;;[m[K]
+ 5747 |     [01;35m[Kint mem[m[K) {}
+      |     [01;35m[K~~~~^~~[m[K
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/gen/eval_g_leg_complex.cpp:[m[K In function ‘[01m[Kint[01;32m[K eval_g_leg_complex_f0[m[K(const double**, double**, long long int*, double*, int)[m[K’:
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/gen/eval_g_leg_complex.cpp:73:78:[m[K [01;35m[Kwarning: [m[Kunused parameter ‘[01m[Kiw[m[K’ [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wunused-parameter-Wunused-parameter]8;;[m[K]
+   73 | static int casadi_f0(const casadi_real** arg, casadi_real** res, casadi_int* [01;35m[Ki[m[Kw,
+      |                                                                              [01;35m[K^[m[K
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/gen/eval_g_leg_complex.cpp:74:35:[m[K [01;35m[Kwarning: [m[Kunused parameter ‘[01m[Kw[m[K’ [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wunused-parameter-Wunused-parameter]8;;[m[K]
+   74 |                      casadi_real* [01;35m[Kw[m[K, int mem) {
+      |                                   [01;35m[K^[m[K
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/gen/eval_g_leg_complex.cpp:74:42:[m[K [01;35m[Kwarning: [m[Kunused parameter ‘[01m[Kmem[m[K’ [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wunused-parameter-Wunused-parameter]8;;[m[K]
+   74 |                      casadi_real* w, [01;35m[Kint mem[m[K) {
+      |                                      [01;35m[K~~~~^~~[m[K
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/gen/eval_g_leg_complex.cpp:[m[K In function ‘[01m[Kint[01;32m[K eval_g_leg_complex_init_mem[m[K(int)[m[K’:
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/gen/eval_g_leg_complex.cpp:6300:69:[m[K [01;35m[Kwarning: [m[Kunused parameter ‘[01m[Kmem[m[K’ [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wunused-parameter-Wunused-parameter]8;;[m[K]
+ 6300 | extern "C" CASADI_SYMBOL_EXPORT int eval_g_leg_complex_init_mem([01;35m[Kint mem[m[K) {
+      |                                                                 [01;35m[K~~~~^~~[m[K
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/gen/eval_g_leg_complex.cpp:[m[K In function ‘[01m[Kvoid[01;32m[K eval_g_leg_complex_free_mem[m[K(int)[m[K’:
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/gen/eval_g_leg_complex.cpp:6304:70:[m[K [01;35m[Kwarning: [m[Kunused parameter ‘[01m[Kmem[m[K’ [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wunused-parameter-Wunused-parameter]8;;[m[K]
+ 6304 | extern "C" CASADI_SYMBOL_EXPORT void eval_g_leg_complex_free_mem([01;35m[Kint mem[m[K) {}
+      |                                                                  [01;35m[K~~~~^~~[m[K
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/gen/eval_g_leg_complex.cpp:[m[K In function ‘[01m[Kvoid[01;32m[K eval_g_leg_complex_release[m[K(int)[m[K’:
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/gen/eval_g_leg_complex.cpp:6310:69:[m[K [01;35m[Kwarning: [m[Kunused parameter ‘[01m[Kmem[m[K’ [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wunused-parameter-Wunused-parameter]8;;[m[K]
+ 6310 | extern "C" CASADI_SYMBOL_EXPORT void eval_g_leg_complex_release([01;35m[Kint mem[m[K) {}
+      |                                                                 [01;35m[K~~~~^~~[m[K
+[ 65%] [32mBuilding CXX object CMakeFiles/nmpc_controller.dir/src/gen/eval_jac_g_leg_complex.cpp.o[0m
+[ 69%] [32mBuilding CXX object CMakeFiles/nmpc_controller.dir/src/gen/eval_jac_g_leg_simple.cpp.o[0m
+[ 73%] [32mBuilding CXX object CMakeFiles/nmpc_controller.dir/src/gen/eval_jac_g_leg_complex_to_simple.cpp.o[0m
+[ 80%] [32mBuilding CXX object CMakeFiles/nmpc_controller.dir/src/gen/eval_jac_g_spirit.cpp.o[0m
+[ 80%] [32mBuilding CXX object CMakeFiles/nmpc_controller.dir/src/gen/eval_jac_g_leg_simple_to_complex.cpp.o[0m
+[ 84%] [32mBuilding CXX object CMakeFiles/nmpc_controller.dir/src/quad_nlp_utils.cpp.o[0m
+[ 88%] [32mBuilding CXX object CMakeFiles/nmpc_controller.dir/src/quad_nlp.cpp.o[0m
+[ 92%] [32mBuilding CXX object CMakeFiles/nmpc_controller.dir/src/adaptive_complexity_utils.cpp.o[0m
+[ 96%] [32mBuilding CXX object CMakeFiles/nmpc_controller.dir/src/nmpc_controller.cpp.o[0m
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/gen/eval_jac_g_leg_simple.cpp:[m[K In function ‘[01m[Kint[01;32m[K eval_jac_g_leg_simple_f0[m[K(const double**, double**, long long int*, double*, int)[m[K’:
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/gen/eval_jac_g_leg_simple.cpp:51:78:[m[K [01;35m[Kwarning: [m[Kunused parameter ‘[01m[Kiw[m[K’ [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wunused-parameter-Wunused-parameter]8;;[m[K]
+   51 | _f0(const casadi_real** arg, casadi_real** res, casadi_int* [01;35m[Ki[m[Kw, casadi_real* w, int mem) {
+      |                                                             [01;35m[K^[m[K
+
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/gen/eval_jac_g_leg_simple.cpp:51:95:[m[K [01;35m[Kwarning: [m[Kunused parameter ‘[01m[Kw[m[K’ [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wunused-parameter-Wunused-parameter]8;;[m[K]
+   51 | real** arg, casadi_real** res, casadi_int* iw, casadi_real* [01;35m[Kw[m[K, int mem) {
+      |                                                             [01;35m[K^[m[K
+
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/gen/eval_jac_g_leg_simple.cpp:51:102:[m[K [01;35m[Kwarning: [m[Kunused parameter ‘[01m[Kmem[m[K’ [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wunused-parameter-Wunused-parameter]8;;[m[K]
+   51 | al** arg, casadi_real** res, casadi_int* iw, casadi_real* w, [01;35m[Kint mem[m[K) {
+      |                                                              [01;35m[K~~~~^~~[m[K
+
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/gen/eval_jac_g_leg_simple.cpp:[m[K In function ‘[01m[Kint[01;32m[K eval_jac_g_leg_simple_init_mem[m[K(int)[m[K’:
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/gen/eval_jac_g_leg_simple.cpp:702:72:[m[K [01;35m[Kwarning: [m[Kunused parameter ‘[01m[Kmem[m[K’ [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wunused-parameter-Wunused-parameter]8;;[m[K]
+  702 |  "C" CASADI_SYMBOL_EXPORT int eval_jac_g_leg_simple_init_mem([01;35m[Kint mem[m[K) {
+      |                                                              [01;35m[K~~~~^~~[m[K
+
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/gen/eval_jac_g_leg_simple.cpp:[m[K In function ‘[01m[Kvoid[01;32m[K eval_jac_g_leg_simple_free_mem[m[K(int)[m[K’:
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/gen/eval_jac_g_leg_simple.cpp:706:73:[m[K [01;35m[Kwarning: [m[Kunused parameter ‘[01m[Kmem[m[K’ [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wunused-parameter-Wunused-parameter]8;;[m[K]
+  706 | "C" CASADI_SYMBOL_EXPORT void eval_jac_g_leg_simple_free_mem([01;35m[Kint mem[m[K) {
+      |                                                              [01;35m[K~~~~^~~[m[K
+
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/gen/eval_jac_g_leg_simple.cpp:[m[K In function ‘[01m[Kvoid[01;32m[K eval_jac_g_leg_simple_release[m[K(int)[m[K’:
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/gen/eval_jac_g_leg_simple.cpp:713:72:[m[K [01;35m[Kwarning: [m[Kunused parameter ‘[01m[Kmem[m[K’ [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wunused-parameter-Wunused-parameter]8;;[m[K]
+  713 |  "C" CASADI_SYMBOL_EXPORT void eval_jac_g_leg_simple_release([01;35m[Kint mem[m[K) {
+      |                                                              [01;35m[K~~~~^~~[m[K
+
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/gen/eval_jac_g_leg_complex_to_simple.cpp:[m[K In function ‘[01m[Kint[01;32m[K eval_jac_g_leg_complex_to_simple_f0[m[K(const double**, double**, long long int*, double*, int)[m[K’:
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/gen/eval_jac_g_leg_complex_to_simple.cpp:85:78:[m[K [01;35m[Kwarning: [m[Kunused parameter ‘[01m[Kiw[m[K’ [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wunused-parameter-Wunused-parameter]8;;[m[K]
+   85 | static int casadi_f0(const casadi_real** arg, casadi_real** res, casadi_int* [01;35m[Ki[m[Kw,
+      |                                                                              [01;35m[K^[m[K
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/gen/eval_jac_g_leg_complex_to_simple.cpp:86:35:[m[K [01;35m[Kwarning: [m[Kunused parameter ‘[01m[Kw[m[K’ [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wunused-parameter-Wunused-parameter]8;;[m[K]
+   86 |                      casadi_real* [01;35m[Kw[m[K, int mem) {
+      |                                   [01;35m[K^[m[K
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/gen/eval_jac_g_leg_complex_to_simple.cpp:86:42:[m[K [01;35m[Kwarning: [m[Kunused parameter ‘[01m[Kmem[m[K’ [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wunused-parameter-Wunused-parameter]8;;[m[K]
+   86 |                      casadi_real* w, [01;35m[Kint mem[m[K) {
+      |                                      [01;35m[K~~~~^~~[m[K
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/gen/eval_jac_g_leg_complex_to_simple.cpp:[m[K In function ‘[01m[Kint[01;32m[K eval_jac_g_leg_complex_to_simple_init_mem[m[K(int)[m[K’:
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/gen/eval_jac_g_leg_complex_to_simple.cpp:875:9:[m[K [01;35m[Kwarning: [m[Kunused parameter ‘[01m[Kmem[m[K’ [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wunused-parameter-Wunused-parameter]8;;[m[K]
+  875 |     [01;35m[Kint mem[m[K) {
+      |     [01;35m[K~~~~^~~[m[K
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/gen/eval_jac_g_leg_complex_to_simple.cpp:[m[K In function ‘[01m[Kvoid[01;32m[K eval_jac_g_leg_complex_to_simple_free_mem[m[K(int)[m[K’:
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/gen/eval_jac_g_leg_complex_to_simple.cpp:880:9:[m[K [01;35m[Kwarning: [m[Kunused parameter ‘[01m[Kmem[m[K’ [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wunused-parameter-Wunused-parameter]8;;[m[K]
+  880 |     [01;35m[Kint mem[m[K) {}
+      |     [01;35m[K~~~~^~~[m[K
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/gen/eval_jac_g_leg_complex_to_simple.cpp:[m[K In function ‘[01m[Kvoid[01;32m[K eval_jac_g_leg_complex_to_simple_release[m[K(int)[m[K’:
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/gen/eval_jac_g_leg_complex_to_simple.cpp:888:9:[m[K [01;35m[Kwarning: [m[Kunused parameter ‘[01m[Kmem[m[K’ [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wunused-parameter-Wunused-parameter]8;;[m[K]
+  888 |     [01;35m[Kint mem[m[K) {}
+      |     [01;35m[K~~~~^~~[m[K
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/gen/eval_jac_g_spirit.cpp:[m[K In function ‘[01m[Kint[01;32m[K eval_jac_g_spirit_f0[m[K(const double**, double**, long long int*, double*, int)[m[K’:
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/gen/eval_jac_g_spirit.cpp:48:78:[m[K [01;35m[Kwarning: [m[Kunused parameter ‘[01m[Kiw[m[K’ [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wunused-parameter-Wunused-parameter]8;;[m[K]
+   48 | static int casadi_f0(const casadi_real** arg, casadi_real** res, casadi_int* [01;35m[Ki[m[Kw, casadi_real* w, int mem) {
+      |                                                                              [01;35m[K^[m[K
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/gen/eval_jac_g_spirit.cpp:48:95:[m[K [01;35m[Kwarning: [m[Kunused parameter ‘[01m[Kw[m[K’ [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wunused-parameter-Wunused-parameter]8;;[m[K]
+   48 | static int casadi_f0(const casadi_real** arg, casadi_real** res, casadi_int* iw, casadi_real* [01;35m[Kw[m[K, int mem) {
+      |                                                                                               [01;35m[K^[m[K
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/gen/eval_jac_g_spirit.cpp:48:102:[m[K [01;35m[Kwarning: [m[Kunused parameter ‘[01m[Kmem[m[K’ [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wunused-parameter-Wunused-parameter]8;;[m[K]
+   48 | static int casadi_f0(const casadi_real** arg, casadi_real** res, casadi_int* iw, casadi_real* w, [01;35m[Kint mem[m[K) {
+      |                                                                                                  [01;35m[K~~~~^~~[m[K
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/gen/eval_jac_g_spirit.cpp:[m[K In function ‘[01m[Kint[01;32m[K eval_jac_g_spirit_init_mem[m[K(int)[m[K’:
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/gen/eval_jac_g_spirit.cpp:674:68:[m[K [01;35m[Kwarning: [m[Kunused parameter ‘[01m[Kmem[m[K’ [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wunused-parameter-Wunused-parameter]8;;[m[K]
+  674 | extern "C" CASADI_SYMBOL_EXPORT int eval_jac_g_spirit_init_mem([01;35m[Kint mem[m[K) {
+      |                                                                [01;35m[K~~~~^~~[m[K
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/gen/eval_jac_g_spirit.cpp:[m[K In function ‘[01m[Kvoid[01;32m[K eval_jac_g_spirit_free_mem[m[K(int)[m[K’:
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/gen/eval_jac_g_spirit.cpp:678:69:[m[K [01;35m[Kwarning: [m[Kunused parameter ‘[01m[Kmem[m[K’ [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wunused-parameter-Wunused-parameter]8;;[m[K]
+  678 | extern "C" CASADI_SYMBOL_EXPORT void eval_jac_g_spirit_free_mem([01;35m[Kint mem[m[K) {
+      |                                                                 [01;35m[K~~~~^~~[m[K
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/gen/eval_jac_g_spirit.cpp:[m[K In function ‘[01m[Kvoid[01;32m[K eval_jac_g_spirit_release[m[K(int)[m[K’:
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/gen/eval_jac_g_spirit.cpp:685:68:[m[K [01;35m[Kwarning: [m[Kunused parameter ‘[01m[Kmem[m[K’ [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wunused-parameter-Wunused-parameter]8;;[m[K]
+  685 | extern "C" CASADI_SYMBOL_EXPORT void eval_jac_g_spirit_release([01;35m[Kint mem[m[K) {
+      |                                                                [01;35m[K~~~~^~~[m[K
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/gen/eval_hess_g_leg_complex.cpp:[m[K In function ‘[01m[Kint[01;32m[K eval_hess_g_leg_complex_f0[m[K(const double**, double**, long long int*, double*, int)[m[K’:
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/gen/eval_hess_g_leg_complex.cpp:106:78:[m[K [01;35m[Kwarning: [m[Kunused parameter ‘[01m[Kiw[m[K’ [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wunused-parameter-Wunused-parameter]8;;[m[K]
+  106 | static int casadi_f0(const casadi_real** arg, casadi_real** res, casadi_int* [01;35m[Ki[m[Kw,
+      |                                                                              [01;35m[K^[m[K
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/gen/eval_hess_g_leg_complex.cpp:107:35:[m[K [01;35m[Kwarning: [m[Kunused parameter ‘[01m[Kw[m[K’ [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wunused-parameter-Wunused-parameter]8;;[m[K]
+  107 |                      casadi_real* [01;35m[Kw[m[K, int mem) {
+      |                                   [01;35m[K^[m[K
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/gen/eval_hess_g_leg_complex.cpp:107:42:[m[K [01;35m[Kwarning: [m[Kunused parameter ‘[01m[Kmem[m[K’ [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wunused-parameter-Wunused-parameter]8;;[m[K]
+  107 |                      casadi_real* w, [01;35m[Kint mem[m[K) {
+      |                                      [01;35m[K~~~~^~~[m[K
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/gen/eval_hess_g_leg_simple_to_complex.cpp:[m[K In function ‘[01m[Kint[01;32m[K eval_hess_g_leg_simple_to_complex_f0[m[K(const double**, double**, long long int*, double*, int)[m[K’:
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/gen/eval_hess_g_leg_simple_to_complex.cpp:50:78:[m[K [01;35m[Kwarning: [m[Kunused parameter ‘[01m[Kiw[m[K’ [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wunused-parameter-Wunused-parameter]8;;[m[K]
+   50 | static int casadi_f0(const casadi_real** arg, casadi_real** res, casadi_int* [01;35m[Ki[m[Kw, casadi_real* w, int mem) {
+      |                                                                              [01;35m[K^[m[K
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/gen/eval_hess_g_leg_simple_to_complex.cpp:50:95:[m[K [01;35m[Kwarning: [m[Kunused parameter ‘[01m[Kw[m[K’ [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wunused-parameter-Wunused-parameter]8;;[m[K]
+   50 | static int casadi_f0(const casadi_real** arg, casadi_real** res, casadi_int* iw, casadi_real* [01;35m[Kw[m[K, int mem) {
+      |                                                                                               [01;35m[K^[m[K
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/gen/eval_hess_g_leg_simple_to_complex.cpp:50:102:[m[K [01;35m[Kwarning: [m[Kunused parameter ‘[01m[Kmem[m[K’ [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wunused-parameter-Wunused-parameter]8;;[m[K]
+   50 | static int casadi_f0(const casadi_real** arg, casadi_real** res, casadi_int* iw, casadi_real* w, [01;35m[Kint mem[m[K) {
+      |                                                                                                  [01;35m[K~~~~^~~[m[K
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/gen/eval_hess_g_leg_complex.cpp:[m[K In function ‘[01m[Kint[01;32m[K eval_hess_g_leg_complex_init_mem[m[K(int)[m[K’:
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/gen/eval_hess_g_leg_complex.cpp:42328:74:[m[K [01;35m[Kwarning: [m[Kunused parameter ‘[01m[Kmem[m[K’ [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wunused-parameter-Wunused-parameter]8;;[m[K]
+42328 | extern "C" CASADI_SYMBOL_EXPORT int eval_hess_g_leg_complex_init_mem([01;35m[Kint mem[m[K) {
+      |                                                                      [01;35m[K~~~~^~~[m[K
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/gen/eval_hess_g_leg_complex.cpp:[m[K In function ‘[01m[Kvoid[01;32m[K eval_hess_g_leg_complex_free_mem[m[K(int)[m[K’:
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/gen/eval_hess_g_leg_complex.cpp:42332:75:[m[K [01;35m[Kwarning: [m[Kunused parameter ‘[01m[Kmem[m[K’ [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wunused-parameter-Wunused-parameter]8;;[m[K]
+42332 | extern "C" CASADI_SYMBOL_EXPORT void eval_hess_g_leg_complex_free_mem([01;35m[Kint mem[m[K) {
+      |                                                                       [01;35m[K~~~~^~~[m[K
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/gen/eval_hess_g_leg_complex.cpp:[m[K In function ‘[01m[Kvoid[01;32m[K eval_hess_g_leg_complex_release[m[K(int)[m[K’:
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/gen/eval_hess_g_leg_complex.cpp:42339:74:[m[K [01;35m[Kwarning: [m[Kunused parameter ‘[01m[Kmem[m[K’ [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wunused-parameter-Wunused-parameter]8;;[m[K]
+42339 | extern "C" CASADI_SYMBOL_EXPORT void eval_hess_g_leg_complex_release([01;35m[Kint mem[m[K) {}
+      |                                                                      [01;35m[K~~~~^~~[m[K
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/gen/eval_hess_g_leg_simple_to_complex.cpp:[m[K In function ‘[01m[Kint[01;32m[K eval_hess_g_leg_simple_to_complex_init_mem[m[K(int)[m[K’:
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/gen/eval_hess_g_leg_simple_to_complex.cpp:39783:84:[m[K [01;35m[Kwarning: [m[Kunused parameter ‘[01m[Kmem[m[K’ [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wunused-parameter-Wunused-parameter]8;;[m[K]
+39783 | extern "C" CASADI_SYMBOL_EXPORT int eval_hess_g_leg_simple_to_complex_init_mem([01;35m[Kint mem[m[K) {
+      |                                                                                [01;35m[K~~~~^~~[m[K
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/gen/eval_hess_g_leg_simple_to_complex.cpp:[m[K In function ‘[01m[Kvoid[01;32m[K eval_hess_g_leg_simple_to_complex_free_mem[m[K(int)[m[K’:
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/gen/eval_hess_g_leg_simple_to_complex.cpp:39787:85:[m[K [01;35m[Kwarning: [m[Kunused parameter ‘[01m[Kmem[m[K’ [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wunused-parameter-Wunused-parameter]8;;[m[K]
+39787 | extern "C" CASADI_SYMBOL_EXPORT void eval_hess_g_leg_simple_to_complex_free_mem([01;35m[Kint mem[m[K) {
+      |                                                                                 [01;35m[K~~~~^~~[m[K
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/gen/eval_hess_g_leg_simple_to_complex.cpp:[m[K In function ‘[01m[Kvoid[01;32m[K eval_hess_g_leg_simple_to_complex_release[m[K(int)[m[K’:
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/gen/eval_hess_g_leg_simple_to_complex.cpp:39794:84:[m[K [01;35m[Kwarning: [m[Kunused parameter ‘[01m[Kmem[m[K’ [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wunused-parameter-Wunused-parameter]8;;[m[K]
+39794 | extern "C" CASADI_SYMBOL_EXPORT void eval_hess_g_leg_simple_to_complex_release([01;35m[Kint mem[m[K) {
+      |                                                                                [01;35m[K~~~~^~~[m[K
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/gen/eval_jac_g_leg_simple_to_complex.cpp:[m[K In function ‘[01m[Kint[01;32m[K eval_jac_g_leg_simple_to_complex_f0[m[K(const double**, double**, long long int*, double*, int)[m[K’:
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/gen/eval_jac_g_leg_simple_to_complex.cpp:109:78:[m[K [01;35m[Kwarning: [m[Kunused parameter ‘[01m[Kiw[m[K’ [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wunused-parameter-Wunused-parameter]8;;[m[K]
+  109 | static int casadi_f0(const casadi_real** arg, casadi_real** res, casadi_int* [01;35m[Ki[m[Kw,
+      |                                                                              [01;35m[K^[m[K
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/gen/eval_jac_g_leg_simple_to_complex.cpp:110:35:[m[K [01;35m[Kwarning: [m[Kunused parameter ‘[01m[Kw[m[K’ [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wunused-parameter-Wunused-parameter]8;;[m[K]
+  110 |                      casadi_real* [01;35m[Kw[m[K, int mem) {
+      |                                   [01;35m[K^[m[K
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/gen/eval_jac_g_leg_simple_to_complex.cpp:110:42:[m[K [01;35m[Kwarning: [m[Kunused parameter ‘[01m[Kmem[m[K’ [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wunused-parameter-Wunused-parameter]8;;[m[K]
+  110 |                      casadi_real* w, [01;35m[Kint mem[m[K) {
+      |                                      [01;35m[K~~~~^~~[m[K
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/gen/eval_jac_g_leg_simple_to_complex.cpp:[m[K In function ‘[01m[Kint[01;32m[K eval_jac_g_leg_simple_to_complex_init_mem[m[K(int)[m[K’:
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/gen/eval_jac_g_leg_simple_to_complex.cpp:24145:9:[m[K [01;35m[Kwarning: [m[Kunused parameter ‘[01m[Kmem[m[K’ [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wunused-parameter-Wunused-parameter]8;;[m[K]
+24145 |     [01;35m[Kint mem[m[K) {
+      |     [01;35m[K~~~~^~~[m[K
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/gen/eval_jac_g_leg_simple_to_complex.cpp:[m[K In function ‘[01m[Kvoid[01;32m[K eval_jac_g_leg_simple_to_complex_free_mem[m[K(int)[m[K’:
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/gen/eval_jac_g_leg_simple_to_complex.cpp:24150:9:[m[K [01;35m[Kwarning: [m[Kunused parameter ‘[01m[Kmem[m[K’ [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wunused-parameter-Wunused-parameter]8;;[m[K]
+24150 |     [01;35m[Kint mem[m[K) {}
+      |     [01;35m[K~~~~^~~[m[K
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/gen/eval_jac_g_leg_simple_to_complex.cpp:[m[K In function ‘[01m[Kvoid[01;32m[K eval_jac_g_leg_simple_to_complex_release[m[K(int)[m[K’:
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/gen/eval_jac_g_leg_simple_to_complex.cpp:24158:9:[m[K [01;35m[Kwarning: [m[Kunused parameter ‘[01m[Kmem[m[K’ [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wunused-parameter-Wunused-parameter]8;;[m[K]
+24158 |     [01;35m[Kint mem[m[K) {}
+      |     [01;35m[K~~~~^~~[m[K
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/gen/eval_jac_g_leg_complex.cpp:[m[K In function ‘[01m[Kint[01;32m[K eval_jac_g_leg_complex_f0[m[K(const double**, double**, long long int*, double*, int)[m[K’:
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/gen/eval_jac_g_leg_complex.cpp:131:78:[m[K [01;35m[Kwarning: [m[Kunused parameter ‘[01m[Kiw[m[K’ [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wunused-parameter-Wunused-parameter]8;;[m[K]
+  131 | static int casadi_f0(const casadi_real** arg, casadi_real** res, casadi_int* [01;35m[Ki[m[Kw,
+      |                                                                              [01;35m[K^[m[K
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/gen/eval_jac_g_leg_complex.cpp:132:35:[m[K [01;35m[Kwarning: [m[Kunused parameter ‘[01m[Kw[m[K’ [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wunused-parameter-Wunused-parameter]8;;[m[K]
+  132 |                      casadi_real* [01;35m[Kw[m[K, int mem) {
+      |                                   [01;35m[K^[m[K
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/gen/eval_jac_g_leg_complex.cpp:132:42:[m[K [01;35m[Kwarning: [m[Kunused parameter ‘[01m[Kmem[m[K’ [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wunused-parameter-Wunused-parameter]8;;[m[K]
+  132 |                      casadi_real* w, [01;35m[Kint mem[m[K) {
+      |                                      [01;35m[K~~~~^~~[m[K
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/gen/eval_jac_g_leg_complex.cpp:[m[K In function ‘[01m[Kint[01;32m[K eval_jac_g_leg_complex_init_mem[m[K(int)[m[K’:
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/gen/eval_jac_g_leg_complex.cpp:25167:73:[m[K [01;35m[Kwarning: [m[Kunused parameter ‘[01m[Kmem[m[K’ [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wunused-parameter-Wunused-parameter]8;;[m[K]
+25167 | extern "C" CASADI_SYMBOL_EXPORT int eval_jac_g_leg_complex_init_mem([01;35m[Kint mem[m[K) {
+      |                                                                     [01;35m[K~~~~^~~[m[K
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/gen/eval_jac_g_leg_complex.cpp:[m[K In function ‘[01m[Kvoid[01;32m[K eval_jac_g_leg_complex_free_mem[m[K(int)[m[K’:
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/gen/eval_jac_g_leg_complex.cpp:25171:74:[m[K [01;35m[Kwarning: [m[Kunused parameter ‘[01m[Kmem[m[K’ [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wunused-parameter-Wunused-parameter]8;;[m[K]
+25171 | extern "C" CASADI_SYMBOL_EXPORT void eval_jac_g_leg_complex_free_mem([01;35m[Kint mem[m[K) {}
+      |                                                                      [01;35m[K~~~~^~~[m[K
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/gen/eval_jac_g_leg_complex.cpp:[m[K In function ‘[01m[Kvoid[01;32m[K eval_jac_g_leg_complex_release[m[K(int)[m[K’:
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/gen/eval_jac_g_leg_complex.cpp:25177:73:[m[K [01;35m[Kwarning: [m[Kunused parameter ‘[01m[Kmem[m[K’ [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wunused-parameter-Wunused-parameter]8;;[m[K]
+25177 | extern "C" CASADI_SYMBOL_EXPORT void eval_jac_g_leg_complex_release([01;35m[Kint mem[m[K) {}
+      |                                                                     [01;35m[K~~~~^~~[m[K
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/quad_nlp_utils.cpp:[m[K In member function ‘[01m[Kvoid quadNLP::[01;32m[KloadConstraintNames[m[K()[m[K’:
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/quad_nlp_utils.cpp:311:7:[m[K [01;35m[Kwarning: [m[Kunused variable ‘[01m[Kn_complex[m[K’ [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wunused-variable-Wunused-variable]8;;[m[K]
+  311 |   int [01;35m[Kn_complex[m[K = n_simple + n_null;
+      |       [01;35m[K^~~~~~~~~[m[K
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/quad_nlp.cpp:[m[K In constructor ‘[01m[KquadNLP::[01;32m[KquadNLP[m[K(SystemID, int, double, double, double, double, double, double, const Eigen::VectorXi&, const NLPConfig&, rclcpp::Node::SharedPtr, std::string)[m[K’:
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/quad_nlp.cpp:95:24:[m[K [01;35m[Kwarning: [m[Kcomparison of integer expressions of different signedness: ‘[01m[Ksize_t[m[K’ {aka ‘[01m[Klong unsigned int[m[K’} and ‘[01m[Kint[m[K’ [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wsign-compare-Wsign-compare]8;;[m[K]
+   95 |   for (size_t i = 0; [01;35m[Ki < N_ - 1[m[K; i++) {
+      |                      [01;35m[K~~^~~~~~~~[m[K
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/quad_nlp.cpp:[m[K In copy constructor ‘[01m[KquadNLP::[01;32m[KquadNLP[m[K(const quadNLP&)[m[K’:
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/quad_nlp.cpp:119:1:[m[K [01;35m[Kwarning: [m[Kbase class ‘[01m[Kclass Ipopt::TNLP[m[K’ should be explicitly initialized in the copy constructor [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wextra-Wextra]8;;[m[K]
+  119 | [01;35m[KquadNLP[m[K::quadNLP(const quadNLP& nlp) {
+      | [01;35m[K^~~~~~~[m[K
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/nmpc_controller.cpp:[m[K In constructor ‘[01m[KNMPCController::[01;32m[KNMPCController[m[K(rclcpp::Node::SharedPtr, int, std::string)[m[K’:
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/nmpc_controller.cpp:65:21:[m[K [01;35m[Kwarning: [m[Kcomparison of integer expressions of different signedness: ‘[01m[Kint[m[K’ and ‘[01m[Kstd::vector<std::__cxx11::basic_string<char>, std::allocator<std::__cxx11::basic_string<char> > >::size_type[m[K’ {aka ‘[01m[Klong unsigned int[m[K’} [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wsign-compare-Wsign-compare]8;;[m[K]
+   65 |   for (int i = 0; [01;35m[Ki < components.size()[m[K; i++) {
+      |                   [01;35m[K~~^~~~~~~~~~~~~~~~~~~[m[K
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/adaptive_complexity_utils.cpp:[m[K In member function ‘[01m[KEigen::VectorXi NMPCController::[01;32m[KupdateAdaptiveComplexitySchedule[m[K(const Eigen::MatrixXd&, const Eigen::MatrixXd&, const Eigen::MatrixXd&, const Eigen::MatrixXd&)[m[K’:
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/adaptive_complexity_utils.cpp:17:7:[m[K [01;35m[Kwarning: [m[Kvariable ‘[01m[Kmax_violation_index[m[K’ set but not used [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wunused-but-set-variable-Wunused-but-set-variable]8;;[m[K]
+   17 |   int [01;35m[Kmax_violation_index[m[K = -1;
+      |       [01;35m[K^~~~~~~~~~~~~~~~~~~[m[K
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/adaptive_complexity_utils.cpp:6:28:[m[K [01;35m[Kwarning: [m[Kunused parameter ‘[01m[Kstate_traj_lifted[m[K’ [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wunused-parameter-Wunused-parameter]8;;[m[K]
+    6 |     [01;35m[Kconst Eigen::MatrixXd &state_traj_lifted[m[K,
+      |     [01;35m[K~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~[m[K
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/adaptive_complexity_utils.cpp:7:28:[m[K [01;35m[Kwarning: [m[Kunused parameter ‘[01m[Kcontrol_traj_lifted[m[K’ [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wunused-parameter-Wunused-parameter]8;;[m[K]
+    7 |     [01;35m[Kconst Eigen::MatrixXd &control_traj_lifted[m[K) {
+      |     [01;35m[K~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~[m[K
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/nmpc_controller.cpp:[m[K In member function ‘[01m[Kbool NMPCController::[01;32m[KcomputePlan[m[K(const Eigen::VectorXd&, const Eigen::MatrixXd&, const std::vector<std::vector<bool, std::allocator<bool> > >&, Eigen::MatrixXd&, Eigen::MatrixXd&, Eigen::MatrixXd&, Eigen::MatrixXd&)[m[K’:
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/nmpc_controller.cpp:288:28:[m[K [01;35m[Kwarning: [m[Kunused parameter ‘[01m[Kinitial_state[m[K’ [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wunused-parameter-Wunused-parameter]8;;[m[K]
+  288 |     [01;35m[Kconst Eigen::VectorXd& initial_state[m[K, const Eigen::MatrixXd& ref_traj,
+      |     [01;35m[K~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~[m[K
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/nmpc_controller.cpp:288:66:[m[K [01;35m[Kwarning: [m[Kunused parameter ‘[01m[Kref_traj[m[K’ [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wunused-parameter-Wunused-parameter]8;;[m[K]
+  288 |     const Eigen::VectorXd& initial_state, [01;35m[Kconst Eigen::MatrixXd& ref_traj[m[K,
+      |                                           [01;35m[K~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~[m[K
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/nmpc_controller.cpp:289:43:[m[K [01;35m[Kwarning: [m[Kunused parameter ‘[01m[Kcontact_schedule[m[K’ [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wunused-parameter-Wunused-parameter]8;;[m[K]
+  289 |     [01;35m[Kconst std::vector<std::vector<bool>>& contact_schedule[m[K,
+      |     [01;35m[K~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~[m[K
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/quad_nlp.cpp:[m[K In member function ‘[01m[Kvirtual bool quadNLP::[01;32m[Keval_f[m[K(Ipopt::Index, const Ipopt::Number*, bool, Ipopt::Number&)[m[K’:
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/quad_nlp.cpp:514:12:[m[K [01;35m[Kwarning: [m[Kunused variable ‘[01m[Kpanic_weights[m[K’ [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wunused-variable-Wunused-variable]8;;[m[K]
+  514 |     double [01;35m[Kpanic_weights[m[K, constraint_panic_weights;
+      |            [01;35m[K^~~~~~~~~~~~~[m[K
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/quad_nlp.cpp:514:27:[m[K [01;35m[Kwarning: [m[Kunused variable ‘[01m[Kconstraint_panic_weights[m[K’ [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wunused-variable-Wunused-variable]8;;[m[K]
+  514 |     double panic_weights, [01;35m[Kconstraint_panic_weights[m[K;
+      |                           [01;35m[K^~~~~~~~~~~~~~~~~~~~~~~~[m[K
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/quad_nlp.cpp:[m[K In member function ‘[01m[KEigen::VectorXd quadNLP::[01;32m[Keval_g_single_complex_fe[m[K(int, const Eigen::VectorXd&, const Eigen::VectorXd&, const Eigen::VectorXd&)[m[K’:
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/quad_nlp.cpp:649:17:[m[K [01;35m[Kwarning: [m[KISO C++ forbids variable length array ‘[01m[Karg[m[K’ [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wvla-Wvla]8;;[m[K]
+  649 |   const double* [01;35m[Karg[m[K[sz_arg];
+      |                 [01;35m[K^~~[m[K
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/quad_nlp.cpp:650:11:[m[K [01;35m[Kwarning: [m[KISO C++ forbids variable length array ‘[01m[Kres[m[K’ [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wvla-Wvla]8;;[m[K]
+  650 |   double* [01;35m[Kres[m[K[sz_res];
+      |           [01;35m[K^~~[m[K
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/quad_nlp.cpp:651:14:[m[K [01;35m[Kwarning: [m[KISO C++ forbids variable length array ‘[01m[Kiw[m[K’ [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wvla-Wvla]8;;[m[K]
+  651 |   casadi_int [01;35m[Kiw[m[K[sz_iw];
+      |              [01;35m[K^~[m[K
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/quad_nlp.cpp:652:10:[m[K [01;35m[Kwarning: [m[KISO C++ forbids variable length array ‘[01m[K_w[m[K’ [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wvla-Wvla]8;;[m[K]
+  652 |   double [01;35m[K_w[m[K[sz_w];
+      |          [01;35m[K^~[m[K
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/quad_nlp.cpp:[m[K In member function ‘[01m[Kvirtual bool quadNLP::[01;32m[Keval_g[m[K(Ipopt::Index, const Ipopt::Number*, bool, Ipopt::Index, Ipopt::Number*)[m[K’:
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/quad_nlp.cpp:715:19:[m[K [01;35m[Kwarning: [m[KISO C++ forbids variable length array ‘[01m[Karg[m[K’ [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wvla-Wvla]8;;[m[K]
+  715 |     const double* [01;35m[Karg[m[K[sz_arg];
+      |                   [01;35m[K^~~[m[K
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/quad_nlp.cpp:716:13:[m[K [01;35m[Kwarning: [m[KISO C++ forbids variable length array ‘[01m[Kres[m[K’ [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wvla-Wvla]8;;[m[K]
+  716 |     double* [01;35m[Kres[m[K[sz_res];
+      |             [01;35m[K^~~[m[K
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/quad_nlp.cpp:717:16:[m[K [01;35m[Kwarning: [m[KISO C++ forbids variable length array ‘[01m[Kiw[m[K’ [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wvla-Wvla]8;;[m[K]
+  717 |     casadi_int [01;35m[Kiw[m[K[sz_iw];
+      |                [01;35m[K^~[m[K
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/quad_nlp.cpp:718:12:[m[K [01;35m[Kwarning: [m[KISO C++ forbids variable length array ‘[01m[K_w[m[K’ [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wvla-Wvla]8;;[m[K]
+  718 |     double [01;35m[K_w[m[K[sz_w];
+      |            [01;35m[K^~[m[K
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/quad_nlp.cpp:[m[K In member function ‘[01m[Kvirtual bool quadNLP::[01;32m[Keval_jac_g[m[K(Ipopt::Index, const Ipopt::Number*, bool, Ipopt::Index, Ipopt::Index, Ipopt::Index*, Ipopt::Index*, Ipopt::Number*)[m[K’:
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/quad_nlp.cpp:833:21:[m[K [01;35m[Kwarning: [m[KISO C++ forbids variable length array ‘[01m[Karg[m[K’ [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wvla-Wvla]8;;[m[K]
+  833 |       const double* [01;35m[Karg[m[K[sz_arg];
+      |                     [01;35m[K^~~[m[K
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/quad_nlp.cpp:834:15:[m[K [01;35m[Kwarning: [m[KISO C++ forbids variable length array ‘[01m[Kres[m[K’ [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wvla-Wvla]8;;[m[K]
+  834 |       double* [01;35m[Kres[m[K[sz_res];
+      |               [01;35m[K^~~[m[K
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/quad_nlp.cpp:835:18:[m[K [01;35m[Kwarning: [m[KISO C++ forbids variable length array ‘[01m[Kiw[m[K’ [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wvla-Wvla]8;;[m[K]
+  835 |       casadi_int [01;35m[Kiw[m[K[sz_iw];
+      |                  [01;35m[K^~[m[K
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/quad_nlp.cpp:836:14:[m[K [01;35m[Kwarning: [m[KISO C++ forbids variable length array ‘[01m[K_w[m[K’ [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wvla-Wvla]8;;[m[K]
+  836 |       double [01;35m[K_w[m[K[sz_w];
+      |              [01;35m[K^~[m[K
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/quad_nlp.cpp:852:26:[m[K [01;35m[Kwarning: [m[Kcomparison of integer expressions of different signedness: ‘[01m[Ksize_t[m[K’ {aka ‘[01m[Klong unsigned int[m[K’} and ‘[01m[Kint[m[K’ [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wsign-compare-Wsign-compare]8;;[m[K]
+  852 |     for (size_t i = 0; [01;35m[Ki < N_ - 1[m[K; i++) {
+      |                        [01;35m[K~~^~~~~~~~[m[K
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/quad_nlp.cpp:[m[K In member function ‘[01m[Kvirtual void quadNLP::[01;32m[Kcompute_nnz_jac_g[m[K()[m[K’:
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/quad_nlp.cpp:970:24:[m[K [01;35m[Kwarning: [m[Kcomparison of integer expressions of different signedness: ‘[01m[Ksize_t[m[K’ {aka ‘[01m[Klong unsigned int[m[K’} and ‘[01m[Kint[m[K’ [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wsign-compare-Wsign-compare]8;;[m[K]
+  970 |   for (size_t i = 0; [01;35m[Ki < N_ - 1[m[K; i++) {
+      |                      [01;35m[K~~^~~~~~~~[m[K
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/quad_nlp.cpp:[m[K In member function ‘[01m[Kvirtual bool quadNLP::[01;32m[Keval_h[m[K(Ipopt::Index, const Ipopt::Number*, bool, Ipopt::Number, Ipopt::Index, const Ipopt::Number*, bool, Ipopt::Index, Ipopt::Index*, Ipopt::Index*, Ipopt::Number*)[m[K’:
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/quad_nlp.cpp:1174:21:[m[K [01;35m[Kwarning: [m[KISO C++ forbids variable length array ‘[01m[Karg[m[K’ [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wvla-Wvla]8;;[m[K]
+ 1174 |       const double* [01;35m[Karg[m[K[sz_arg];
+      |                     [01;35m[K^~~[m[K
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/quad_nlp.cpp:1175:15:[m[K [01;35m[Kwarning: [m[KISO C++ forbids variable length array ‘[01m[Kres[m[K’ [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wvla-Wvla]8;;[m[K]
+ 1175 |       double* [01;35m[Kres[m[K[sz_res];
+      |               [01;35m[K^~~[m[K
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/quad_nlp.cpp:1176:18:[m[K [01;35m[Kwarning: [m[KISO C++ forbids variable length array ‘[01m[Kiw[m[K’ [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wvla-Wvla]8;;[m[K]
+ 1176 |       casadi_int [01;35m[Kiw[m[K[sz_iw];
+      |                  [01;35m[K^~[m[K
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/quad_nlp.cpp:1177:14:[m[K [01;35m[Kwarning: [m[KISO C++ forbids variable length array ‘[01m[K_w[m[K’ [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wvla-Wvla]8;;[m[K]
+ 1177 |       double [01;35m[K_w[m[K[sz_w];
+      |              [01;35m[K^~[m[K
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/quad_nlp.cpp:1197:26:[m[K [01;35m[Kwarning: [m[Kcomparison of integer expressions of different signedness: ‘[01m[Ksize_t[m[K’ {aka ‘[01m[Klong unsigned int[m[K’} and ‘[01m[Kint[m[K’ [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wsign-compare-Wsign-compare]8;;[m[K]
+ 1197 |     for (size_t i = 0; [01;35m[Ki < N_ - 1[m[K; i++) {
+      |                        [01;35m[K~~^~~~~~~~[m[K
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/quad_nlp.cpp:[m[K In member function ‘[01m[Kvirtual void quadNLP::[01;32m[Kcompute_nnz_h[m[K()[m[K’:
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/quad_nlp.cpp:1266:24:[m[K [01;35m[Kwarning: [m[Kcomparison of integer expressions of different signedness: ‘[01m[Ksize_t[m[K’ {aka ‘[01m[Klong unsigned int[m[K’} and ‘[01m[Kint[m[K’ [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wsign-compare-Wsign-compare]8;;[m[K]
+ 1266 |   for (size_t i = 0; [01;35m[Ki < N_ - 1[m[K; i++) {
+      |                      [01;35m[K~~^~~~~~~~[m[K
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/quad_nlp.cpp:[m[K In member function ‘[01m[Kvirtual void quadNLP::[01;32m[Kupdate_initial_guess[m[K(const quadNLP&, int)[m[K’:
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/quad_nlp.cpp:1401:15:[m[K [01;35m[Kwarning: [m[Kunused variable ‘[01m[Ki_prev_constr[m[K’ [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wunused-variable-Wunused-variable]8;;[m[K]
+ 1401 |   int i_prev, [01;35m[Ki_prev_constr[m[K, n_shared, m_shared, n_slack_shared, g_shared,
+      |               [01;35m[K^~~~~~~~~~~~~[m[K
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/quad_nlp.cpp:[m[K In member function ‘[01m[Kvirtual void quadNLP::[01;32m[Kupdate_solver[m[K(const Eigen::VectorXd&, const Eigen::MatrixXd&, const Eigen::MatrixXd&, const std::vector<std::vector<bool, std::allocator<bool> > >&, const Eigen::VectorXi&, const Eigen::VectorXd&, const double&, int, const bool&)[m[K’:
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/quad_nlp.cpp:1755:24:[m[K [01;35m[Kwarning: [m[Kcomparison of integer expressions of different signedness: ‘[01m[Ksize_t[m[K’ {aka ‘[01m[Klong unsigned int[m[K’} and ‘[01m[Kint[m[K’ [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wsign-compare-Wsign-compare]8;;[m[K]
+ 1755 |   for (size_t i = 0; [01;35m[Ki < N_ - 1[m[K; i++) {
+      |                      [01;35m[K~~^~~~~~~~[m[K
+[01m[K/home/rml/ros2_ws/src/quad-sdk/nmpc_controller/src/quad_nlp.cpp:1858:26:[m[K [01;35m[Kwarning: [m[Kcomparison of integer expressions of different signedness: ‘[01m[Ksize_t[m[K’ {aka ‘[01m[Klong unsigned int[m[K’} and ‘[01m[Kint[m[K’ [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wsign-compare-Wsign-compare]8;;[m[K]
+ 1858 |     for (size_t i = 0; [01;35m[Ki < N_ - 1[m[K; i++) {
+      |                        [01;35m[K~~^~~~~~~~[m[K
+[100%] [32m[1mLinking CXX static library libnmpc_controller.a[0m
+[100%] Built target nmpc_controller
+-- Install configuration: "Release"
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/nmpc_controller/share/nmpc_controller/config
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/nmpc_controller/share/nmpc_controller/config/nmpc_controller.yaml
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/nmpc_controller/include
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/nmpc_controller/include/nmpc_controller
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/nmpc_controller/include/nmpc_controller/nmpc_controller.hpp
+-- Installing: /home/rml/ros2_ws/src/quad-sdk/install/nmpc_controller/include/nmpc_controller/quad_nlp.hpp
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/nmpc_controller/include/nmpc_controller/gen
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/nmpc_controller/include/nmpc_controller/gen/eval_g_a1.h
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/nmpc_controller/include/nmpc_controller/gen/eval_g_go2.h
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/nmpc_controller/include/nmpc_controller/gen/eval_hess_g_leg_simple_to_complex.h
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/nmpc_controller/include/nmpc_controller/gen/eval_jac_g_leg_complex_to_simple.h
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/nmpc_controller/include/nmpc_controller/gen/eval_jac_g_leg_simple_to_complex.h
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/nmpc_controller/include/nmpc_controller/gen/eval_g_leg_simple.h
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/nmpc_controller/include/nmpc_controller/gen/eval_g_leg_simple_to_complex.h
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/nmpc_controller/include/nmpc_controller/gen/eval_g_leg_complex.h
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/nmpc_controller/include/nmpc_controller/gen/eval_jac_g_spirit.h
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/nmpc_controller/include/nmpc_controller/gen/eval_hess_g_leg_complex.h
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/nmpc_controller/include/nmpc_controller/gen/eval_hess_g_leg_complex_to_simple.h
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/nmpc_controller/include/nmpc_controller/gen/eval_hess_g_a1.h
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/nmpc_controller/include/nmpc_controller/gen/eval_jac_g_leg_complex.h
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/nmpc_controller/include/nmpc_controller/gen/eval_jac_g_go2.h
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/nmpc_controller/include/nmpc_controller/gen/eval_hess_g_spirit.h
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/nmpc_controller/include/nmpc_controller/gen/eval_hess_g_go2.h
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/nmpc_controller/include/nmpc_controller/gen/eval_g_spirit.h
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/nmpc_controller/include/nmpc_controller/gen/eval_g_leg_complex_to_simple.h
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/nmpc_controller/include/nmpc_controller/gen/eval_jac_g_a1.h
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/nmpc_controller/include/nmpc_controller/gen/eval_hess_g_leg_simple.h
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/nmpc_controller/include/nmpc_controller/gen/eval_jac_g_leg_simple.h
+-- Installing: /home/rml/ros2_ws/src/quad-sdk/install/nmpc_controller/lib/libnmpc_controller.a
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/nmpc_controller/share/ament_index/resource_index/package_run_dependencies/nmpc_controller
+-- Installing: /home/rml/ros2_ws/src/quad-sdk/install/nmpc_controller/share/ament_index/resource_index/parent_prefix_path/nmpc_controller
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/nmpc_controller/share/nmpc_controller/environment/ament_prefix_path.sh
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/nmpc_controller/share/nmpc_controller/environment/ament_prefix_path.dsv
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/nmpc_controller/share/nmpc_controller/environment/path.sh
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/nmpc_controller/share/nmpc_controller/environment/path.dsv
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/nmpc_controller/share/nmpc_controller/local_setup.bash
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/nmpc_controller/share/nmpc_controller/local_setup.sh
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/nmpc_controller/share/nmpc_controller/local_setup.zsh
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/nmpc_controller/share/nmpc_controller/local_setup.dsv
+-- Installing: /home/rml/ros2_ws/src/quad-sdk/install/nmpc_controller/share/nmpc_controller/package.dsv
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/nmpc_controller/share/ament_index/resource_index/packages/nmpc_controller
+-- Installing: /home/rml/ros2_ws/src/quad-sdk/install/nmpc_controller/share/nmpc_controller/cmake/export_nmpc_controllerExport.cmake
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/nmpc_controller/share/nmpc_controller/cmake/export_nmpc_controllerExport-release.cmake
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/nmpc_controller/share/nmpc_controller/cmake/ament_cmake_export_include_directories-extras.cmake
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/nmpc_controller/share/nmpc_controller/cmake/ament_cmake_export_dependencies-extras.cmake
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/nmpc_controller/share/nmpc_controller/cmake/ament_cmake_export_targets-extras.cmake
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/nmpc_controller/share/nmpc_controller/cmake/nmpc_controllerConfig.cmake
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/nmpc_controller/share/nmpc_controller/cmake/nmpc_controllerConfig-version.cmake
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/nmpc_controller/share/nmpc_controller/package.xml

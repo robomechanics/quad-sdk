@@ -1,0 +1,203 @@
+-- Found ament_cmake: 2.5.5 (/opt/ros/jazzy/share/ament_cmake/cmake)
+-- Found Python3: /usr/bin/python3 (found version "3.12.3") found components: Interpreter 
+-- Found rclcpp: 28.1.16 (/opt/ros/jazzy/share/rclcpp/cmake)
+-- Found rosidl_generator_c: 4.6.7 (/opt/ros/jazzy/share/rosidl_generator_c/cmake)
+-- Found rosidl_generator_cpp: 4.6.7 (/opt/ros/jazzy/share/rosidl_generator_cpp/cmake)
+-- Using all available rosidl_typesupport_c: rosidl_typesupport_fastrtps_c;rosidl_typesupport_introspection_c
+-- Using all available rosidl_typesupport_cpp: rosidl_typesupport_fastrtps_cpp;rosidl_typesupport_introspection_cpp
+-- Found rmw_implementation_cmake: 7.3.3 (/opt/ros/jazzy/share/rmw_implementation_cmake/cmake)
+-- Found rmw_fastrtps_cpp: 8.4.3 (/opt/ros/jazzy/share/rmw_fastrtps_cpp/cmake)
+-- Using RMW implementation 'rmw_fastrtps_cpp' as default
+-- Found std_msgs: 5.3.6 (/opt/ros/jazzy/share/std_msgs/cmake)
+-- Found nav_msgs: 5.3.6 (/opt/ros/jazzy/share/nav_msgs/cmake)
+-- Found nav2_msgs: 1.3.10 (/opt/ros/jazzy/share/nav2_msgs/cmake)
+-- Found sensor_msgs: 5.3.6 (/opt/ros/jazzy/share/sensor_msgs/cmake)
+-- Found visualization_msgs: 5.3.6 (/opt/ros/jazzy/share/visualization_msgs/cmake)
+-- Found grid_map_core: 2.2.2 (/opt/ros/jazzy/share/grid_map_core/cmake)
+-- Found grid_map_ros: 2.2.2 (/opt/ros/jazzy/share/grid_map_ros/cmake)
+-- Setting yaml-cpp_DIR to: '/opt/ros/jazzy/share/yaml_cpp_vendor/cmake/../../../opt/yaml_cpp_vendor/share/cmake/yaml-cpp'
+-- Found grid_map_pcl: 2.2.2 (/opt/ros/jazzy/share/grid_map_pcl/cmake)
+-- Found quad_msgs: 0.0.0 (/home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/share/quad_msgs/cmake)
+-- Found Boost: /usr/lib/x86_64-linux-gnu/cmake/Boost-1.83.0/BoostConfig.cmake (found suitable version "1.83.0", minimum required is "1.65.0") found components: system filesystem iostreams serialization 
+-- Found flann version 1.9.2
+-- Found Eigen3: /usr/include/eigen3 (found version "3.4.0") 
+-- OpenNI found (version: 1.5.4.0, include: /usr/include/ni, lib: /usr/lib/libOpenNI.so;libusb::libusb)
+-- OpenNI2 found (version: 2.2.0.33, include: /usr/include/openni2, lib: /usr/lib/x86_64-linux-gnu/libOpenNI2.so;libusb::libusb)
+-- Could NOT find Pcap (missing: PCAP_LIBRARIES PCAP_INCLUDE_DIRS) 
+-- OpenNI found (version: 1.5.4.0, include: /usr/include/ni, lib: /usr/lib/libOpenNI.so;libusb::libusb)
+-- OpenNI2 found (version: 2.2.0.33, include: /usr/include/openni2, lib: /usr/lib/x86_64-linux-gnu/libOpenNI2.so;libusb::libusb)
+-- Found Qhull version 8.0.2
+-- OpenNI found (version: 1.5.4.0, include: /usr/include/ni, lib: /usr/lib/libOpenNI.so;libusb::libusb)
+-- looking for PCL_COMMON
+-- looking for PCL_KDTREE
+-- looking for PCL_OCTREE
+-- looking for PCL_SEARCH
+-- looking for PCL_SAMPLE_CONSENSUS
+-- looking for PCL_FILTERS
+-- looking for PCL_2D
+-- looking for PCL_GEOMETRY
+-- looking for PCL_IO
+-- looking for PCL_FEATURES
+-- looking for PCL_ML
+-- looking for PCL_SEGMENTATION
+-- looking for PCL_VISUALIZATION
+-- looking for PCL_SURFACE
+-- looking for PCL_REGISTRATION
+-- looking for PCL_KEYPOINTS
+-- looking for PCL_TRACKING
+-- looking for PCL_RECOGNITION
+-- looking for PCL_STEREO
+-- looking for PCL_APPS
+-- looking for PCL_IN_HAND_SCANNER
+-- looking for PCL_MODELER
+-- looking for PCL_POINT_CLOUD_EDITOR
+-- looking for PCL_OUTOFCORE
+-- looking for PCL_PEOPLE
+-- Found pcl_msgs: 1.0.0 (/opt/ros/jazzy/share/pcl_msgs/cmake)
+-- Found pcl_conversions: 2.6.2 (/opt/ros/jazzy/share/pcl_conversions/cmake)
+-- Found tf2_geometry_msgs: 0.36.19 (/opt/ros/jazzy/share/tf2_geometry_msgs/cmake)
+-- Found eigen3_cmake_module: 0.3.0 (/opt/ros/jazzy/share/eigen3_cmake_module/cmake)
+-- Found Eigen3: TRUE (found version "3.4.0") 
+-- Ensuring Eigen3 include directory is part of orocos-kdl CMake target
+-- pinocchio_default FOUND. pinocchio_default at /opt/ros/jazzy/lib/x86_64-linux-gnu/libpinocchio_default.so
+-- pinocchio_parsers FOUND. pinocchio_parsers at /opt/ros/jazzy/lib/x86_64-linux-gnu/libpinocchio_parsers.so
+-- boost_filesystem FOUND. boost_filesystem at /lib/x86_64-linux-gnu/libboost_filesystem.so
+-- Found Boost: /usr/include (found version "1.83.0") found components: filesystem serialization system 
+-- eigenpy FOUND. eigenpy at /opt/ros/jazzy/lib/x86_64-linux-gnu/libeigenpy.so
+-- Checking for NumPy
+--   NUMPY_INCLUDE_DIRS=/usr/lib/python3/dist-packages/numpy/core/include
+--   NUMPY_VERSION=1.26.4
+-- Found Python3: /usr/bin/python3 (found version "3.12.3") found components: Interpreter Development.Module NumPy 
+-- PythonLibraryDirs: 
+-- PythonLibVersionString: 3.12.3
+-- Python site lib: lib/python3.12/site-packages
+-- Python include dirs: /usr/include/python3.12
+-- Checking for NumPy
+--   NUMPY_INCLUDE_DIRS=/usr/lib/python3/dist-packages/numpy/core/include
+--   NUMPY_VERSION=1.26.4
+-- NumPy include dir: /usr/lib/python3/dist-packages/numpy/core/include
+-- Found Boost: /usr/include (found version "1.83.0") found components: python312 
+-- Default C++ standard: 201703
+-- C++ standard sufficient: Minimal required 14, currently defined: 17
+-- CMAKE_CXX_STANDARD was not set: automatically set to currently defined standard 17
+-- hpp-fcl FOUND. hpp-fcl at /opt/ros/jazzy/lib/x86_64-linux-gnu/libhpp-fcl.so
+-- Found Boost: /usr/include (found version "1.83.0") found components: chrono serialization filesystem 
+-- C++ standard sufficient: Minimal required 14, currently defined: 17
+-- C++ standard sufficient: Minimal required 14, currently defined: 17
+-- Found ament_cmake_gtest: 2.5.5 (/opt/ros/jazzy/share/ament_cmake_gtest/cmake)
+-- Found gtest sources under '/opt/ros/jazzy/src/gtest_vendor': C++ tests using 'Google Test' will be built
+-- Configuring done (2.1s)
+-- Generating done (0.1s)
+-- Build files have been written to: /home/rml/ros2_ws/src/quad-sdk/build/quad_utils
+[  8%] Built target gtest_main
+[ 16%] Built target gtest
+[ 20%] [32mBuilding CXX object CMakeFiles/grid_map_filters_demo.dir/src/filters_demo.cpp.o[0m
+[ 24%] [32mBuilding CXX object CMakeFiles/grid_map_filters_demo.dir/src/filters_demo_node.cpp.o[0m
+[ 28%] [32mBuilding CXX object CMakeFiles/quad_utils.dir/src/rviz_interface.cpp.o[0m
+[ 32%] [32mBuilding CXX object CMakeFiles/quad_utils.dir/src/fast_terrain_map.cpp.o[0m
+[ 36%] [32mBuilding CXX object CMakeFiles/quad_utils.dir/src/mesh_to_grid_map_converter.cpp.o[0m
+[ 40%] [32mBuilding CXX object CMakeFiles/quad_utils.dir/src/math_utils.cpp.o[0m
+[ 44%] [32mBuilding CXX object CMakeFiles/quad_utils.dir/src/ros_utils.cpp.o[0m
+[ 48%] [32mBuilding CXX object CMakeFiles/quad_utils.dir/src/quad_kd2.cpp.o[0m
+[ 52%] [32m[1mLinking CXX executable grid_map_filters_demo[0m
+[ 52%] Built target grid_map_filters_demo
+[ 56%] [32m[1mLinking CXX static library libquad_utils.a[0m
+[ 56%] Built target quad_utils
+[ 60%] [32mBuilding CXX object CMakeFiles/mesh_to_grid_map_node.dir/src/mesh_to_grid_map_node.cpp.o[0m
+[ 64%] [32mBuilding CXX object CMakeFiles/mesh_to_grid_map_node.dir/src/mesh_to_grid_map_converter.cpp.o[0m
+[ 68%] [32mBuilding CXX object CMakeFiles/rviz_interface_node.dir/src/rviz_interface_node.cpp.o[0m
+[ 72%] [32mBuilding CXX object CMakeFiles/rviz_interface_node.dir/src/rviz_interface.cpp.o[0m
+[ 76%] [32mBuilding CXX object CMakeFiles/quad_utils_test.dir/test/test_quad_kd.cpp.o[0m
+[ 80%] [32mBuilding CXX object CMakeFiles/quad_utils_test.dir/test/test_rviz_interface.cpp.o[0m
+[ 84%] [32mBuilding CXX object CMakeFiles/quad_utils_test.dir/test/test_main.cpp.o[0m
+[ 88%] [32mBuilding CXX object CMakeFiles/quad_utils_test.dir/test/test_math_utils.cpp.o[0m
+[ 92%] [32m[1mLinking CXX executable quad_utils_test[0m
+[ 92%] Built target quad_utils_test
+[ 96%] [32m[1mLinking CXX executable mesh_to_grid_map_node[0m
+[ 96%] Built target mesh_to_grid_map_node
+[100%] [32m[1mLinking CXX executable rviz_interface_node[0m
+[100%] Built target rviz_interface_node
+-- Install configuration: "Release"
+-- Installing: /home/rml/ros2_ws/src/quad-sdk/install/quad_utils/lib/quad_utils/grid_map_filters_demo
+-- Set non-toolchain portion of runtime path of "/home/rml/ros2_ws/src/quad-sdk/install/quad_utils/lib/quad_utils/grid_map_filters_demo" to ""
+-- Installing: /home/rml/ros2_ws/src/quad-sdk/install/quad_utils/lib/libquad_utils.a
+-- Installing: /home/rml/ros2_ws/src/quad-sdk/install/quad_utils/lib/quad_utils/mesh_to_grid_map_node
+-- Set non-toolchain portion of runtime path of "/home/rml/ros2_ws/src/quad-sdk/install/quad_utils/lib/quad_utils/mesh_to_grid_map_node" to ""
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_utils/lib/quad_utils/mesh_to_grid_map_node
+-- Installing: /home/rml/ros2_ws/src/quad-sdk/install/quad_utils/lib/quad_utils/rviz_interface_node
+-- Set non-toolchain portion of runtime path of "/home/rml/ros2_ws/src/quad-sdk/install/quad_utils/lib/quad_utils/rviz_interface_node" to ""
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_utils/share/quad_utils/launch
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_utils/share/quad_utils/launch/robot_bringup.py
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_utils/share/quad_utils/launch/quad_plan.py
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_utils/share/quad_utils/launch/planning.py
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_utils/share/quad_utils/launch/mapping.py
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_utils/share/quad_utils/launch/quad_gazebo.py
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_utils/share/quad_utils/launch/testing.py
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_utils/share/quad_utils/launch/force_applicator.py
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_utils/share/quad_utils/launch/logging.py
+-- Installing: /home/rml/ros2_ws/src/quad-sdk/install/quad_utils/share/quad_utils/launch/remote_driver.py
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_utils/share/quad_utils/launch/spawn_obstacles.py
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_utils/share/quad_utils/launch/visualization_plugins.py
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_utils/share/quad_utils/launch/robot_driver.py
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_utils/share/quad_utils/launch/quad_visualization.py
+-- Installing: /home/rml/ros2_ws/src/quad-sdk/install/quad_utils/share/quad_utils/launch/quad_sim.py
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_utils/share/quad_utils/launch/mocap.py
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_utils/share/quad_utils/launch/force_app_single.py
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_utils/share/quad_utils/config
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_utils/share/quad_utils/config/ros_gz_bridge.yaml
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_utils/share/quad_utils/config/go2w.yaml
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_utils/share/quad_utils/config/demo.yaml
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_utils/share/quad_utils/config/rviz_visualization.yaml
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_utils/share/quad_utils/config/b2.yaml
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_utils/share/quad_utils/config/teleop_twist_keyboard.yaml
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_utils/share/quad_utils/config/grid_map_visualization.yaml
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_utils/share/quad_utils/config/topics_global.yaml
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_utils/share/quad_utils/config/a1.yaml
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_utils/share/quad_utils/config/filter_chain.yaml
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_utils/share/quad_utils/config/plotjuggler_config_hw.xml
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_utils/share/quad_utils/config/rviz_interface.yaml
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_utils/share/quad_utils/config/plotjuggler_config.xml
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_utils/share/quad_utils/config/remote_heartbeat.yaml
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_utils/share/quad_utils/config/terrain_map_publisher.yaml
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_utils/share/quad_utils/config/trajectory_publisher.yaml
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_utils/share/quad_utils/config/joy_config.yaml
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_utils/share/quad_utils/config/spot.yaml
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_utils/share/quad_utils/config/topics_robot.yaml
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_utils/share/quad_utils/config/dashboard.perspective
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_utils/share/quad_utils/config/spirit.yaml
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_utils/share/quad_utils/config/go2.yaml
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_utils/include
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_utils/include/quad_utils
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_utils/include/quad_utils/fast_terrain_map.hpp
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_utils/include/quad_utils/rviz_interface.hpp
+-- Installing: /home/rml/ros2_ws/src/quad-sdk/install/quad_utils/include/quad_utils/mesh_to_grid_map_converter.hpp
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_utils/include/quad_utils/function_timer.hpp
+-- Installing: /home/rml/ros2_ws/src/quad-sdk/install/quad_utils/include/quad_utils/quad_kd.hpp
+-- Installing: /home/rml/ros2_ws/src/quad-sdk/install/quad_utils/include/quad_utils/filters_demo.hpp
+-- Installing: /home/rml/ros2_ws/src/quad-sdk/install/quad_utils/include/quad_utils/math_utils.hpp
+-- Installing: /home/rml/ros2_ws/src/quad-sdk/install/quad_utils/include/quad_utils/matrix_utils.hpp
+-- Installing: /home/rml/ros2_ws/src/quad-sdk/install/quad_utils/include/quad_utils/quad_kd2.hpp
+-- Installing: /home/rml/ros2_ws/src/quad-sdk/install/quad_utils/include/quad_utils/ros_utils.hpp
+-- Installing: /home/rml/ros2_ws/src/quad-sdk/install/quad_utils/include/quad_utils/trajectory_publisher.hpp
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_utils/share/quad_utils/rviz
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_utils/share/quad_utils/rviz/quad_viewer.rviz
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_utils/share/quad_utils/environment/library_path.sh
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_utils/share/quad_utils/environment/library_path.dsv
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_utils/share/ament_index/resource_index/package_run_dependencies/quad_utils
+-- Installing: /home/rml/ros2_ws/src/quad-sdk/install/quad_utils/share/ament_index/resource_index/parent_prefix_path/quad_utils
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_utils/share/quad_utils/environment/ament_prefix_path.sh
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_utils/share/quad_utils/environment/ament_prefix_path.dsv
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_utils/share/quad_utils/environment/path.sh
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_utils/share/quad_utils/environment/path.dsv
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_utils/share/quad_utils/local_setup.bash
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_utils/share/quad_utils/local_setup.sh
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_utils/share/quad_utils/local_setup.zsh
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_utils/share/quad_utils/local_setup.dsv
+-- Installing: /home/rml/ros2_ws/src/quad-sdk/install/quad_utils/share/quad_utils/package.dsv
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_utils/share/ament_index/resource_index/packages/quad_utils
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_utils/share/quad_utils/cmake/ament_cmake_export_include_directories-extras.cmake
+-- Installing: /home/rml/ros2_ws/src/quad-sdk/install/quad_utils/share/quad_utils/cmake/ament_cmake_export_libraries-extras.cmake
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_utils/share/quad_utils/cmake/ament_cmake_export_dependencies-extras.cmake
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_utils/share/quad_utils/cmake/quad_utilsConfig.cmake
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_utils/share/quad_utils/cmake/quad_utilsConfig-version.cmake
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/quad_utils/share/quad_utils/package.xml

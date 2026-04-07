@@ -1,0 +1,39 @@
+[0.003s] Invoking command in '/home/rml/ros2_ws/src/quad-sdk/build/a1_description': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/rml/ros2_ws/src/quad-sdk/install/teleop_twist_keyboard:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake --build /home/rml/ros2_ws/src/quad-sdk/build/a1_description -- -j16 -l16
+[0.018s] Invoked command in '/home/rml/ros2_ws/src/quad-sdk/build/a1_description' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/rml/ros2_ws/src/quad-sdk/install/teleop_twist_keyboard:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake --build /home/rml/ros2_ws/src/quad-sdk/build/a1_description -- -j16 -l16
+[0.018s] Invoking command in '/home/rml/ros2_ws/src/quad-sdk/build/a1_description': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/rml/ros2_ws/src/quad-sdk/install/teleop_twist_keyboard:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake --install /home/rml/ros2_ws/src/quad-sdk/build/a1_description
+[0.021s] -- Install configuration: "Release"
+[0.021s] -- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/a1_description/share/a1_description/models
+[0.021s] -- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/a1_description/share/a1_description/models/a1
+[0.021s] -- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/a1_description/share/a1_description/models/a1/urdf
+[0.021s] -- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/a1_description/share/a1_description/models/a1/urdf/a1.urdf.xacro
+[0.021s] -- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/a1_description/share/a1_description/models/a1/meshes
+[0.021s] -- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/a1_description/share/a1_description/models/a1/meshes/calf.dae
+[0.021s] -- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/a1_description/share/a1_description/models/a1/meshes/hip.dae
+[0.021s] -- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/a1_description/share/a1_description/models/a1/meshes/thigh.dae
+[0.021s] -- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/a1_description/share/a1_description/models/a1/meshes/trunk_A1.png
+[0.021s] -- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/a1_description/share/a1_description/models/a1/meshes/trunk.dae
+[0.021s] -- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/a1_description/share/a1_description/models/a1/meshes/thigh_mirror.dae
+[0.021s] -- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/a1_description/share/a1_description/models/a1/xacro
+[0.021s] -- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/a1_description/share/a1_description/models/a1/xacro/const.xacro
+[0.021s] -- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/a1_description/share/a1_description/models/a1/xacro/materials.xacro
+[0.021s] -- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/a1_description/share/a1_description/models/a1/xacro/leg.xacro
+[0.021s] -- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/a1_description/share/a1_description/models/a1/xacro/gazebo.xacro
+[0.021s] -- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/a1_description/share/a1_description/models/a1/xacro/robot.xacro
+[0.021s] -- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/a1_description/share/a1_description/models/a1/xacro/transmission.xacro
+[0.021s] -- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/a1_description/share/a1_description/models/a1/a1.sdf.xacro
+[0.021s] -- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/a1_description/share/ament_index/resource_index/package_run_dependencies/a1_description
+[0.022s] -- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/a1_description/share/ament_index/resource_index/parent_prefix_path/a1_description
+[0.022s] -- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/a1_description/share/a1_description/environment/ament_prefix_path.sh
+[0.022s] -- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/a1_description/share/a1_description/environment/ament_prefix_path.dsv
+[0.022s] -- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/a1_description/share/a1_description/environment/path.sh
+[0.022s] -- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/a1_description/share/a1_description/environment/path.dsv
+[0.022s] -- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/a1_description/share/a1_description/local_setup.bash
+[0.022s] -- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/a1_description/share/a1_description/local_setup.sh
+[0.022s] -- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/a1_description/share/a1_description/local_setup.zsh
+[0.022s] -- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/a1_description/share/a1_description/local_setup.dsv
+[0.022s] -- Installing: /home/rml/ros2_ws/src/quad-sdk/install/a1_description/share/a1_description/package.dsv
+[0.022s] -- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/a1_description/share/ament_index/resource_index/packages/a1_description
+[0.022s] -- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/a1_description/share/a1_description/cmake/a1_descriptionConfig.cmake
+[0.022s] -- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/a1_description/share/a1_description/cmake/a1_descriptionConfig-version.cmake
+[0.022s] -- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/a1_description/share/a1_description/package.xml
+[0.022s] Invoked command in '/home/rml/ros2_ws/src/quad-sdk/build/a1_description' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/rml/ros2_ws/src/quad-sdk/install/teleop_twist_keyboard:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake --install /home/rml/ros2_ws/src/quad-sdk/build/a1_description

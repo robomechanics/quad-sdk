@@ -1,0 +1,20 @@
+running egg_info
+writing ../../build/teleop_twist_keyboard/teleop_twist_keyboard.egg-info/PKG-INFO
+writing dependency_links to ../../build/teleop_twist_keyboard/teleop_twist_keyboard.egg-info/dependency_links.txt
+writing entry points to ../../build/teleop_twist_keyboard/teleop_twist_keyboard.egg-info/entry_points.txt
+writing requirements to ../../build/teleop_twist_keyboard/teleop_twist_keyboard.egg-info/requires.txt
+writing top-level names to ../../build/teleop_twist_keyboard/teleop_twist_keyboard.egg-info/top_level.txt
+reading manifest file '../../build/teleop_twist_keyboard/teleop_twist_keyboard.egg-info/SOURCES.txt'
+adding license file 'LICENSE'
+writing manifest file '../../build/teleop_twist_keyboard/teleop_twist_keyboard.egg-info/SOURCES.txt'
+running build
+running build_py
+running install
+running install_lib
+running install_data
+running install_egg_info
+removing '/home/rml/ros2_ws/src/quad-sdk/install/teleop_twist_keyboard/lib/python3.12/site-packages/teleop_twist_keyboard-2.4.0-py3.12.egg-info' (and everything under it)
+Copying ../../build/teleop_twist_keyboard/teleop_twist_keyboard.egg-info to /home/rml/ros2_ws/src/quad-sdk/install/teleop_twist_keyboard/lib/python3.12/site-packages/teleop_twist_keyboard-2.4.0-py3.12.egg-info
+running install_scripts
+Installing teleop_twist_keyboard script to /home/rml/ros2_ws/src/quad-sdk/install/teleop_twist_keyboard/lib/teleop_twist_keyboard
+writing list of installed files to '/home/rml/ros2_ws/src/quad-sdk/build/teleop_twist_keyboard/install.log'

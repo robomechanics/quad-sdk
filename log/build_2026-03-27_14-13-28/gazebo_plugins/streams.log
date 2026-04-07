@@ -1,0 +1,362 @@
+[0.005s] Invoking command in '/home/rml/ros2_ws/src/quad-sdk/build/gazebo_plugins': AMENT_PREFIX_PATH=/home/rml/ros2_ws/src/quad-sdk/install/quad_utils:/home/rml/ros2_ws/src/quad-sdk/install/quad_msgs:${AMENT_PREFIX_PATH} CMAKE_MODULE_PATH=/home/rml/ros2_ws/src/quad-sdk/install/quad_utils/share/quad_utils/cmake CMAKE_PREFIX_PATH=/home/rml/ros2_ws/src/quad-sdk/install/quad_utils:/home/rml/ros2_ws/src/quad-sdk/install/quad_msgs:/opt/ros/jazzy/opt/gz_sim_vendor:/opt/ros/jazzy/opt/gz_sensors_vendor:/opt/ros/jazzy/opt/gz_physics_vendor:/opt/ros/jazzy/opt/sdformat_vendor:/opt/ros/jazzy/opt/gz_gui_vendor:/opt/ros/jazzy/opt/gz_transport_vendor:/opt/ros/jazzy/opt/gz_rendering_vendor:/opt/ros/jazzy/opt/gz_plugin_vendor:/opt/ros/jazzy/opt/gz_fuel_tools_vendor:/opt/ros/jazzy/opt/gz_msgs_vendor:/opt/ros/jazzy/opt/gz_common_vendor:/opt/ros/jazzy/opt/gz_math_vendor:/opt/ros/jazzy/opt/gz_utils_vendor:/opt/ros/jazzy/opt/gz_tools_vendor:/opt/ros/jazzy/opt/gz_ogre_next_vendor:/opt/ros/jazzy/opt/gz_dartsim_vendor:/opt/ros/jazzy/opt/gz_cmake_vendor:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com LD_LIBRARY_PATH=/home/rml/ros2_ws/src/quad-sdk/install/quad_utils/lib:/home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/lib:${LD_LIBRARY_PATH} PYTHONPATH=/home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/lib/python3.12/site-packages:${PYTHONPATH} /usr/bin/cmake /home/rml/ros2_ws/src/quad-sdk/quad_simulator/gazebo_plugins -DCMAKE_BUILD_TYPE=Release -DCMAKE_BUILD_PARALLEL_LEVEL=1 -DCMAKE_INSTALL_PREFIX=/home/rml/ros2_ws/src/quad-sdk/install/gazebo_plugins
+[0.011s] -- Found ament_cmake: 2.5.5 (/opt/ros/jazzy/share/ament_cmake/cmake)
+[0.024s] -- Found Python3: /usr/bin/python3 (found version "3.12.3") found components: Interpreter 
+[0.059s] -- Found rclcpp: 28.1.16 (/opt/ros/jazzy/share/rclcpp/cmake)
+[0.071s] -- Found rosidl_generator_c: 4.6.7 (/opt/ros/jazzy/share/rosidl_generator_c/cmake)
+[0.075s] -- Found rosidl_generator_cpp: 4.6.7 (/opt/ros/jazzy/share/rosidl_generator_cpp/cmake)
+[0.080s] -- Using all available rosidl_typesupport_c: rosidl_typesupport_fastrtps_c;rosidl_typesupport_introspection_c
+[0.085s] -- Using all available rosidl_typesupport_cpp: rosidl_typesupport_fastrtps_cpp;rosidl_typesupport_introspection_cpp
+[0.114s] -- Found rmw_implementation_cmake: 7.3.3 (/opt/ros/jazzy/share/rmw_implementation_cmake/cmake)
+[0.114s] -- Found rmw_fastrtps_cpp: 8.4.3 (/opt/ros/jazzy/share/rmw_fastrtps_cpp/cmake)
+[0.143s] -- Using RMW implementation 'rmw_fastrtps_cpp' as default
+[0.176s] -- Found controller_interface: 4.42.2 (/opt/ros/jazzy/share/controller_interface/cmake)
+[0.307s] -- Found angles: 1.16.1 (/opt/ros/jazzy/share/angles/cmake)
+[0.308s] -- Found quad_utils: 0.0.0 (/home/rml/ros2_ws/src/quad-sdk/install/quad_utils/share/quad_utils/cmake)
+[0.420s] -- Setting yaml-cpp_DIR to: '/opt/ros/jazzy/share/yaml_cpp_vendor/cmake/../../../opt/yaml_cpp_vendor/share/cmake/yaml-cpp'
+[0.472s] [33mCMake Warning (dev) at /usr/lib/x86_64-linux-gnu/cmake/pcl/Modules/FindFLANN.cmake:45 (find_package):
+[0.472s]   Policy CMP0144 is not set: find_package uses upper-case <PACKAGENAME>_ROOT
+[0.472s]   variables.  Run "cmake --help-policy CMP0144" for policy details.  Use the
+[0.472s]   cmake_policy command to set the policy and suppress this warning.
+[0.472s] 
+[0.472s]   CMake variable FLANN_ROOT is set to:
+[0.472s] 
+[0.472s]     /usr
+[0.472s] 
+[0.472s]   For compatibility, find_package is ignoring the variable, but code in a
+[0.472s]   .cmake module might still use it.
+[0.472s] Call Stack (most recent call first):
+[0.472s]   /usr/lib/x86_64-linux-gnu/cmake/pcl/PCLConfig.cmake:261 (find_package)
+[0.472s]   /usr/lib/x86_64-linux-gnu/cmake/pcl/PCLConfig.cmake:306 (find_flann)
+[0.472s]   /usr/lib/x86_64-linux-gnu/cmake/pcl/PCLConfig.cmake:570 (find_external_library)
+[0.472s]   /opt/ros/jazzy/share/pcl_conversions/cmake/ament_cmake_export_dependencies-extras.cmake:21 (find_package)
+[0.472s]   /opt/ros/jazzy/share/pcl_conversions/cmake/pcl_conversionsConfig.cmake:41 (include)
+[0.472s]   /home/rml/ros2_ws/src/quad-sdk/install/quad_utils/share/quad_utils/cmake/ament_cmake_export_dependencies-extras.cmake:21 (find_package)
+[0.472s]   /home/rml/ros2_ws/src/quad-sdk/install/quad_utils/share/quad_utils/cmake/quad_utilsConfig.cmake:41 (include)
+[0.473s]   CMakeLists.txt:17 (find_package)
+[0.473s] This warning is for project developers.  Use -Wno-dev to suppress it.
+[0.473s] [0m
+[0.473s] -- Found flann version 1.9.2
+[0.684s] -- OpenNI found (version: 1.5.4.0, include: /usr/include/ni, lib: /usr/lib/libOpenNI.so;libusb::libusb)
+[0.687s] -- OpenNI2 found (version: 2.2.0.33, include: /usr/include/openni2, lib: /usr/lib/x86_64-linux-gnu/libOpenNI2.so;libusb::libusb)
+[0.688s] -- Could NOT find Pcap (missing: PCAP_LIBRARIES PCAP_INCLUDE_DIRS) 
+[0.908s] -- OpenNI found (version: 1.5.4.0, include: /usr/include/ni, lib: /usr/lib/libOpenNI.so;libusb::libusb)
+[0.910s] -- OpenNI2 found (version: 2.2.0.33, include: /usr/include/openni2, lib: /usr/lib/x86_64-linux-gnu/libOpenNI2.so;libusb::libusb)
+[1.104s] -- Found Qhull version 8.0.2
+[1.306s] -- OpenNI found (version: 1.5.4.0, include: /usr/include/ni, lib: /usr/lib/libOpenNI.so;libusb::libusb)
+[1.509s] -- Found eigen3_cmake_module: 0.3.0 (/opt/ros/jazzy/share/eigen3_cmake_module/cmake)
+[1.510s] -- Ensuring Eigen3 include directory is part of orocos-kdl CMake target
+[1.546s] -- pinocchio_default FOUND. pinocchio_default at /opt/ros/jazzy/lib/x86_64-linux-gnu/libpinocchio_default.so
+[1.546s] -- pinocchio_parsers FOUND. pinocchio_parsers at /opt/ros/jazzy/lib/x86_64-linux-gnu/libpinocchio_parsers.so
+[1.547s] -- boost_filesystem FOUND. boost_filesystem at /lib/x86_64-linux-gnu/libboost_filesystem.so
+[1.551s] -- eigenpy FOUND. eigenpy at /opt/ros/jazzy/lib/x86_64-linux-gnu/libeigenpy.so
+[1.562s] -- Checking for NumPy
+[1.653s] --   NUMPY_INCLUDE_DIRS=/usr/lib/python3/dist-packages/numpy/core/include
+[1.697s] --   NUMPY_VERSION=1.26.4
+[1.800s] -- Found Python3: /usr/bin/python3 (found version "3.12.3") found components: Interpreter Development.Module NumPy 
+[1.800s] -- PythonLibraryDirs: 
+[1.800s] -- PythonLibVersionString: 3.12.3
+[1.808s] -- Python site lib: lib/python3.12/site-packages
+[1.808s] -- Python include dirs: /usr/include/python3.12
+[1.827s] -- Checking for NumPy
+[1.872s] --   NUMPY_INCLUDE_DIRS=/usr/lib/python3/dist-packages/numpy/core/include
+[1.916s] --   NUMPY_VERSION=1.26.4
+[1.916s] -- NumPy include dir: /usr/lib/python3/dist-packages/numpy/core/include
+[2.059s] -- Default C++ standard: 201703
+[2.060s] -- C++ standard sufficient: Minimal required 14, currently defined: 17
+[2.060s] -- CMAKE_CXX_STANDARD was not set: automatically set to currently defined standard 17
+[2.061s] -- hpp-fcl FOUND. hpp-fcl at /opt/ros/jazzy/lib/x86_64-linux-gnu/libhpp-fcl.so
+[2.067s] -- C++ standard sufficient: Minimal required 14, currently defined: 17
+[2.067s] -- C++ standard sufficient: Minimal required 14, currently defined: 17
+[2.073s] -- Found RBDL: /usr/local/lib/librbdl.so
+[2.073s] -- Found RBDL URDFREADER: /usr/local/lib/librbdl_urdfreader.so
+[2.074s] -- Looking for gz-sim8 -- found version 8.10.0
+[2.078s] -- Searching for dependencies of gz-sim8
+[2.078s] -- Looking for sdformat14 -- found version 14.8.0
+[2.078s] -- Searching for dependencies of sdformat14
+[2.080s] -- Checking for module 'tinyxml2'
+[2.086s] --   Found tinyxml2, version 10.0.0
+[2.099s] -- Looking for gz-math7 -- found version 7.5.2
+[2.099s] -- Searching for dependencies of gz-math7
+[2.099s] -- Looking for gz-utils2 -- found version 2.2.1
+[2.100s] -- Searching for dependencies of gz-utils2
+[2.100s] -- Looking for gz-utils2 -- found version 2.2.1
+[2.100s] -- Searching for dependencies of gz-utils2
+[2.101s] -- Searching for <gz-utils2> component [cli]
+[2.101s] -- Looking for gz-utils2-cli -- found version 2.2.1
+[2.101s] -- Searching for dependencies of gz-utils2-cli
+[2.102s] -- Looking for gz-plugin2 -- found version 2.0.4
+[2.102s] -- Searching for dependencies of gz-plugin2
+[2.102s] -- Looking for gz-utils2 -- found version 2.2.1
+[2.102s] -- Searching for <gz-plugin2> component [loader]
+[2.103s] -- Looking for gz-plugin2-loader -- found version 2.0.4
+[2.103s] -- Searching for dependencies of gz-plugin2-loader
+[2.103s] -- Searching for <gz-plugin2> component [register]
+[2.104s] -- Looking for gz-plugin2-register -- found version 2.0.4
+[2.104s] -- Searching for dependencies of gz-plugin2-register
+[2.104s] -- Looking for gz-transport13 -- found version 13.5.0
+[2.104s] -- Searching for dependencies of gz-transport13
+[2.124s] -- Config-file not installed for ZeroMQ -- checking for pkg-config
+[2.126s] -- Checking for module 'libzmq >= 4'
+[2.132s] --   Found libzmq, version 4.3.5
+[2.151s] -- Checking for module 'uuid'
+[2.157s] --   Found uuid, version 2.39.3
+[2.170s] -- Looking for gz-utils2 -- found version 2.2.1
+[2.171s] -- Looking for gz-msgs10 -- found version 10.3.2
+[2.171s] -- Searching for dependencies of gz-msgs10
+[2.180s] -- Looking for gz-utils2 -- found version 2.2.1
+[2.180s] -- Looking for gz-math7 -- found version 7.5.2
+[2.184s] -- Searching for <gz-transport13> component [log]
+[2.184s] -- Looking for gz-transport13-log -- found version 13.5.0
+[2.184s] -- Searching for dependencies of gz-transport13-log
+[2.184s] -- Searching for <gz-transport13> component [parameters]
+[2.185s] -- Looking for gz-transport13-parameters -- found version 13.5.0
+[2.185s] -- Searching for dependencies of gz-transport13-parameters
+[2.186s] -- Looking for gz-msgs10 -- found version 10.3.2
+[2.186s] -- Looking for gz-common5 -- found version 5.7.1
+[2.186s] -- Searching for dependencies of gz-common5
+[2.186s] -- Looking for gz-utils2 -- found version 2.2.1
+[2.186s] -- Looking for dlfcn.h - found
+[2.186s] -- Looking for libdl - found
+[2.190s] -- Searching for <gz-common5> component [av]
+[2.190s] -- Looking for gz-common5-av -- found version 5.7.1
+[2.191s] -- Searching for dependencies of gz-common5-av
+[2.193s] -- Checking for module 'libswscale'
+[2.199s] --   Found libswscale, version 7.5.100
+[2.215s] -- Checking for module 'libavdevice >= 56.4.100'
+[2.221s] --   Found libavdevice, version 60.3.100
+[2.241s] -- Checking for module 'libavformat'
+[2.247s] --   Found libavformat, version 60.16.100
+[2.263s] -- Checking for module 'libavcodec'
+[2.269s] --   Found libavcodec, version 60.31.102
+[2.285s] -- Checking for module 'libavutil'
+[2.291s] --   Found libavutil, version 58.29.100
+[2.305s] -- Searching for <gz-common5> component [events]
+[2.305s] -- Looking for gz-common5-events -- found version 5.7.1
+[2.305s] -- Searching for dependencies of gz-common5-events
+[2.305s] -- Looking for gz-math7 -- found version 7.5.2
+[2.306s] -- Searching for <gz-common5> component [graphics]
+[2.306s] -- Looking for gz-common5-graphics -- found version 5.7.1
+[2.306s] -- Searching for dependencies of gz-common5-graphics
+[2.306s] -- Looking for gz-math7 -- found version 7.5.2
+[2.308s] -- Searching for <gz-common5> component [io]
+[2.308s] -- Looking for gz-common5-io -- found version 5.7.1
+[2.309s] -- Searching for dependencies of gz-common5-io
+[2.309s] -- Searching for <gz-common5> component [profiler]
+[2.309s] -- Looking for gz-common5-profiler -- found version 5.7.1
+[2.309s] -- Searching for dependencies of gz-common5-profiler
+[2.310s] -- Looking for gz-fuel_tools9 -- found version 9.1.1
+[2.310s] -- Searching for dependencies of gz-fuel_tools9
+[2.330s] -- Checking for module 'jsoncpp'
+[2.335s] --   Found jsoncpp, version 1.9.5
+[2.356s] -- Checking for module 'yaml-0.1'
+[2.362s] --   Found yaml-0.1, version 0.2.5
+[2.377s] -- Checking for module 'libzip'
+[2.383s] --   Found libzip, version 1.7.3
+[2.396s] -- Looking for gz-utils2 -- found version 2.2.1
+[2.396s] -- Looking for gz-common5 -- found version 5.7.1
+[2.396s] -- Searching for dependencies of gz-common5
+[2.396s] -- Looking for gz-utils2 -- found version 2.2.1
+[2.396s] -- Looking for dlfcn.h - found
+[2.396s] -- Looking for libdl - found
+[2.400s] -- Searching for <gz-common5> component [testing]
+[2.400s] -- Looking for gz-common5-testing -- found version 5.7.1
+[2.400s] -- Searching for dependencies of gz-common5-testing
+[2.401s] -- Looking for gz-math7 -- found version 7.5.2
+[2.401s] -- Looking for gz-msgs10 -- found version 10.3.2
+[2.402s] -- Looking for gz-gui8 -- found version 8.4.0
+[2.402s] -- Searching for dependencies of gz-gui8
+[2.413s] -- Looking for gz-utils2 -- found version 2.2.1
+[2.413s] -- Looking for gz-math7 -- found version 7.5.2
+[2.414s] -- Looking for gz-common5 -- found version 5.7.1
+[2.414s] -- Looking for gz-plugin2 -- found version 2.0.4
+[2.414s] -- Looking for gz-transport13 -- found version 13.5.0
+[2.414s] -- Looking for gz-rendering8 -- found version 8.2.3
+[2.414s] -- Searching for dependencies of gz-rendering8
+[2.415s] -- Looking for gz-math7 -- found version 7.5.2
+[2.415s] -- Searching for dependencies of gz-math7
+[2.415s] -- Looking for gz-utils2 -- found version 2.2.1
+[2.415s] -- Searching for <gz-math7> component [eigen3]
+[2.415s] -- Looking for gz-math7-eigen3 -- found version 7.5.2
+[2.415s] -- Searching for dependencies of gz-math7-eigen3
+[2.416s] -- Looking for gz-common5 -- found version 5.7.1
+[2.416s] -- Searching for dependencies of gz-common5
+[2.416s] -- Looking for gz-utils2 -- found version 2.2.1
+[2.416s] -- Looking for dlfcn.h - found
+[2.416s] -- Looking for libdl - found
+[2.419s] -- Searching for <gz-common5> component [graphics]
+[2.419s] -- Searching for <gz-common5> component [events]
+[2.419s] -- Searching for <gz-common5> component [geospatial]
+[2.420s] -- Looking for gz-common5-geospatial -- found version 5.7.1
+[2.420s] -- Searching for dependencies of gz-common5-geospatial
+[2.420s] -- Looking for gz-math7 -- found version 7.5.2
+[2.420s] -- Looking for gz-common5 -- found version 5.7.1
+[2.421s] -- Looking for gz-plugin2 -- found version 2.0.4
+[2.421s] -- Searching for dependencies of gz-plugin2
+[2.421s] -- Looking for gz-utils2 -- found version 2.2.1
+[2.421s] -- Searching for <gz-plugin2> component [all]
+[2.422s] -- Looking for all libraries of gz-plugin2 -- found version 2.0.4
+[2.422s] -- Looking for gz-plugin2 -- found version 2.0.4
+[2.422s] -- Looking for gz-utils2 -- found version 2.2.1
+[2.424s] -- Looking for gz-msgs10 -- found version 10.3.2
+[2.430s] -- Looking for gz-physics7 -- found version 7.6.0
+[2.430s] -- Searching for dependencies of gz-physics7
+[2.430s] -- Looking for gz-common5 -- found version 5.7.1
+[2.430s] -- Looking for gz-math7 -- found version 7.5.2
+[2.431s] -- Looking for gz-plugin2 -- found version 2.0.4
+[2.431s] -- Looking for gz-utils2 -- found version 2.2.1
+[2.431s] -- Searching for <gz-physics7> component [heightmap]
+[2.432s] -- Looking for gz-physics7-heightmap -- found version 7.6.0
+[2.432s] -- Searching for dependencies of gz-physics7-heightmap
+[2.432s] -- Looking for gz-common5 -- found version 5.7.1
+[2.432s] -- Searching for <gz-physics7> component [mesh]
+[2.433s] -- Looking for gz-physics7-mesh -- found version 7.6.0
+[2.433s] -- Searching for dependencies of gz-physics7-mesh
+[2.433s] -- Looking for gz-common5 -- found version 5.7.1
+[2.433s] -- Searching for <gz-physics7> component [sdf]
+[2.433s] -- Looking for gz-physics7-sdf -- found version 7.6.0
+[2.433s] -- Searching for dependencies of gz-physics7-sdf
+[2.434s] -- Looking for sdformat14 -- found version 14.8.0
+[2.434s] -- Looking for gz-sensors8 -- found version 8.2.2
+[2.434s] -- Searching for dependencies of gz-sensors8
+[2.444s] -- Looking for gz-math7 -- found version 7.5.2
+[2.444s] -- Looking for gz-common5 -- found version 5.7.1
+[2.444s] -- Looking for gz-transport13 -- found version 13.5.0
+[2.444s] -- Looking for gz-rendering8 -- found version 8.2.3
+[2.444s] -- Looking for gz-msgs10 -- found version 10.3.2
+[2.445s] -- Looking for sdformat14 -- found version 14.8.0
+[2.445s] -- Searching for <gz-sensors8> component [air_pressure]
+[2.445s] -- Looking for gz-sensors8-air_pressure -- found version 8.2.2
+[2.445s] -- Searching for dependencies of gz-sensors8-air_pressure
+[2.446s] -- Searching for <gz-sensors8> component [air_speed]
+[2.446s] -- Looking for gz-sensors8-air_speed -- found version 8.2.2
+[2.446s] -- Searching for dependencies of gz-sensors8-air_speed
+[2.447s] -- Searching for <gz-sensors8> component [altimeter]
+[2.447s] -- Looking for gz-sensors8-altimeter -- found version 8.2.2
+[2.447s] -- Searching for dependencies of gz-sensors8-altimeter
+[2.448s] -- Searching for <gz-sensors8> component [imu]
+[2.448s] -- Looking for gz-sensors8-imu -- found version 8.2.2
+[2.448s] -- Searching for dependencies of gz-sensors8-imu
+[2.448s] -- Searching for <gz-sensors8> component [force_torque]
+[2.449s] -- Looking for gz-sensors8-force_torque -- found version 8.2.2
+[2.449s] -- Searching for dependencies of gz-sensors8-force_torque
+[2.449s] -- Searching for <gz-sensors8> component [logical_camera]
+[2.449s] -- Looking for gz-sensors8-logical_camera -- found version 8.2.2
+[2.450s] -- Searching for dependencies of gz-sensors8-logical_camera
+[2.450s] -- Searching for <gz-sensors8> component [magnetometer]
+[2.450s] -- Looking for gz-sensors8-magnetometer -- found version 8.2.2
+[2.450s] -- Searching for dependencies of gz-sensors8-magnetometer
+[2.451s] -- Searching for <gz-sensors8> component [navsat]
+[2.451s] -- Looking for gz-sensors8-navsat -- found version 8.2.2
+[2.451s] -- Searching for dependencies of gz-sensors8-navsat
+[2.451s] -- Searching for <gz-sensors8> component [dvl]
+[2.452s] -- Looking for gz-sensors8-dvl -- found version 8.2.2
+[2.452s] -- Searching for dependencies of gz-sensors8-dvl
+[2.452s] -- Looking for gz-sensors8 -- found version 8.2.2
+[2.452s] -- Searching for dependencies of gz-sensors8
+[2.461s] -- Looking for gz-math7 -- found version 7.5.2
+[2.461s] -- Looking for gz-common5 -- found version 5.7.1
+[2.461s] -- Looking for gz-transport13 -- found version 13.5.0
+[2.462s] -- Looking for gz-rendering8 -- found version 8.2.3
+[2.462s] -- Looking for gz-msgs10 -- found version 10.3.2
+[2.462s] -- Looking for sdformat14 -- found version 14.8.0
+[2.462s] -- Searching for <gz-sensors8> component [rendering]
+[2.462s] -- Looking for gz-sensors8-rendering -- found version 8.2.2
+[2.463s] -- Searching for dependencies of gz-sensors8-rendering
+[2.463s] -- Searching for <gz-sensors8> component [rendering]
+[2.463s] -- Searching for <gz-sensors8> component [lidar]
+[2.464s] -- Looking for gz-sensors8-lidar -- found version 8.2.2
+[2.464s] -- Searching for dependencies of gz-sensors8-lidar
+[2.464s] -- Looking for gz-sensors8 -- found version 8.2.2
+[2.464s] -- Searching for <gz-sensors8> component [gpu_lidar]
+[2.465s] -- Looking for gz-sensors8-gpu_lidar -- found version 8.2.2
+[2.465s] -- Searching for dependencies of gz-sensors8-gpu_lidar
+[2.465s] -- Looking for gz-sensors8 -- found version 8.2.2
+[2.465s] -- Searching for <gz-sensors8> component [camera]
+[2.466s] -- Looking for gz-sensors8-camera -- found version 8.2.2
+[2.466s] -- Searching for dependencies of gz-sensors8-camera
+[2.466s] -- Looking for gz-sensors8 -- found version 8.2.2
+[2.466s] -- Searching for <gz-sensors8> component [boundingbox_camera]
+[2.467s] -- Looking for gz-sensors8-boundingbox_camera -- found version 8.2.2
+[2.467s] -- Searching for dependencies of gz-sensors8-boundingbox_camera
+[2.467s] -- Searching for <gz-sensors8> component [segmentation_camera]
+[2.467s] -- Looking for gz-sensors8-segmentation_camera -- found version 8.2.2
+[2.467s] -- Searching for dependencies of gz-sensors8-segmentation_camera
+[2.468s] -- Searching for <gz-sensors8> component [depth_camera]
+[2.468s] -- Looking for gz-sensors8-depth_camera -- found version 8.2.2
+[2.468s] -- Searching for dependencies of gz-sensors8-depth_camera
+[2.468s] -- Looking for gz-sensors8 -- found version 8.2.2
+[2.469s] -- Searching for <gz-sensors8> component [rgbd_camera]
+[2.469s] -- Looking for gz-sensors8-rgbd_camera -- found version 8.2.2
+[2.469s] -- Searching for dependencies of gz-sensors8-rgbd_camera
+[2.469s] -- Looking for gz-sensors8 -- found version 8.2.2
+[2.470s] -- Searching for <gz-sensors8> component [thermal_camera]
+[2.470s] -- Looking for gz-sensors8-thermal_camera -- found version 8.2.2
+[2.470s] -- Searching for dependencies of gz-sensors8-thermal_camera
+[2.470s] -- Looking for gz-sensors8 -- found version 8.2.2
+[2.471s] -- Searching for <gz-sensors8> component [wide_angle_camera]
+[2.471s] -- Looking for gz-sensors8-wide_angle_camera -- found version 8.2.2
+[2.471s] -- Searching for dependencies of gz-sensors8-wide_angle_camera
+[2.472s] -- Looking for gz-rendering8 -- found version 8.2.3
+[2.472s] -- Looking for gz-math7 -- found version 7.5.2
+[2.472s] -- Looking for gz-utils2 -- found version 2.2.1
+[2.481s] -- Looking for gz-plugin2 -- found version 2.0.4
+[2.523s] -- Found ament_lint_auto: 0.17.4 (/opt/ros/jazzy/share/ament_lint_auto/cmake)
+[2.565s] -- Configuring done (2.6s)
+[2.623s] -- Generating done (0.0s)
+[2.624s] [33mCMake Warning:
+[2.624s]   Manually-specified variables were not used by the project:
+[2.624s] 
+[2.624s]     CMAKE_BUILD_PARALLEL_LEVEL
+[2.624s] 
+[2.624s] [0m
+[2.628s] -- Build files have been written to: /home/rml/ros2_ws/src/quad-sdk/build/gazebo_plugins
+[2.640s] Invoked command in '/home/rml/ros2_ws/src/quad-sdk/build/gazebo_plugins' returned '0': AMENT_PREFIX_PATH=/home/rml/ros2_ws/src/quad-sdk/install/quad_utils:/home/rml/ros2_ws/src/quad-sdk/install/quad_msgs:${AMENT_PREFIX_PATH} CMAKE_MODULE_PATH=/home/rml/ros2_ws/src/quad-sdk/install/quad_utils/share/quad_utils/cmake CMAKE_PREFIX_PATH=/home/rml/ros2_ws/src/quad-sdk/install/quad_utils:/home/rml/ros2_ws/src/quad-sdk/install/quad_msgs:/opt/ros/jazzy/opt/gz_sim_vendor:/opt/ros/jazzy/opt/gz_sensors_vendor:/opt/ros/jazzy/opt/gz_physics_vendor:/opt/ros/jazzy/opt/sdformat_vendor:/opt/ros/jazzy/opt/gz_gui_vendor:/opt/ros/jazzy/opt/gz_transport_vendor:/opt/ros/jazzy/opt/gz_rendering_vendor:/opt/ros/jazzy/opt/gz_plugin_vendor:/opt/ros/jazzy/opt/gz_fuel_tools_vendor:/opt/ros/jazzy/opt/gz_msgs_vendor:/opt/ros/jazzy/opt/gz_common_vendor:/opt/ros/jazzy/opt/gz_math_vendor:/opt/ros/jazzy/opt/gz_utils_vendor:/opt/ros/jazzy/opt/gz_tools_vendor:/opt/ros/jazzy/opt/gz_ogre_next_vendor:/opt/ros/jazzy/opt/gz_dartsim_vendor:/opt/ros/jazzy/opt/gz_cmake_vendor:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com LD_LIBRARY_PATH=/home/rml/ros2_ws/src/quad-sdk/install/quad_utils/lib:/home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/lib:${LD_LIBRARY_PATH} PYTHONPATH=/home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/lib/python3.12/site-packages:${PYTHONPATH} /usr/bin/cmake /home/rml/ros2_ws/src/quad-sdk/quad_simulator/gazebo_plugins -DCMAKE_BUILD_TYPE=Release -DCMAKE_BUILD_PARALLEL_LEVEL=1 -DCMAKE_INSTALL_PREFIX=/home/rml/ros2_ws/src/quad-sdk/install/gazebo_plugins
+[2.641s] Invoking command in '/home/rml/ros2_ws/src/quad-sdk/build/gazebo_plugins': AMENT_PREFIX_PATH=/home/rml/ros2_ws/src/quad-sdk/install/quad_utils:/home/rml/ros2_ws/src/quad-sdk/install/quad_msgs:${AMENT_PREFIX_PATH} CMAKE_MODULE_PATH=/home/rml/ros2_ws/src/quad-sdk/install/quad_utils/share/quad_utils/cmake CMAKE_PREFIX_PATH=/home/rml/ros2_ws/src/quad-sdk/install/quad_utils:/home/rml/ros2_ws/src/quad-sdk/install/quad_msgs:/opt/ros/jazzy/opt/gz_sim_vendor:/opt/ros/jazzy/opt/gz_sensors_vendor:/opt/ros/jazzy/opt/gz_physics_vendor:/opt/ros/jazzy/opt/sdformat_vendor:/opt/ros/jazzy/opt/gz_gui_vendor:/opt/ros/jazzy/opt/gz_transport_vendor:/opt/ros/jazzy/opt/gz_rendering_vendor:/opt/ros/jazzy/opt/gz_plugin_vendor:/opt/ros/jazzy/opt/gz_fuel_tools_vendor:/opt/ros/jazzy/opt/gz_msgs_vendor:/opt/ros/jazzy/opt/gz_common_vendor:/opt/ros/jazzy/opt/gz_math_vendor:/opt/ros/jazzy/opt/gz_utils_vendor:/opt/ros/jazzy/opt/gz_tools_vendor:/opt/ros/jazzy/opt/gz_ogre_next_vendor:/opt/ros/jazzy/opt/gz_dartsim_vendor:/opt/ros/jazzy/opt/gz_cmake_vendor:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com LD_LIBRARY_PATH=/home/rml/ros2_ws/src/quad-sdk/install/quad_utils/lib:/home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/lib:${LD_LIBRARY_PATH} PYTHONPATH=/home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/lib/python3.12/site-packages:${PYTHONPATH} /usr/bin/cmake --build /home/rml/ros2_ws/src/quad-sdk/build/gazebo_plugins -- -j16 -l16
+[2.680s] [ 25%] [32mBuilding CXX object CMakeFiles/quad_controller.dir/src/controller_plugin.cpp.o[0m
+[2.681s] [ 50%] [32mBuilding CXX object CMakeFiles/ground_truth_estimator.dir/src/estimator_plugin.cpp.o[0m
+[5.870s] [01m[K/home/rml/ros2_ws/src/quad-sdk/quad_simulator/gazebo_plugins/src/controller_plugin.cpp:[m[K In member function ‘[01m[Kvirtual controller_interface::return_type effort_controllers::QuadController::[01;32m[Kupdate[m[K(const rclcpp::Time&, const rclcpp::Duration&)[m[K’:
+[5.870s] [01m[K/home/rml/ros2_ws/src/quad-sdk/quad_simulator/gazebo_plugins/src/controller_plugin.cpp:203:25:[m[K [01;35m[Kwarning: [m[Kunused parameter ‘[01m[Ktime[m[K’ [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wunused-parameter-Wunused-parameter]8;;[m[K]
+[5.870s]   203 |     [01;35m[Kconst rclcpp::Time& time[m[K, const rclcpp::Duration& period) {
+[5.870s]       |     [01;35m[K~~~~~~~~~~~~~~~~~~~~^~~~[m[K
+[5.870s] [01m[K/home/rml/ros2_ws/src/quad-sdk/quad_simulator/gazebo_plugins/src/controller_plugin.cpp:203:55:[m[K [01;35m[Kwarning: [m[Kunused parameter ‘[01m[Kperiod[m[K’ [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wunused-parameter-Wunused-parameter]8;;[m[K]
+[5.871s]   203 |     const rclcpp::Time& time, [01;35m[Kconst rclcpp::Duration& period[m[K) {
+[5.871s]       |                               [01;35m[K~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~[m[K
+[6.872s] [01m[K/home/rml/ros2_ws/src/quad-sdk/quad_simulator/gazebo_plugins/src/estimator_plugin.cpp:[m[K In member function ‘[01m[Kvirtual void gz_plugins::GroundTruthEstimator::[01;32m[KConfigure[m[K(const gz::sim::v8::Entity&, const std::shared_ptr<const sdf::v14::Element>&, gz::sim::v8::EntityComponentManager&, gz::sim::v8::EventManager&)[m[K’:
+[6.872s] [01m[K/home/rml/ros2_ws/src/quad-sdk/quad_simulator/gazebo_plugins/src/estimator_plugin.cpp:10:66:[m[K [01;35m[Kwarning: [m[Kunused parameter ‘[01m[KeventMgr[m[K’ [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wunused-parameter-Wunused-parameter]8;;[m[K]
+[6.872s]    10 | z::sim::EntityComponentManager& ecm, [01;35m[Kgz::sim::EventManager& eventMgr[m[K) {
+[6.872s]       |                                      [01;35m[K~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~[m[K
+[6.872s] 
+[10.697s] [ 75%] [32m[1mLinking CXX shared library libquad_controller.so[0m
+[10.888s] [ 75%] Built target quad_controller
+[18.737s] [100%] [32m[1mLinking CXX shared library libground_truth_estimator.so[0m
+[19.085s] [100%] Built target ground_truth_estimator
+[19.089s] Invoked command in '/home/rml/ros2_ws/src/quad-sdk/build/gazebo_plugins' returned '0': AMENT_PREFIX_PATH=/home/rml/ros2_ws/src/quad-sdk/install/quad_utils:/home/rml/ros2_ws/src/quad-sdk/install/quad_msgs:${AMENT_PREFIX_PATH} CMAKE_MODULE_PATH=/home/rml/ros2_ws/src/quad-sdk/install/quad_utils/share/quad_utils/cmake CMAKE_PREFIX_PATH=/home/rml/ros2_ws/src/quad-sdk/install/quad_utils:/home/rml/ros2_ws/src/quad-sdk/install/quad_msgs:/opt/ros/jazzy/opt/gz_sim_vendor:/opt/ros/jazzy/opt/gz_sensors_vendor:/opt/ros/jazzy/opt/gz_physics_vendor:/opt/ros/jazzy/opt/sdformat_vendor:/opt/ros/jazzy/opt/gz_gui_vendor:/opt/ros/jazzy/opt/gz_transport_vendor:/opt/ros/jazzy/opt/gz_rendering_vendor:/opt/ros/jazzy/opt/gz_plugin_vendor:/opt/ros/jazzy/opt/gz_fuel_tools_vendor:/opt/ros/jazzy/opt/gz_msgs_vendor:/opt/ros/jazzy/opt/gz_common_vendor:/opt/ros/jazzy/opt/gz_math_vendor:/opt/ros/jazzy/opt/gz_utils_vendor:/opt/ros/jazzy/opt/gz_tools_vendor:/opt/ros/jazzy/opt/gz_ogre_next_vendor:/opt/ros/jazzy/opt/gz_dartsim_vendor:/opt/ros/jazzy/opt/gz_cmake_vendor:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com LD_LIBRARY_PATH=/home/rml/ros2_ws/src/quad-sdk/install/quad_utils/lib:/home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/lib:${LD_LIBRARY_PATH} PYTHONPATH=/home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/lib/python3.12/site-packages:${PYTHONPATH} /usr/bin/cmake --build /home/rml/ros2_ws/src/quad-sdk/build/gazebo_plugins -- -j16 -l16
+[19.090s] Invoking command in '/home/rml/ros2_ws/src/quad-sdk/build/gazebo_plugins': AMENT_PREFIX_PATH=/home/rml/ros2_ws/src/quad-sdk/install/quad_utils:/home/rml/ros2_ws/src/quad-sdk/install/quad_msgs:${AMENT_PREFIX_PATH} CMAKE_MODULE_PATH=/home/rml/ros2_ws/src/quad-sdk/install/quad_utils/share/quad_utils/cmake CMAKE_PREFIX_PATH=/home/rml/ros2_ws/src/quad-sdk/install/quad_utils:/home/rml/ros2_ws/src/quad-sdk/install/quad_msgs:/opt/ros/jazzy/opt/gz_sim_vendor:/opt/ros/jazzy/opt/gz_sensors_vendor:/opt/ros/jazzy/opt/gz_physics_vendor:/opt/ros/jazzy/opt/sdformat_vendor:/opt/ros/jazzy/opt/gz_gui_vendor:/opt/ros/jazzy/opt/gz_transport_vendor:/opt/ros/jazzy/opt/gz_rendering_vendor:/opt/ros/jazzy/opt/gz_plugin_vendor:/opt/ros/jazzy/opt/gz_fuel_tools_vendor:/opt/ros/jazzy/opt/gz_msgs_vendor:/opt/ros/jazzy/opt/gz_common_vendor:/opt/ros/jazzy/opt/gz_math_vendor:/opt/ros/jazzy/opt/gz_utils_vendor:/opt/ros/jazzy/opt/gz_tools_vendor:/opt/ros/jazzy/opt/gz_ogre_next_vendor:/opt/ros/jazzy/opt/gz_dartsim_vendor:/opt/ros/jazzy/opt/gz_cmake_vendor:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com LD_LIBRARY_PATH=/home/rml/ros2_ws/src/quad-sdk/install/quad_utils/lib:/home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/lib:${LD_LIBRARY_PATH} PYTHONPATH=/home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/lib/python3.12/site-packages:${PYTHONPATH} /usr/bin/cmake --install /home/rml/ros2_ws/src/quad-sdk/build/gazebo_plugins
+[19.093s] -- Install configuration: "Release"
+[19.093s] -- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/gazebo_plugins/share/gazebo_plugins/controller_plugin.xml
+[19.093s] -- Installing: /home/rml/ros2_ws/src/quad-sdk/install/gazebo_plugins/lib/libground_truth_estimator.so
+[19.095s] -- Set non-toolchain portion of runtime path of "/home/rml/ros2_ws/src/quad-sdk/install/gazebo_plugins/lib/libground_truth_estimator.so" to ""
+[19.095s] -- Installing: /home/rml/ros2_ws/src/quad-sdk/install/gazebo_plugins/lib/libquad_controller.so
+[19.095s] -- Set non-toolchain portion of runtime path of "/home/rml/ros2_ws/src/quad-sdk/install/gazebo_plugins/lib/libquad_controller.so" to ""
+[19.095s] -- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/gazebo_plugins/include
+[19.095s] -- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/gazebo_plugins/include/gazebo_plugins
+[19.095s] -- Installing: /home/rml/ros2_ws/src/quad-sdk/install/gazebo_plugins/include/gazebo_plugins/controller_plugin.hpp
+[19.095s] -- Installing: /home/rml/ros2_ws/src/quad-sdk/install/gazebo_plugins/include/gazebo_plugins/estimator_plugin.hpp
+[19.095s] -- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/gazebo_plugins/share/ament_index/resource_index/package_run_dependencies/gazebo_plugins
+[19.096s] -- Installing: /home/rml/ros2_ws/src/quad-sdk/install/gazebo_plugins/share/ament_index/resource_index/parent_prefix_path/gazebo_plugins
+[19.096s] -- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/gazebo_plugins/share/gazebo_plugins/environment/ament_prefix_path.sh
+[19.096s] -- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/gazebo_plugins/share/gazebo_plugins/environment/ament_prefix_path.dsv
+[19.096s] -- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/gazebo_plugins/share/gazebo_plugins/environment/path.sh
+[19.096s] -- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/gazebo_plugins/share/gazebo_plugins/environment/path.dsv
+[19.096s] -- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/gazebo_plugins/share/gazebo_plugins/local_setup.bash
+[19.096s] -- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/gazebo_plugins/share/gazebo_plugins/local_setup.sh
+[19.096s] -- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/gazebo_plugins/share/gazebo_plugins/local_setup.zsh
+[19.096s] -- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/gazebo_plugins/share/gazebo_plugins/local_setup.dsv
+[19.096s] -- Installing: /home/rml/ros2_ws/src/quad-sdk/install/gazebo_plugins/share/gazebo_plugins/package.dsv
+[19.096s] -- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/gazebo_plugins/share/ament_index/resource_index/packages/gazebo_plugins
+[19.096s] -- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/gazebo_plugins/share/ament_index/resource_index/controller_interface__pluginlib__plugin/gazebo_plugins
+[19.096s] -- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/gazebo_plugins/share/gazebo_plugins/cmake/ament_cmake_export_include_directories-extras.cmake
+[19.096s] -- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/gazebo_plugins/share/gazebo_plugins/cmake/gazebo_pluginsConfig.cmake
+[19.096s] -- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/gazebo_plugins/share/gazebo_plugins/cmake/gazebo_pluginsConfig-version.cmake
+[19.096s] -- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/gazebo_plugins/share/gazebo_plugins/package.xml
+[19.096s] Invoked command in '/home/rml/ros2_ws/src/quad-sdk/build/gazebo_plugins' returned '0': AMENT_PREFIX_PATH=/home/rml/ros2_ws/src/quad-sdk/install/quad_utils:/home/rml/ros2_ws/src/quad-sdk/install/quad_msgs:${AMENT_PREFIX_PATH} CMAKE_MODULE_PATH=/home/rml/ros2_ws/src/quad-sdk/install/quad_utils/share/quad_utils/cmake CMAKE_PREFIX_PATH=/home/rml/ros2_ws/src/quad-sdk/install/quad_utils:/home/rml/ros2_ws/src/quad-sdk/install/quad_msgs:/opt/ros/jazzy/opt/gz_sim_vendor:/opt/ros/jazzy/opt/gz_sensors_vendor:/opt/ros/jazzy/opt/gz_physics_vendor:/opt/ros/jazzy/opt/sdformat_vendor:/opt/ros/jazzy/opt/gz_gui_vendor:/opt/ros/jazzy/opt/gz_transport_vendor:/opt/ros/jazzy/opt/gz_rendering_vendor:/opt/ros/jazzy/opt/gz_plugin_vendor:/opt/ros/jazzy/opt/gz_fuel_tools_vendor:/opt/ros/jazzy/opt/gz_msgs_vendor:/opt/ros/jazzy/opt/gz_common_vendor:/opt/ros/jazzy/opt/gz_math_vendor:/opt/ros/jazzy/opt/gz_utils_vendor:/opt/ros/jazzy/opt/gz_tools_vendor:/opt/ros/jazzy/opt/gz_ogre_next_vendor:/opt/ros/jazzy/opt/gz_dartsim_vendor:/opt/ros/jazzy/opt/gz_cmake_vendor:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com LD_LIBRARY_PATH=/home/rml/ros2_ws/src/quad-sdk/install/quad_utils/lib:/home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/lib:${LD_LIBRARY_PATH} PYTHONPATH=/home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/lib/python3.12/site-packages:${PYTHONPATH} /usr/bin/cmake --install /home/rml/ros2_ws/src/quad-sdk/build/gazebo_plugins

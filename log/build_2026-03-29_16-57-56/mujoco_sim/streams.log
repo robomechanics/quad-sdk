@@ -1,0 +1,44 @@
+[0.005s] Invoking command in '/home/rml/ros2_ws/src/quad-sdk/build/mujoco_sim': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/rml/ros2_ws/src/quad-sdk/install/teleop_twist_keyboard:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake /home/rml/ros2_ws/src/quad-sdk/quad_simulator/mujoco_sim -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/home/rml/ros2_ws/src/quad-sdk/install/mujoco_sim
+[0.032s] -- The C compiler identification is GNU 13.3.0
+[0.056s] -- The CXX compiler identification is GNU 13.3.0
+[0.063s] -- Detecting C compiler ABI info
+[0.097s] -- Detecting C compiler ABI info - done
+[0.101s] -- Check for working C compiler: /usr/bin/cc - skipped
+[0.102s] -- Detecting C compile features
+[0.102s] -- Detecting C compile features - done
+[0.106s] -- Detecting CXX compiler ABI info
+[0.144s] -- Detecting CXX compiler ABI info - done
+[0.149s] -- Check for working CXX compiler: /usr/bin/c++ - skipped
+[0.149s] -- Detecting CXX compile features
+[0.149s] -- Detecting CXX compile features - done
+[0.151s] -- Found ament_cmake: 2.5.5 (/opt/ros/jazzy/share/ament_cmake/cmake)
+[0.225s] -- Found Python3: /usr/bin/python3 (found version "3.12.3") found components: Interpreter 
+[0.292s] -- Found rclcpp: 28.1.16 (/opt/ros/jazzy/share/rclcpp/cmake)
+[0.322s] -- Found rosidl_generator_c: 4.6.7 (/opt/ros/jazzy/share/rosidl_generator_c/cmake)
+[0.331s] -- Found rosidl_generator_cpp: 4.6.7 (/opt/ros/jazzy/share/rosidl_generator_cpp/cmake)
+[0.342s] -- Using all available rosidl_typesupport_c: rosidl_typesupport_fastrtps_c;rosidl_typesupport_introspection_c
+[0.353s] -- Using all available rosidl_typesupport_cpp: rosidl_typesupport_fastrtps_cpp;rosidl_typesupport_introspection_cpp
+[0.400s] -- Found rmw_implementation_cmake: 7.3.3 (/opt/ros/jazzy/share/rmw_implementation_cmake/cmake)
+[0.403s] -- Found rmw_fastrtps_cpp: 8.4.3 (/opt/ros/jazzy/share/rmw_fastrtps_cpp/cmake)
+[0.444s] -- Found OpenSSL: /usr/lib/x86_64-linux-gnu/libcrypto.so (found version "3.0.13")  
+[0.455s] -- Found FastRTPS: /opt/ros/jazzy/include (Required is at least version "2.13") 
+[0.466s] -- Using RMW implementation 'rmw_fastrtps_cpp' as default
+[0.514s] [31mCMake Error at CMakeLists.txt:6 (find_package):
+[0.514s]   By not providing "Findmujoco_ros2_control.cmake" in CMAKE_MODULE_PATH this
+[0.514s]   project has asked CMake to find a package configuration file provided by
+[0.514s]   "mujoco_ros2_control", but CMake did not find one.
+[0.514s] 
+[0.514s]   Could not find a package configuration file provided by
+[0.514s]   "mujoco_ros2_control" with any of the following names:
+[0.514s] 
+[0.514s]     mujoco_ros2_controlConfig.cmake
+[0.514s]     mujoco_ros2_control-config.cmake
+[0.514s] 
+[0.514s]   Add the installation prefix of "mujoco_ros2_control" to CMAKE_PREFIX_PATH
+[0.514s]   or set "mujoco_ros2_control_DIR" to a directory containing one of the above
+[0.514s]   files.  If "mujoco_ros2_control" provides a separate development package or
+[0.514s]   SDK, be sure it has been installed.
+[0.514s] 
+[0.514s] [0m
+[0.514s] -- Configuring incomplete, errors occurred!
+[0.518s] Invoked command in '/home/rml/ros2_ws/src/quad-sdk/build/mujoco_sim' returned '1': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/rml/ros2_ws/src/quad-sdk/install/teleop_twist_keyboard:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake /home/rml/ros2_ws/src/quad-sdk/quad_simulator/mujoco_sim -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/home/rml/ros2_ws/src/quad-sdk/install/mujoco_sim

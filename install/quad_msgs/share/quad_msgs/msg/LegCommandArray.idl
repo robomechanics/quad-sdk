@@ -1,0 +1,22 @@
+// generated from rosidl_adapter/resource/msg.idl.em
+// with input from quad_msgs/msg/LegCommandArray.msg
+// generated code does not contain a copyright notice
+
+#include "quad_msgs/msg/LegCommand.idl"
+#include "std_msgs/msg/Header.idl"
+
+module quad_msgs {
+  module msg {
+    @verbatim (language="comment", text=
+      "This is a message of leg commands for each leg on quad. The order is in FL, BL, FR, BR." "\n"
+      "" "\n"
+      "Accurate timing information is stored in the header")
+    struct LegCommandArray {
+      std_msgs::msg::Header header;
+
+      @verbatim (language="comment", text=
+        "FL, BL, FR, BR")
+      sequence<quad_msgs::msg::LegCommand> leg_commands;
+    };
+  };
+};

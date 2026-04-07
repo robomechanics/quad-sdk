@@ -1,0 +1,8 @@
+source;share/quad_logger/hook/cmake_prefix_path.ps1
+source;share/quad_logger/hook/cmake_prefix_path.dsv
+source;share/quad_logger/hook/cmake_prefix_path.sh
+source;share/quad_logger/local_setup.bash
+source;share/quad_logger/local_setup.dsv
+source;share/quad_logger/local_setup.ps1
+source;share/quad_logger/local_setup.sh
+source;share/quad_logger/local_setup.zsh

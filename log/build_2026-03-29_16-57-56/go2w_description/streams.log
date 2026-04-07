@@ -1,0 +1,45 @@
+[0.003s] Invoking command in '/home/rml/ros2_ws/src/quad-sdk/build/go2w_description': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/rml/ros2_ws/src/quad-sdk/install/teleop_twist_keyboard:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake /home/rml/ros2_ws/src/quad-sdk/quad_simulator/go2w_description -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/home/rml/ros2_ws/src/quad-sdk/install/go2w_description
+[0.009s] -- Found ament_cmake: 2.5.5 (/opt/ros/jazzy/share/ament_cmake/cmake)
+[0.103s] -- Found ament_lint_auto: 0.17.4 (/opt/ros/jazzy/share/ament_lint_auto/cmake)
+[0.145s] -- Added test 'lint_cmake' to check CMake code style
+[0.146s] -- Added test 'xmllint' to check XML markup files
+[0.146s] -- Configuring done (0.1s)
+[0.148s] -- Generating done (0.0s)
+[0.149s] -- Build files have been written to: /home/rml/ros2_ws/src/quad-sdk/build/go2w_description
+[0.150s] Invoked command in '/home/rml/ros2_ws/src/quad-sdk/build/go2w_description' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/rml/ros2_ws/src/quad-sdk/install/teleop_twist_keyboard:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake /home/rml/ros2_ws/src/quad-sdk/quad_simulator/go2w_description -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/home/rml/ros2_ws/src/quad-sdk/install/go2w_description
+[0.151s] Invoking command in '/home/rml/ros2_ws/src/quad-sdk/build/go2w_description': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/rml/ros2_ws/src/quad-sdk/install/teleop_twist_keyboard:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake --build /home/rml/ros2_ws/src/quad-sdk/build/go2w_description -- -j16 -l16
+[0.165s] Invoked command in '/home/rml/ros2_ws/src/quad-sdk/build/go2w_description' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/rml/ros2_ws/src/quad-sdk/install/teleop_twist_keyboard:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake --build /home/rml/ros2_ws/src/quad-sdk/build/go2w_description -- -j16 -l16
+[0.166s] Invoking command in '/home/rml/ros2_ws/src/quad-sdk/build/go2w_description': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/rml/ros2_ws/src/quad-sdk/install/teleop_twist_keyboard:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake --install /home/rml/ros2_ws/src/quad-sdk/build/go2w_description
+[0.169s] -- Install configuration: "Release"
+[0.169s] -- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/go2w_description/share/go2w_description/models
+[0.169s] -- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/go2w_description/share/go2w_description/models/go2w
+[0.169s] -- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/go2w_description/share/go2w_description/models/go2w/urdf
+[0.169s] -- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/go2w_description/share/go2w_description/models/go2w/urdf/go2w.urdf.xacro
+[0.169s] -- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/go2w_description/share/go2w_description/models/go2w/dae
+[0.169s] -- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/go2w_description/share/go2w_description/models/go2w/dae/calf_mirror.stl
+[0.169s] -- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/go2w_description/share/go2w_description/models/go2w/dae/body.dae
+[0.169s] -- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/go2w_description/share/go2w_description/models/go2w/dae/hip.dae
+[0.169s] -- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/go2w_description/share/go2w_description/models/go2w/dae/thigh.dae
+[0.169s] -- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/go2w_description/share/go2w_description/models/go2w/dae/left_wheel.dae
+[0.169s] -- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/go2w_description/share/go2w_description/models/go2w/dae/foot.dae
+[0.169s] -- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/go2w_description/share/go2w_description/models/go2w/dae/right_wheel.dae
+[0.169s] -- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/go2w_description/share/go2w_description/models/go2w/dae/calf.stl
+[0.169s] -- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/go2w_description/share/go2w_description/models/go2w/dae/thigh_mirror.dae
+[0.169s] -- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/go2w_description/share/go2w_description/models/go2w/go2w.sdf.xacro
+[0.169s] -- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/go2w_description/share/go2w_description/models/go2w/model.config
+[0.169s] -- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/go2w_description/share/ament_index/resource_index/package_run_dependencies/go2w_description
+[0.169s] -- Installing: /home/rml/ros2_ws/src/quad-sdk/install/go2w_description/share/ament_index/resource_index/parent_prefix_path/go2w_description
+[0.169s] -- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/go2w_description/share/go2w_description/environment/ament_prefix_path.sh
+[0.169s] -- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/go2w_description/share/go2w_description/environment/ament_prefix_path.dsv
+[0.169s] -- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/go2w_description/share/go2w_description/environment/path.sh
+[0.169s] -- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/go2w_description/share/go2w_description/environment/path.dsv
+[0.169s] -- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/go2w_description/share/go2w_description/local_setup.bash
+[0.169s] -- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/go2w_description/share/go2w_description/local_setup.sh
+[0.169s] -- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/go2w_description/share/go2w_description/local_setup.zsh
+[0.169s] -- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/go2w_description/share/go2w_description/local_setup.dsv
+[0.170s] -- Installing: /home/rml/ros2_ws/src/quad-sdk/install/go2w_description/share/go2w_description/package.dsv
+[0.170s] -- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/go2w_description/share/ament_index/resource_index/packages/go2w_description
+[0.170s] -- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/go2w_description/share/go2w_description/cmake/go2w_descriptionConfig.cmake
+[0.170s] -- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/go2w_description/share/go2w_description/cmake/go2w_descriptionConfig-version.cmake
+[0.170s] -- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/go2w_description/share/go2w_description/package.xml
+[0.170s] Invoked command in '/home/rml/ros2_ws/src/quad-sdk/build/go2w_description' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/rml/ros2_ws/src/quad-sdk/install/teleop_twist_keyboard:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake --install /home/rml/ros2_ws/src/quad-sdk/build/go2w_description

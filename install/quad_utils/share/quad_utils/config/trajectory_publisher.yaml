@@ -1,0 +1,11 @@
+/**/trajectory_publisher:
+  ros__parameters:
+    trajectory_publisher:
+      update_rate: 60.0
+      playback_speed: 1.0
+      traj_source: topic
+    topics:
+      global_plan: global_plan
+      state:
+        trajectory: state/trajectory
+    map_frame: map

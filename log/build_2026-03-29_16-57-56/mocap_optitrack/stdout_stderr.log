@@ -1,0 +1,45 @@
+-- Found ament_cmake: 2.5.5 (/opt/ros/jazzy/share/ament_cmake/cmake)
+-- Found rclcpp: 28.1.16 (/opt/ros/jazzy/share/rclcpp/cmake)
+-- Found rosidl_generator_c: 4.6.7 (/opt/ros/jazzy/share/rosidl_generator_c/cmake)
+-- Found rosidl_generator_cpp: 4.6.7 (/opt/ros/jazzy/share/rosidl_generator_cpp/cmake)
+-- Using all available rosidl_typesupport_c: rosidl_typesupport_fastrtps_c;rosidl_typesupport_introspection_c
+-- Using all available rosidl_typesupport_cpp: rosidl_typesupport_fastrtps_cpp;rosidl_typesupport_introspection_cpp
+-- Found rmw_implementation_cmake: 7.3.3 (/opt/ros/jazzy/share/rmw_implementation_cmake/cmake)
+-- Found rmw_fastrtps_cpp: 8.4.3 (/opt/ros/jazzy/share/rmw_fastrtps_cpp/cmake)
+-- Using RMW implementation 'rmw_fastrtps_cpp' as default
+-- Found tf2_ros: 0.36.19 (/opt/ros/jazzy/share/tf2_ros/cmake)
+-- Found nav_msgs: 5.3.6 (/opt/ros/jazzy/share/nav_msgs/cmake)
+-- Found ament_lint_auto: 0.17.4 (/opt/ros/jazzy/share/ament_lint_auto/cmake)
+-- Added test 'cppcheck' to perform static code analysis on C / C++ code
+-- Configured cppcheck include dirs: /home/rml/ros2_ws/src/quad-sdk/external/mocap_optitrack/include
+-- Configured cppcheck exclude dirs and/or files: 
+-- Added test 'flake8' to check Python code syntax and style conventions
+-- Configured 'flake8' exclude dirs and/or files: 
+-- Added test 'lint_cmake' to check CMake code style
+-- Added test 'pep257' to check Python code against some of the docstring style conventions in PEP 257
+-- Added test 'xmllint' to check XML markup files
+-- Configuring done (0.3s)
+-- Generating done (0.1s)
+-- Build files have been written to: /home/rml/ros2_ws/src/quad-sdk/build/mocap_optitrack
+[100%] Built target mocap_optitrack_mocap_node
+-- Install configuration: "Release"
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/mocap_optitrack/share/mocap_optitrack//launch
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/mocap_optitrack/share/mocap_optitrack//launch/mocap.launch.py
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/mocap_optitrack/share/mocap_optitrack//config
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/mocap_optitrack/share/mocap_optitrack//config/mocap.yaml
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/mocap_optitrack/share/ament_index/resource_index/package_run_dependencies/mocap_optitrack
+-- Installing: /home/rml/ros2_ws/src/quad-sdk/install/mocap_optitrack/share/ament_index/resource_index/parent_prefix_path/mocap_optitrack
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/mocap_optitrack/share/mocap_optitrack/environment/ament_prefix_path.sh
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/mocap_optitrack/share/mocap_optitrack/environment/ament_prefix_path.dsv
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/mocap_optitrack/share/mocap_optitrack/environment/path.sh
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/mocap_optitrack/share/mocap_optitrack/environment/path.dsv
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/mocap_optitrack/share/mocap_optitrack/local_setup.bash
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/mocap_optitrack/share/mocap_optitrack/local_setup.sh
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/mocap_optitrack/share/mocap_optitrack/local_setup.zsh
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/mocap_optitrack/share/mocap_optitrack/local_setup.dsv
+-- Installing: /home/rml/ros2_ws/src/quad-sdk/install/mocap_optitrack/share/mocap_optitrack/package.dsv
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/mocap_optitrack/share/ament_index/resource_index/packages/mocap_optitrack
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/mocap_optitrack/share/mocap_optitrack/cmake/mocap_optitrackConfig.cmake
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/mocap_optitrack/share/mocap_optitrack/cmake/mocap_optitrackConfig-version.cmake
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/mocap_optitrack/share/mocap_optitrack/package.xml
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/mocap_optitrack/lib/mocap_optitrack/mocap_node

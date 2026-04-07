@@ -1,0 +1,126 @@
+-- Found ament_cmake: 2.5.5 (/opt/ros/jazzy/share/ament_cmake/cmake)
+-- Found Python3: /usr/bin/python3 (found version "3.12.3") found components: Interpreter 
+-- Found rclcpp: 28.1.16 (/opt/ros/jazzy/share/rclcpp/cmake)
+-- Found rosidl_generator_c: 4.6.7 (/opt/ros/jazzy/share/rosidl_generator_c/cmake)
+-- Found rosidl_generator_cpp: 4.6.7 (/opt/ros/jazzy/share/rosidl_generator_cpp/cmake)
+-- Using all available rosidl_typesupport_c: rosidl_typesupport_fastrtps_c;rosidl_typesupport_introspection_c
+-- Using all available rosidl_typesupport_cpp: rosidl_typesupport_fastrtps_cpp;rosidl_typesupport_introspection_cpp
+-- Found rmw_implementation_cmake: 7.3.3 (/opt/ros/jazzy/share/rmw_implementation_cmake/cmake)
+-- Found rmw_fastrtps_cpp: 8.4.3 (/opt/ros/jazzy/share/rmw_fastrtps_cpp/cmake)
+-- Using RMW implementation 'rmw_fastrtps_cpp' as default
+-- Found geometry_msgs: 5.3.6 (/opt/ros/jazzy/share/geometry_msgs/cmake)
+-- Found visualization_msgs: 5.3.6 (/opt/ros/jazzy/share/visualization_msgs/cmake)
+-- Found tf2: 0.36.19 (/opt/ros/jazzy/share/tf2/cmake)
+-- Found tf2_ros: 0.36.19 (/opt/ros/jazzy/share/tf2_ros/cmake)
+-- Found tf2_geometry_msgs: 0.36.19 (/opt/ros/jazzy/share/tf2_geometry_msgs/cmake)
+-- Found eigen3_cmake_module: 0.3.0 (/opt/ros/jazzy/share/eigen3_cmake_module/cmake)
+-- Ensuring Eigen3 include directory is part of orocos-kdl CMake target
+-- Found ros_gz_interfaces: 1.0.18 (/opt/ros/jazzy/share/ros_gz_interfaces/cmake)
+-- Found quad_utils: 0.0.0 (/home/rml/ros2_ws/src/quad-sdk/install/quad_utils/share/quad_utils/cmake)
+-- Setting yaml-cpp_DIR to: '/opt/ros/jazzy/share/yaml_cpp_vendor/cmake/../../../opt/yaml_cpp_vendor/share/cmake/yaml-cpp'
+[33mCMake Warning (dev) at /usr/lib/x86_64-linux-gnu/cmake/pcl/Modules/FindFLANN.cmake:45 (find_package):
+  Policy CMP0144 is not set: find_package uses upper-case <PACKAGENAME>_ROOT
+  variables.  Run "cmake --help-policy CMP0144" for policy details.  Use the
+  cmake_policy command to set the policy and suppress this warning.
+
+  CMake variable FLANN_ROOT is set to:
+
+    /usr
+
+  For compatibility, find_package is ignoring the variable, but code in a
+  .cmake module might still use it.
+Call Stack (most recent call first):
+  /usr/lib/x86_64-linux-gnu/cmake/pcl/PCLConfig.cmake:261 (find_package)
+  /usr/lib/x86_64-linux-gnu/cmake/pcl/PCLConfig.cmake:306 (find_flann)
+  /usr/lib/x86_64-linux-gnu/cmake/pcl/PCLConfig.cmake:570 (find_external_library)
+  /opt/ros/jazzy/share/pcl_conversions/cmake/ament_cmake_export_dependencies-extras.cmake:21 (find_package)
+  /opt/ros/jazzy/share/pcl_conversions/cmake/pcl_conversionsConfig.cmake:41 (include)
+  /home/rml/ros2_ws/src/quad-sdk/install/quad_utils/share/quad_utils/cmake/ament_cmake_export_dependencies-extras.cmake:21 (find_package)
+  /home/rml/ros2_ws/src/quad-sdk/install/quad_utils/share/quad_utils/cmake/quad_utilsConfig.cmake:41 (include)
+  CMakeLists.txt:17 (find_package)
+This warning is for project developers.  Use -Wno-dev to suppress it.
+[0m
+-- Found flann version 1.9.2
+-- OpenNI found (version: 1.5.4.0, include: /usr/include/ni, lib: /usr/lib/libOpenNI.so;libusb::libusb)
+-- OpenNI2 found (version: 2.2.0.33, include: /usr/include/openni2, lib: /usr/lib/x86_64-linux-gnu/libOpenNI2.so;libusb::libusb)
+-- Could NOT find Pcap (missing: PCAP_LIBRARIES PCAP_INCLUDE_DIRS) 
+-- OpenNI found (version: 1.5.4.0, include: /usr/include/ni, lib: /usr/lib/libOpenNI.so;libusb::libusb)
+-- OpenNI2 found (version: 2.2.0.33, include: /usr/include/openni2, lib: /usr/lib/x86_64-linux-gnu/libOpenNI2.so;libusb::libusb)
+-- Found Qhull version 8.0.2
+-- OpenNI found (version: 1.5.4.0, include: /usr/include/ni, lib: /usr/lib/libOpenNI.so;libusb::libusb)
+-- pinocchio_default FOUND. pinocchio_default at /opt/ros/jazzy/lib/x86_64-linux-gnu/libpinocchio_default.so
+-- pinocchio_parsers FOUND. pinocchio_parsers at /opt/ros/jazzy/lib/x86_64-linux-gnu/libpinocchio_parsers.so
+-- boost_filesystem FOUND. boost_filesystem at /lib/x86_64-linux-gnu/libboost_filesystem.so
+-- eigenpy FOUND. eigenpy at /opt/ros/jazzy/lib/x86_64-linux-gnu/libeigenpy.so
+-- Checking for NumPy
+--   NUMPY_INCLUDE_DIRS=/usr/lib/python3/dist-packages/numpy/core/include
+--   NUMPY_VERSION=1.26.4
+-- Found Python3: /usr/bin/python3 (found version "3.12.3") found components: Interpreter Development.Module NumPy 
+-- PythonLibraryDirs: 
+-- PythonLibVersionString: 3.12.3
+-- Python site lib: lib/python3.12/site-packages
+-- Python include dirs: /usr/include/python3.12
+-- Checking for NumPy
+--   NUMPY_INCLUDE_DIRS=/usr/lib/python3/dist-packages/numpy/core/include
+--   NUMPY_VERSION=1.26.4
+-- NumPy include dir: /usr/lib/python3/dist-packages/numpy/core/include
+-- Default C++ standard: 201703
+-- C++ standard sufficient: Minimal required 14, currently defined: 17
+-- CMAKE_CXX_STANDARD was not set: automatically set to currently defined standard 17
+-- hpp-fcl FOUND. hpp-fcl at /opt/ros/jazzy/lib/x86_64-linux-gnu/libhpp-fcl.so
+-- C++ standard sufficient: Minimal required 14, currently defined: 17
+-- C++ standard sufficient: Minimal required 14, currently defined: 17
+-- Found ament_lint_auto: 0.17.4 (/opt/ros/jazzy/share/ament_lint_auto/cmake)
+-- Configuring done (2.1s)
+-- Generating done (0.0s)
+[33mCMake Warning:
+  Manually-specified variables were not used by the project:
+
+    CMAKE_BUILD_PARALLEL_LEVEL
+
+[0m
+-- Build files have been written to: /home/rml/ros2_ws/src/quad-sdk/build/force_applicator
+[ 20%] [32mBuilding CXX object CMakeFiles/force_applicator.dir/src/force_applicator_node.cpp.o[0m
+[ 40%] [32mBuilding CXX object CMakeFiles/force_applicator.dir/src/force_applicator.cpp.o[0m
+[01m[K/home/rml/ros2_ws/src/quad-sdk/force_applicator/src/force_applicator.cpp:[m[K In member function ‘[01m[Kvoid ForceApplicator::[01;32m[KapplyForce[m[K()[m[K’:
+[01m[K/home/rml/ros2_ws/src/quad-sdk/force_applicator/src/force_applicator.cpp:163:10:[m[K [01;35m[Kwarning: [m[K‘[01m[Ktx[m[K’ may be used uninitialized [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wmaybe-uninitialized-Wmaybe-uninitialized]8;;[m[K]
+  163 |   double [01;35m[Ktx[m[K, ty, tz;
+      |          [01;35m[K^~[m[K
+[01m[K/home/rml/ros2_ws/src/quad-sdk/force_applicator/src/force_applicator.cpp:163:14:[m[K [01;35m[Kwarning: [m[K‘[01m[Kty[m[K’ may be used uninitialized [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wmaybe-uninitialized-Wmaybe-uninitialized]8;;[m[K]
+  163 |   double tx, [01;35m[Kty[m[K, tz;
+      |              [01;35m[K^~[m[K
+[01m[K/home/rml/ros2_ws/src/quad-sdk/force_applicator/src/force_applicator.cpp:163:18:[m[K [01;35m[Kwarning: [m[K‘[01m[Ktz[m[K’ may be used uninitialized [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wmaybe-uninitialized-Wmaybe-uninitialized]8;;[m[K]
+  163 |   double tx, ty, [01;35m[Ktz[m[K;
+      |                  [01;35m[K^~[m[K
+[ 60%] [32m[1mLinking CXX static library libforce_applicator.a[0m
+[ 60%] Built target force_applicator
+[ 80%] [32mBuilding CXX object CMakeFiles/force_applicator_node.dir/src/force_applicator_node.cpp.o[0m
+[100%] [32m[1mLinking CXX executable force_applicator_node[0m
+[100%] Built target force_applicator_node
+-- Install configuration: "Release"
+-- Installing: /home/rml/ros2_ws/src/quad-sdk/install/force_applicator/lib/force_applicator/libforce_applicator.a
+-- Installing: /home/rml/ros2_ws/src/quad-sdk/install/force_applicator/lib/force_applicator/force_applicator_node
+-- Set non-toolchain portion of runtime path of "/home/rml/ros2_ws/src/quad-sdk/install/force_applicator/lib/force_applicator/force_applicator_node" to ""
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/force_applicator/share/force_applicator/config
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/force_applicator/share/force_applicator/config/force_applicator.yaml
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/force_applicator/share/force_applicator/config/force_applicator_topics.yaml
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/force_applicator/include
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/force_applicator/include/force_applicator
+-- Installing: /home/rml/ros2_ws/src/quad-sdk/install/force_applicator/include/force_applicator/force_applicator.hpp
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/force_applicator/share/ament_index/resource_index/package_run_dependencies/force_applicator
+-- Installing: /home/rml/ros2_ws/src/quad-sdk/install/force_applicator/share/ament_index/resource_index/parent_prefix_path/force_applicator
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/force_applicator/share/force_applicator/environment/ament_prefix_path.sh
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/force_applicator/share/force_applicator/environment/ament_prefix_path.dsv
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/force_applicator/share/force_applicator/environment/path.sh
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/force_applicator/share/force_applicator/environment/path.dsv
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/force_applicator/share/force_applicator/local_setup.bash
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/force_applicator/share/force_applicator/local_setup.sh
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/force_applicator/share/force_applicator/local_setup.zsh
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/force_applicator/share/force_applicator/local_setup.dsv
+-- Installing: /home/rml/ros2_ws/src/quad-sdk/install/force_applicator/share/force_applicator/package.dsv
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/force_applicator/share/ament_index/resource_index/packages/force_applicator
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/force_applicator/share/force_applicator/cmake/ament_cmake_export_include_directories-extras.cmake
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/force_applicator/share/force_applicator/cmake/ament_cmake_export_dependencies-extras.cmake
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/force_applicator/share/force_applicator/cmake/force_applicatorConfig.cmake
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/force_applicator/share/force_applicator/cmake/force_applicatorConfig-version.cmake
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/force_applicator/share/force_applicator/package.xml

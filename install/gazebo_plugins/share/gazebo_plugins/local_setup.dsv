@@ -1,0 +1,2 @@
+source;share/gazebo_plugins/environment/ament_prefix_path.sh
+source;share/gazebo_plugins/environment/path.sh

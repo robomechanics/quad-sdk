@@ -1,0 +1,2 @@
+source;share/force_applicator/environment/ament_prefix_path.sh
+source;share/force_applicator/environment/path.sh

@@ -1,0 +1,122 @@
+-- Found ament_cmake: 2.5.5 (/opt/ros/jazzy/share/ament_cmake/cmake)
+-- Found Python3: /usr/bin/python3 (found version "3.12.3") found components: Interpreter 
+-- Found quad_utils: 0.0.0 (/home/rml/ros2_ws/src/quad-sdk/install/quad_utils/share/quad_utils/cmake)
+-- Found rosidl_generator_c: 4.6.7 (/opt/ros/jazzy/share/rosidl_generator_c/cmake)
+-- Found rosidl_generator_cpp: 4.6.7 (/opt/ros/jazzy/share/rosidl_generator_cpp/cmake)
+-- Using all available rosidl_typesupport_c: rosidl_typesupport_fastrtps_c;rosidl_typesupport_introspection_c
+-- Using all available rosidl_typesupport_cpp: rosidl_typesupport_fastrtps_cpp;rosidl_typesupport_introspection_cpp
+-- Found rmw_implementation_cmake: 7.3.3 (/opt/ros/jazzy/share/rmw_implementation_cmake/cmake)
+-- Found rmw_fastrtps_cpp: 8.4.3 (/opt/ros/jazzy/share/rmw_fastrtps_cpp/cmake)
+-- Using RMW implementation 'rmw_fastrtps_cpp' as default
+-- Setting yaml-cpp_DIR to: '/opt/ros/jazzy/share/yaml_cpp_vendor/cmake/../../../opt/yaml_cpp_vendor/share/cmake/yaml-cpp'
+-- Found flann version 1.9.2
+-- OpenNI found (version: 1.5.4.0, include: /usr/include/ni, lib: /usr/lib/libOpenNI.so;libusb::libusb)
+-- OpenNI2 found (version: 2.2.0.33, include: /usr/include/openni2, lib: /usr/lib/x86_64-linux-gnu/libOpenNI2.so;libusb::libusb)
+-- Could NOT find Pcap (missing: PCAP_LIBRARIES PCAP_INCLUDE_DIRS) 
+-- OpenNI found (version: 1.5.4.0, include: /usr/include/ni, lib: /usr/lib/libOpenNI.so;libusb::libusb)
+-- OpenNI2 found (version: 2.2.0.33, include: /usr/include/openni2, lib: /usr/lib/x86_64-linux-gnu/libOpenNI2.so;libusb::libusb)
+-- Found Qhull version 8.0.2
+-- OpenNI found (version: 1.5.4.0, include: /usr/include/ni, lib: /usr/lib/libOpenNI.so;libusb::libusb)
+-- Found eigen3_cmake_module: 0.3.0 (/opt/ros/jazzy/share/eigen3_cmake_module/cmake)
+-- Ensuring Eigen3 include directory is part of orocos-kdl CMake target
+-- pinocchio_default FOUND. pinocchio_default at /opt/ros/jazzy/lib/x86_64-linux-gnu/libpinocchio_default.so
+-- pinocchio_parsers FOUND. pinocchio_parsers at /opt/ros/jazzy/lib/x86_64-linux-gnu/libpinocchio_parsers.so
+-- boost_filesystem FOUND. boost_filesystem at /lib/x86_64-linux-gnu/libboost_filesystem.so
+-- eigenpy FOUND. eigenpy at /opt/ros/jazzy/lib/x86_64-linux-gnu/libeigenpy.so
+-- Checking for NumPy
+--   NUMPY_INCLUDE_DIRS=/usr/lib/python3/dist-packages/numpy/core/include
+--   NUMPY_VERSION=1.26.4
+-- Found Python3: /usr/bin/python3 (found version "3.12.3") found components: Interpreter Development.Module NumPy 
+-- PythonLibraryDirs: 
+-- PythonLibVersionString: 3.12.3
+-- Python site lib: lib/python3.12/site-packages
+-- Python include dirs: /usr/include/python3.12
+-- Checking for NumPy
+--   NUMPY_INCLUDE_DIRS=/usr/lib/python3/dist-packages/numpy/core/include
+--   NUMPY_VERSION=1.26.4
+-- NumPy include dir: /usr/lib/python3/dist-packages/numpy/core/include
+-- Default C++ standard: 201703
+-- C++ standard sufficient: Minimal required 14, currently defined: 17
+-- hpp-fcl FOUND. hpp-fcl at /opt/ros/jazzy/lib/x86_64-linux-gnu/libhpp-fcl.so
+-- C++ standard sufficient: Minimal required 14, currently defined: 17
+-- C++ standard sufficient: Minimal required 14, currently defined: 17
+-- Found tf2_eigen: 0.36.19 (/opt/ros/jazzy/share/tf2_eigen/cmake)
+-- Found ONNX Runtime: /usr/local/lib/libonnxruntime.so
+-- Using architecture x86_64
+-- Found ament_lint_auto: 0.17.4 (/opt/ros/jazzy/share/ament_lint_auto/cmake)
+-- Found ament_cmake_gtest: 2.5.5 (/opt/ros/jazzy/share/ament_cmake_gtest/cmake)
+-- Found gtest sources under '/opt/ros/jazzy/src/gtest_vendor': C++ tests using 'Google Test' will be built
+-- Configuring done (2.1s)
+-- Generating done (0.1s)
+-- Build files have been written to: /home/rml/ros2_ws/src/quad-sdk/build/robot_driver
+[  8%] Built target gtest_main
+[ 16%] Built target gtest
+[ 20%] [32mBuilding CXX object CMakeFiles/robot_driver.dir/src/robot_driver.cpp.o[0m
+[ 25%] [32mBuilding CXX object CMakeFiles/robot_driver.dir/src/robot_driver_utils.cpp.o[0m
+[ 29%] [32mBuilding CXX object CMakeFiles/robot_driver.dir/src/controllers/leg_controller.cpp.o[0m
+[ 33%] [32mBuilding CXX object CMakeFiles/robot_driver.dir/src/controllers/inverse_dynamics_controller.cpp.o[0m
+[ 37%] [32mBuilding CXX object CMakeFiles/robot_driver.dir/src/controllers/underbrush_inverse_dynamics.cpp.o[0m
+[ 41%] [32mBuilding CXX object CMakeFiles/robot_driver.dir/src/controllers/inertia_estimation_controller.cpp.o[0m
+[ 45%] [32mBuilding CXX object CMakeFiles/robot_driver.dir/src/controllers/grf_pid_controller.cpp.o[0m
+[ 50%] [32mBuilding CXX object CMakeFiles/robot_driver.dir/src/controllers/joint_controller.cpp.o[0m
+[ 54%] [32mBuilding CXX object CMakeFiles/robot_driver.dir/src/estimators/state_estimator.cpp.o[0m
+[ 58%] [32mBuilding CXX object CMakeFiles/robot_driver.dir/src/estimators/comp_filter_estimator.cpp.o[0m
+[ 62%] [32mBuilding CXX object CMakeFiles/robot_driver.dir/src/estimators/ekf_estimator.cpp.o[0m
+[ 66%] [32mBuilding CXX object CMakeFiles/robot_driver.dir/src/hardware_interfaces/hardware_interface.cpp.o[0m
+[ 75%] [32mBuilding CXX object CMakeFiles/robot_driver.dir/src/hardware_interfaces/spirit_interface.cpp.o[0m
+[ 75%] [32mBuilding CXX object CMakeFiles/robot_driver.dir/src/hardware_interfaces/unitree_interface.cpp.o[0m
+[ 79%] [32mBuilding CXX object CMakeFiles/robot_driver.dir/src/controllers/learned_policy.cpp.o[0m
+[ 83%] [32m[1mLinking CXX shared library librobot_driver.so[0m
+[ 83%] Built target robot_driver
+[ 91%] [32mBuilding CXX object CMakeFiles/robot_driver_node.dir/src/robot_driver_node.cpp.o[0m
+[ 91%] [32mBuilding CXX object CMakeFiles/robot_driver_test.dir/test/test_robot_driver.cpp.o[0m
+[ 95%] [32m[1mLinking CXX executable robot_driver_node[0m
+[100%] [32m[1mLinking CXX executable robot_driver_test[0m
+[100%] Built target robot_driver_node
+[100%] Built target robot_driver_test
+-- Install configuration: "Release"
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/robot_driver/share/robot_driver/config
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/robot_driver/share/robot_driver/config/robot_driver.yaml
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/robot_driver/share/robot_driver/config/robot_driver_topics.yaml
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/robot_driver/include
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/robot_driver/include/robot_driver
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/robot_driver/include/robot_driver/models
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/robot_driver/include/robot_driver/models/go2
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/robot_driver/include/robot_driver/models/go2/policy.onnx
+-- Installing: /home/rml/ros2_ws/src/quad-sdk/install/robot_driver/include/robot_driver/robot_driver_utils.hpp
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/robot_driver/include/robot_driver/estimators
+-- Installing: /home/rml/ros2_ws/src/quad-sdk/install/robot_driver/include/robot_driver/estimators/ekf_estimator.hpp
+-- Installing: /home/rml/ros2_ws/src/quad-sdk/install/robot_driver/include/robot_driver/estimators/state_estimator.hpp
+-- Installing: /home/rml/ros2_ws/src/quad-sdk/install/robot_driver/include/robot_driver/estimators/comp_filter_estimator.hpp
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/robot_driver/include/robot_driver/hardware_interfaces
+-- Installing: /home/rml/ros2_ws/src/quad-sdk/install/robot_driver/include/robot_driver/hardware_interfaces/hardware_interface.hpp
+-- Installing: /home/rml/ros2_ws/src/quad-sdk/install/robot_driver/include/robot_driver/hardware_interfaces/spirit_interface.hpp
+-- Installing: /home/rml/ros2_ws/src/quad-sdk/install/robot_driver/include/robot_driver/hardware_interfaces/unitree_interface.hpp
+-- Installing: /home/rml/ros2_ws/src/quad-sdk/install/robot_driver/include/robot_driver/robot_driver.hpp
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/robot_driver/include/robot_driver/controllers
+-- Installing: /home/rml/ros2_ws/src/quad-sdk/install/robot_driver/include/robot_driver/controllers/inverse_dynamics_controller.hpp
+-- Installing: /home/rml/ros2_ws/src/quad-sdk/install/robot_driver/include/robot_driver/controllers/underbrush_inverse_dynamics.hpp
+-- Installing: /home/rml/ros2_ws/src/quad-sdk/install/robot_driver/include/robot_driver/controllers/grf_pid_controller.hpp
+-- Installing: /home/rml/ros2_ws/src/quad-sdk/install/robot_driver/include/robot_driver/controllers/learned_policy.hpp
+-- Installing: /home/rml/ros2_ws/src/quad-sdk/install/robot_driver/include/robot_driver/controllers/inertia_estimation_controller.hpp
+-- Installing: /home/rml/ros2_ws/src/quad-sdk/install/robot_driver/include/robot_driver/controllers/leg_controller.hpp
+-- Installing: /home/rml/ros2_ws/src/quad-sdk/install/robot_driver/include/robot_driver/controllers/joint_controller.hpp
+-- Installing: /home/rml/ros2_ws/src/quad-sdk/install/robot_driver/lib/librobot_driver.so
+-- Set non-toolchain portion of runtime path of "/home/rml/ros2_ws/src/quad-sdk/install/robot_driver/lib/librobot_driver.so" to ""
+-- Installing: /home/rml/ros2_ws/src/quad-sdk/install/robot_driver/lib/robot_driver/robot_driver_node
+-- Set non-toolchain portion of runtime path of "/home/rml/ros2_ws/src/quad-sdk/install/robot_driver/lib/robot_driver/robot_driver_node" to ""
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/robot_driver/share/ament_index/resource_index/package_run_dependencies/robot_driver
+-- Installing: /home/rml/ros2_ws/src/quad-sdk/install/robot_driver/share/ament_index/resource_index/parent_prefix_path/robot_driver
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/robot_driver/share/robot_driver/environment/ament_prefix_path.sh
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/robot_driver/share/robot_driver/environment/ament_prefix_path.dsv
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/robot_driver/share/robot_driver/environment/path.sh
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/robot_driver/share/robot_driver/environment/path.dsv
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/robot_driver/share/robot_driver/local_setup.bash
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/robot_driver/share/robot_driver/local_setup.sh
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/robot_driver/share/robot_driver/local_setup.zsh
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/robot_driver/share/robot_driver/local_setup.dsv
+-- Installing: /home/rml/ros2_ws/src/quad-sdk/install/robot_driver/share/robot_driver/package.dsv
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/robot_driver/share/ament_index/resource_index/packages/robot_driver
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/robot_driver/share/robot_driver/cmake/robot_driverConfig.cmake
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/robot_driver/share/robot_driver/cmake/robot_driverConfig-version.cmake
+-- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/robot_driver/share/robot_driver/package.xml

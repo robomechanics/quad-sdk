@@ -1,0 +1,2 @@
+source;share/quad_logger/environment/ament_prefix_path.sh
+source;share/quad_logger/environment/path.sh

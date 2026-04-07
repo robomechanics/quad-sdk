@@ -1,0 +1,11 @@
+/**/force_applicator:
+  ros__parameters:
+    force_applicator:
+      topics:
+        state:
+          ground_truth: state/ground_truth
+        visualization:
+          force_torque_markers: visualization/force_torque_markers
+        wrench:
+          wrench_persist: wrench/persistent
+          wrench_clear: wrench/clear

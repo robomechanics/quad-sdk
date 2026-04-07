@@ -1,0 +1,132 @@
+[0.005s] Invoking command in '/home/rml/ros2_ws/src/quad-sdk/build/force_applicator': AMENT_PREFIX_PATH=/home/rml/ros2_ws/src/quad-sdk/install/quad_utils:/home/rml/ros2_ws/src/quad-sdk/install/quad_msgs:${AMENT_PREFIX_PATH} CMAKE_MODULE_PATH=/home/rml/ros2_ws/src/quad-sdk/install/quad_utils/share/quad_utils/cmake CMAKE_PREFIX_PATH=/home/rml/ros2_ws/src/quad-sdk/install/quad_utils:/home/rml/ros2_ws/src/quad-sdk/install/quad_msgs:/opt/ros/jazzy/opt/gz_sim_vendor:/opt/ros/jazzy/opt/gz_sensors_vendor:/opt/ros/jazzy/opt/gz_physics_vendor:/opt/ros/jazzy/opt/sdformat_vendor:/opt/ros/jazzy/opt/gz_gui_vendor:/opt/ros/jazzy/opt/gz_transport_vendor:/opt/ros/jazzy/opt/gz_rendering_vendor:/opt/ros/jazzy/opt/gz_plugin_vendor:/opt/ros/jazzy/opt/gz_fuel_tools_vendor:/opt/ros/jazzy/opt/gz_msgs_vendor:/opt/ros/jazzy/opt/gz_common_vendor:/opt/ros/jazzy/opt/gz_math_vendor:/opt/ros/jazzy/opt/gz_utils_vendor:/opt/ros/jazzy/opt/gz_tools_vendor:/opt/ros/jazzy/opt/gz_ogre_next_vendor:/opt/ros/jazzy/opt/gz_dartsim_vendor:/opt/ros/jazzy/opt/gz_cmake_vendor:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com LD_LIBRARY_PATH=/home/rml/ros2_ws/src/quad-sdk/install/quad_utils/lib:/home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/lib:${LD_LIBRARY_PATH} PYTHONPATH=/home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/lib/python3.12/site-packages:${PYTHONPATH} /usr/bin/cmake /home/rml/ros2_ws/src/quad-sdk/force_applicator -DCMAKE_BUILD_TYPE=Release -DCMAKE_BUILD_PARALLEL_LEVEL=1 -DCMAKE_INSTALL_PREFIX=/home/rml/ros2_ws/src/quad-sdk/install/force_applicator
+[0.011s] -- Found ament_cmake: 2.5.5 (/opt/ros/jazzy/share/ament_cmake/cmake)
+[0.023s] -- Found Python3: /usr/bin/python3 (found version "3.12.3") found components: Interpreter 
+[0.059s] -- Found rclcpp: 28.1.16 (/opt/ros/jazzy/share/rclcpp/cmake)
+[0.071s] -- Found rosidl_generator_c: 4.6.7 (/opt/ros/jazzy/share/rosidl_generator_c/cmake)
+[0.075s] -- Found rosidl_generator_cpp: 4.6.7 (/opt/ros/jazzy/share/rosidl_generator_cpp/cmake)
+[0.080s] -- Using all available rosidl_typesupport_c: rosidl_typesupport_fastrtps_c;rosidl_typesupport_introspection_c
+[0.085s] -- Using all available rosidl_typesupport_cpp: rosidl_typesupport_fastrtps_cpp;rosidl_typesupport_introspection_cpp
+[0.114s] -- Found rmw_implementation_cmake: 7.3.3 (/opt/ros/jazzy/share/rmw_implementation_cmake/cmake)
+[0.114s] -- Found rmw_fastrtps_cpp: 8.4.3 (/opt/ros/jazzy/share/rmw_fastrtps_cpp/cmake)
+[0.143s] -- Using RMW implementation 'rmw_fastrtps_cpp' as default
+[0.174s] -- Found geometry_msgs: 5.3.6 (/opt/ros/jazzy/share/geometry_msgs/cmake)
+[0.190s] -- Found visualization_msgs: 5.3.6 (/opt/ros/jazzy/share/visualization_msgs/cmake)
+[0.218s] -- Found tf2: 0.36.19 (/opt/ros/jazzy/share/tf2/cmake)
+[0.220s] -- Found tf2_ros: 0.36.19 (/opt/ros/jazzy/share/tf2_ros/cmake)
+[0.274s] -- Found tf2_geometry_msgs: 0.36.19 (/opt/ros/jazzy/share/tf2_geometry_msgs/cmake)
+[0.276s] -- Found eigen3_cmake_module: 0.3.0 (/opt/ros/jazzy/share/eigen3_cmake_module/cmake)
+[0.276s] -- Ensuring Eigen3 include directory is part of orocos-kdl CMake target
+[0.280s] -- Found ros_gz_interfaces: 1.0.18 (/opt/ros/jazzy/share/ros_gz_interfaces/cmake)
+[0.298s] -- Found quad_utils: 0.0.0 (/home/rml/ros2_ws/src/quad-sdk/install/quad_utils/share/quad_utils/cmake)
+[0.409s] -- Setting yaml-cpp_DIR to: '/opt/ros/jazzy/share/yaml_cpp_vendor/cmake/../../../opt/yaml_cpp_vendor/share/cmake/yaml-cpp'
+[0.462s] [33mCMake Warning (dev) at /usr/lib/x86_64-linux-gnu/cmake/pcl/Modules/FindFLANN.cmake:45 (find_package):
+[0.462s]   Policy CMP0144 is not set: find_package uses upper-case <PACKAGENAME>_ROOT
+[0.462s]   variables.  Run "cmake --help-policy CMP0144" for policy details.  Use the
+[0.462s]   cmake_policy command to set the policy and suppress this warning.
+[0.462s] 
+[0.462s]   CMake variable FLANN_ROOT is set to:
+[0.462s] 
+[0.462s]     /usr
+[0.462s] 
+[0.462s]   For compatibility, find_package is ignoring the variable, but code in a
+[0.462s]   .cmake module might still use it.
+[0.462s] Call Stack (most recent call first):
+[0.462s]   /usr/lib/x86_64-linux-gnu/cmake/pcl/PCLConfig.cmake:261 (find_package)
+[0.462s]   /usr/lib/x86_64-linux-gnu/cmake/pcl/PCLConfig.cmake:306 (find_flann)
+[0.462s]   /usr/lib/x86_64-linux-gnu/cmake/pcl/PCLConfig.cmake:570 (find_external_library)
+[0.462s]   /opt/ros/jazzy/share/pcl_conversions/cmake/ament_cmake_export_dependencies-extras.cmake:21 (find_package)
+[0.462s]   /opt/ros/jazzy/share/pcl_conversions/cmake/pcl_conversionsConfig.cmake:41 (include)
+[0.462s]   /home/rml/ros2_ws/src/quad-sdk/install/quad_utils/share/quad_utils/cmake/ament_cmake_export_dependencies-extras.cmake:21 (find_package)
+[0.462s]   /home/rml/ros2_ws/src/quad-sdk/install/quad_utils/share/quad_utils/cmake/quad_utilsConfig.cmake:41 (include)
+[0.462s]   CMakeLists.txt:17 (find_package)
+[0.462s] This warning is for project developers.  Use -Wno-dev to suppress it.
+[0.462s] [0m
+[0.462s] -- Found flann version 1.9.2
+[0.677s] -- OpenNI found (version: 1.5.4.0, include: /usr/include/ni, lib: /usr/lib/libOpenNI.so;libusb::libusb)
+[0.680s] -- OpenNI2 found (version: 2.2.0.33, include: /usr/include/openni2, lib: /usr/lib/x86_64-linux-gnu/libOpenNI2.so;libusb::libusb)
+[0.681s] -- Could NOT find Pcap (missing: PCAP_LIBRARIES PCAP_INCLUDE_DIRS) 
+[0.903s] -- OpenNI found (version: 1.5.4.0, include: /usr/include/ni, lib: /usr/lib/libOpenNI.so;libusb::libusb)
+[0.906s] -- OpenNI2 found (version: 2.2.0.33, include: /usr/include/openni2, lib: /usr/lib/x86_64-linux-gnu/libOpenNI2.so;libusb::libusb)
+[1.102s] -- Found Qhull version 8.0.2
+[1.304s] -- OpenNI found (version: 1.5.4.0, include: /usr/include/ni, lib: /usr/lib/libOpenNI.so;libusb::libusb)
+[1.509s] -- pinocchio_default FOUND. pinocchio_default at /opt/ros/jazzy/lib/x86_64-linux-gnu/libpinocchio_default.so
+[1.509s] -- pinocchio_parsers FOUND. pinocchio_parsers at /opt/ros/jazzy/lib/x86_64-linux-gnu/libpinocchio_parsers.so
+[1.509s] -- boost_filesystem FOUND. boost_filesystem at /lib/x86_64-linux-gnu/libboost_filesystem.so
+[1.514s] -- eigenpy FOUND. eigenpy at /opt/ros/jazzy/lib/x86_64-linux-gnu/libeigenpy.so
+[1.526s] -- Checking for NumPy
+[1.616s] --   NUMPY_INCLUDE_DIRS=/usr/lib/python3/dist-packages/numpy/core/include
+[1.660s] --   NUMPY_VERSION=1.26.4
+[1.763s] -- Found Python3: /usr/bin/python3 (found version "3.12.3") found components: Interpreter Development.Module NumPy 
+[1.763s] -- PythonLibraryDirs: 
+[1.763s] -- PythonLibVersionString: 3.12.3
+[1.772s] -- Python site lib: lib/python3.12/site-packages
+[1.772s] -- Python include dirs: /usr/include/python3.12
+[1.790s] -- Checking for NumPy
+[1.836s] --   NUMPY_INCLUDE_DIRS=/usr/lib/python3/dist-packages/numpy/core/include
+[1.883s] --   NUMPY_VERSION=1.26.4
+[1.883s] -- NumPy include dir: /usr/lib/python3/dist-packages/numpy/core/include
+[2.022s] -- Default C++ standard: 201703
+[2.022s] -- C++ standard sufficient: Minimal required 14, currently defined: 17
+[2.022s] -- CMAKE_CXX_STANDARD was not set: automatically set to currently defined standard 17
+[2.023s] -- hpp-fcl FOUND. hpp-fcl at /opt/ros/jazzy/lib/x86_64-linux-gnu/libhpp-fcl.so
+[2.027s] -- C++ standard sufficient: Minimal required 14, currently defined: 17
+[2.027s] -- C++ standard sufficient: Minimal required 14, currently defined: 17
+[2.075s] -- Found ament_lint_auto: 0.17.4 (/opt/ros/jazzy/share/ament_lint_auto/cmake)
+[2.118s] -- Configuring done (2.1s)
+[2.162s] -- Generating done (0.0s)
+[2.163s] [33mCMake Warning:
+[2.163s]   Manually-specified variables were not used by the project:
+[2.163s] 
+[2.163s]     CMAKE_BUILD_PARALLEL_LEVEL
+[2.163s] 
+[2.163s] [0m
+[2.166s] -- Build files have been written to: /home/rml/ros2_ws/src/quad-sdk/build/force_applicator
+[2.176s] Invoked command in '/home/rml/ros2_ws/src/quad-sdk/build/force_applicator' returned '0': AMENT_PREFIX_PATH=/home/rml/ros2_ws/src/quad-sdk/install/quad_utils:/home/rml/ros2_ws/src/quad-sdk/install/quad_msgs:${AMENT_PREFIX_PATH} CMAKE_MODULE_PATH=/home/rml/ros2_ws/src/quad-sdk/install/quad_utils/share/quad_utils/cmake CMAKE_PREFIX_PATH=/home/rml/ros2_ws/src/quad-sdk/install/quad_utils:/home/rml/ros2_ws/src/quad-sdk/install/quad_msgs:/opt/ros/jazzy/opt/gz_sim_vendor:/opt/ros/jazzy/opt/gz_sensors_vendor:/opt/ros/jazzy/opt/gz_physics_vendor:/opt/ros/jazzy/opt/sdformat_vendor:/opt/ros/jazzy/opt/gz_gui_vendor:/opt/ros/jazzy/opt/gz_transport_vendor:/opt/ros/jazzy/opt/gz_rendering_vendor:/opt/ros/jazzy/opt/gz_plugin_vendor:/opt/ros/jazzy/opt/gz_fuel_tools_vendor:/opt/ros/jazzy/opt/gz_msgs_vendor:/opt/ros/jazzy/opt/gz_common_vendor:/opt/ros/jazzy/opt/gz_math_vendor:/opt/ros/jazzy/opt/gz_utils_vendor:/opt/ros/jazzy/opt/gz_tools_vendor:/opt/ros/jazzy/opt/gz_ogre_next_vendor:/opt/ros/jazzy/opt/gz_dartsim_vendor:/opt/ros/jazzy/opt/gz_cmake_vendor:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com LD_LIBRARY_PATH=/home/rml/ros2_ws/src/quad-sdk/install/quad_utils/lib:/home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/lib:${LD_LIBRARY_PATH} PYTHONPATH=/home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/lib/python3.12/site-packages:${PYTHONPATH} /usr/bin/cmake /home/rml/ros2_ws/src/quad-sdk/force_applicator -DCMAKE_BUILD_TYPE=Release -DCMAKE_BUILD_PARALLEL_LEVEL=1 -DCMAKE_INSTALL_PREFIX=/home/rml/ros2_ws/src/quad-sdk/install/force_applicator
+[2.177s] Invoking command in '/home/rml/ros2_ws/src/quad-sdk/build/force_applicator': AMENT_PREFIX_PATH=/home/rml/ros2_ws/src/quad-sdk/install/quad_utils:/home/rml/ros2_ws/src/quad-sdk/install/quad_msgs:${AMENT_PREFIX_PATH} CMAKE_MODULE_PATH=/home/rml/ros2_ws/src/quad-sdk/install/quad_utils/share/quad_utils/cmake CMAKE_PREFIX_PATH=/home/rml/ros2_ws/src/quad-sdk/install/quad_utils:/home/rml/ros2_ws/src/quad-sdk/install/quad_msgs:/opt/ros/jazzy/opt/gz_sim_vendor:/opt/ros/jazzy/opt/gz_sensors_vendor:/opt/ros/jazzy/opt/gz_physics_vendor:/opt/ros/jazzy/opt/sdformat_vendor:/opt/ros/jazzy/opt/gz_gui_vendor:/opt/ros/jazzy/opt/gz_transport_vendor:/opt/ros/jazzy/opt/gz_rendering_vendor:/opt/ros/jazzy/opt/gz_plugin_vendor:/opt/ros/jazzy/opt/gz_fuel_tools_vendor:/opt/ros/jazzy/opt/gz_msgs_vendor:/opt/ros/jazzy/opt/gz_common_vendor:/opt/ros/jazzy/opt/gz_math_vendor:/opt/ros/jazzy/opt/gz_utils_vendor:/opt/ros/jazzy/opt/gz_tools_vendor:/opt/ros/jazzy/opt/gz_ogre_next_vendor:/opt/ros/jazzy/opt/gz_dartsim_vendor:/opt/ros/jazzy/opt/gz_cmake_vendor:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com LD_LIBRARY_PATH=/home/rml/ros2_ws/src/quad-sdk/install/quad_utils/lib:/home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/lib:${LD_LIBRARY_PATH} PYTHONPATH=/home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/lib/python3.12/site-packages:${PYTHONPATH} /usr/bin/cmake --build /home/rml/ros2_ws/src/quad-sdk/build/force_applicator -- -j16 -l16
+[2.218s] [ 20%] [32mBuilding CXX object CMakeFiles/force_applicator.dir/src/force_applicator_node.cpp.o[0m
+[2.219s] [ 40%] [32mBuilding CXX object CMakeFiles/force_applicator.dir/src/force_applicator.cpp.o[0m
+[10.789s] [01m[K/home/rml/ros2_ws/src/quad-sdk/force_applicator/src/force_applicator.cpp:[m[K In member function ‘[01m[Kvoid ForceApplicator::[01;32m[KapplyForce[m[K()[m[K’:
+[10.789s] [01m[K/home/rml/ros2_ws/src/quad-sdk/force_applicator/src/force_applicator.cpp:163:10:[m[K [01;35m[Kwarning: [m[K‘[01m[Ktx[m[K’ may be used uninitialized [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wmaybe-uninitialized-Wmaybe-uninitialized]8;;[m[K]
+[10.789s]   163 |   double [01;35m[Ktx[m[K, ty, tz;
+[10.789s]       |          [01;35m[K^~[m[K
+[10.789s] [01m[K/home/rml/ros2_ws/src/quad-sdk/force_applicator/src/force_applicator.cpp:163:14:[m[K [01;35m[Kwarning: [m[K‘[01m[Kty[m[K’ may be used uninitialized [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wmaybe-uninitialized-Wmaybe-uninitialized]8;;[m[K]
+[10.789s]   163 |   double tx, [01;35m[Kty[m[K, tz;
+[10.789s]       |              [01;35m[K^~[m[K
+[10.789s] [01m[K/home/rml/ros2_ws/src/quad-sdk/force_applicator/src/force_applicator.cpp:163:18:[m[K [01;35m[Kwarning: [m[K‘[01m[Ktz[m[K’ may be used uninitialized [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wmaybe-uninitialized-Wmaybe-uninitialized]8;;[m[K]
+[10.789s]   163 |   double tx, ty, [01;35m[Ktz[m[K;
+[10.789s]       |                  [01;35m[K^~[m[K
+[11.065s] [ 60%] [32m[1mLinking CXX static library libforce_applicator.a[0m
+[11.082s] [ 60%] Built target force_applicator
+[11.104s] [ 80%] [32mBuilding CXX object CMakeFiles/force_applicator_node.dir/src/force_applicator_node.cpp.o[0m
+[14.485s] [100%] [32m[1mLinking CXX executable force_applicator_node[0m
+[14.668s] [100%] Built target force_applicator_node
+[14.673s] Invoked command in '/home/rml/ros2_ws/src/quad-sdk/build/force_applicator' returned '0': AMENT_PREFIX_PATH=/home/rml/ros2_ws/src/quad-sdk/install/quad_utils:/home/rml/ros2_ws/src/quad-sdk/install/quad_msgs:${AMENT_PREFIX_PATH} CMAKE_MODULE_PATH=/home/rml/ros2_ws/src/quad-sdk/install/quad_utils/share/quad_utils/cmake CMAKE_PREFIX_PATH=/home/rml/ros2_ws/src/quad-sdk/install/quad_utils:/home/rml/ros2_ws/src/quad-sdk/install/quad_msgs:/opt/ros/jazzy/opt/gz_sim_vendor:/opt/ros/jazzy/opt/gz_sensors_vendor:/opt/ros/jazzy/opt/gz_physics_vendor:/opt/ros/jazzy/opt/sdformat_vendor:/opt/ros/jazzy/opt/gz_gui_vendor:/opt/ros/jazzy/opt/gz_transport_vendor:/opt/ros/jazzy/opt/gz_rendering_vendor:/opt/ros/jazzy/opt/gz_plugin_vendor:/opt/ros/jazzy/opt/gz_fuel_tools_vendor:/opt/ros/jazzy/opt/gz_msgs_vendor:/opt/ros/jazzy/opt/gz_common_vendor:/opt/ros/jazzy/opt/gz_math_vendor:/opt/ros/jazzy/opt/gz_utils_vendor:/opt/ros/jazzy/opt/gz_tools_vendor:/opt/ros/jazzy/opt/gz_ogre_next_vendor:/opt/ros/jazzy/opt/gz_dartsim_vendor:/opt/ros/jazzy/opt/gz_cmake_vendor:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com LD_LIBRARY_PATH=/home/rml/ros2_ws/src/quad-sdk/install/quad_utils/lib:/home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/lib:${LD_LIBRARY_PATH} PYTHONPATH=/home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/lib/python3.12/site-packages:${PYTHONPATH} /usr/bin/cmake --build /home/rml/ros2_ws/src/quad-sdk/build/force_applicator -- -j16 -l16
+[14.673s] Invoking command in '/home/rml/ros2_ws/src/quad-sdk/build/force_applicator': AMENT_PREFIX_PATH=/home/rml/ros2_ws/src/quad-sdk/install/quad_utils:/home/rml/ros2_ws/src/quad-sdk/install/quad_msgs:${AMENT_PREFIX_PATH} CMAKE_MODULE_PATH=/home/rml/ros2_ws/src/quad-sdk/install/quad_utils/share/quad_utils/cmake CMAKE_PREFIX_PATH=/home/rml/ros2_ws/src/quad-sdk/install/quad_utils:/home/rml/ros2_ws/src/quad-sdk/install/quad_msgs:/opt/ros/jazzy/opt/gz_sim_vendor:/opt/ros/jazzy/opt/gz_sensors_vendor:/opt/ros/jazzy/opt/gz_physics_vendor:/opt/ros/jazzy/opt/sdformat_vendor:/opt/ros/jazzy/opt/gz_gui_vendor:/opt/ros/jazzy/opt/gz_transport_vendor:/opt/ros/jazzy/opt/gz_rendering_vendor:/opt/ros/jazzy/opt/gz_plugin_vendor:/opt/ros/jazzy/opt/gz_fuel_tools_vendor:/opt/ros/jazzy/opt/gz_msgs_vendor:/opt/ros/jazzy/opt/gz_common_vendor:/opt/ros/jazzy/opt/gz_math_vendor:/opt/ros/jazzy/opt/gz_utils_vendor:/opt/ros/jazzy/opt/gz_tools_vendor:/opt/ros/jazzy/opt/gz_ogre_next_vendor:/opt/ros/jazzy/opt/gz_dartsim_vendor:/opt/ros/jazzy/opt/gz_cmake_vendor:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com LD_LIBRARY_PATH=/home/rml/ros2_ws/src/quad-sdk/install/quad_utils/lib:/home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/lib:${LD_LIBRARY_PATH} PYTHONPATH=/home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/lib/python3.12/site-packages:${PYTHONPATH} /usr/bin/cmake --install /home/rml/ros2_ws/src/quad-sdk/build/force_applicator
+[14.676s] -- Install configuration: "Release"
+[14.677s] -- Installing: /home/rml/ros2_ws/src/quad-sdk/install/force_applicator/lib/force_applicator/libforce_applicator.a
+[14.677s] -- Installing: /home/rml/ros2_ws/src/quad-sdk/install/force_applicator/lib/force_applicator/force_applicator_node
+[14.678s] -- Set non-toolchain portion of runtime path of "/home/rml/ros2_ws/src/quad-sdk/install/force_applicator/lib/force_applicator/force_applicator_node" to ""
+[14.678s] -- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/force_applicator/share/force_applicator/config
+[14.678s] -- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/force_applicator/share/force_applicator/config/force_applicator.yaml
+[14.678s] -- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/force_applicator/share/force_applicator/config/force_applicator_topics.yaml
+[14.678s] -- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/force_applicator/include
+[14.678s] -- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/force_applicator/include/force_applicator
+[14.678s] -- Installing: /home/rml/ros2_ws/src/quad-sdk/install/force_applicator/include/force_applicator/force_applicator.hpp
+[14.678s] -- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/force_applicator/share/ament_index/resource_index/package_run_dependencies/force_applicator
+[14.678s] -- Installing: /home/rml/ros2_ws/src/quad-sdk/install/force_applicator/share/ament_index/resource_index/parent_prefix_path/force_applicator
+[14.678s] -- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/force_applicator/share/force_applicator/environment/ament_prefix_path.sh
+[14.678s] -- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/force_applicator/share/force_applicator/environment/ament_prefix_path.dsv
+[14.678s] -- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/force_applicator/share/force_applicator/environment/path.sh
+[14.678s] -- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/force_applicator/share/force_applicator/environment/path.dsv
+[14.678s] -- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/force_applicator/share/force_applicator/local_setup.bash
+[14.678s] -- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/force_applicator/share/force_applicator/local_setup.sh
+[14.678s] -- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/force_applicator/share/force_applicator/local_setup.zsh
+[14.678s] -- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/force_applicator/share/force_applicator/local_setup.dsv
+[14.678s] -- Installing: /home/rml/ros2_ws/src/quad-sdk/install/force_applicator/share/force_applicator/package.dsv
+[14.678s] -- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/force_applicator/share/ament_index/resource_index/packages/force_applicator
+[14.678s] -- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/force_applicator/share/force_applicator/cmake/ament_cmake_export_include_directories-extras.cmake
+[14.678s] -- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/force_applicator/share/force_applicator/cmake/ament_cmake_export_dependencies-extras.cmake
+[14.678s] -- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/force_applicator/share/force_applicator/cmake/force_applicatorConfig.cmake
+[14.678s] -- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/force_applicator/share/force_applicator/cmake/force_applicatorConfig-version.cmake
+[14.678s] -- Up-to-date: /home/rml/ros2_ws/src/quad-sdk/install/force_applicator/share/force_applicator/package.xml
+[14.679s] Invoked command in '/home/rml/ros2_ws/src/quad-sdk/build/force_applicator' returned '0': AMENT_PREFIX_PATH=/home/rml/ros2_ws/src/quad-sdk/install/quad_utils:/home/rml/ros2_ws/src/quad-sdk/install/quad_msgs:${AMENT_PREFIX_PATH} CMAKE_MODULE_PATH=/home/rml/ros2_ws/src/quad-sdk/install/quad_utils/share/quad_utils/cmake CMAKE_PREFIX_PATH=/home/rml/ros2_ws/src/quad-sdk/install/quad_utils:/home/rml/ros2_ws/src/quad-sdk/install/quad_msgs:/opt/ros/jazzy/opt/gz_sim_vendor:/opt/ros/jazzy/opt/gz_sensors_vendor:/opt/ros/jazzy/opt/gz_physics_vendor:/opt/ros/jazzy/opt/sdformat_vendor:/opt/ros/jazzy/opt/gz_gui_vendor:/opt/ros/jazzy/opt/gz_transport_vendor:/opt/ros/jazzy/opt/gz_rendering_vendor:/opt/ros/jazzy/opt/gz_plugin_vendor:/opt/ros/jazzy/opt/gz_fuel_tools_vendor:/opt/ros/jazzy/opt/gz_msgs_vendor:/opt/ros/jazzy/opt/gz_common_vendor:/opt/ros/jazzy/opt/gz_math_vendor:/opt/ros/jazzy/opt/gz_utils_vendor:/opt/ros/jazzy/opt/gz_tools_vendor:/opt/ros/jazzy/opt/gz_ogre_next_vendor:/opt/ros/jazzy/opt/gz_dartsim_vendor:/opt/ros/jazzy/opt/gz_cmake_vendor:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com LD_LIBRARY_PATH=/home/rml/ros2_ws/src/quad-sdk/install/quad_utils/lib:/home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/lib:${LD_LIBRARY_PATH} PYTHONPATH=/home/rml/ros2_ws/src/quad-sdk/install/quad_msgs/lib/python3.12/site-packages:${PYTHONPATH} /usr/bin/cmake --install /home/rml/ros2_ws/src/quad-sdk/build/force_applicator
