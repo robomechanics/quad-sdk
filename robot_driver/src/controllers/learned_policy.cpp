@@ -12,7 +12,8 @@ void LearnedPolicy::init(const std::vector<double>& stance_kp,
                          const std::vector<double>& swing_kp_cart,
                          const std::vector<double>& swing_kd_cart,
                          const std::string& model_path,
-                         double policy_inference_rate) {
+                         double policy_inference_rate,
+                         const std::vector<double>& stand_joint_angles) {
   // Initalize the Path to the Model Onnx File
   stance_kp_ = stance_kp;
   stance_kd_ = stance_kd;
@@ -24,8 +25,13 @@ void LearnedPolicy::init(const std::vector<double>& stance_kp,
   policy_inference_rate_ = policy_inference_rate;
   first_inference_ = true;
   loadONNXModel();
-  nominal_stance_pose_ << 0.0, 0.0, 0.0, 0.0, 0.8, 0.8, 0.8, 0.8, -1.5, -1.5,
-      -1.5, -1.5;  // For Go2 Change this to a Param Later On, IsaacLab
+  // Build nominal stance in Isaac ordering (FL,FR,RL,RR grouped by joint type)
+  // stand_joint_angles is [abd, hip, knee] from robot_driver.yaml
+  double abd = stand_joint_angles.at(0);
+  double hip = stand_joint_angles.at(1);
+  double knee = stand_joint_angles.at(2);
+  nominal_stance_pose_ << abd, abd, abd, abd, hip, hip, hip, hip,
+      knee, knee, knee, knee;
   last_cmd_vel_msg_time_ = node_->now();
   last_inference_time_ = node_->now();
 
@@ -104,7 +110,6 @@ void LearnedPolicy::computeObservations(
   base_ang_vel << body_state(9), body_state(10), body_state(11);
   base_orientation << body_state(3), body_state(4), body_state(5);
   vel_cmd << cmd_vel_msg_(0), cmd_vel_msg_(1), cmd_vel_msg_(5);
-  // vel_cmd << 0.5, 0.0, 0.0; // Debug with a Fixed Forward velocity
 
   // Clip the Commanded Velocity within Trained Bounds
   const Eigen::Vector3d vmin(-1.0, -0.4, -1.0);
@@ -226,8 +231,8 @@ void LearnedPolicy::runInference() {
       unordered_actions_(11);
 
   // Print out Action Commands as a Debugging Step
-  temp_actions_ << 0.0, 0.8, -1.5, 0.0, 0.8, -1.5, 0.0, 0.8, -1.5, 0.0, 0.8,
-      -1.5;
+  // temp_actions_ << 0.0, 0.8, -1.5, 0.0, 0.8, -1.5, 0.0, 0.8, -1.5, 0.0, 0.8,
+  //     -1.5;
   // std::cout << "Outputted Actions"  << unordered_actions_ -
   // nominal_stance_pose_ << std::endl;
 }

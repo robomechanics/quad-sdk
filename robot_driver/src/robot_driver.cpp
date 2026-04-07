@@ -265,7 +265,7 @@ void RobotDriver::initLegController() {
   } else {
     leg_controller_->init(stance_kp_, stance_kd_, swing_kp_, swing_kd_,
                           swing_kp_cart_, swing_kd_cart_, model_path_,
-                          policy_inference_rate_);
+                          policy_inference_rate_, stand_joint_angles_);
   }
 }
 

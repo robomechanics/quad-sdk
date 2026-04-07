@@ -48,7 +48,8 @@ class LearnedPolicy : public LegController {
             const std::vector<double>& swing_kp_cart,
             const std::vector<double>& swing_kd_cart,
             const std::string& model_path,
-            double policy_inference_rate = 50.0);
+            double policy_inference_rate = 50.0,
+            const std::vector<double>& stand_joint_angles = {0.0, 0.8, -1.5});
 
   void loadONNXModel();
   /**
