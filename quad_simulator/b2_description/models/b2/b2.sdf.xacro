@@ -164,14 +164,14 @@
       </visual>
     </link>
     <joint name='0' type='revolute'>
-      <pose relative_to='hip0'>0 0.11973 0 0 1.5708 0</pose>
+      <pose relative_to='hip0'>0 0.11973 0 0 0 0</pose>
       <parent>hip0</parent>
       <child>upper0</child>
       <axis>
-        <xyz>0 -1 0</xyz>
+        <xyz>0 1 0</xyz>
         <limit>
-          <lower>-2.8012</lower>
-          <upper>2.8012</upper>
+          <lower>-0.94</lower>
+          <upper>4.69</upper>
           <effort>200.0</effort>
           <velocity>23.0</velocity>
         </limit>
@@ -227,14 +227,14 @@
       </visual>
     </link>
     <joint name='1' type='revolute'>
-      <pose relative_to='upper0'>0 -8.6984000000000006e-05 -0.34999999999999998 -3.14159 0 -3.14159</pose>
+      <pose relative_to='upper0'>0 -8.6984000000000006e-05 -0.34999999999999998 0 0 0</pose>
       <parent>upper0</parent>
       <child>lower0</child>
       <axis>
         <xyz>0 1 0</xyz>
         <limit>
-          <lower>0.32159265359</lower>
-          <upper>2.71159265359</upper>
+          <lower>-2.82</lower>
+          <upper>-0.43</upper>
           <effort>320</effort>
           <velocity>14</velocity>
         </limit>
@@ -463,14 +463,14 @@
       </visual>
     </link>
     <joint name='4' type='revolute'>
-      <pose relative_to='hip2'>0 -0.11973 0 0 1.5708 0</pose>
+      <pose relative_to='hip2'>0 -0.11973 0 0 0 0</pose>
       <parent>hip2</parent>
       <child>upper2</child>
       <axis>
-        <xyz>0 -1 0</xyz>
+        <xyz>0 1 0</xyz>
         <limit>
-          <lower>-2.8012</lower>
-          <upper>2.8012</upper>
+          <lower>-0.94</lower>
+          <upper>4.69</upper>
           <effort>200.0</effort>
           <velocity>23.0</velocity>
         </limit>
@@ -526,14 +526,14 @@
       </visual>
     </link>
     <joint name='5' type='revolute'>
-      <pose relative_to='upper2'>0 8.6985999999999997e-05 -0.34999999999999998 -3.14159 0 -3.14159</pose>
+      <pose relative_to='upper2'>0 8.6985999999999997e-05 -0.34999999999999998 0 0 0</pose>
       <parent>upper2</parent>
       <child>lower2</child>
       <axis>
         <xyz>0 1 0</xyz>
         <limit>
-          <lower>0.32159265359</lower>
-          <upper>2.71159265359</upper>
+          <lower>-2.82</lower>
+          <upper>-0.43</upper>
           <effort>320</effort>
           <velocity>14</velocity>
         </limit>
@@ -763,14 +763,14 @@
       </visual>
     </link>
     <joint name='2' type='revolute'>
-      <pose relative_to='hip1'>0 0.11973 0 0 1.5708 0</pose>
+      <pose relative_to='hip1'>0 0.11973 0 0 0 0</pose>
       <parent>hip1</parent>
       <child>upper1</child>
       <axis>
-        <xyz>0 -1 0</xyz>
+        <xyz>0 1 0</xyz>
         <limit>
-          <lower>-2.8012</lower>
-          <upper>2.8012</upper>
+          <lower>-0.94</lower>
+          <upper>4.69</upper>
           <effort>200.0</effort>
           <velocity>23.0</velocity>
         </limit>
@@ -826,14 +826,14 @@
       </visual>
     </link>
     <joint name='3' type='revolute'>
-      <pose relative_to='upper1'>0 -8.6984000000000006e-05 -0.34999999999999998 -3.14159 0 -3.14159</pose>
+      <pose relative_to='upper1'>0 -8.6984000000000006e-05 -0.34999999999999998 0 0 0</pose>
       <parent>upper1</parent>
       <child>lower1</child>
       <axis>
         <xyz>0 1 0</xyz>
         <limit>
-          <lower>0.32159265359</lower>
-          <upper>2.71159265359</upper>
+          <lower>-2.82</lower>
+          <upper>-0.43</upper>
           <effort>320</effort>
           <velocity>14</velocity>
         </limit>
@@ -1062,14 +1062,14 @@
       </visual>
     </link>
     <joint name='6' type='revolute'>
-      <pose relative_to='hip3'>0 -0.11973 0 0 1.5708 0</pose>
+      <pose relative_to='hip3'>0 -0.11973 0 0 0 0</pose>
       <parent>hip3</parent>
       <child>upper3</child>
       <axis>
-        <xyz>0 -1 0</xyz>
+        <xyz>0 1 0</xyz>
         <limit>
-          <lower>-2.8012</lower>
-          <upper>2.8012</upper>
+          <lower>-0.94</lower>
+          <upper>4.69</upper>
           <effort>200.0</effort>
           <velocity>23.0</velocity>
         </limit>
@@ -1125,14 +1125,14 @@
       </visual>
     </link>
     <joint name='7' type='revolute'>
-      <pose relative_to='upper3'>0 8.6985999999999997e-05 -0.34999999999999998 -3.14159 0 -3.14159</pose>
+      <pose relative_to='upper3'>0 8.6985999999999997e-05 -0.34999999999999998 0 0 0</pose>
       <parent>upper3</parent>
       <child>lower3</child>
       <axis>
         <xyz>0 1 0</xyz>
         <limit>
-          <lower>0.32159265359</lower>
-          <upper>2.71159265359</upper>
+          <lower>-2.82</lower>
+          <upper>-0.43</upper>
           <effort>320</effort>
           <velocity>14</velocity>
         </limit>
