@@ -1,5 +1,5 @@
 <mujoco model="go2">
-  <compiler angle="radian" meshdir="assets" autolimits="true" />
+  <!-- <compiler angle="radian" meshdir="assets" autolimits="true" /> -->
 
   <option cone="elliptic" impratio="100" />
 
@@ -65,7 +65,7 @@
       <inertial pos="0.021112 0 -0.005366" quat="-0.000543471 0.713435 -0.00173769 0.700719"
         mass="6.921"
         diaginertia="0.107027 0.0980771 0.0244531" />
-      <freejoint />
+      <freejoint name="floating_base" />
       <geom mesh="base_0" material="black" class="visual" />
       <geom mesh="base_1" material="black" class="visual" />
       <geom mesh="base_2" material="black" class="visual" />

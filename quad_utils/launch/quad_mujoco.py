@@ -9,80 +9,6 @@ from launch.substitutions import PathJoinSubstitution
 import os
 import json
 
-def  launch_mujoco_world(context, *args, **kwargs):
-    world_name = LaunchConfiguration('world').perform(context)
-    gui = LaunchConfiguration('gui').perform(context).lower() == 'true'
-    verbose = LaunchConfiguration('verbose').perform(context).lower() == 'true'
-
-    pkg_share = FindPackageShare('mujoco_scripts').perform(context)
-    world_path = os.path.join(pkg_share, 'worlds', f"{world_name}")  
-    model_path = os.path.join(pkg_share, 'models')
-
-    
-    # Build the command for `mujoco_sim` (or your MuJoCo simulator executable)
-    cmd = ['python3', '-m', 'mujoco.viewer', '--mjcf', world_path]
-
-
-    if not gui:
-        cmd.append('--headless')
-    if verbose:
-        cmd.extend(['--verbose', '4'])
-
-    return [
-        GroupAction([
-            PushRosNamespace('remote'),
-            ExecuteProcess(
-                cmd=cmd,
-                output='log',
-                additional_env={'MUJOCO_MODEL_PATH': (EnvironmentVariable('MUJOCO_MODEL_PATH')),
-                                'MUJOCO_PLUGIN_PATH': (EnvironmentVariable('MUJOCO_PLUGIN_PATH'))}
-            )
-        ])
-    ]
-
-# def launch_obstacles(context, *args, **kwargs):
-#     obstacle_launch_path = PathJoinSubstitution([
-#         FindPackageShare('quad_utils'),
-#         'launch',
-#         'spawn_obstacles.py'
-#         ])
-#     return[
-#         GroupAction([
-#             PushRosNamespace('remote'),
-#             IncludeLaunchDescription(
-#                 PythonLaunchDescriptionSource(obstacle_launch_path),
-#                 launch_arguments={
-#                     'scenario' : LaunchConfiguration('scenario'),
-#                     'obstacles':LaunchConfiguration('obstacles')
-#                 }.items()
-#             )
-#         ])
-#     ]
-
-# def bridge_mujoco_clock(context, *args, **kwargs):
-#     return [
-#         Node(
-#             package='mujoco_ros2_control',
-#             executable='parameter_bridge',
-#             name='mujoco_clock_bridge',
-#             namespace='',
-#             arguments=['/clock@rosgraph_msgs/msg/Clock[mujoco.msgs.Clock]'],
-#             # output='screen'
-#         )
-#     ]
-
-def bridge_mujoco_clock(context, *args, **kwargs):
-    # If using mujoco_ros2_control, the sim node usually handles time.
-    # If you need a clock bridge, verify the package name.
-    # For many MuJoCo setups, this is handled within the main sim node.
-    return [
-        Node(
-            package='mujoco_ros2_control', 
-            executable='ros2_control_node', # Correct executable name
-            parameters=[{'use_sim_time': True}]
-        )
-    ]
-
 def launch_robot_mapping(context, *args, **kwargs):
     mapping_launch_path = PathJoinSubstitution([
         FindPackageShare('quad_utils'),
@@ -160,7 +86,6 @@ def launch_visualization(context, *args, **kwargs):
         )
     ]
 
-
 def launch_plot_juggler(context, *args, **kwargs):
     live_plot = LaunchConfiguration('live_plot').perform(context).lower() == 'true'
 
@@ -174,7 +99,6 @@ def launch_plot_juggler(context, *args, **kwargs):
             shell=False
         )
     ]
-
 
 def generate_launch_description():
     declared_args = [
@@ -197,9 +121,9 @@ def generate_launch_description():
     ]
 
     return LaunchDescription(declared_args + [
-        OpaqueFunction(function=launch_mujoco_world),
+        # OpaqueFunction(function=launch_mujoco_world),
         # OpaqueFunction(function=launch_obstacles),
-        OpaqueFunction(function=bridge_mujoco_clock),
+        # OpaqueFunction(function=bridge_mujoco_clock),
         OpaqueFunction(function=launch_robot_mapping),
         OpaqueFunction(function=launch_robot_group),
         OpaqueFunction(function=launch_visualization),
@@ -209,3 +133,130 @@ def generate_launch_description():
 
 # Example Usage, for Running Multiple Robots
 # ros2 launch quad_utils quad_mujoco.py robot_configs:='[{"name": "robot_1", "type": "spirit", "controller": "inverse_dynamics",  "init_pose": "-x 0.0 -y 0.0 -z 15"}, {"name": "robot_2", "type": "go2", "controller": "inverse_dynamics",  "init_pose": "-x 2.0 -y 0.0 -z 15"}]'
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# def  launch_mujoco_world(context, *args, **kwargs):
+#     world_name = LaunchConfiguration('world').perform(context)
+#     gui = LaunchConfiguration('gui').perform(context).lower() == 'true'
+#     verbose = LaunchConfiguration('verbose').perform(context).lower() == 'true'
+
+#     pkg_share = FindPackageShare('mujoco_scripts').perform(context)
+#     world_path = os.path.join(pkg_share, 'worlds', f"{world_name}")  
+#     model_path = os.path.join(pkg_share, 'models')
+
+    
+#     # Build the command for `mujoco_sim` (or your MuJoCo simulator executable)
+#     cmd = ['python3', '-m', 'mujoco.viewer', '--mjcf', world_path]
+
+
+#     if not gui:
+#         cmd.append('--headless')
+#     if verbose:
+#         cmd.extend(['--verbose', '4'])
+
+#     return [
+#         GroupAction([
+#             PushRosNamespace('remote'),
+#             ExecuteProcess(
+#                 cmd=cmd,
+#                 output='log',
+#                 additional_env={'MUJOCO_MODEL_PATH': (EnvironmentVariable('MUJOCO_MODEL_PATH')),
+#                                 'MUJOCO_PLUGIN_PATH': (EnvironmentVariable('MUJOCO_PLUGIN_PATH'))}
+#             )
+#         ])
+#     ]
+
+# def launch_obstacles(context, *args, **kwargs):
+#     obstacle_launch_path = PathJoinSubstitution([
+#         FindPackageShare('quad_utils'),
+#         'launch',
+#         'spawn_obstacles.py'
+#         ])
+#     return[
+#         GroupAction([
+#             PushRosNamespace('remote'),
+#             IncludeLaunchDescription(
+#                 PythonLaunchDescriptionSource(obstacle_launch_path),
+#                 launch_arguments={
+#                     'scenario' : LaunchConfiguration('scenario'),
+#                     'obstacles':LaunchConfiguration('obstacles')
+#                 }.items()
+#             )
+#         ])
+#     ]
+
+# def bridge_mujoco_clock(context, *args, **kwargs):
+#     return [
+#         Node(
+#             package='mujoco_ros2_control',
+#             executable='parameter_bridge',
+#             name='mujoco_clock_bridge',
+#             namespace='',
+#             arguments=['/clock@rosgraph_msgs/msg/Clock[mujoco.msgs.Clock]'],
+#             # output='screen'
+#         )
+#     ]
+
+# def bridge_mujoco_clock(context, *args, **kwargs):
+#     return [
+#         Node(
+#             package='mujoco_ros2_control',
+#             executable='ros2_control_node',
+#             namespace='robot_1',          # ← must match your robot namespace
+#             parameters=[
+#                 {'use_sim_time': True},
+#             ],
+#             remappings=[
+#                 ('robot_description', '/robot_1/robot_description')  # ← find the live topic
+#             ]
+#         )
+#     ]
