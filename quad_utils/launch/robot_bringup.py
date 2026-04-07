@@ -124,7 +124,6 @@ def launch_ros2_control(context, *args, **kwargs):
         Node(
             package='controller_manager',
             executable='ros2_control_node',
-            namespace=namespace,
             parameters=[
                 controller_config,
                 {'use_sim_time': True},

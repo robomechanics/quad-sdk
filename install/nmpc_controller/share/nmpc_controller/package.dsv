@@ -1,8 +1,0 @@
-source;share/nmpc_controller/hook/cmake_prefix_path.ps1
-source;share/nmpc_controller/hook/cmake_prefix_path.dsv
-source;share/nmpc_controller/hook/cmake_prefix_path.sh
-source;share/nmpc_controller/local_setup.bash
-source;share/nmpc_controller/local_setup.dsv
-source;share/nmpc_controller/local_setup.ps1
-source;share/nmpc_controller/local_setup.sh
-source;share/nmpc_controller/local_setup.zsh

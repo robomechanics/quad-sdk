@@ -1,8 +1,0 @@
-source;share/quad_perf_tests/hook/cmake_prefix_path.ps1
-source;share/quad_perf_tests/hook/cmake_prefix_path.dsv
-source;share/quad_perf_tests/hook/cmake_prefix_path.sh
-source;share/quad_perf_tests/local_setup.bash
-source;share/quad_perf_tests/local_setup.dsv
-source;share/quad_perf_tests/local_setup.ps1
-source;share/quad_perf_tests/local_setup.sh
-source;share/quad_perf_tests/local_setup.zsh

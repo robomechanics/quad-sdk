@@ -1,8 +1,0 @@
-source;share/underbrush_description/hook/cmake_prefix_path.ps1
-source;share/underbrush_description/hook/cmake_prefix_path.dsv
-source;share/underbrush_description/hook/cmake_prefix_path.sh
-source;share/underbrush_description/local_setup.bash
-source;share/underbrush_description/local_setup.dsv
-source;share/underbrush_description/local_setup.ps1
-source;share/underbrush_description/local_setup.sh
-source;share/underbrush_description/local_setup.zsh

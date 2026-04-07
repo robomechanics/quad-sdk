@@ -1383,71 +1383,38 @@ Stephen Brawner (brawner@gmail.com)
     name="front_camera">
   </link>
 
+  <!-- Macro: declare a controllable joint + its transmission to a named MuJoCo joint -->
+  <xacro:macro name="mujoco_joint" params="idx mujoco_joint_name">
+    <joint name="${idx}">
+      <command_interface name="effort" />
+      <state_interface name="velocity" />
+      <state_interface name="position" />
+    </joint>
+    <transmission name="trans_${idx}">
+      <plugin>transmission_interface/SimpleTransmission</plugin>
+      <actuator name="${mujoco_joint_name}" role="actuator"/>
+      <joint name="${idx}" role="joint"/>
+    </transmission>
+  </xacro:macro>
+
   <ros2_control name="MujocoSystem" type="system">
     <hardware>
       <plugin>mujoco_ros2_control/MujocoSystemInterface</plugin>
       <param name="mujoco_model">$(find mujoco_scripts)/worlds/flat.xml</param>
     </hardware>
-    <joint name="0">
-      <command_interface name="effort" />
-      <state_interface name="velocity" />
-      <state_interface name="position" />
-    </joint>
-    <joint name="1">
-      <command_interface name="effort" />
-      <state_interface name="velocity" />
-      <state_interface name="position" />
-    </joint>
-    <joint name="2">
-      <command_interface name="effort" />
-      <state_interface name="velocity" />
-      <state_interface name="position" />
-    </joint>
-    <joint name="3">
-      <command_interface name="effort" />
-      <state_interface name="velocity" />
-      <state_interface name="position" />
-    </joint>
-    <joint name="4">
-      <command_interface name="effort" />
-      <state_interface name="velocity" />
-      <state_interface name="position" />
-    </joint>
-    <joint name="5">
-      <command_interface name="effort" />
-      <state_interface name="velocity" />
-      <state_interface name="position" />
-    </joint>
-    <joint name="6">
-      <command_interface name="effort" />
-      <state_interface name="velocity" />
-      <state_interface name="position" />
-    </joint>
-    <joint name="7">
-      <command_interface name="effort" />
-      <state_interface name="velocity" />
-      <state_interface name="position" />
-    </joint>
-    <joint name="8">
-      <command_interface name="effort" />
-      <state_interface name="velocity" />
-      <state_interface name="position" />
-    </joint>
-    <joint name="9">
-      <command_interface name="effort" />
-      <state_interface name="velocity" />
-      <state_interface name="position" />
-    </joint>
-    <joint name="10">
-      <command_interface name="effort" />
-      <state_interface name="velocity" />
-      <state_interface name="position" />
-    </joint>
-    <joint name="11">
-      <command_interface name="effort" />
-      <state_interface name="velocity" />
-      <state_interface name="position" />
-    </joint>
+    <!-- Joint index mapping follows Gazebo SDF joint ordering (go2.sdf.xacro) -->
+    <xacro:mujoco_joint idx="0"  mujoco_joint_name="FL_thigh_joint" />
+    <xacro:mujoco_joint idx="1"  mujoco_joint_name="FL_calf_joint"  />
+    <xacro:mujoco_joint idx="2"  mujoco_joint_name="RL_thigh_joint" />
+    <xacro:mujoco_joint idx="3"  mujoco_joint_name="RL_calf_joint"  />
+    <xacro:mujoco_joint idx="4"  mujoco_joint_name="FR_thigh_joint" />
+    <xacro:mujoco_joint idx="5"  mujoco_joint_name="FR_calf_joint"  />
+    <xacro:mujoco_joint idx="6"  mujoco_joint_name="RR_thigh_joint" />
+    <xacro:mujoco_joint idx="7"  mujoco_joint_name="RR_calf_joint"  />
+    <xacro:mujoco_joint idx="8"  mujoco_joint_name="FL_hip_joint"   />
+    <xacro:mujoco_joint idx="9"  mujoco_joint_name="RL_hip_joint"   />
+    <xacro:mujoco_joint idx="10" mujoco_joint_name="FR_hip_joint"   />
+    <xacro:mujoco_joint idx="11" mujoco_joint_name="RR_hip_joint"   />
   </ros2_control>
 
 

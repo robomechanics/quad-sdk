@@ -1,8 +1,0 @@
-source;share/global_body_planner/hook/cmake_prefix_path.ps1
-source;share/global_body_planner/hook/cmake_prefix_path.dsv
-source;share/global_body_planner/hook/cmake_prefix_path.sh
-source;share/global_body_planner/local_setup.bash
-source;share/global_body_planner/local_setup.dsv
-source;share/global_body_planner/local_setup.ps1
-source;share/global_body_planner/local_setup.sh
-source;share/global_body_planner/local_setup.zsh

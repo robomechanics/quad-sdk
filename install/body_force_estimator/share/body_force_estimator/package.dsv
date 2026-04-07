@@ -1,8 +1,0 @@
-source;share/body_force_estimator/hook/cmake_prefix_path.ps1
-source;share/body_force_estimator/hook/cmake_prefix_path.dsv
-source;share/body_force_estimator/hook/cmake_prefix_path.sh
-source;share/body_force_estimator/local_setup.bash
-source;share/body_force_estimator/local_setup.dsv
-source;share/body_force_estimator/local_setup.ps1
-source;share/body_force_estimator/local_setup.sh
-source;share/body_force_estimator/local_setup.zsh

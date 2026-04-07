@@ -1,8 +1,0 @@
-source;share/force_applicator/hook/cmake_prefix_path.ps1
-source;share/force_applicator/hook/cmake_prefix_path.dsv
-source;share/force_applicator/hook/cmake_prefix_path.sh
-source;share/force_applicator/local_setup.bash
-source;share/force_applicator/local_setup.dsv
-source;share/force_applicator/local_setup.ps1
-source;share/force_applicator/local_setup.sh
-source;share/force_applicator/local_setup.zsh

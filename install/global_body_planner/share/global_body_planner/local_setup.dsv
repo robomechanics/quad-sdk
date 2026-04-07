@@ -1,3 +1,0 @@
-source;share/global_body_planner/environment/ament_prefix_path.sh
-source;share/global_body_planner/environment/library_path.sh
-source;share/global_body_planner/environment/path.sh
