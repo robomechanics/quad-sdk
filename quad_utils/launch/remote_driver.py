@@ -68,6 +68,7 @@ def launch_visualization_plugins(context, *args, **kwargs):
         'go2w': 'go2w_description',
         'b2': 'b2_description',
         'spot': 'spot_description',
+        'vision60'  : 'vision60_description' 
     }
     desc_pkg = desc_pkg_map[robot_type]
     desc_path = FindPackageShare(desc_pkg).perform(context)

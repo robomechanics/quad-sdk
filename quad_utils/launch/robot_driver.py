@@ -30,6 +30,7 @@ def load_robot_params(context, *args, **kwargs):
         'go2w': 'go2w_description',
         'b2': 'b2_description',
         'spot': 'spot_description',
+        'vision60'  : 'vision60_description'
     }
     if robot_type not in desc_pkg_map:
         raise RuntimeError(f"[robot_driver] Unsupported robot type: {robot_type}")
