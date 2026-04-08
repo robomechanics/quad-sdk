@@ -41,9 +41,9 @@ Development Kit License (20191101-BDSDK-SL).
       </geometry>
     </collision>
     <inertial>
-      <origin xyz="0 0 -0.00496172"/>
-      <mass value="16.70765207"/>
-      <inertia ixx="0.081543792" ixy="0.0" ixz="0.0" iyy="0.549231154" iyz="0.0" izz="0.569454373"/>
+      <origin xyz="0.006394396536052227 -9.812158532440662e-05 0.0009113792330026627"/>
+      <mass value="32.86"/>
+      <inertia ixx="0.13143999874591827" ixy="0.0" ixz="0.0" iyy="0.13143999874591827" iyz="0.0" izz="0.13143999874591827"/>
     </inertial>
   </link>
   <gazebo reference="body">
@@ -75,9 +75,9 @@ Development Kit License (20191101-BDSDK-SL).
       <material name="gray" />
     </visual>
     <inertial>
-      <origin xyz="-0.01586739 0.00855842 0.00000903"/>
-      <inertia ixx="0.00122166" ixy="-0.00017754" ixz="0.00000043" iyy="0.00158957" iyz="-0.00000049" izz="0.00172903"/>
-      <mass value="1.13688339"/>
+      <origin xyz="-0.005374345928430557 0.012841847725212574 9.875232353806496e-05"/>
+      <inertia ixx="0.0021147398873455382" ixy="0.0" ixz="0.0" iyy="0.0018129577956607131" iyz="0.0" izz="0.002265435737304666"/>
+      <mass value="1.68"/>
     </inertial>
   </link>
   <gazebo reference="hip0">
@@ -118,9 +118,9 @@ Development Kit License (20191101-BDSDK-SL).
       </geometry>
     </collision>
     <inertial>
-      <origin xyz="0.00214442 -0.01110184 -0.07881204"/>
-      <inertia ixx="0.02692501" ixy="-0.00008782" ixz="0.00054873" iyy="0.02583907" iyz="0.00207146" izz="0.00318737"/>
-      <mass value="2.25620359"/>
+      <origin xyz="0.005142373498529196 -0.0024323679972440004 -0.12100915610790253"/>
+      <inertia ixx="0.02755964961185679" ixy="0.0" ixz="0.0" iyy="0.027354914287651046" iyz="0.0" izz="0.002848145546743553"/>
+      <mass value="2.34"/>
     </inertial>
   </link>
   <gazebo reference="upper0">
@@ -131,7 +131,7 @@ Development Kit License (20191101-BDSDK-SL).
   <joint name="0" type="revolute">
     <parent link="hip0"/>
     <child link="upper0"/>
-    <origin xyz="0.0 0.110945 0.0" rpy="0 0 0"/>
+    <origin xyz="0.0 0.11080 0.0" rpy="0 0 0"/>
     <axis xyz="0 1 0"/>
     <limit effort="45" velocity="100.00" lower="-0.89884456477707963539" upper="2.2951079663725435509"/>
     <dynamics damping="0" friction="0"/>
@@ -167,9 +167,9 @@ Development Kit License (20191101-BDSDK-SL).
       </geometry>
     </collision> -->
     <inertial>
-      <origin xyz="0.00597360 0.0 -0.17466427"/>
-      <inertia ixx="0.00701356" ixy="0.0" ixz="0.00006600" iyy="0.00709946" iyz="0.0" izz="0.00014529"/>
-      <mass value="0.330"/>
+      <origin xyz="0.00225794012658298 4.607596201822162e-05 -0.1800822913646698"/>
+      <inertia ixx="0.003999022654901177" ixy="0.0" ixz="0.0" iyy="0.0040503157598010785" iyz="0.0" izz="0.0001493402097647426"/>
+      <mass value="0.35"/>
     </inertial>
   </link>
   <gazebo reference="lower0">
@@ -180,7 +180,7 @@ Development Kit License (20191101-BDSDK-SL).
   <joint name="1" type="revolute">
     <parent link="upper0"/>
     <child link="lower0"/>
-    <origin xyz="0.025 0.000 -0.3205" rpy="0 0 0"/> 
+    <origin xyz="0.025 0.000 -0.3200" rpy="0 0 0"/> 
     <axis xyz="0 1 0"/>
     <limit effort="115" velocity="100.00" lower="-2.7929" upper="-0.254402"/>
     <dynamics damping="0" friction="0"/>
@@ -250,9 +250,9 @@ Development Kit License (20191101-BDSDK-SL).
       <material name="gray" />
     </visual>
     <inertial>
-      <origin xyz="0.01586739 0.00855842 0.00000903"/>
-      <inertia ixx="0.00122166" ixy="0.00017754" ixz="-0.00000043" iyy="0.00158957" iyz="-0.00000049" izz="0.00172903"/>
-      <mass value="1.13688339"/>
+      <origin xyz="0.005374345928430557 0.012841847725212574 -9.875232353806496e-05"/>
+      <inertia ixx="0.0021147398873455382" ixy="0.0" ixz="0.0" iyy="0.0018129577956607131" iyz="0.0" izz="0.002265435737304666"/>
+      <mass value="1.68"/>
     </inertial>
   </link>
   <gazebo reference="hip1">
@@ -293,9 +293,9 @@ Development Kit License (20191101-BDSDK-SL).
       </geometry>
     </collision>
     <inertial>
-      <origin xyz="0.00214442 -0.01110184 -0.07881204"/>
-      <inertia ixx="0.02692501" ixy="-0.00008782" ixz="0.00054873" iyy="0.02583907" iyz="0.00207146" izz="0.00318737"/>
-      <mass value="2.25620359"/>
+      <origin xyz="0.005142373498529196 -0.0024323679972440004 -0.12100915610790253"/>
+      <inertia ixx="0.02755964961185679" ixy="0.0" ixz="0.0" iyy="0.027354914287651046" iyz="0.0" izz="0.002848145546743553"/>
+      <mass value="2.34"/>
     </inertial>
   </link>
   <gazebo reference="upper1">
@@ -305,9 +305,9 @@ Development Kit License (20191101-BDSDK-SL).
   <joint name="2" type="revolute">
     <parent link="hip1"/>
     <child link="upper1"/>
-    <origin xyz="0.0 0.110945 0.0" rpy="0 0 0"/> 
+    <origin xyz="0.0 0.11080 0.0" rpy="0 0 0"/> 
     <axis xyz="0 1 0"/>
-    <limit effort="45" velocity="100.00" lower="-0.898845" upper="2.24363"/>
+    <limit effort="45" velocity="100.00" lower="-0.89884456477707963539" upper="2.2951079663725435509"/>
     <dynamics damping="0" friction="0"/>
   </joint>
   <transmission name="transmission_2">
@@ -341,9 +341,9 @@ Development Kit License (20191101-BDSDK-SL).
       </geometry>
     </collision> -->
     <inertial>
-      <origin xyz="0.00597360 0.0 -0.17466427"/>
-      <inertia ixx="0.00701356" ixy="0.0" ixz="0.00006600" iyy="0.00709946" iyz="0.0" izz="0.00014529"/>
-      <mass value="0.330"/>
+      <origin xyz="0.00225794012658298 4.607596201822162e-05 -0.1800822913646698"/>
+      <inertia ixx="0.003999022654901177" ixy="0.0" ixz="0.0" iyy="0.0040503157598010785" iyz="0.0" izz="0.0001493402097647426"/>
+      <mass value="0.35"/>
     </inertial>
   </link>
   <gazebo reference="lower1">
@@ -353,9 +353,9 @@ Development Kit License (20191101-BDSDK-SL).
   <joint name="3" type="revolute">
     <parent link="upper1"/>
     <child link="lower1"/>
-    <origin xyz="0.025 0.000 -0.3205" rpy="0 0 0"/> 
+    <origin xyz="0.025 0.000 -0.3200" rpy="0 0 0"/> 
     <axis xyz="0 1 0"/>
-    <limit effort="115" velocity="100.00" lower="-2.7929" upper="-0.255648"/>
+    <limit effort="115" velocity="100.00" lower="-2.7929" upper="-0.247067"/>
     <dynamics damping="0" friction="0"/>
   </joint>
   <transmission name="transmission_3">
@@ -424,9 +424,9 @@ Development Kit License (20191101-BDSDK-SL).
       <material name="gray" />
     </visual>
     <inertial>
-      <origin xyz="-0.01586739 -0.00855842 0.00000903"/>
-      <inertia ixx="0.00122166" ixy="0.00017754" ixz="0.00000043" iyy="0.00158957" iyz="0.00000049" izz="0.00172903"/>
-      <mass value="1.13688339"/>
+      <origin xyz="-0.005374345928430557 -0.012841847725212574 -9.875232353806496e-05"/>
+      <inertia ixx="0.0021147398873455382" ixy="0.0" ixz="0.0" iyy="0.0018129577956607131" iyz="0.0" izz="0.002265435737304666"/>
+      <mass value="1.68"/>
     </inertial>
   </link>
   <gazebo reference="hip2">
@@ -466,9 +466,9 @@ Development Kit License (20191101-BDSDK-SL).
       </geometry>
     </collision>
     <inertial>
-      <origin xyz="0.00214442 0.01110184 -0.07881204"/>
-      <inertia ixx="0.02692501" ixy="0.00008782" ixz="0.00054873" iyy="0.02583907" iyz="-0.00207146" izz="0.00318737"/>
-      <mass value="2.25620359"/>
+      <origin xyz="0.005142373498529196 0.0024323677644133568 -0.12100915610790253"/>
+      <inertia ixx="0.02755964678927691" ixy="0.0" ixz="0.0" iyy="0.02735491706466737" iyz="0.0" izz="0.0028481453594764797"/>
+      <mass value="2.34"/>
     </inertial>
   </link>
   <gazebo reference="upper2">
@@ -478,7 +478,7 @@ Development Kit License (20191101-BDSDK-SL).
   <joint name="4" type="revolute">
     <parent link="hip2"/>
     <child link="upper2"/>
-    <origin xyz="0.0 -0.110945 0.0" rpy="0 0 0"/>
+    <origin xyz="0.0 -0.11080 0.0" rpy="0 0 0"/>
     <axis xyz="0 1 0"/>
     <limit effort="45" velocity="100.00" lower="-0.89884456477707963539" upper="2.2951079663725435509"/>
     <dynamics damping="0" friction="0"/>
@@ -514,9 +514,9 @@ Development Kit License (20191101-BDSDK-SL).
       </geometry>
     </collision> -->
     <inertial>
-      <origin xyz="0.00597360 0.0 -0.17466427"/>
-      <inertia ixx="0.00701356" ixy="0.0" ixz="0.00006600" iyy="0.00709946" iyz="0.0" izz="0.00014529"/>
-      <mass value="0.330"/>
+      <origin xyz="0.00225794012658298 4.607596201822162e-05 -0.1800822913646698"/>
+      <inertia ixx="0.003999022654901177" ixy="0.0" ixz="0.0" iyy="0.0040503157598010785" iyz="0.0" izz="0.0001493402097647426"/>
+      <mass value="0.35"/>
     </inertial>
   </link>
   <gazebo reference="lower2">
@@ -526,9 +526,9 @@ Development Kit License (20191101-BDSDK-SL).
   <joint name="5" type="revolute">
     <parent link="upper2"/>
     <child link="lower2"/>
-    <origin xyz="0.025 0.000 -0.3205" rpy="0 0 0"/>
+    <origin xyz="0.025 0.000 -0.3200" rpy="0 0 0"/>
     <axis xyz="0 1 0"/>
-    <limit effort="115" velocity="100.00" lower="-2.7929" upper="-0.247067"/>
+    <limit effort="115" velocity="100.00" lower="-2.7929" upper="-0.255648"/>
     <dynamics damping="0" friction="0"/>
   </joint>
   <transmission name="transmission_5">
@@ -597,9 +597,9 @@ Development Kit License (20191101-BDSDK-SL).
       <material name="gray" />
     </visual>
     <inertial>
-      <origin xyz="0.01586739 -0.00855842 0.00000903"/>
-      <inertia ixx="0.00122166" ixy="-0.00017754" ixz="-0.00000043" iyy="0.00158957" iyz="0.00000049" izz="0.00172903"/>
-      <mass value="1.13688339"/>
+      <origin xyz="0.005374345928430557 -0.012841847725212574 9.875232353806496e-05"/>
+      <inertia ixx="0.0021147398873455382" ixy="0.0" ixz="0.0" iyy="0.0018129577956607131" iyz="0.0" izz="0.002265435737304666"/>
+      <mass value="1.68"/>
     </inertial>
   </link>
   <gazebo reference="hip3">
@@ -640,9 +640,9 @@ Development Kit License (20191101-BDSDK-SL).
       </geometry>
     </collision>
     <inertial>
-      <origin xyz="0.00214442 0.01110184 -0.07881204"/>
-      <inertia ixx="0.02692501" ixy="0.00008782" ixz="0.00054873" iyy="0.02583907" iyz="-0.00207146" izz="0.00318737"/>
-      <mass value="2.25620359"/>
+      <origin xyz="0.005142373498529196 0.0024323677644133568 -0.12100915610790253"/>
+      <inertia ixx="0.02755964678927691" ixy="0.0" ixz="0.0" iyy="0.02735491706466737" iyz="0.0" izz="0.0028481453594764797"/>
+      <mass value="2.34"/>
     </inertial>
   </link>
   <gazebo reference="upper3">
@@ -653,7 +653,7 @@ Development Kit License (20191101-BDSDK-SL).
   <joint name="6" type="revolute">
     <parent link="hip3"/>
     <child link="upper3"/>
-    <origin xyz="0.0 -0.110945 0.0" rpy="0 0 0"/> 
+    <origin xyz="0.0 -0.11080 0.0" rpy="0 0 0"/> 
     <axis xyz="0 1 0"/>
     <limit effort="45" velocity="100.00" lower="-0.89884456477707963539" upper="2.2951079663725435509"/>
     <dynamics damping="0" friction="0"/>
@@ -689,9 +689,9 @@ Development Kit License (20191101-BDSDK-SL).
       </geometry>
     </collision> -->
     <inertial>
-      <origin xyz="0.00597360 0.0 -0.17466427"/>
-      <inertia ixx="0.00701356" ixy="0.0" ixz="0.00006600" iyy="0.00709946" iyz="0.0" izz="0.00014529"/>
-      <mass value="0.330"/>
+      <origin xyz="0.00225794012658298 4.607596201822162e-05 -0.1800822913646698"/>
+      <inertia ixx="0.003999022654901177" ixy="0.0" ixz="0.0" iyy="0.0040503157598010785" iyz="0.0" izz="0.0001493402097647426"/>
+      <mass value="0.35"/>
     </inertial>
   </link>
   <gazebo reference="lower3">
@@ -701,9 +701,9 @@ Development Kit License (20191101-BDSDK-SL).
   <joint name="7" type="revolute">
     <parent link="upper3"/>
     <child link="lower3"/>
-    <origin xyz="0.025 0.000 -0.3205" rpy="0 0 0"/> 
+    <origin xyz="0.025 0.000 -0.3200" rpy="0 0 0"/> 
     <axis xyz="0 1 0"/>
-    <limit effort="115" velocity="100.00" lower="-2.7929" upper="-0.248282"/>
+    <limit effort="115" velocity="100.00" lower="-2.7929" upper="-0.247067"/>
     <dynamics damping="0" friction="0"/>
   </joint>
   <transmission name="transmission_7">
