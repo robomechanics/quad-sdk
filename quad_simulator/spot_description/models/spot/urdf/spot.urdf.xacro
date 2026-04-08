@@ -90,7 +90,7 @@ Development Kit License (20191101-BDSDK-SL).
     <child link="hip0"/>
     <origin xyz="0.29785 0.05500 0.00000" rpy="0 0 0"/>
     <axis xyz="1 0 0"/>
-    <limit effort="1000" velocity="1000.00" lower="-0.78539816339744827899" upper="0.78539816339744827899"/>
+    <limit effort="45" velocity="100.00" lower="-0.78539816339744827899" upper="0.78539816339744827899"/>
     <dynamics damping="0" friction="0"/>
   </joint>
   <transmission name="transmission_8">
@@ -133,7 +133,7 @@ Development Kit License (20191101-BDSDK-SL).
     <child link="upper0"/>
     <origin xyz="0.0 0.110945 0.0" rpy="0 0 0"/>
     <axis xyz="0 1 0"/>
-    <limit effort="1000" velocity="1000.00" lower="-0.89884456477707963539" upper="2.2951079663725435509"/>
+    <limit effort="45" velocity="100.00" lower="-0.89884456477707963539" upper="2.2951079663725435509"/>
     <dynamics damping="0" friction="0"/>
   </joint>
   <transmission name="transmission_0">
@@ -182,7 +182,7 @@ Development Kit License (20191101-BDSDK-SL).
     <child link="lower0"/>
     <origin xyz="0.025 0.000 -0.3205" rpy="0 0 0"/> 
     <axis xyz="0 1 0"/>
-    <limit effort="1000" velocity="1000.00" lower="-2.7929" upper="-0.254402"/>
+    <limit effort="115" velocity="100.00" lower="-2.7929" upper="-0.254402"/>
     <dynamics damping="0" friction="0"/>
   </joint>
   <transmission name="transmission_1">
@@ -265,7 +265,7 @@ Development Kit License (20191101-BDSDK-SL).
     <child link="hip1"/>
     <origin xyz="-0.29785 0.05500 0.00000" rpy="0 0 0"/>
     <axis xyz="1 0 0"/>
-    <limit effort="1000" velocity="1000.00" lower="-0.78539816339744827899" upper="0.78539816339744827899"/>
+    <limit effort="45" velocity="100.00" lower="-0.78539816339744827899" upper="0.78539816339744827899"/>
     <dynamics damping="0" friction="0"/>
   </joint>
   <transmission name="transmission_9">
@@ -307,7 +307,7 @@ Development Kit License (20191101-BDSDK-SL).
     <child link="upper1"/>
     <origin xyz="0.0 0.110945 0.0" rpy="0 0 0"/> 
     <axis xyz="0 1 0"/>
-    <limit effort="1000" velocity="1000.00" lower="-0.898845" upper="2.24363"/>
+    <limit effort="45" velocity="100.00" lower="-0.898845" upper="2.24363"/>
     <dynamics damping="0" friction="0"/>
   </joint>
   <transmission name="transmission_2">
@@ -355,7 +355,7 @@ Development Kit License (20191101-BDSDK-SL).
     <child link="lower1"/>
     <origin xyz="0.025 0.000 -0.3205" rpy="0 0 0"/> 
     <axis xyz="0 1 0"/>
-    <limit effort="1000" velocity="1000.00" lower="-2.7929" upper="-0.255648"/>
+    <limit effort="115" velocity="100.00" lower="-2.7929" upper="-0.255648"/>
     <dynamics damping="0" friction="0"/>
   </joint>
   <transmission name="transmission_3">
@@ -438,7 +438,7 @@ Development Kit License (20191101-BDSDK-SL).
     <child link="hip2"/>
     <origin xyz="0.29785 -0.05500 0.00000" rpy="0 0 0"/>
     <axis xyz="1 0 0"/>
-    <limit effort="1000" velocity="1000.00" lower="-0.78539816339744827899" upper="0.78539816339744827899"/>
+    <limit effort="45" velocity="100.00" lower="-0.78539816339744827899" upper="0.78539816339744827899"/>
     <dynamics damping="0" friction="0"/>
   </joint>
   <transmission name="transmission_10">
@@ -480,7 +480,7 @@ Development Kit License (20191101-BDSDK-SL).
     <child link="upper2"/>
     <origin xyz="0.0 -0.110945 0.0" rpy="0 0 0"/>
     <axis xyz="0 1 0"/>
-    <limit effort="1000" velocity="1000.00" lower="-0.89884456477707963539" upper="2.2951079663725435509"/>
+    <limit effort="45" velocity="100.00" lower="-0.89884456477707963539" upper="2.2951079663725435509"/>
     <dynamics damping="0" friction="0"/>
   </joint>
   <transmission name="transmission_4">
@@ -528,7 +528,7 @@ Development Kit License (20191101-BDSDK-SL).
     <child link="lower2"/>
     <origin xyz="0.025 0.000 -0.3205" rpy="0 0 0"/>
     <axis xyz="0 1 0"/>
-    <limit effort="1000" velocity="1000.00" lower="-2.7929" upper="-0.247067"/>
+    <limit effort="115" velocity="100.00" lower="-2.7929" upper="-0.247067"/>
     <dynamics damping="0" friction="0"/>
   </joint>
   <transmission name="transmission_5">
@@ -612,7 +612,7 @@ Development Kit License (20191101-BDSDK-SL).
     <child link="hip3"/>
     <origin xyz="-0.29785 -0.05500 0.00000" rpy="0 0 0"/>
     <axis xyz="1 0 0"/>
-    <limit effort="1000" velocity="1000.00" lower="-0.78539816339744827899" upper="0.78539816339744827899"/>
+    <limit effort="45" velocity="100.00" lower="-0.78539816339744827899" upper="0.78539816339744827899"/>
     <dynamics damping="0" friction="0"/>
   </joint>
   <transmission name="transmission_11">
@@ -655,7 +655,7 @@ Development Kit License (20191101-BDSDK-SL).
     <child link="upper3"/>
     <origin xyz="0.0 -0.110945 0.0" rpy="0 0 0"/> 
     <axis xyz="0 1 0"/>
-    <limit effort="1000" velocity="1000.00" lower="-0.89884456477707963539" upper="2.2951079663725435509"/>
+    <limit effort="45" velocity="100.00" lower="-0.89884456477707963539" upper="2.2951079663725435509"/>
     <dynamics damping="0" friction="0"/>
   </joint>
   <transmission name="transmission_6">
@@ -703,7 +703,7 @@ Development Kit License (20191101-BDSDK-SL).
     <child link="lower3"/>
     <origin xyz="0.025 0.000 -0.3205" rpy="0 0 0"/> 
     <axis xyz="0 1 0"/>
-    <limit effort="1000" velocity="1000.00" lower="-2.7929" upper="-0.248282"/>
+    <limit effort="115" velocity="100.00" lower="-2.7929" upper="-0.248282"/>
     <dynamics damping="0" friction="0"/>
   </joint>
   <transmission name="transmission_7">

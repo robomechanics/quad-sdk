@@ -8,15 +8,15 @@
     <link name='body'>
       <pose>0 0 0 0 -0 0</pose>
       <inertial>
-        <pose>0 0 -0.004962 0 -0 0</pose>
-        <mass>16.7077</mass>
+        <pose>0 0 -0.00496172 0 -0 0</pose>
+        <mass>16.70765207</mass>
         <inertia>
-          <ixx>0.0815438</ixx>
+          <ixx>0.081543792</ixx>
           <ixy>0</ixy>
           <ixz>0</ixz>
-          <iyy>0.549231</iyy>
+          <iyy>0.549231154</iyy>
           <iyz>0</iyz>
-          <izz>0.569454</izz>
+          <izz>0.569454373</izz>
         </inertia>
       </inertial>
       <collision name='body_collision'>
@@ -51,14 +51,14 @@
     <link name='hip0'>
       <pose>0.29785 0.055 0 0 -0 0</pose>
       <inertial>
-        <pose>-0.015867 0.008558 9e-06 0 -0 0</pose>
-        <mass>1.13688</mass>
+        <pose>-0.01586739 0.00855842 0.00000903 0 -0 0</pose>
+        <mass>1.13688339</mass>
         <inertia>
           <ixx>0.00122166</ixx>
           <ixy>-0.00017754</ixy>
-          <ixz>4.3e-07</ixz>
+          <ixz>0.00000043</ixz>
           <iyy>0.00158957</iyy>
-          <iyz>-4.9e-07</iyz>
+          <iyz>-0.00000049</iyz>
           <izz>0.00172903</izz>
         </inertia>
       </inertial>
@@ -92,8 +92,8 @@
         <limit>
             <lower>-0.7853981633974483</lower>
             <upper>0.7853981633974483</upper>
-            <effort>1000</effort>
-            <velocity>1000.00</velocity>
+            <effort>45</effort>
+            <velocity>100.00</velocity>
         </limit>
         <dynamics>
           <damping>0</damping>
@@ -108,13 +108,13 @@
     <link name='upper0'>
       <pose>0.29785 0.165945 0 0 -0 0</pose>
       <inertial>
-        <pose>0.002144 -0.011102 -0.078812 0 -0 0</pose>
-        <mass>2.2562</mass>
+        <pose>0.00214442 -0.01110184 -0.07881204 0 -0 0</pose>
+        <mass>2.25620359</mass>
         <inertia>
-          <ixx>0.026925</ixx>
-          <ixy>-8.782e-05</ixy>
+          <ixx>0.02692501</ixx>
+          <ixy>-0.00008782</ixy>
           <ixz>0.00054873</ixz>
-          <iyy>0.0258391</iyy>
+          <iyy>0.02583907</iyy>
           <iyz>0.00207146</iyz>
           <izz>0.00318737</izz>
         </inertia>
@@ -164,10 +164,10 @@
       <axis>
         <xyz>0 1 0</xyz>
         <limit>
-            <lower>-0.8988445647770796</lower>
-            <upper>2.2951079663725436</upper>
-            <effort>1000</effort>
-            <velocity>1000.00</velocity>
+            <lower>-0.89884456477707963539</lower>
+            <upper>2.2951079663725435509</upper>
+            <effort>45</effort>
+            <velocity>100.00</velocity>
         </limit>
         <dynamics>
           <damping>0</damping>
@@ -182,15 +182,15 @@
     <link name='lower0'>
       <pose>0.32285 0.165945 -0.3205 0 -0 0</pose>
       <inertial>
-        <pose>0.081455 0 -0.126678 0 -0 0</pose>
-        <mass>0.53</mass>
+        <pose>0.00597360 0 -0.17466427 0 -0 0</pose>
+        <mass>0.330</mass>
         <inertia>
-          <ixx>0.00920778</ixx>
-          <ixy>0</ixy>
-          <ixz>-0.00310153</ixz>
-          <iyy>0.0142761</iyy>
-          <iyz>0</iyz>
-          <izz>0.00530824</izz>
+          <ixx>0.00701356</ixx>
+          <ixy>0.0</ixy>
+          <ixz>0.00006600</ixz>
+          <iyy>0.00709946</iyy>
+          <iyz>0.0</iyz>
+          <izz>0.00014529</izz>
         </inertia>
       </inertial>
       <collision name='lower0_collision'>
@@ -255,8 +255,8 @@
         <limit>
             <lower>-2.7929</lower>
             <upper>-0.254402</upper>
-            <effort>1000</effort>
-            <velocity>1000.00</velocity>
+            <effort>115</effort>
+            <velocity>100.00</velocity>
         </limit>
         <dynamics>
           <damping>0</damping>
@@ -271,14 +271,14 @@
     <link name='hip1'>
       <pose>-0.29785 0.055 0 0 -0 0</pose>
       <inertial>
-        <pose>0.015867 0.008558 9e-06 0 -0 0</pose>
-        <mass>1.13688</mass>
+        <pose>0.01586739 0.00855842 0.00000903 0 -0 0</pose>
+        <mass>1.13688339</mass>
         <inertia>
           <ixx>0.00122166</ixx>
           <ixy>0.00017754</ixy>
-          <ixz>-4.3e-07</ixz>
+          <ixz>-0.00000043</ixz>
           <iyy>0.00158957</iyy>
-          <iyz>-4.9e-07</iyz>
+          <iyz>-0.00000049</iyz>
           <izz>0.00172903</izz>
         </inertia>
       </inertial>
@@ -312,8 +312,8 @@
         <limit>
             <lower>-0.7853981633974483</lower>
             <upper>0.7853981633974483</upper>
-            <effort>1000</effort>
-            <velocity>1000.00</velocity>
+            <effort>45</effort>
+            <velocity>100.00</velocity>
         </limit>
         <dynamics>
           <damping>0</damping>
@@ -328,13 +328,13 @@
     <link name='upper1'>
       <pose>-0.29785 0.165945 0 0 -0 0</pose>
       <inertial>
-        <pose>0.002144 -0.011102 -0.078812 0 -0 0</pose>
-        <mass>2.2562</mass>
+        <pose>0.00214442 -0.01110184 -0.07881204 0 -0 0</pose>
+        <mass>2.25620359</mass>
         <inertia>
-          <ixx>0.026925</ixx>
-          <ixy>-8.782e-05</ixy>
+          <ixx>0.02692501</ixx>
+          <ixy>-0.00008782</ixy>
           <ixz>0.00054873</ixz>
-          <iyy>0.0258391</iyy>
+          <iyy>0.02583907</iyy>
           <iyz>0.00207146</iyz>
           <izz>0.00318737</izz>
         </inertia>
@@ -384,10 +384,10 @@
       <axis>
         <xyz>0 1 0</xyz>
         <limit>
-            <lower>-0.898845</lower>
-            <upper>2.24363</upper>
-            <effort>1000</effort>
-            <velocity>1000.00</velocity>
+            <lower>-0.89884456477707963539</lower>
+            <upper>2.2951079663725435509</upper>
+            <effort>45</effort>
+            <velocity>100.00</velocity>
         </limit>
         <dynamics>
           <damping>0</damping>
@@ -402,15 +402,15 @@
     <link name='lower1'>
       <pose>-0.27285 0.165945 -0.3205 0 -0 0</pose>
       <inertial>
-        <pose>0.081455 0 -0.126678 0 -0 0</pose>
-        <mass>0.53</mass>
+        <pose>0.00597360 0 -0.17466427 0 -0 0</pose>
+        <mass>0.330</mass>
         <inertia>
-          <ixx>0.00920778</ixx>
-          <ixy>0</ixy>
-          <ixz>-0.00310153</ixz>
-          <iyy>0.0142761</iyy>
-          <iyz>0</iyz>
-          <izz>0.00530824</izz>
+          <ixx>0.00701356</ixx>
+          <ixy>0.0</ixy>
+          <ixz>0.00006600</ixz>
+          <iyy>0.00709946</iyy>
+          <iyz>0.0</iyz>
+          <izz>0.00014529</izz>
         </inertia>
       </inertial>
       <collision name='lower1_collision'>
@@ -478,8 +478,8 @@
         <limit>
             <lower>-2.7929</lower>
             <upper>-0.255648</upper>
-            <effort>1000</effort>
-            <velocity>1000.00</velocity>
+            <effort>115</effort>
+            <velocity>100.00</velocity>
         </limit>
         <dynamics>
           <damping>0</damping>
@@ -494,14 +494,14 @@
     <link name='hip2'>
       <pose>0.29785 -0.055 0 0 -0 0</pose>
       <inertial>
-        <pose>-0.015867 -0.008558 9e-06 0 -0 0</pose>
-        <mass>1.13688</mass>
+        <pose>-0.01586739 -0.00855842 0.00000903 0 -0 0</pose>
+        <mass>1.13688339</mass>
         <inertia>
           <ixx>0.00122166</ixx>
           <ixy>0.00017754</ixy>
-          <ixz>4.3e-07</ixz>
+          <ixz>0.00000043</ixz>
           <iyy>0.00158957</iyy>
-          <iyz>4.9e-07</iyz>
+          <iyz>0.00000049</iyz>
           <izz>0.00172903</izz>
         </inertia>
       </inertial>
@@ -535,8 +535,8 @@
         <limit>
             <lower>-0.7853981633974483</lower>
             <upper>0.7853981633974483</upper>
-            <effort>1000</effort>
-            <velocity>1000.00</velocity>
+            <effort>45</effort>
+            <velocity>100.00</velocity>
         </limit>
         <dynamics>
           <damping>0</damping>
@@ -551,13 +551,13 @@
     <link name='upper2'>
       <pose>0.29785 -0.165945 0 0 -0 0</pose>
       <inertial>
-        <pose>0.002144 0.011102 -0.078812 0 -0 0</pose>
-        <mass>2.2562</mass>
+        <pose>0.00214442 0.01110184 -0.07881204 0 -0 0</pose>
+        <mass>2.25620359</mass>
         <inertia>
-          <ixx>0.026925</ixx>
-          <ixy>8.782e-05</ixy>
+          <ixx>0.02692501</ixx>
+          <ixy>0.00008782</ixy>
           <ixz>0.00054873</ixz>
-          <iyy>0.0258391</iyy>
+          <iyy>0.02583907</iyy>
           <iyz>-0.00207146</iyz>
           <izz>0.00318737</izz>
         </inertia>
@@ -607,10 +607,10 @@
       <axis>
         <xyz>0 1 0</xyz>
         <limit>
-            <lower>-0.8988445647770796</lower>
-            <upper>2.2951079663725436</upper>
-            <effort>1000</effort>
-            <velocity>1000.00</velocity>
+            <lower>-0.89884456477707963539</lower>
+            <upper>2.2951079663725435509</upper>
+            <effort>45</effort>
+            <velocity>100.00</velocity>
         </limit>
         <dynamics>
           <damping>0</damping>
@@ -625,15 +625,15 @@
     <link name='lower2'>
       <pose>0.32285 -0.165945 -0.3205 0 -0 0</pose>
       <inertial>
-        <pose>0.081455 0 -0.126678 0 -0 0</pose>
-        <mass>0.53</mass>
+        <pose>0.00597360 0 -0.17466427 0 -0 0</pose>
+        <mass>0.330</mass>
         <inertia>
-          <ixx>0.00920778</ixx>
-          <ixy>0</ixy>
-          <ixz>-0.00310153</ixz>
-          <iyy>0.0142761</iyy>
-          <iyz>0</iyz>
-          <izz>0.00530824</izz>
+          <ixx>0.00701356</ixx>
+          <ixy>0.0</ixy>
+          <ixz>0.00006600</ixz>
+          <iyy>0.00709946</iyy>
+          <iyz>0.0</iyz>
+          <izz>0.00014529</izz>
         </inertia>
       </inertial>
       <collision name='lower2_collision'>
@@ -701,8 +701,8 @@
         <limit>
             <lower>-2.7929</lower>
             <upper>-0.247067</upper>
-            <effort>1000</effort>
-            <velocity>1000.00</velocity>
+            <effort>115</effort>
+            <velocity>100.00</velocity>
         </limit>
         <dynamics>
           <damping>0</damping>
@@ -717,14 +717,14 @@
     <link name='hip3'>
       <pose>-0.29785 -0.055 0 0 -0 0</pose>
       <inertial>
-        <pose>0.015867 -0.008558 9e-06 0 -0 0</pose>
-        <mass>1.13688</mass>
+        <pose>0.01586739 -0.00855842 0.00000903 0 -0 0</pose>
+        <mass>1.13688339</mass>
         <inertia>
           <ixx>0.00122166</ixx>
           <ixy>-0.00017754</ixy>
-          <ixz>-4.3e-07</ixz>
+          <ixz>-0.00000043</ixz>
           <iyy>0.00158957</iyy>
-          <iyz>4.9e-07</iyz>
+          <iyz>0.00000049</iyz>
           <izz>0.00172903</izz>
         </inertia>
       </inertial>
@@ -758,8 +758,8 @@
         <limit>
             <lower>-0.7853981633974483</lower>
             <upper>0.7853981633974483</upper>
-            <effort>1000</effort>
-            <velocity>1000.00</velocity>
+            <effort>45</effort>
+            <velocity>100.00</velocity>
         </limit>
         <dynamics>
           <damping>0</damping>
@@ -774,13 +774,13 @@
     <link name='upper3'>
       <pose>-0.29785 -0.165945 0 0 -0 0</pose>
       <inertial>
-        <pose>0.002144 0.011102 -0.078812 0 -0 0</pose>
-        <mass>2.2562</mass>
+        <pose>0.00214442 0.01110184 -0.07881204 0 -0 0</pose>
+        <mass>2.25620359</mass>
         <inertia>
-          <ixx>0.026925</ixx>
-          <ixy>8.782e-05</ixy>
+          <ixx>0.02692501</ixx>
+          <ixy>0.00008782</ixy>
           <ixz>0.00054873</ixz>
-          <iyy>0.0258391</iyy>
+          <iyy>0.02583907</iyy>
           <iyz>-0.00207146</iyz>
           <izz>0.00318737</izz>
         </inertia>
@@ -830,10 +830,10 @@
       <axis>
         <xyz>0 1 0</xyz>
         <limit>
-            <lower>-0.8988445647770796</lower>
-            <upper>2.2951079663725436</upper>
-            <effort>1000</effort>
-            <velocity>1000.00</velocity>
+            <lower>-0.89884456477707963539</lower>
+            <upper>2.2951079663725435509</upper>
+            <effort>45</effort>
+            <velocity>100.00</velocity>
         </limit>
         <dynamics>
           <damping>0</damping>
@@ -848,15 +848,15 @@
     <link name='lower3'>
       <pose>-0.27285 -0.165945 -0.3205 0 -0 0</pose>
       <inertial>
-        <pose>0.081455 0 -0.126678 0 -0 0</pose>
-        <mass>0.53</mass>
+        <pose>0.00597360 0 -0.17466427 0 -0 0</pose>
+        <mass>0.330</mass>
         <inertia>
-          <ixx>0.00920778</ixx>
-          <ixy>0</ixy>
-          <ixz>-0.00310153</ixz>
-          <iyy>0.0142761</iyy>
-          <iyz>0</iyz>
-          <izz>0.00530824</izz>
+          <ixx>0.00701356</ixx>
+          <ixy>0.0</ixy>
+          <ixz>0.00006600</ixz>
+          <iyy>0.00709946</iyy>
+          <iyz>0.0</iyz>
+          <izz>0.00014529</izz>
         </inertia>
       </inertial>
       <collision name='lower3_collision'>
@@ -924,8 +924,8 @@
         <limit>
             <lower>-2.7929</lower>
             <upper>-0.248282</upper>
-            <effort>1000</effort>
-            <velocity>1000.00</velocity>
+            <effort>115</effort>
+            <velocity>100.00</velocity>
         </limit>
         <dynamics>
           <damping>0</damping>

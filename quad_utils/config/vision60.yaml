@@ -86,7 +86,7 @@
       safety_kp: [0.0, 0.0, 0.0]
       safety_kd: [2.0, 2.0, 2.0]
       stand_joint_angles: [0.0, 1.0, 1.7]
-      sit_joint_angles: [0.0, 0.2, 0.2]
+      sit_joint_angles: [0.0, 0.0, 0.0]
       torque_limit: [50000.0, 50000.0, 50000.0]
 
 /**:
@@ -98,10 +98,10 @@
         offset: 0.0
       hip:
         sign: 1.0
-        offset: -1.5708
+        offset: 0.0
       knee:
         sign: 1.0
-        offset: -3.1415
+        offset: 0.0
     leg_1: 
       joint_names: ["9", "2", "3"]
       abad:
@@ -109,10 +109,10 @@
         offset: 0.0
       hip:
         sign: 1.0
-        offset: -1.5708
+        offset: 0.0
       knee:
         sign: 1.0
-        offset: -3.1415
+        offset: 0.0
     leg_2: 
       joint_names: ["10", "4", "5"]
       abad:
@@ -120,10 +120,10 @@
         offset: 0.0
       hip:
         sign: 1.0
-        offset: -1.5708
+        offset: 0.0
       knee:
         sign: 1.0
-        offset: -3.1415
+        offset: 0.0
     leg_3: 
       joint_names: ["11", "6", "7"]
       abad:
@@ -131,7 +131,7 @@
         offset: 0.0
       hip:
         sign: 1.0
-        offset: -1.5708
+        offset: 0.0
       knee:
         sign: 1.0
-        offset: -3.1415
+        offset: 0.0

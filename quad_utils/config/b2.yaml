@@ -16,7 +16,7 @@
 /**/local_planner:
   ros__parameters:
     local_planner:
-        desired_height: 0.38 # m
+        desired_height: 0.3 # m
         toe_radius: 0.032 # m
     local_footstep_planner:
         hip_clearance: 0.15
@@ -75,7 +75,7 @@
     robot_driver:
       sit_kp: [200.0, 100.0, 100.0]
       sit_kd: [10.0, 10.0, 10.0]
-      stand_kp: [100.0, 200.0, 170.0]
+      stand_kp: [100.0, 200.0, 500.0]
       stand_kd: [10.0, 30.0, 50.0]
       stance_kp: [100.0, 200.0, 200.0]
       stance_kd: [15.0, 45.0, 45.0]

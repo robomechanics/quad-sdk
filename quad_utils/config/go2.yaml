@@ -94,7 +94,7 @@
 /**:
   ros__parameters:
     leg_0: 
-      joint_names: ["FL_hip_joint", "FL_thigh_joint", "FL_calf_joint"]
+      joint_names: ["8", "0", "1"]
       abad: 
         sign: 1.0
         offset: 0.0
@@ -105,7 +105,7 @@
         sign: 1.0
         offset: -3.1415
     leg_1: 
-      joint_names: ["RL_hip_joint", "RL_thigh_joint", "RL_calf_joint"]
+      joint_names: ["9", "2", "3"]
       abad: 
         sign: 1.0
         offset: 0.0
@@ -116,7 +116,7 @@
         sign: 1.0
         offset: -3.1415
     leg_2: 
-      joint_names: ["FR_hip_joint", "FR_thigh_joint", "FR_calf_joint"]
+      joint_names: ["10", "4", "5"]
       abad: 
         sign: 1.0
         offset: 0.0
@@ -127,7 +127,7 @@
         sign: 1.0
         offset: -3.1415
     leg_3: 
-      joint_names: ["RR_hip_joint", "RR_thigh_joint", "RR_calf_joint"]
+      joint_names: ["11", "6", "7"]
       abad: 
         sign: 1.0
         offset: 0.0
