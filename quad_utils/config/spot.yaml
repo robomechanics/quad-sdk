@@ -37,7 +37,7 @@
         x_lb_soft: [!!float -2e19, !!float -2e19, 0.0, -3.14159, -3.14159, -3.14159, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19]
         x_ub_soft: [!!float 2e19, !!float 2e19, !!float 2e19, 3.14159, 3.14159, 3.14159, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19]
         u_lb: [!!float -2e19, !!float -2e19, 10.0, !!float -2e19, !!float -2e19, 10.0, !!float -2e19, !!float -2e19, 10.0, !!float -2e19, !!float -2e19, 10.0]
-        u_ub: [!!float 2e19, !!float 2e19, 150.0, !!float 2e19, !!float 2e19, 150.0, !!float 2e19, !!float 2e19, 150.0, !!float 2e19, !!float 2e19, 150.0]
+        u_ub: [!!float 2e19, !!float 2e19, 400.0, !!float 2e19, !!float 2e19, 400.0, !!float 2e19, !!float 2e19, 400.0, !!float 2e19, !!float 2e19, 400.0]
         g_lb: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19]
         g_ub: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
       feet:
