@@ -1398,10 +1398,14 @@ Stephen Brawner (brawner@gmail.com)
   </xacro:macro>
 
   <ros2_control name="MujocoSystem" type="system">
+
     <hardware>
       <plugin>mujoco_ros2_control/MujocoSystemInterface</plugin>
       <param name="mujoco_model">$(find mujoco_scripts)/worlds/flat.xml</param>
+      <param name="odom_free_joint_name">floating_base</param>
+      <param name="odom_topic">/robot_1/odom</param>
     </hardware>
+
     <!-- Joint index mapping follows Gazebo SDF joint ordering (go2.sdf.xacro) -->
     <xacro:mujoco_joint idx="0"  mujoco_joint_name="FL_thigh_joint" />
     <xacro:mujoco_joint idx="1"  mujoco_joint_name="FL_calf_joint"  />
@@ -1426,3 +1430,4 @@ Stephen Brawner (brawner@gmail.com)
 
   
 </robot>
+

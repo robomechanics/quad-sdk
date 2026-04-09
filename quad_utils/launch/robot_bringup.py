@@ -16,11 +16,13 @@ def load_robot_params(context, *args, **kwargs):
     namespace = LaunchConfiguration('namespace').perform(context)
     simulator = LaunchConfiguration('simulator').perform(context)  # CHANGED: read simulator
 
+
+
     if robot_type == 'spirit' or robot_type == 'spirit_rotors':
         desc_pkg = 'spirit_description'
         urdf_file = 'spirit.urdf.xacro'
         sdf_file = 'spirit_rotors.sdf.xacro' if robot_type == 'spirit_rotors' else 'spirit.sdf.xacro'
-        mujoco_sdf_file = 'spirit_mujoco.sdf.xacro'  # CHANGED: separate MuJoCo SDF
+        # mujoco_sdf_file = 'spirit_mujoco.sdf.xacro'  # CHANGED: separate MuJoCo SDF
         mujoco_urdf_file = 'spirit_mujoco.urdf.xacro'  # CHANGED: separate MuJoCo URDF (if needed)
         config_file = 'spirit.yaml'
 
@@ -28,36 +30,38 @@ def load_robot_params(context, *args, **kwargs):
         desc_pkg = 'a1_description'
         urdf_file = 'a1.urdf.xacro'
         sdf_file = 'a1.sdf.xacro'
-        mujoco_sdf_file = 'a1_mujoco.sdf.xacro'
+        mjcf_file = 'a1.xml'
         config_file = 'a1.yaml'
 
     elif robot_type == 'go2':
         desc_pkg = 'go2_description'
         urdf_file = 'go2.urdf.xacro'
         sdf_file = 'go2.sdf.xacro'
-        mujoco_sdf_file = 'go2_mujoco.sdf.xacro'  # CHANGED: separate MuJoCo SDF
-        mujoco_urdf_file = 'go2_mujoco.urdf.xacro'  # CHANGED: separate MuJoCo URDF (if needed)
+
+        mjcf_file = 'go2.xml'
+        mujoco_urdf_file = 'go2_mujoco.urdf.xacro'
+
         config_file = 'go2.yaml'
 
     elif robot_type == 'go2w':
         desc_pkg = 'go2w_description'
         urdf_file = 'go2w.urdf.xacro'
         sdf_file = 'go2w.sdf.xacro'
-        mujoco_sdf_file = 'go2w_mujoco.sdf.xacro'
+        mjcf_file = 'go2w.xml'
         config_file = 'go2w.yaml'
 
     elif robot_type == 'b2':
         desc_pkg = 'b2_description'
         urdf_file = 'b2.urdf.xacro'
         sdf_file = 'b2.sdf.xacro'
-        mujoco_sdf_file = 'b2_mujoco.sdf.xacro'
+        mjcf_file = 'b2.xml'
         config_file = 'b2.yaml'
 
     elif robot_type == 'spot':
         desc_pkg = 'spot_description'
         urdf_file = 'spot.urdf.xacro'
         sdf_file = 'spot.sdf.xacro'
-        mujoco_sdf_file = 'spot_mujoco.sdf.xacro'
+        mjcf_file = 'spot.xml'
         config_file = 'spot.yaml'
     else:
         raise RuntimeError(f"[robot_bringup] Unsupported robot type: {robot_type}")
@@ -66,31 +70,33 @@ def load_robot_params(context, *args, **kwargs):
 
     if simulator == 'mujoco':
         urdf_path = os.path.join(desc_path, 'models', robot_type, 'urdf', mujoco_urdf_file)
+        mjcf_path = os.path.join(desc_path, 'models', robot_type, f'{robot_type}_mjc', mjcf_file)
+        urdf = xacro.process_file(urdf_path).toxml()
+        return [
+            SetLaunchConfiguration('robot_urdf', urdf),
+            SetLaunchConfiguration('robot_urdf_path', urdf_path),
+            SetLaunchConfiguration('mjcf_path', mjcf_path),
+        ]
     else:
         urdf_path = os.path.join(desc_path, 'models', robot_type, 'urdf', urdf_file)
-
-    # CHANGED: select SDF based on simulator
-    if simulator == 'mujoco':
-        sdf_path = os.path.join(desc_path, 'models', robot_type, mujoco_sdf_file)
-    else:
         sdf_path = os.path.join(desc_path, 'models', robot_type, sdf_file)
 
-    controller_config_path = os.path.join(FindPackageShare('gazebo_scripts').perform(context), 'config', 'quad_control.yaml')
-    robot_config_path = os.path.join(FindPackageShare('quad_utils').perform(context), 'config', config_file)
+        controller_config_path = os.path.join(FindPackageShare('gazebo_scripts').perform(context), 'config', 'quad_control.yaml')
+        robot_config_path = os.path.join(FindPackageShare('quad_utils').perform(context), 'config', config_file)
+        urdf = xacro.process_file(urdf_path).toxml()
+        sdf = xacro.process_file(sdf_path, mappings={
+            "namespace": namespace,
+            "controller_config_path": controller_config_path,
+            "robot_config_path": robot_config_path
+        }).toxml()
+        return [
+            SetLaunchConfiguration('robot_urdf', urdf),
+            SetLaunchConfiguration('robot_sdf', sdf),
+            SetLaunchConfiguration('robot_urdf_path', urdf_path),
+            SetLaunchConfiguration('robot_sdf_path', sdf_path)
+        ]
 
-    urdf = xacro.process_file(urdf_path).toxml()
-    sdf = xacro.process_file(sdf_path, mappings={
-        "namespace": namespace,
-        "controller_config_path": controller_config_path,
-        "robot_config_path": robot_config_path
-    }).toxml()
 
-    return [
-        SetLaunchConfiguration('robot_urdf', urdf),
-        SetLaunchConfiguration('robot_sdf', sdf),
-        SetLaunchConfiguration('robot_urdf_path', urdf_path),
-        SetLaunchConfiguration('robot_sdf_path', sdf_path)
-    ]
 
 def launch_robot_urdf_node(context, *args, **kwargs):
     namespace = LaunchConfiguration('namespace').perform(context)
@@ -116,6 +122,7 @@ def launch_ros2_control(context, *args, **kwargs):
     if simulator != 'mujoco':
         return []
 
+    mjcf_path = LaunchConfiguration('mjcf_path').perform(context)
     namespace = LaunchConfiguration('namespace').perform(context)
     controller_config = os.path.join(
         FindPackageShare('gazebo_scripts').perform(context), 'config', 'quad_control.yaml'
@@ -127,6 +134,7 @@ def launch_ros2_control(context, *args, **kwargs):
             parameters=[
                 controller_config,
                 {'use_sim_time': True},
+                {'mujoco_model_path': mjcf_path},
             ],
             remappings=[
                 ('robot_description', f'/{namespace}/robot_description')
@@ -267,7 +275,6 @@ def launch_contact_state_publisher(context, *args, **kwargs):
     world_name = LaunchConfiguration('world').perform(context)
     quad_utils_path = FindPackageShare('quad_utils').perform(context)
     config_file = os.path.join(quad_utils_path, 'config', 'topics_robot.yaml')
-
     return [
         Node(
             package='gazebo_scripts',
@@ -279,6 +286,20 @@ def launch_contact_state_publisher(context, *args, **kwargs):
             }]
         )
     ]
+
+def launch_mujoco_ground_truth(context, *args, **kwargs):
+    simulator = LaunchConfiguration('simulator').perform(context)
+    if simulator != 'mujoco':
+        return []
+
+    quad_utils_path = FindPackageShare('quad_utils').perform(context)
+    ground_truth_node = Node(
+        package='mujoco_plugins',
+        executable='mujoco_ground_truth_node',
+        name='mujoco_ground_truth_node',
+        parameters=[{'use_sim_time': True}]
+    )
+    return [ground_truth_node]
 
 def launch_visualization_plugins(context, *args, **kwargs):
     namespace = LaunchConfiguration('namespace').perform(context)
@@ -324,5 +345,6 @@ def generate_launch_description():
         OpaqueFunction(function=spawn_controller_broadcasters),
         OpaqueFunction(function=launch_robot_driver),
         OpaqueFunction(function=launch_contact_state_publisher),
-        OpaqueFunction(function=launch_visualization_plugins)
+        OpaqueFunction(function=launch_visualization_plugins),
+        OpaqueFunction(function=launch_mujoco_ground_truth),
     ])
