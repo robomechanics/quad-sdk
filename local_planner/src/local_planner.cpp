@@ -71,6 +71,9 @@ LocalPlanner::LocalPlanner(rclcpp::Node::SharedPtr node)
                            stand_cmd_vel_threshold_);
   quad_utils::loadROSParam(node_, "local_planner.stand_pos_error_threshold",
                            stand_pos_error_threshold_);
+  double robot_mass;
+  quad_utils::loadROSParamDefault(node_, "global_body_planner.mass",
+                                  robot_mass, 13.3);
 
   // Load system parameters from launch file (not in config file)
   // nh.param<bool>("local_planner/use_twist_input", use_twist_input_, false);
@@ -94,7 +97,7 @@ LocalPlanner::LocalPlanner(rclcpp::Node::SharedPtr node)
   ref_ground_height_ = Eigen::VectorXd::Zero(N_);
   grf_plan_ = Eigen::MatrixXd::Zero(N_ - 1, 12);
   for (int i = 0; i < num_feet_; i++) {
-    grf_plan_.col(3 * i + 2).fill(13.3 * 9.81 / num_feet_);
+    grf_plan_.col(3 * i + 2).fill(robot_mass * 9.81 / num_feet_);
   }
 
   // Initialize body and footstep planners

@@ -18,6 +18,7 @@
 #include <gz/transport/Node.hh>
 
 #include <memory>
+#include <array>
 #include <quad_msgs/msg/robot_state.hpp>
 #include <rclcpp/rclcpp.hpp>
 #include <string>
@@ -62,6 +63,10 @@ class GroundTruthEstimator : public gz::sim::System,
       ground_truth_state_body_frame_pub_;
 
   mutable std::shared_ptr<quad_utils::QuadKD2> quadKD_;
+  std::string body_frame_name_{"body"};
+  std::array<std::string, 4> lower_frame_names_{};
+  std::array<std::string, 4> toe_frame_names_{};
+  std::vector<std::string> joint_names_;
 
   mutable std::chrono::steady_clock::duration last_time_;
 };

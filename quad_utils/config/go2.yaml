@@ -89,51 +89,101 @@
       # sit_joint_angles: [0.0, 0.2, 0.2]
       stand_joint_angles: [0.0, 0.8, -1.5] # go2 learned
       sit_joint_angles: [0.0, 1.36, -2.65]
-      torque_limit: [500.7, 500.7, 500.0] #[33.5, 33.5, 33.5]
+
+/**/controller_manager:
+  ros__parameters:
+    update_rate: 500
+    joint_state_broadcaster:
+      type: joint_state_broadcaster/JointStateBroadcaster
+    joint_controller:
+      type: effort_controllers/QuadController
+
+/**/joint_controller:
+  ros__parameters:
+    topics:
+      control:
+        joint_command: control/joint_command
 
 /**:
   ros__parameters:
+    body:
+      frame: "body"
+    motor_limits:
+      torque: [500.7, 500.7, 500.0]
+      speed: [30.0, 30.0, 15.7]
     leg_0: 
-      joint_names: ["8", "0", "1"]
-      abad: 
-        sign: 1.0
-        offset: 0.0
-      hip:
-        sign: -1.0
-        offset: 1.5708
-      knee: 
-        sign: 1.0
-        offset: -3.1415
+      joints:
+        abad:
+          name: "8"
+          sign: 1.0
+          offset: 0.0
+        hip:
+          name: "0"
+          sign: -1.0
+          offset: 1.5708
+        knee:
+          name: "1"
+          sign: 1.0
+          offset: -3.1415
+      frames:
+        hip: "hip0"
+        upper: "upper0"
+        lower: "lower0"
+        toe: "toe0"
     leg_1: 
-      joint_names: ["9", "2", "3"]
-      abad: 
-        sign: 1.0
-        offset: 0.0
-      hip:
-        sign: -1.0
-        offset: 1.5708
-      knee: 
-        sign: 1.0
-        offset: -3.1415
+      joints:
+        abad:
+          name: "9"
+          sign: 1.0
+          offset: 0.0
+        hip:
+          name: "2"
+          sign: -1.0
+          offset: 1.5708
+        knee:
+          name: "3"
+          sign: 1.0
+          offset: -3.1415
+      frames:
+        hip: "hip1"
+        upper: "upper1"
+        lower: "lower1"
+        toe: "toe1"
     leg_2: 
-      joint_names: ["10", "4", "5"]
-      abad: 
-        sign: 1.0
-        offset: 0.0
-      hip: 
-        sign: -1.0
-        offset: 1.5708
-      knee: 
-        sign: 1.0
-        offset: -3.1415
+      joints:
+        abad:
+          name: "10"
+          sign: 1.0
+          offset: 0.0
+        hip:
+          name: "4"
+          sign: -1.0
+          offset: 1.5708
+        knee:
+          name: "5"
+          sign: 1.0
+          offset: -3.1415
+      frames:
+        hip: "hip2"
+        upper: "upper2"
+        lower: "lower2"
+        toe: "toe2"
     leg_3: 
-      joint_names: ["11", "6", "7"]
-      abad: 
-        sign: 1.0
-        offset: 0.0
-      hip: 
-        sign: -1.0
-        offset: 1.5708
-      knee:
-        sign: 1.0
-        offset: -3.1415
+      joints:
+        abad:
+          name: "11"
+          sign: 1.0
+          offset: 0.0
+        hip:
+          name: "6"
+          sign: -1.0
+          offset: 1.5708
+        knee:
+          name: "7"
+          sign: 1.0
+          offset: -3.1415
+      frames:
+        hip: "hip3"
+        upper: "upper3"
+        lower: "lower3"
+        toe: "toe3"

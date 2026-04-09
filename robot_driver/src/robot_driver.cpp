@@ -9,6 +9,7 @@ RobotDriver::RobotDriver(std::shared_ptr<rclcpp::Node> node, int argc,
       single_joint_cmd_topic, mocap_topic, control_restart_flag_topic,
       body_force_estimate_topic, cmd_vel_topic, cmd_vel_stamped_topic,
       state_estimate_topic;
+  bool found_torque_limits = false;
 
   quad_utils::loadROSParamDefault(node_, "namespace", robot_ns,
                                   std::string("robot_1"));
@@ -74,7 +75,14 @@ RobotDriver::RobotDriver(std::shared_ptr<rclcpp::Node> node, int argc,
                            stand_joint_angles_);
   quad_utils::loadROSParam(node_, "robot_driver.sit_joint_angles",
                            sit_joint_angles_);
-  quad_utils::loadROSParam(node_, "robot_driver.torque_limit", torque_limits_);
+  found_torque_limits =
+      quad_utils::loadROSParam(node_, "motor_limits.torque", torque_limits_);
+  if (!found_torque_limits) {
+    quad_utils::loadROSParam(node_, "robot_driver.torque_limit", torque_limits_);
+    RCLCPP_WARN(node_->get_logger(),
+                "Using legacy parameter 'robot_driver.torque_limit'; migrate "
+                "to 'motor_limits.torque'");
+  }
   quad_utils::loadROSParam(node_, "robot_driver.model_path", model_path_);
   quad_utils::loadROSParamDefault(node_, "robot_driver.policy_inference_rate",
                                   policy_inference_rate_, 50.0);

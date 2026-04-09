@@ -59,12 +59,14 @@ def load_robot_params(context, *args, **kwargs):
     urdf_path = os.path.join(desc_path, 'models', robot_type, 'urdf', urdf_file)
     sdf_path = os.path.join(desc_path, 'models', robot_type, sdf_file)
 
-    controller_config_path = os.path.join(FindPackageShare('gazebo_scripts').perform(context), 'config', 'quad_control.yaml')
-    robot_config_path = os.path.join(FindPackageShare('quad_utils').perform(context), 'config', config_file)
+    controller_config_path = os.path.join(FindPackageShare('quad_utils').perform(context), 'config', config_file)
 
     # Load URDF and SDF from disk
     urdf = xacro.process_file(urdf_path).toxml()
-    sdf = xacro.process_file(sdf_path, mappings={"namespace": namespace, "controller_config_path": controller_config_path, "robot_config_path": robot_config_path}).toxml()
+    sdf = xacro.process_file(
+        sdf_path,
+        mappings={"namespace": namespace, "controller_config_path": controller_config_path},
+    ).toxml()
 
     return [
         SetLaunchConfiguration('robot_urdf', urdf),
@@ -349,4 +351,4 @@ def generate_launch_description():
     # param_files = [os.path.join(quad_utils_path, 'config', 'topics_robot.yaml'),
     #                os.path.join(quad_utils_path, 'config, topics_global.yaml'),
     #                os.path.join(quad_utils_path, 'config', config_file),
-    #                os.path.join(gazebo_scripts_path), 'config', 'quad_control.yaml']
+    #                os.path.join(quad_utils_path), 'config', config_file]

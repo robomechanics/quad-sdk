@@ -4,6 +4,80 @@
 #include "gazebo_plugins/estimator_plugin.hpp"
 
 namespace gz_plugins {
+namespace {
+
+template <typename ParamType>
+void declare_if_missing(const rclcpp::Node::SharedPtr& node,
+                        const std::string& param_name,
+                        const ParamType& default_value) {
+  if (!node->has_parameter(param_name)) {
+    node->declare_parameter<ParamType>(param_name, default_value);
+  }
+}
+
+bool load_leg_joint_names(const rclcpp::Node::SharedPtr& node, int leg_index,
+                          std::array<std::string, 3>& joint_names) {
+  const std::string leg_ns = "leg_" + std::to_string(leg_index);
+  declare_if_missing<std::vector<std::string>>(
+      node, leg_ns + ".joint_names", std::vector<std::string>({"", "", ""}));
+  declare_if_missing<std::string>(node, leg_ns + ".joints.abad.name", "");
+  declare_if_missing<std::string>(node, leg_ns + ".joints.hip.name", "");
+  declare_if_missing<std::string>(node, leg_ns + ".joints.knee.name", "");
+  std::string abad_name;
+  std::string hip_name;
+  std::string knee_name;
+  if (node->get_parameter(leg_ns + ".joints.abad.name", abad_name) &&
+      node->get_parameter(leg_ns + ".joints.hip.name", hip_name) &&
+      node->get_parameter(leg_ns + ".joints.knee.name", knee_name) &&
+      !abad_name.empty() && !hip_name.empty() && !knee_name.empty()) {
+    joint_names = {abad_name, hip_name, knee_name};
+    return true;
+  }
+
+  std::vector<std::string> legacy_joint_names;
+  if (node->get_parameter(leg_ns + ".joint_names", legacy_joint_names) &&
+      legacy_joint_names.size() == 3) {
+    joint_names = {legacy_joint_names[0], legacy_joint_names[1],
+                   legacy_joint_names[2]};
+    return true;
+  }
+  return false;
+}
+
+bool load_robot_names(const rclcpp::Node::SharedPtr& node,
+                      std::string& body_frame_name,
+                      std::array<std::string, 4>& lower_frame_names,
+                      std::array<std::string, 4>& toe_frame_names,
+                      std::vector<std::string>& joint_names) {
+  declare_if_missing<std::string>(node, "body.frame", "body");
+  node->get_parameter("body.frame", body_frame_name);
+
+  joint_names.clear();
+  for (int leg_index = 0; leg_index < 4; ++leg_index) {
+    const std::string leg_ns = "leg_" + std::to_string(leg_index);
+    declare_if_missing<std::string>(node, leg_ns + ".frames.lower", "");
+    declare_if_missing<std::string>(node, leg_ns + ".frames.toe", "");
+    node->get_parameter(leg_ns + ".frames.lower", lower_frame_names[leg_index]);
+    node->get_parameter(leg_ns + ".frames.toe", toe_frame_names[leg_index]);
+
+    std::array<std::string, 3> leg_joint_names;
+    if (!load_leg_joint_names(node, leg_index, leg_joint_names)) {
+      return false;
+    }
+    if (lower_frame_names[leg_index].empty() || toe_frame_names[leg_index].empty()) {
+      return false;
+    }
+
+    // Preserve the estimator's published order: [abad, hip, knee] per leg.
+    joint_names.insert(joint_names.end(), leg_joint_names.begin(),
+                       leg_joint_names.end());
+  }
+
+  return !body_frame_name.empty() && joint_names.size() == 12;
+}
+
+}  // namespace
+
 void GroundTruthEstimator::Configure(
     const gz::sim::Entity& entity,
     const std::shared_ptr<const sdf::Element>& sdf,
@@ -72,6 +146,18 @@ void GroundTruthEstimator::Configure(
       this->node_->create_publisher<quad_msgs::msg::RobotState>(
           this->ground_truth_body_frame_topic_, 10);
 
+  if (!load_robot_names(this->node_, this->body_frame_name_,
+                        this->lower_frame_names_, this->toe_frame_names_,
+                        this->joint_names_)) {
+    RCLCPP_FATAL(this->node_->get_logger(),
+                 "Missing robot naming config. Expected 'body.frame', "
+                 "'leg_i.frames.(lower|toe)', and either "
+                 "'leg_i.joints.(abad|hip|knee).name' or legacy "
+                 "'leg_i.joint_names'.");
+    rclcpp::shutdown();
+    return;
+  }
+
   // Convert Kinematics, and initialize World Time
   std::string urdf_topic = "robot_description";
   rclcpp::QoS qos(10);
@@ -98,8 +184,9 @@ void GroundTruthEstimator::Configure(
         }
       });
 
-  std::vector<std::string> links_to_check = {"body", "toe0", "toe1", "toe2",
-                                             "toe3"};
+  std::vector<std::string> links_to_check = {this->body_frame_name_};
+  links_to_check.insert(links_to_check.end(), this->toe_frame_names_.begin(),
+                        this->toe_frame_names_.end());
 
   for (const auto& link_name : links_to_check) {
     auto link_entity = this->model_.LinkByName(ecm, link_name);
@@ -123,10 +210,7 @@ void GroundTruthEstimator::Configure(
     }
   }
 
-  std::vector<std::string> joint_names = {"8",  "0", "1", "9",  "2", "3",
-                                          "10", "4", "5", "11", "6", "7"};
-
-  for (const auto& joint_name : joint_names) {
+  for (const auto& joint_name : this->joint_names_) {
     auto joint_entity = this->model_.JointByName(ecm, joint_name);
     if (joint_entity == gz::sim::kNullEntity) continue;
 
@@ -141,7 +225,7 @@ void GroundTruthEstimator::Configure(
     }
   }
 
-  for (const auto& joint_name : joint_names) {
+  for (const auto& joint_name : this->joint_names_) {
     auto joint_entity = this->model_.JointByName(ecm, joint_name);
     if (joint_entity != gz::sim::kNullEntity) {
       gz::sim::Joint joint(joint_entity);
@@ -173,7 +257,7 @@ void GroundTruthEstimator::PostUpdate(
   this->last_time_ = info.simTime;
 
   // Extract all relevant information from the simulator
-  auto body_entity = this->model_.LinkByName(ecm, "body");
+  auto body_entity = this->model_.LinkByName(ecm, this->body_frame_name_);
 
   if (body_entity == gz::sim::kNullEntity) {
     RCLCPP_WARN_THROTTLE(this->node_->get_logger(), *this->node_->get_clock(),
@@ -183,27 +267,21 @@ void GroundTruthEstimator::PostUpdate(
     return;
   }
 
-  auto lower0_entity = this->model_.LinkByName(ecm, "lower0");
-  auto lower1_entity = this->model_.LinkByName(ecm, "lower1");
-  auto lower2_entity = this->model_.LinkByName(ecm, "lower2");
-  auto lower3_entity = this->model_.LinkByName(ecm, "lower3");
-
-  auto toe0_entity = this->model_.LinkByName(ecm, "toe0");
-  auto toe1_entity = this->model_.LinkByName(ecm, "toe1");
-  auto toe2_entity = this->model_.LinkByName(ecm, "toe2");
-  auto toe3_entity = this->model_.LinkByName(ecm, "toe3");
-
   gz::sim::Link body_link(body_entity);
-
-  gz::sim::Link lower0(lower0_entity);
-  gz::sim::Link lower1(lower1_entity);
-  gz::sim::Link lower2(lower2_entity);
-  gz::sim::Link lower3(lower3_entity);
-
-  gz::sim::Link toe0(toe0_entity);
-  gz::sim::Link toe1(toe1_entity);
-  gz::sim::Link toe2(toe2_entity);
-  gz::sim::Link toe3(toe3_entity);
+  std::array<gz::sim::Link, 4> toe_links;
+  for (int i = 0; i < 4; ++i) {
+    auto lower_entity = this->model_.LinkByName(ecm, this->lower_frame_names_[i]);
+    auto toe_entity = this->model_.LinkByName(ecm, this->toe_frame_names_[i]);
+    if (lower_entity == gz::sim::kNullEntity ||
+        toe_entity == gz::sim::kNullEntity) {
+      RCLCPP_WARN_THROTTLE(this->node_->get_logger(), *this->node_->get_clock(),
+                           2000,
+                           "Can't find leg links in sdf. Make sure the lower "
+                           "and toe frame names in the robot yaml match the model.");
+      return;
+    }
+    toe_links[i] = gz::sim::Link(toe_entity);
+  }
 
   auto pose_opt = body_link.WorldPose(ecm);
   auto lin_vel_opt = body_link.WorldLinearVelocity(ecm);
@@ -247,8 +325,7 @@ void GroundTruthEstimator::PostUpdate(
 
   // Update the Joints
   int num_joints = 12;
-  state.joints.name = {"8",  "0", "1", "9",  "2", "3",
-                       "10", "4", "5", "11", "6", "7"};
+  state.joints.name = this->joint_names_;
 
   for (int i = 0; i < num_joints; i++) {
     auto joint_entity = this->model_.JointByName(ecm, state.joints.name[i]);
@@ -294,11 +371,9 @@ void GroundTruthEstimator::PostUpdate(
   quad_utils::fkRobotState(*this->quadKD_, state);
 
   // Update the Feet Positions and Velocities
-  std::vector<gz::sim::Link> toes = {toe0, toe1, toe2, toe3};
-
   for (int i = 0; i < 4; i++) {
-    auto toe_pose_opt = toes[i].WorldPose(ecm);
-    auto toe_vel_opt = toes[i].WorldLinearVelocity(ecm);
+    auto toe_pose_opt = toe_links[i].WorldPose(ecm);
+    auto toe_vel_opt = toe_links[i].WorldLinearVelocity(ecm);
     if (toe_pose_opt) {
       const auto& toe_pose = *toe_pose_opt;
       state.feet.feet[i].position.x = toe_pose.Pos().X();
@@ -337,10 +412,9 @@ void GroundTruthEstimator::PostUpdate(
   const gz::math::Vector3d p_body_w =
       pose.Pos();  // world position of body origin
 
-  std::array<gz::sim::Link, 4> toes_body = {toe0, toe1, toe2, toe3};
   for (int i = 0; i < 4; ++i) {
-    auto toe_pose_opt = toes_body[i].WorldPose(ecm);
-    auto toe_vel_opt = toes_body[i].WorldLinearVelocity(ecm);
+    auto toe_pose_opt = toe_links[i].WorldPose(ecm);
+    auto toe_vel_opt = toe_links[i].WorldLinearVelocity(ecm);
     if (!toe_pose_opt || !toe_vel_opt) continue;
 
     const auto& toe_pose_w = *toe_pose_opt;

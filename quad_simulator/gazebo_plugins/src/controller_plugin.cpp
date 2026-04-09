@@ -2,9 +2,111 @@
 
 #include <angles/angles.h>
 
+#include <array>
 #include <pluginlib/class_list_macros.hpp>
 
 namespace effort_controllers {
+
+namespace {
+
+bool load_joint_names_from_robot_yaml(
+    const std::shared_ptr<rclcpp_lifecycle::LifecycleNode>& node,
+    std::vector<std::string>& joint_names) {
+  std::array<std::vector<std::string>, 4> leg_joint_names;
+  for (size_t leg_idx = 0; leg_idx < leg_joint_names.size(); ++leg_idx) {
+    const std::string leg_ns = "leg_" + std::to_string(leg_idx);
+    std::string abad_name;
+    std::string hip_name;
+    std::string knee_name;
+
+    if (node->get_parameter(leg_ns + ".joints.abad.name", abad_name) &&
+        node->get_parameter(leg_ns + ".joints.hip.name", hip_name) &&
+        node->get_parameter(leg_ns + ".joints.knee.name", knee_name)) {
+      if (!abad_name.empty() && !hip_name.empty() && !knee_name.empty()) {
+        leg_joint_names[leg_idx] = {abad_name, hip_name, knee_name};
+        continue;
+      }
+    }
+
+    const std::string param_name = leg_ns + ".joint_names";
+    if (!node->get_parameter(param_name, leg_joint_names[leg_idx])) {
+      return false;
+    }
+
+    if (leg_joint_names[leg_idx].size() != 3) {
+      RCLCPP_ERROR(node->get_logger(),
+                   "Parameter '%s' must contain exactly 3 joint names",
+                   param_name.c_str());
+      return false;
+    }
+  }
+
+  joint_names = {
+      leg_joint_names[0][1], leg_joint_names[0][2], leg_joint_names[1][1],
+      leg_joint_names[1][2], leg_joint_names[2][1], leg_joint_names[2][2],
+      leg_joint_names[3][1], leg_joint_names[3][2], leg_joint_names[0][0],
+      leg_joint_names[1][0], leg_joint_names[2][0], leg_joint_names[3][0]};
+  return true;
+}
+
+bool validate_motor_limits(
+    const std::shared_ptr<rclcpp_lifecycle::LifecycleNode>& node,
+    const std::vector<double>& torque_lims,
+    const std::vector<double>& speed_lims) {
+  constexpr size_t kExpectedMotorDims = 3;
+  if (torque_lims.size() != kExpectedMotorDims) {
+    RCLCPP_ERROR(node->get_logger(),
+                 "Parameter 'torque_lims' must contain exactly %zu values",
+                 kExpectedMotorDims);
+    return false;
+  }
+  if (speed_lims.size() != kExpectedMotorDims) {
+    RCLCPP_ERROR(node->get_logger(),
+                 "Parameter 'speed_lims' must contain exactly %zu values",
+                 kExpectedMotorDims);
+    return false;
+  }
+  return true;
+}
+
+bool load_motor_limits(
+    const std::shared_ptr<rclcpp_lifecycle::LifecycleNode>& node,
+    std::vector<double>& torque_lims, std::vector<double>& speed_lims) {
+  bool found_torque = node->get_parameter("motor_limits.torque", torque_lims);
+  bool found_speed = node->get_parameter("motor_limits.speed", speed_lims);
+
+  if (!found_torque) {
+    found_torque = node->get_parameter("torque_lims", torque_lims);
+    if (found_torque) {
+      RCLCPP_WARN(node->get_logger(),
+                  "Using legacy parameter 'torque_lims'; migrate to "
+                  "'motor_limits.torque'");
+    }
+  }
+
+  if (!found_speed) {
+    found_speed = node->get_parameter("speed_lims", speed_lims);
+    if (found_speed) {
+      RCLCPP_WARN(node->get_logger(),
+                  "Using legacy parameter 'speed_lims'; migrate to "
+                  "'motor_limits.speed'");
+    }
+  }
+
+  if (!found_torque) {
+    RCLCPP_ERROR(node->get_logger(),
+                 "Failed to get parameter 'motor_limits.torque'");
+    return false;
+  }
+  if (!found_speed) {
+    RCLCPP_ERROR(node->get_logger(),
+                 "Failed to get parameter 'motor_limits.speed'");
+    return false;
+  }
+  return true;
+}
+
+}  // namespace
 
 /**
  * \brief Forward command controller for a set of effort controlled joints
@@ -66,17 +168,26 @@ controller_interface::CallbackReturn QuadController::on_init() {
   leg_map_[10] = std::make_pair(2, 0);  // abd2
   leg_map_[11] = std::make_pair(3, 0);  // abd3
 
-  // Torque saturation (could change to linear model in future)
-  torque_lims_ = {1000.0, 1000.0, 1000.0};
-  speed_lims_ = {50.0, 50.0, 50.0};
-
   node_ = get_node();
-  node_->declare_parameter<std::vector<std::string>>("joints");
-  node_->declare_parameter<std::string>("topics.control.joint_command");
+  node_->declare_parameter<std::vector<std::string>>(
+      "joints", std::vector<std::string>{});
+  for (int leg_idx = 0; leg_idx < 4; ++leg_idx) {
+    const std::string leg_ns = "leg_" + std::to_string(leg_idx);
+    node_->declare_parameter<std::vector<std::string>>(
+        leg_ns + ".joint_names", std::vector<std::string>{});
+    node_->declare_parameter<std::string>(leg_ns + ".joints.abad.name", "");
+    node_->declare_parameter<std::string>(leg_ns + ".joints.hip.name", "");
+    node_->declare_parameter<std::string>(leg_ns + ".joints.knee.name", "");
+  }
+  node_->declare_parameter<std::string>("topics.control.joint_command", "");
+  node_->declare_parameter<std::vector<double>>("motor_limits.torque",
+                                                std::vector<double>{});
+  node_->declare_parameter<std::vector<double>>("motor_limits.speed",
+                                                std::vector<double>{});
   node_->declare_parameter<std::vector<double>>("torque_lims",
-                                                {1000.0, 1000.0, 1000.0});
+                                                std::vector<double>{});
   node_->declare_parameter<std::vector<double>>("speed_lims",
-                                                {50.0, 50.0, 50.0});
+                                                std::vector<double>{});
 
   return controller_interface::CallbackReturn::SUCCESS;
 }
@@ -92,29 +203,21 @@ controller_interface::CallbackReturn QuadController::on_configure(
     return controller_interface::CallbackReturn::ERROR;
   }
 
-  std::string param_name = "joints";
-  if (!node_->get_parameter(param_name, joint_names_)) {
-    RCLCPP_ERROR_STREAM(
-        node_->get_logger(),
-        "Failed to get parameter '"
-            << param_name << "' (namespace: " << node_->get_namespace() << ")");
+  if (!load_joint_names_from_robot_yaml(node_, joint_names_)) {
+    std::string param_name = "joints";
+    if (!node_->get_parameter(param_name, joint_names_)) {
+      RCLCPP_ERROR_STREAM(
+          node_->get_logger(),
+          "Failed to get joint names from robot yaml leg params or legacy '"
+              << param_name << "' list (namespace: "
+              << node_->get_namespace() << ")");
+      return controller_interface::CallbackReturn::ERROR;
+    }
+  }
+  if (!load_motor_limits(node_, torque_lims_, speed_lims_)) {
     return controller_interface::CallbackReturn::ERROR;
   }
-  std::string torque_param = "torque_lims";
-  if (!node_->get_parameter(torque_param, torque_lims_)) {
-    RCLCPP_ERROR_STREAM(node_->get_logger(),
-                        "Failed to get parameter '"
-                            << torque_param << "' (namespace: "
-                            << node_->get_namespace() << ")");
-    return controller_interface::CallbackReturn::ERROR;
-  }
-
-  std::string speed_param = "speed_lims";
-  if (!node_->get_parameter(speed_param, speed_lims_)) {
-    RCLCPP_ERROR_STREAM(node_->get_logger(),
-                        "Failed to get parameter '"
-                            << speed_param << "' (namespace: "
-                            << node_->get_namespace() << ")");
+  if (!validate_motor_limits(node_, torque_lims_, speed_lims_)) {
     return controller_interface::CallbackReturn::ERROR;
   }
   // RCLCPP_INFO(node_->get_logger(), "Torque Limits for each joint:");

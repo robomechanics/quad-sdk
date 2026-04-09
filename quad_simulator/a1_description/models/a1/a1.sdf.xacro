@@ -1,7 +1,7 @@
 <?xml version='1.0'?>
 <sdf version='1.6' xmlns:xacro="http://www.ros.org/wiki/xacro">
   <xacro:arg name="namespace" default="robot_1" />
-  <xacro:arg name="controller_config_path" default="/path/quad_control.yaml" />
+  <xacro:arg name="controller_config_path" default="/path/a1.yaml" />
   
   <model name='a1'>
     <link name='body'>
@@ -1358,6 +1358,7 @@
       <updateRateHZ>500.0</updateRateHZ>
       <ground_truth_state_topic>state/ground_truth</ground_truth_state_topic>
       <ground_truth_body_frame_topic>state/ground_truth_body_frame</ground_truth_body_frame_topic>
+      <parameters>$(arg controller_config_path)</parameters>
       <ros>
         <parameter name="use_sim_time">true</parameter>
       </ros>

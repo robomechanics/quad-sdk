@@ -87,51 +87,101 @@
       safety_kd: [2.0, 2.0, 2.0]
       stand_joint_angles: [0.0, 0.6, 1.6] # go2
       sit_joint_angles: [0.0, 0.2, 0.2]
-      torque_limit: [500.7, 500.7, 500.0] #[33.5, 33.5, 33.5]
+
+/**/controller_manager:
+  ros__parameters:
+    update_rate: 500
+    joint_state_broadcaster:
+      type: joint_state_broadcaster/JointStateBroadcaster
+    joint_controller:
+      type: effort_controllers/QuadController
+
+/**/joint_controller:
+  ros__parameters:
+    topics:
+      control:
+        joint_command: control/joint_command
 
 /**:
   ros__parameters:
+    body:
+      frame: "trunk"
+    motor_limits:
+      torque: [500.7, 500.7, 500.0]
+      speed: [50.0, 50.0, 50.0]
     leg_0: 
-      joint_names: ["FL_hip_joint", "FL_thigh_joint", "FL_calf_joint"]
-      abad: 
-        sign: 1.0
-        offset: 0.0
-      hip:
-        sign: -1.0
-        offset: 1.5708
-      knee: 
-        sign: 1.0
-        offset: -3.1415
+      joints:
+        abad:
+          name: "FL_hip_joint"
+          sign: 1.0
+          offset: 0.0
+        hip:
+          name: "FL_thigh_joint"
+          sign: -1.0
+          offset: 1.5708
+        knee:
+          name: "FL_calf_joint"
+          sign: 1.0
+          offset: -3.1415
+      frames:
+        hip: "FL_hip"
+        upper: "FL_thigh"
+        lower: "FL_calf"
+        toe: "FL_foot"
     leg_1: 
-      joint_names: ["RL_hip_joint", "RL_thigh_joint", "RL_calf_joint"]
-      abad: 
-        sign: 1.0
-        offset: 0.0
-      hip:
-        sign: -1.0
-        offset: 1.5708
-      knee: 
-        sign: 1.0
-        offset: -3.1415
+      joints:
+        abad:
+          name: "RL_hip_joint"
+          sign: 1.0
+          offset: 0.0
+        hip:
+          name: "RL_thigh_joint"
+          sign: -1.0
+          offset: 1.5708
+        knee:
+          name: "RL_calf_joint"
+          sign: 1.0
+          offset: -3.1415
+      frames:
+        hip: "RL_hip"
+        upper: "RL_thigh"
+        lower: "RL_calf"
+        toe: "RL_foot"
     leg_2: 
-      joint_names: ["FR_hip_joint", "FR_thigh_joint", "FR_calf_joint"]
-      abad: 
-        sign: 1.0
-        offset: 0.0
-      hip: 
-        sign: -1.0
-        offset: 1.5708
-      knee: 
-        sign: 1.0
-        offset: -3.1415
+      joints:
+        abad:
+          name: "FR_hip_joint"
+          sign: 1.0
+          offset: 0.0
+        hip:
+          name: "FR_thigh_joint"
+          sign: -1.0
+          offset: 1.5708
+        knee:
+          name: "FR_calf_joint"
+          sign: 1.0
+          offset: -3.1415
+      frames:
+        hip: "FR_hip"
+        upper: "FR_thigh"
+        lower: "FR_calf"
+        toe: "FR_foot"
     leg_3: 
-      joint_names: ["RR_hip_joint", "RR_thigh_joint", "RR_calf_joint"]
-      abad: 
-        sign: 1.0
-        offset: 0.0
-      hip: 
-        sign: -1.0
-        offset: 1.5708
-      knee:
-        sign: 1.0
-        offset: -3.1415
+      joints:
+        abad:
+          name: "RR_hip_joint"
+          sign: 1.0
+          offset: 0.0
+        hip:
+          name: "RR_thigh_joint"
+          sign: -1.0
+          offset: 1.5708
+        knee:
+          name: "RR_calf_joint"
+          sign: 1.0
+          offset: -3.1415
+      frames:
+        hip: "RR_hip"
+        upper: "RR_thigh"
+        lower: "RR_calf"
+        toe: "RR_foot"
