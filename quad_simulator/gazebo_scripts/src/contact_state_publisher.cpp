@@ -5,41 +5,41 @@ ContactStatePublisher::ContactStatePublisher(rclcpp::Node::SharedPtr node)
       tf_buffer_(node_->get_clock(), tf2::durationFromSec(10.0), node_),
       tf_listener_(tf_buffer_, node_) {
   // Load rosparams from parameter server
-  std::string grf_topic, toe0_contact_state_topic, toe1_contact_state_topic,
-      toe2_contact_state_topic, toe3_contact_state_topic;
+  std::string grf_topic;
 
   // Load Rosparams from Node Specific yaml File
   quad_utils::loadROSParam(node_, "topics.state.grfs", grf_topic);
-  quad_utils::loadROSParam(node_, "topics.gazebo.toe0_contact_state",
-                           toe0_contact_state_topic);
-  quad_utils::loadROSParam(node_, "topics.gazebo.toe1_contact_state",
-                           toe1_contact_state_topic);
-  quad_utils::loadROSParam(node_, "topics.gazebo.toe2_contact_state",
-                           toe2_contact_state_topic);
-  quad_utils::loadROSParam(node_, "topics.gazebo.toe3_contact_state",
-                           toe3_contact_state_topic);
-
   quad_utils::loadROSParam(node_, "namespace", ns);
   quad_utils::loadROSParam(node_, "world", world_name);
 
+  std::array<std::string, 4> toe_contact_state_topics;
+  for (int toe_idx = 0; toe_idx < num_feet_; ++toe_idx) {
+    const std::string leg_ns = "leg_" + std::to_string(toe_idx);
+    quad_utils::loadROSParam(node_, leg_ns + ".frames.toe",
+                             toe_frame_names_[toe_idx]);
+    toe_collision_names_[toe_idx] = toe_frame_names_[toe_idx] + "_collision";
+    toe_contact_state_topics[toe_idx] =
+        "gazebo/" + toe_frame_names_[toe_idx] + "_contact_states";
+  }
+
   toe_0_contact_state_sub_ =
       node_->create_subscription<ros_gz_interfaces::msg::Contacts>(
-          toe0_contact_state_topic, 1,
+          toe_contact_state_topics[0], 1,
           std::bind(&ContactStatePublisher::onContactToe<0>, this,
                     std::placeholders::_1));
   toe_1_contact_state_sub_ =
       node_->create_subscription<ros_gz_interfaces::msg::Contacts>(
-          toe1_contact_state_topic, 1,
+          toe_contact_state_topics[1], 1,
           std::bind(&ContactStatePublisher::onContactToe<1>, this,
                     std::placeholders::_1));
   toe_2_contact_state_sub_ =
       node_->create_subscription<ros_gz_interfaces::msg::Contacts>(
-          toe2_contact_state_topic, 1,
+          toe_contact_state_topics[2], 1,
           std::bind(&ContactStatePublisher::onContactToe<2>, this,
                     std::placeholders::_1));
   toe_3_contact_state_sub_ =
       node_->create_subscription<ros_gz_interfaces::msg::Contacts>(
-          toe3_contact_state_topic, 1,
+          toe_contact_state_topics[3], 1,
           std::bind(&ContactStatePublisher::onContactToe<3>, this,
                     std::placeholders::_1));
 
@@ -64,18 +64,17 @@ void ContactStatePublisher::onContactToe(
     const ros_gz_interfaces::msg::Contacts::SharedPtr msg) {
   std::string terrain_name =
       "flat::body::collision";  // Change this to be the world name
-  std::string toe_collision_names[4] = {"toe0_collision", "toe1_collision",
-                                        "toe2_collision", "toe3_collision"};
-  std::string toe_string = toe_collision_names[toe_idx];
+  const std::string& toe_string = toe_collision_names_[toe_idx];
 
   // Toe Transform Names
   std::string ns = node_->get_namespace();
   if (!ns.empty() && ns.front() == '/') {
     ns = ns.substr(1);  // Remove leading slash
   }
-  const std::array<std::string, 4> toe_transform_names = {
-      ns + "_ground_truth/toe0", ns + "_ground_truth/toe1",
-      ns + "_ground_truth/toe2", ns + "_ground_truth/toe3"};
+  std::array<std::string, 4> toe_transform_names;
+  for (int i = 0; i < num_feet_; ++i) {
+    toe_transform_names[i] = ns + "_ground_truth/" + toe_frame_names_[i];
+  }
 
   // Initialize outputs
   grf_array_msg_.vectors[toe_idx].x = 0.0;

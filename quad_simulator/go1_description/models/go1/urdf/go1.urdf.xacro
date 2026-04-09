@@ -31,366 +31,6 @@
   <material name="white">
     <color rgba="1.0 1.0 1.0 1.0"/>
   </material>
-  <!-- ros_control plugin -->
-  <gazebo>
-    <plugin filename="libgazebo_ros_control.so" name="gazebo_ros_control">
-      <robotNamespace>/go1_gazebo</robotNamespace>
-      <robotSimType>gazebo_ros_control/DefaultRobotHWSim</robotSimType>
-    </plugin>
-  </gazebo>
-  <!-- Show the trajectory of trunk center. -->
-  <gazebo>
-    <plugin filename="libLinkPlot3DPlugin.so" name="3dplot">
-      <frequency>10</frequency>
-      <plot>
-        <link>base</link>
-        <pose>0 0 0 0 0 0</pose>
-        <material>Gazebo/Yellow</material>
-      </plot>
-    </plugin>
-  </gazebo>
-  <!-- Show the trajectory of foot. You can add another trajectory about another foot. -->
-  <!-- <gazebo>
-        <plugin name="3dplot" filename="libLinkPlot3DPlugin.so">
-            <frequency>100</frequency>
-            <plot>
-                <link>FL_foot</link>
-                <pose>0 0 0 0 0 0</pose>
-                <material>Gazebo/Green</material>
-            </plot>
-        </plugin>
-    </gazebo> -->
-  <gazebo>
-    <plugin filename="libgazebo_ros_force.so" name="gazebo_ros_force">
-      <bodyName>trunk</bodyName>
-      <topicName>/apply_force/trunk</topicName>
-    </plugin>
-  </gazebo>
-  <gazebo reference="imu_link">
-    <gravity>true</gravity>
-    <sensor name="imu_sensor" type="imu">
-      <always_on>true</always_on>
-      <update_rate>1000</update_rate>
-      <visualize>true</visualize>
-      <topic>__default_topic__</topic>
-      <plugin filename="libgazebo_ros_imu_sensor.so" name="imu_plugin">
-        <topicName>trunk_imu</topicName>
-        <bodyName>imu_link</bodyName>
-        <updateRateHZ>1000.0</updateRateHZ>
-        <gaussianNoise>0.0</gaussianNoise>
-        <xyzOffset>0 0 0</xyzOffset>
-        <rpyOffset>0 0 0</rpyOffset>
-        <frameName>imu_link</frameName>
-      </plugin>
-      <pose>0 0 0 0 0 0</pose>
-    </sensor>
-  </gazebo>
-  <!-- Depth camera -->
-  <!-- <gazebo>
-        <plugin name="camera_plugin" filename="libgazebo_ros_openni_kinect.so">
-            <baseline>0.025</baseline>
-            <always_on>true</always_on>
-            <updateRate>0.0</updateRate>
-            <cameraName>unitree_camera_left</cameraName>
-            <frameName>depthCamera_link_left</frameName>
-            <imageTopicName>rgb/imageRaw_left</imageTopicName>
-            <depthImageTopicName>depth/imageRaw_left</depthImageTopicName>
-            <pointCloudTopicName>depth/points_left</pointCloudTopicName>
-            <cameraInfoTopicName>rgb/cameraInfo_left</cameraInfoTopicName>              
-            <depthImageCameraInfoTopicName>depth/cameraInfo_left</depthImageCameraInfoTopicName>            
-            <pointCloudCutoff>0.1</pointCloudCutoff>                
-            <pointCloudCutoffMax>1.5</pointCloudCutoffMax>                
-            <distortionK1>0.0</distortionK1>
-            <distortionK2>0.0</distortionK2>
-            <distortionK3>0.0</distortionK3>
-            <distortionT1>0.0</distortionT1>
-            <distortionT2>0.0</distortionT2>
-            <CxPrime>0.0</CxPrime>
-            <Cx>0.0045</Cx>
-            <Cy>0.0039</Cy>
-            <focalLength>0.004</focalLength>
-            <hackBaseline>0.0</hackBaseline>
-        </plugin>
-    </gazebo> -->
-  <!-- <gazebo reference="depthCamera_link_left">
-        <sensor name="unitree_camera_left" type="depth_camera">
-            <update_rate>16</update_rate>
-            <always_on>true</always_on>
-            <visualize>true</visualize>
-            <camera>
-                <horizontal_fov>2.094</horizontal_fov>
-                <image>
-                    <width>928</width>
-                    <height>800</height>
-                    <format>R8G8B8</format>
-                </image>
-                <depth_camera></depth_camera>
-                <clip>
-                    <near>0.1</near>
-                    <far>100</far>
-                </clip>
-            </camera>
-            <plugin name="camera_plugin" filename="libgazebo_ros_openni_kinect.so">
-                <baseline>0.025</baseline>
-                <always_on>true</always_on>
-                <updateRate>0.0</updateRate>
-                <cameraName>unitree_camera_left</cameraName>
-                <frameName>depthCamera_link_left</frameName>
-                <imageTopicName>rgb/imageRaw_left</imageTopicName>
-                <depthImageTopicName>depth/imageRaw_left</depthImageTopicName>
-                <pointCloudTopicName>depth/points_left</pointCloudTopicName>
-                <cameraInfoTopicName>rgb/cameraInfo_left</cameraInfoTopicName>              
-                <depthImageCameraInfoTopicName>depth/cameraInfo_left</depthImageCameraInfoTopicName>            
-                <pointCloudCutoff>0.1</pointCloudCutoff>                
-                <pointCloudCutoffMax>1.5</pointCloudCutoffMax>                
-                <distortionK1>0.0</distortionK1>
-                <distortionK2>0.0</distortionK2>
-                <distortionK3>0.0</distortionK3>
-                <distortionT1>0.0</distortionT1>
-                <distortionT2>0.0</distortionT2>
-                <CxPrime>0.0</CxPrime>
-                <Cx>0.0045</Cx>
-                <Cy>0.0039</Cy>
-                <focalLength>0.004</focalLength>
-                <hackBaseline>0.0</hackBaseline>
-            </plugin>
-        </sensor>
-    </gazebo> -->
-  <gazebo reference="depthCamera_link_left">
-    <sensor name="camera_link_camera" type="depth">
-      <update_rate>20</update_rate>
-      <camera>
-        <horizontal_fov>1.047198</horizontal_fov>
-        <image>
-          <width>640</width>
-          <height>480</height>
-          <format>R8G8B8</format>
-        </image>
-        <clip>
-          <near>0.05</near>
-          <far>3</far>
-        </clip>
-      </camera>
-      <plugin filename="libgazebo_ros_openni_kinect.so" name="camera_link_controller">
-        <baseline>0.2</baseline>
-        <alwaysOn>true</alwaysOn>
-        <updateRate>1.0</updateRate>
-        <cameraName>camera_link_ir</cameraName>
-        <imageTopicName>/camera_link/color/image_raw</imageTopicName>
-        <cameraInfoTopicName>/camera_link/color/camera_info</cameraInfoTopicName>
-        <depthImageTopicName>/camera_link/depth/image_raw</depthImageTopicName>
-        <depthImageInfoTopicName>/camera_link/depth/camera_info</depthImageInfoTopicName>
-        <pointCloudTopicName>/camera_link/depth/points</pointCloudTopicName>
-        <frameName>depthCamera_link_left</frameName>
-        <pointCloudCutoff>0.5</pointCloudCutoff>
-        <pointCloudCutoffMax>3.0</pointCloudCutoffMax>
-        <distortionK1>0.00000001</distortionK1>
-        <distortionK2>0.00000001</distortionK2>
-        <distortionK3>0.00000001</distortionK3>
-        <distortionT1>0.00000001</distortionT1>
-        <distortionT2>0.00000001</distortionT2>
-        <CxPrime>0</CxPrime>
-        <Cx>0</Cx>
-        <Cy>0</Cy>
-        <focalLength>0</focalLength>
-        <hackBaseline>0</hackBaseline>
-      </plugin>
-    </sensor>
-  </gazebo>
-  <!-- Foot contacts. -->
-  <gazebo reference="FR_calf">
-    <sensor name="FR_foot_contact" type="contact">
-      <update_rate>100</update_rate>
-      <plugin filename="libunitreeFootContactPlugin.so" name="contactPlugin"/>
-      <contact>
-        <collision>FR_calf_fixed_joint_lump__FR_foot_collision_1</collision>
-      </contact>
-    </sensor>
-  </gazebo>
-  <gazebo reference="FL_calf">
-    <sensor name="FL_foot_contact" type="contact">
-      <update_rate>100</update_rate>
-      <plugin filename="libunitreeFootContactPlugin.so" name="contactPlugin"/>
-      <contact>
-        <collision>FL_calf_fixed_joint_lump__FL_foot_collision_1</collision>
-      </contact>
-    </sensor>
-  </gazebo>
-  <gazebo reference="RR_calf">
-    <sensor name="RR_foot_contact" type="contact">
-      <update_rate>100</update_rate>
-      <plugin filename="libunitreeFootContactPlugin.so" name="contactPlugin"/>
-      <contact>
-        <collision>RR_calf_fixed_joint_lump__RR_foot_collision_1</collision>
-      </contact>
-    </sensor>
-  </gazebo>
-  <gazebo reference="RL_calf">
-    <sensor name="RL_foot_contact" type="contact">
-      <update_rate>100</update_rate>
-      <plugin filename="libunitreeFootContactPlugin.so" name="contactPlugin"/>
-      <contact>
-        <collision>RL_calf_fixed_joint_lump__RL_foot_collision_1</collision>
-      </contact>
-    </sensor>
-  </gazebo>
-  <!-- Visualization of Foot contacts. -->
-  <gazebo reference="FR_foot">
-    <visual>
-      <plugin filename="libunitreeDrawForcePlugin.so" name="drawForcePlugin">
-        <topicName>FR_foot_contact</topicName>
-      </plugin>
-    </visual>
-  </gazebo>
-  <gazebo reference="FL_foot">
-    <visual>
-      <plugin filename="libunitreeDrawForcePlugin.so" name="drawForcePlugin">
-        <topicName>FL_foot_contact</topicName>
-      </plugin>
-    </visual>
-  </gazebo>
-  <gazebo reference="RR_foot">
-    <visual>
-      <plugin filename="libunitreeDrawForcePlugin.so" name="drawForcePlugin">
-        <topicName>RR_foot_contact</topicName>
-      </plugin>
-    </visual>
-  </gazebo>
-  <gazebo reference="RL_foot">
-    <visual>
-      <plugin filename="libunitreeDrawForcePlugin.so" name="drawForcePlugin">
-        <topicName>RL_foot_contact</topicName>
-      </plugin>
-    </visual>
-  </gazebo>
-  <gazebo reference="base">
-    <material>Gazebo/Green</material>
-    <turnGravityOff>false</turnGravityOff>
-  </gazebo>
-  <gazebo reference="trunk">
-    <mu1>0.2</mu1>
-    <mu2>0.2</mu2>
-    <kp value="1000000.0"/>
-    <kd value="1.0"/>
-  </gazebo>
-  <gazebo reference="stick_link">
-    <mu1>0.2</mu1>
-    <mu2>0.2</mu2>
-    <material>Gazebo/White</material>
-  </gazebo>
-  <gazebo reference="imu_link">
-    <mu1>0.2</mu1>
-    <mu2>0.2</mu2>
-    <material>Gazebo/Red</material>
-  </gazebo>
-  <!-- FL leg -->
-  <gazebo reference="FL_hip">
-    <mu1>0.2</mu1>
-    <mu2>0.2</mu2>
-    <material>Gazebo/DarkGrey</material>
-  </gazebo>
-  <gazebo reference="FL_thigh">
-    <mu1>0.2</mu1>
-    <mu2>0.2</mu2>
-    <self_collide>1</self_collide>
-    <material>Gazebo/DarkGrey</material>
-    <kp value="1000000.0"/>
-    <kd value="1.0"/>
-  </gazebo>
-  <gazebo reference="FL_calf">
-    <mu1>0.2</mu1>
-    <mu2>0.2</mu2>
-    <self_collide>1</self_collide>
-  </gazebo>
-  <gazebo reference="FL_foot">
-    <mu1>0.6</mu1>
-    <mu2>0.6</mu2>
-    <self_collide>1</self_collide>
-    <material>Gazebo/DarkGrey</material>
-    <kp value="1000000.0"/>
-    <kd value="1.0"/>
-  </gazebo>
-  <!-- FR leg -->
-  <gazebo reference="FR_hip">
-    <mu1>0.2</mu1>
-    <mu2>0.2</mu2>
-    <material>Gazebo/DarkGrey</material>
-  </gazebo>
-  <gazebo reference="FR_thigh">
-    <mu1>0.2</mu1>
-    <mu2>0.2</mu2>
-    <self_collide>1</self_collide>
-    <material>Gazebo/DarkGrey</material>
-    <kp value="1000000.0"/>
-    <kd value="1.0"/>
-  </gazebo>
-  <gazebo reference="FR_calf">
-    <mu1>0.2</mu1>
-    <mu2>0.2</mu2>
-    <self_collide>1</self_collide>
-  </gazebo>
-  <gazebo reference="FR_foot">
-    <mu1>0.6</mu1>
-    <mu2>0.6</mu2>
-    <self_collide>1</self_collide>
-    <material>Gazebo/DarkGrey</material>
-    <kp value="1000000.0"/>
-    <kd value="1.0"/>
-  </gazebo>
-  <!-- RL leg -->
-  <gazebo reference="RL_hip">
-    <mu1>0.2</mu1>
-    <mu2>0.2</mu2>
-    <material>Gazebo/DarkGrey</material>
-  </gazebo>
-  <gazebo reference="RL_thigh">
-    <mu1>0.2</mu1>
-    <mu2>0.2</mu2>
-    <self_collide>1</self_collide>
-    <material>Gazebo/DarkGrey</material>
-    <kp value="1000000.0"/>
-    <kd value="1.0"/>
-  </gazebo>
-  <gazebo reference="RL_calf">
-    <mu1>0.2</mu1>
-    <mu2>0.2</mu2>
-    <self_collide>1</self_collide>
-  </gazebo>
-  <gazebo reference="RL_foot">
-    <mu1>0.6</mu1>
-    <mu2>0.6</mu2>
-    <self_collide>1</self_collide>
-    <material>Gazebo/DarkGrey</material>
-    <kp value="1000000.0"/>
-    <kd value="1.0"/>
-  </gazebo>
-  <!-- RR leg -->
-  <gazebo reference="RR_hip">
-    <mu1>0.2</mu1>
-    <mu2>0.2</mu2>
-    <material>Gazebo/DarkGrey</material>
-  </gazebo>
-  <gazebo reference="RR_thigh">
-    <mu1>0.2</mu1>
-    <mu2>0.2</mu2>
-    <self_collide>1</self_collide>
-    <material>Gazebo/DarkGrey</material>
-    <kp value="1000000.0"/>
-    <kd value="1.0"/>
-  </gazebo>
-  <gazebo reference="RR_calf">
-    <mu1>0.2</mu1>
-    <mu2>0.2</mu2>
-    <self_collide>1</self_collide>
-  </gazebo>
-  <gazebo reference="RR_foot">
-    <mu1>0.6</mu1>
-    <mu2>0.6</mu2>
-    <self_collide>1</self_collide>
-    <material>Gazebo/DarkGrey</material>
-    <kp value="1000000.0"/>
-    <kd value="1.0"/>
-  </gazebo>
   <!-- <xacro:include filename="$(find go1_gazebo)/launch/stairs.urdf.xacro"/> -->
   <!-- <xacro:stairs stairs="15" xpos="0" ypos="0" zpos="0" /> -->
   <!-- Rotor related joint and link is only for demonstrate location. -->
@@ -401,27 +41,14 @@
         <joint name="base_static_joint" type="fixed">
             <origin rpy="0 0 0" xyz="0 0 0"/>
             <parent link="world"/>
-            <child link="base"/>
+            <child link="trunk"/>
         </joint>
     </xacro:if>  -->
-  <link name="base">
-    <visual>
-      <origin rpy="0 0 0" xyz="0 0 0"/>
-      <geometry>
-        <box size="0.001 0.001 0.001"/>
-      </geometry>
-    </visual>
-  </link>
-  <joint name="floating_base" type="fixed">
-    <origin rpy="0 0 0" xyz="0 0 0"/>
-    <parent link="base"/>
-    <child link="trunk"/>
-  </joint>
   <link name="trunk">
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="package://go1_description/meshes/trunk.dae" scale="1 1 1"/>
+        <mesh filename="package://go1_description/models/go1/dae/trunk.dae" scale="1 1 1"/>
       </geometry>
       <!-- <material name="orange"/> -->
     </visual>
@@ -479,7 +106,7 @@
     <visual>
       <origin rpy="3.141592653589793 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="package://go1_description/meshes/hip.dae" scale="1 1 1"/>
+        <mesh filename="package://go1_description/models/go1/dae/hip.dae" scale="1 1 1"/>
       </geometry>
       <!-- <material name="orange"/> -->
     </visual>
@@ -532,7 +159,7 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="package://go1_description/meshes/thigh_mirror.dae" scale="1 1 1"/>
+        <mesh filename="package://go1_description/models/go1/dae/thigh_mirror.dae" scale="1 1 1"/>
       </geometry>
       <!-- <material name="orange"/> -->
     </visual>
@@ -585,7 +212,7 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="package://go1_description/meshes/calf.dae" scale="1 1 1"/>
+        <mesh filename="package://go1_description/models/go1/dae/calf.dae" scale="1 1 1"/>
       </geometry>
       <!-- <material name="orange"/> -->
     </visual>
@@ -692,7 +319,7 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="package://go1_description/meshes/hip.dae" scale="1 1 1"/>
+        <mesh filename="package://go1_description/models/go1/dae/hip.dae" scale="1 1 1"/>
       </geometry>
       <!-- <material name="orange"/> -->
     </visual>
@@ -745,7 +372,7 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="package://go1_description/meshes/thigh.dae" scale="1 1 1"/>
+        <mesh filename="package://go1_description/models/go1/dae/thigh.dae" scale="1 1 1"/>
       </geometry>
       <!-- <material name="orange"/> -->
     </visual>
@@ -798,7 +425,7 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="package://go1_description/meshes/calf.dae" scale="1 1 1"/>
+        <mesh filename="package://go1_description/models/go1/dae/calf.dae" scale="1 1 1"/>
       </geometry>
       <!-- <material name="orange"/> -->
     </visual>
@@ -905,7 +532,7 @@
     <visual>
       <origin rpy="3.141592653589793 3.141592653589793 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="package://go1_description/meshes/hip.dae" scale="1 1 1"/>
+        <mesh filename="package://go1_description/models/go1/dae/hip.dae" scale="1 1 1"/>
       </geometry>
       <!-- <material name="orange"/> -->
     </visual>
@@ -958,7 +585,7 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="package://go1_description/meshes/thigh_mirror.dae" scale="1 1 1"/>
+        <mesh filename="package://go1_description/models/go1/dae/thigh_mirror.dae" scale="1 1 1"/>
       </geometry>
       <!-- <material name="orange"/> -->
     </visual>
@@ -1011,7 +638,7 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="package://go1_description/meshes/calf.dae" scale="1 1 1"/>
+        <mesh filename="package://go1_description/models/go1/dae/calf.dae" scale="1 1 1"/>
       </geometry>
       <!-- <material name="orange"/> -->
     </visual>
@@ -1118,7 +745,7 @@
     <visual>
       <origin rpy="0 3.141592653589793 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="package://go1_description/meshes/hip.dae" scale="1 1 1"/>
+        <mesh filename="package://go1_description/models/go1/dae/hip.dae" scale="1 1 1"/>
       </geometry>
       <!-- <material name="orange"/> -->
     </visual>
@@ -1171,7 +798,7 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="package://go1_description/meshes/thigh.dae" scale="1 1 1"/>
+        <mesh filename="package://go1_description/models/go1/dae/thigh.dae" scale="1 1 1"/>
       </geometry>
       <!-- <material name="orange"/> -->
     </visual>
@@ -1224,7 +851,7 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="package://go1_description/meshes/calf.dae" scale="1 1 1"/>
+        <mesh filename="package://go1_description/models/go1/dae/calf.dae" scale="1 1 1"/>
       </geometry>
       <!-- <material name="orange"/> -->
     </visual>
@@ -1329,7 +956,7 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="package://go1_description/meshes/depthCamera.dae" scale="1 1 1"/>
+        <mesh filename="package://go1_description/models/go1/dae/depthCamera.dae" scale="1 1 1"/>
       </geometry>
     </visual>
     <inertial>
@@ -1345,49 +972,6 @@
   </joint>
   <link name="camera_optical_face">
         </link>
-  <gazebo reference="camera_face">
-    <!-- <material>Gazebo/Black</material> -->
-    <sensor name="camera_face_camera" type="depth">
-      <update_rate>16</update_rate>
-      <camera>
-        <horizontal_fov>2.094</horizontal_fov>
-        <image>
-          <width>928</width>
-          <height>800</height>
-          <format>R8G8B8</format>
-        </image>
-        <clip>
-          <near>0.1</near>
-          <far>5</far>
-        </clip>
-      </camera>
-      <plugin filename="libgazebo_ros_openni_kinect.so" name="camera_face_controller">
-        <baseline>0.025</baseline>
-        <alwaysOn>true</alwaysOn>
-        <updateRate>0.0</updateRate>
-        <cameraName>camera_face_ir</cameraName>
-        <imageTopicName>/camera_face/color/image_raw</imageTopicName>
-        <cameraInfoTopicName>/camera_face/color/camera_info</cameraInfoTopicName>
-        <depthImageTopicName>/camera_face/depth/image_raw</depthImageTopicName>
-        <depthImageInfoTopicName>/camera_face/depth/camera_info</depthImageInfoTopicName>
-        <!-- <pointCloudTopicName>/camera_${name}/depth/points</pointCloudTopicName> -->
-        <pointCloudTopicName>/cam1/point_cloud_face</pointCloudTopicName>
-        <frameName>camera_optical_face</frameName>
-        <pointCloudCutoff>0.1</pointCloudCutoff>
-        <pointCloudCutoffMax>1.5</pointCloudCutoffMax>
-        <distortionK1>0.0</distortionK1>
-        <distortionK2>0.0</distortionK2>
-        <distortionK3>0.0</distortionK3>
-        <distortionT1>0.0</distortionT1>
-        <distortionT2>0.0</distortionT2>
-        <CxPrime>0</CxPrime>
-        <Cx>0.0045</Cx>
-        <Cy>0.0039</Cy>
-        <focalLength>0</focalLength>
-        <hackBaseline>0</hackBaseline>
-      </plugin>
-    </sensor>
-  </gazebo>
   <joint name="camera_joint_chin" type="fixed">
     <origin rpy="3.141592653589793 1.5707963267948966 0" xyz="0.2522 0.0125 -0.0436"/>
     <parent link="trunk"/>
@@ -1403,7 +987,7 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="package://go1_description/meshes/depthCamera.dae" scale="1 1 1"/>
+        <mesh filename="package://go1_description/models/go1/dae/depthCamera.dae" scale="1 1 1"/>
       </geometry>
     </visual>
     <inertial>
@@ -1419,49 +1003,6 @@
   </joint>
   <link name="camera_optical_chin">
         </link>
-  <gazebo reference="camera_chin">
-    <!-- <material>Gazebo/Black</material> -->
-    <sensor name="camera_chin_camera" type="depth">
-      <update_rate>16</update_rate>
-      <camera>
-        <horizontal_fov>2.094</horizontal_fov>
-        <image>
-          <width>928</width>
-          <height>800</height>
-          <format>R8G8B8</format>
-        </image>
-        <clip>
-          <near>0.1</near>
-          <far>5</far>
-        </clip>
-      </camera>
-      <plugin filename="libgazebo_ros_openni_kinect.so" name="camera_chin_controller">
-        <baseline>0.025</baseline>
-        <alwaysOn>true</alwaysOn>
-        <updateRate>0.0</updateRate>
-        <cameraName>camera_chin_ir</cameraName>
-        <imageTopicName>/camera_chin/color/image_raw</imageTopicName>
-        <cameraInfoTopicName>/camera_chin/color/camera_info</cameraInfoTopicName>
-        <depthImageTopicName>/camera_chin/depth/image_raw</depthImageTopicName>
-        <depthImageInfoTopicName>/camera_chin/depth/camera_info</depthImageInfoTopicName>
-        <!-- <pointCloudTopicName>/camera_${name}/depth/points</pointCloudTopicName> -->
-        <pointCloudTopicName>/cam2/point_cloud_chin</pointCloudTopicName>
-        <frameName>camera_optical_chin</frameName>
-        <pointCloudCutoff>0.1</pointCloudCutoff>
-        <pointCloudCutoffMax>1.5</pointCloudCutoffMax>
-        <distortionK1>0.0</distortionK1>
-        <distortionK2>0.0</distortionK2>
-        <distortionK3>0.0</distortionK3>
-        <distortionT1>0.0</distortionT1>
-        <distortionT2>0.0</distortionT2>
-        <CxPrime>0</CxPrime>
-        <Cx>0.0045</Cx>
-        <Cy>0.0039</Cy>
-        <focalLength>0</focalLength>
-        <hackBaseline>0</hackBaseline>
-      </plugin>
-    </sensor>
-  </gazebo>
   <joint name="camera_joint_left" type="fixed">
     <origin rpy="3.141592653589793 0.2618 1.5707963267948966" xyz="-0.066 0.082 -0.0176"/>
     <parent link="trunk"/>
@@ -1477,7 +1018,7 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="package://go1_description/meshes/depthCamera.dae" scale="1 1 1"/>
+        <mesh filename="package://go1_description/models/go1/dae/depthCamera.dae" scale="1 1 1"/>
       </geometry>
     </visual>
     <inertial>
@@ -1493,49 +1034,6 @@
   </joint>
   <link name="camera_optical_left">
         </link>
-  <gazebo reference="camera_left">
-    <!-- <material>Gazebo/Black</material> -->
-    <sensor name="camera_left_camera" type="depth">
-      <update_rate>16</update_rate>
-      <camera>
-        <horizontal_fov>2.094</horizontal_fov>
-        <image>
-          <width>928</width>
-          <height>800</height>
-          <format>R8G8B8</format>
-        </image>
-        <clip>
-          <near>0.1</near>
-          <far>5</far>
-        </clip>
-      </camera>
-      <plugin filename="libgazebo_ros_openni_kinect.so" name="camera_left_controller">
-        <baseline>0.025</baseline>
-        <alwaysOn>true</alwaysOn>
-        <updateRate>0.0</updateRate>
-        <cameraName>camera_left_ir</cameraName>
-        <imageTopicName>/camera_left/color/image_raw</imageTopicName>
-        <cameraInfoTopicName>/camera_left/color/camera_info</cameraInfoTopicName>
-        <depthImageTopicName>/camera_left/depth/image_raw</depthImageTopicName>
-        <depthImageInfoTopicName>/camera_left/depth/camera_info</depthImageInfoTopicName>
-        <!-- <pointCloudTopicName>/camera_${name}/depth/points</pointCloudTopicName> -->
-        <pointCloudTopicName>/cam3/point_cloud_left</pointCloudTopicName>
-        <frameName>camera_optical_left</frameName>
-        <pointCloudCutoff>0.1</pointCloudCutoff>
-        <pointCloudCutoffMax>1.5</pointCloudCutoffMax>
-        <distortionK1>0.0</distortionK1>
-        <distortionK2>0.0</distortionK2>
-        <distortionK3>0.0</distortionK3>
-        <distortionT1>0.0</distortionT1>
-        <distortionT2>0.0</distortionT2>
-        <CxPrime>0</CxPrime>
-        <Cx>0.0045</Cx>
-        <Cy>0.0039</Cy>
-        <focalLength>0</focalLength>
-        <hackBaseline>0</hackBaseline>
-      </plugin>
-    </sensor>
-  </gazebo>
   <joint name="camera_joint_right" type="fixed">
     <origin rpy="3.141592653589793 0.2618 -1.5707963267948966" xyz="-0.041 -0.082 -0.0176"/>
     <parent link="trunk"/>
@@ -1551,7 +1049,7 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="package://go1_description/meshes/depthCamera.dae" scale="1 1 1"/>
+        <mesh filename="package://go1_description/models/go1/dae/depthCamera.dae" scale="1 1 1"/>
       </geometry>
     </visual>
     <inertial>
@@ -1567,49 +1065,6 @@
   </joint>
   <link name="camera_optical_right">
         </link>
-  <gazebo reference="camera_right">
-    <!-- <material>Gazebo/Black</material> -->
-    <sensor name="camera_right_camera" type="depth">
-      <update_rate>16</update_rate>
-      <camera>
-        <horizontal_fov>2.094</horizontal_fov>
-        <image>
-          <width>928</width>
-          <height>800</height>
-          <format>R8G8B8</format>
-        </image>
-        <clip>
-          <near>0.1</near>
-          <far>5</far>
-        </clip>
-      </camera>
-      <plugin filename="libgazebo_ros_openni_kinect.so" name="camera_right_controller">
-        <baseline>0.025</baseline>
-        <alwaysOn>true</alwaysOn>
-        <updateRate>0.0</updateRate>
-        <cameraName>camera_right_ir</cameraName>
-        <imageTopicName>/camera_right/color/image_raw</imageTopicName>
-        <cameraInfoTopicName>/camera_right/color/camera_info</cameraInfoTopicName>
-        <depthImageTopicName>/camera_right/depth/image_raw</depthImageTopicName>
-        <depthImageInfoTopicName>/camera_right/depth/camera_info</depthImageInfoTopicName>
-        <!-- <pointCloudTopicName>/camera_${name}/depth/points</pointCloudTopicName> -->
-        <pointCloudTopicName>/cam4/point_cloud_right</pointCloudTopicName>
-        <frameName>camera_optical_right</frameName>
-        <pointCloudCutoff>0.1</pointCloudCutoff>
-        <pointCloudCutoffMax>1.5</pointCloudCutoffMax>
-        <distortionK1>0.0</distortionK1>
-        <distortionK2>0.0</distortionK2>
-        <distortionK3>0.0</distortionK3>
-        <distortionT1>0.0</distortionT1>
-        <distortionT2>0.0</distortionT2>
-        <CxPrime>0</CxPrime>
-        <Cx>0.0045</Cx>
-        <Cy>0.0039</Cy>
-        <focalLength>0</focalLength>
-        <hackBaseline>0</hackBaseline>
-      </plugin>
-    </sensor>
-  </gazebo>
   <joint name="camera_joint_rearDown" type="fixed">
     <origin rpy="3.141592653589793 1.5707963267948966 0" xyz="-0.0825 0.0125 -0.04365"/>
     <parent link="trunk"/>
@@ -1625,7 +1080,7 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="package://go1_description/meshes/depthCamera.dae" scale="1 1 1"/>
+        <mesh filename="package://go1_description/models/go1/dae/depthCamera.dae" scale="1 1 1"/>
       </geometry>
     </visual>
     <inertial>
@@ -1641,49 +1096,6 @@
   </joint>
   <link name="camera_optical_rearDown">
         </link>
-  <gazebo reference="camera_rearDown">
-    <!-- <material>Gazebo/Black</material> -->
-    <sensor name="camera_rearDown_camera" type="depth">
-      <update_rate>16</update_rate>
-      <camera>
-        <horizontal_fov>2.094</horizontal_fov>
-        <image>
-          <width>928</width>
-          <height>800</height>
-          <format>R8G8B8</format>
-        </image>
-        <clip>
-          <near>0.1</near>
-          <far>5</far>
-        </clip>
-      </camera>
-      <plugin filename="libgazebo_ros_openni_kinect.so" name="camera_rearDown_controller">
-        <baseline>0.025</baseline>
-        <alwaysOn>true</alwaysOn>
-        <updateRate>0.0</updateRate>
-        <cameraName>camera_rearDown_ir</cameraName>
-        <imageTopicName>/camera_rearDown/color/image_raw</imageTopicName>
-        <cameraInfoTopicName>/camera_rearDown/color/camera_info</cameraInfoTopicName>
-        <depthImageTopicName>/camera_rearDown/depth/image_raw</depthImageTopicName>
-        <depthImageInfoTopicName>/camera_rearDown/depth/camera_info</depthImageInfoTopicName>
-        <!-- <pointCloudTopicName>/camera_${name}/depth/points</pointCloudTopicName> -->
-        <pointCloudTopicName>/cam5/point_cloud_rearDown</pointCloudTopicName>
-        <frameName>camera_optical_rearDown</frameName>
-        <pointCloudCutoff>0.1</pointCloudCutoff>
-        <pointCloudCutoffMax>1.5</pointCloudCutoffMax>
-        <distortionK1>0.0</distortionK1>
-        <distortionK2>0.0</distortionK2>
-        <distortionK3>0.0</distortionK3>
-        <distortionT1>0.0</distortionT1>
-        <distortionT2>0.0</distortionT2>
-        <CxPrime>0</CxPrime>
-        <Cx>0.0045</Cx>
-        <Cy>0.0039</Cy>
-        <focalLength>0</focalLength>
-        <hackBaseline>0</hackBaseline>
-      </plugin>
-    </sensor>
-  </gazebo>
   <joint name="camera_laserscan_joint_left" type="fixed">
     <origin rpy="0 0.2618 0" xyz="0 0 0"/>
     <parent link="camera_left"/>
@@ -1713,7 +1125,7 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="package://go1_description/meshes/ultraSound.dae" scale="1 1 1"/>
+        <mesh filename="package://go1_description/models/go1/dae/ultraSound.dae" scale="1 1 1"/>
       </geometry>
       <material name="black"/>
     </visual>
@@ -1738,7 +1150,7 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="package://go1_description/meshes/ultraSound.dae" scale="1 1 1"/>
+        <mesh filename="package://go1_description/models/go1/dae/ultraSound.dae" scale="1 1 1"/>
       </geometry>
       <material name="black"/>
     </visual>
@@ -1763,7 +1175,7 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="package://go1_description/meshes/ultraSound.dae" scale="1 1 1"/>
+        <mesh filename="package://go1_description/models/go1/dae/ultraSound.dae" scale="1 1 1"/>
       </geometry>
       <material name="black"/>
     </visual>
@@ -1778,66 +1190,66 @@
     <hardware>
       <plugin>gz_ros2_control/GazeboSimSystem</plugin>
     </hardware>
-    <joint name="0">
+    <joint name="FL_hip_joint">
       <command_interface name="effort" />
       <state_interface name="velocity" />
       <state_interface name="position" />
     </joint>
-    <joint name="1">
+    <joint name="FL_thigh_joint">
       <command_interface name="effort" />
       <state_interface name="velocity" />
       <state_interface name="position" />
     </joint>
-    <joint name="2">
+    <joint name="FL_calf_joint">
       <command_interface name="effort" />
       <state_interface name="velocity" />
       <state_interface name="position" />
     </joint>
-    <joint name="3">
+    <joint name="RL_hip_joint">
       <command_interface name="effort" />
       <state_interface name="velocity" />
       <state_interface name="position" />
     </joint>
-    <joint name="4">
+    <joint name="RL_thigh_joint">
       <command_interface name="effort" />
       <state_interface name="velocity" />
       <state_interface name="position" />
     </joint>
-    <joint name="5">
+    <joint name="RL_calf_joint">
       <command_interface name="effort" />
       <state_interface name="velocity" />
       <state_interface name="position" />
     </joint>
-    <joint name="6">
+    <joint name="FR_hip_joint">
       <command_interface name="effort" />
       <state_interface name="velocity" />
       <state_interface name="position" />
     </joint>
-    <joint name="7">
+    <joint name="FR_thigh_joint">
       <command_interface name="effort" />
       <state_interface name="velocity" />
       <state_interface name="position" />
     </joint>
-    <joint name="8">
+    <joint name="FR_calf_joint">
       <command_interface name="effort" />
       <state_interface name="velocity" />
       <state_interface name="position" />
     </joint>
-    <joint name="9">
+    <joint name="RR_hip_joint">
       <command_interface name="effort" />
       <state_interface name="velocity" />
       <state_interface name="position" />
     </joint>
-    <joint name="10">
+    <joint name="RR_thigh_joint">
       <command_interface name="effort" />
       <state_interface name="velocity" />
       <state_interface name="position" />
     </joint>
-    <joint name="11">
+    <joint name="RR_calf_joint">
       <command_interface name="effort" />
       <state_interface name="velocity" />
       <state_interface name="position" />
     </joint>
   </ros2_control>
-</robot>
 
+</robot>

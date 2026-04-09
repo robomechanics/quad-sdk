@@ -327,8 +327,7 @@ void ikRobotState(quad_utils::QuadKD2& kinematics,
   joint_state.header = multi_foot_state.header;
   // If this message is empty set the joint names
   if (joint_state.name.empty()) {
-    joint_state.name = {"8",  "0", "1", "9",  "2", "3",
-                        "10", "4", "5", "11", "6", "7"};
+    joint_state.name = kinematics.getOrderedJointNames();
   }
   joint_state.position.clear();
   joint_state.velocity.clear();

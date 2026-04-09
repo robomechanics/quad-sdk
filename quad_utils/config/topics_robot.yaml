@@ -53,11 +53,5 @@
         foot_1_plan_continuous: visualization/foot_1_plan_continuous
         foot_2_plan_continuous: visualization/foot_2_plan_continuous
         foot_3_plan_continuous: visualization/foot_3_plan_continuous
-      gazebo:
-        toe0_contact_state: gazebo/toe0_contact_states
-        toe1_contact_state: gazebo/toe1_contact_states
-        toe2_contact_state: gazebo/toe2_contact_states
-        toe3_contact_state: gazebo/toe3_contact_states
-
       mocap: mocap_node/quad/pose
     map_frame: map

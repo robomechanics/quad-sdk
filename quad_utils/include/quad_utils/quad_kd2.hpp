@@ -148,6 +148,12 @@ class QuadKD2 {
   double getLinkLength(int leg_index, int link_index) const;
 
   /**
+   * @brief Get the Quad-SDK joint ordering for the configured robot
+   * @return Joint names in [abad, hip, knee] order for each leg
+   */
+  std::vector<std::string> getOrderedJointNames() const;
+
+  /**
    * @brief Generate a Pinocchio ordered q and v from Quad-SDK internal states
    * @param[in] body_state Eigen vector with Quad-SDK ordered robot body state
    * (12)

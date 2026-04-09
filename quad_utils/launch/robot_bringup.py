@@ -10,6 +10,7 @@ from launch.event_handlers import OnProcessStart, OnProcessExit
 from functools import partial
 import os
 import xacro
+import yaml
 
 def load_robot_params(context, *args, **kwargs):
     # Load Robot URDF and Robot Centric Parameters
@@ -26,6 +27,11 @@ def load_robot_params(context, *args, **kwargs):
         urdf_file = 'a1.urdf.xacro'
         sdf_file = 'a1.sdf.xacro'
         config_file = 'a1.yaml'
+    elif robot_type == 'go1':
+        desc_pkg = 'go1_description'
+        urdf_file = 'go1.urdf.xacro'
+        sdf_file = 'go1.sdf.xacro'
+        config_file = 'go1.yaml'
     elif robot_type == 'go2':
         desc_pkg = 'go2_description'
         urdf_file = 'go2.urdf.xacro'
@@ -221,11 +227,22 @@ def spawn_sdf_model_with_driver(context, *arg, **kwargs):
 def harmonic_ros_bridge(context, *args, **kwargs):
     namespace = LaunchConfiguration('namespace').perform(context)
     quad_utils_path = FindPackageShare('quad_utils').perform(context)
-    
+    robot_type = LaunchConfiguration('robot_type').perform(context)
+    robot_config_path = os.path.join(quad_utils_path, 'config', f'{robot_type}.yaml')
+
+    with open(robot_config_path, 'r') as f:
+        robot_config = yaml.safe_load(f)
+
+    root_params = robot_config.get('/**', {}).get('ros__parameters', {})
+    toe_names = [
+        root_params.get(f'leg_{toe_id}', {}).get('frames', {}).get('toe', f'toe{toe_id}')
+        for toe_id in range(4)
+    ]
+
     toe_args, toe_remaps = [],[]
-    for toe_id in range(4):
-        toe_args.append(f'/world/default/model/{namespace}/link/toe{toe_id}/sensor/toe{toe_id}_contact/contact@ros_gz_interfaces/msg/Contacts[gz.msgs.Contacts')
-        toe_remaps.append((f'/world/default/model/{namespace}/link/toe{toe_id}/sensor/toe{toe_id}_contact/contact', f'/{namespace}/gazebo/toe{toe_id}_contact_states'))
+    for toe_name in toe_names:
+        toe_args.append(f'/world/default/model/{namespace}/link/{toe_name}/sensor/{toe_name}_contact/contact@ros_gz_interfaces/msg/Contacts[gz.msgs.Contacts')
+        toe_remaps.append((f'/world/default/model/{namespace}/link/{toe_name}/sensor/{toe_name}_contact/contact', f'/{namespace}/gazebo/{toe_name}_contact_states'))
 
     contact_state_bridge = Node(
         package='ros_gz_bridge',
@@ -260,7 +277,8 @@ def launch_contact_state_publisher(context, *args, **kwargs):
     robot_type = LaunchConfiguration('robot_type').perform(context)
     world_name = LaunchConfiguration('world').perform(context)
     quad_utils_path = FindPackageShare('quad_utils').perform(context)
-    config_file = os.path.join(quad_utils_path, 'config', 'topics_robot.yaml')
+    topics_config_file = os.path.join(quad_utils_path, 'config', 'topics_robot.yaml')
+    robot_config_file = os.path.join(quad_utils_path, 'config', f'{robot_type}.yaml')
 
     return [
         Node(
@@ -269,7 +287,8 @@ def launch_contact_state_publisher(context, *args, **kwargs):
             # name='contact_state_publisher_node',
             # namespace=namespace,
             # output='screen',
-            parameters=[config_file,
+            parameters=[topics_config_file,
+                        robot_config_file,
                         {'namespace': namespace, 
                          'world': world_name, 
                          'use_sim_time' : LaunchConfiguration('use_sim_time')}]

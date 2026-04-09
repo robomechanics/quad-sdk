@@ -291,6 +291,17 @@ double QuadKD2::getLinkLength(int leg_index, int link_index) const {
   }
 }
 
+std::vector<std::string> QuadKD2::getOrderedJointNames() const {
+  std::vector<std::string> joint_names;
+  joint_names.reserve(num_feet_ * 3);
+  for (int leg_index = 0; leg_index < num_feet_; ++leg_index) {
+    const auto& limb = limbs_.at(leg_index);
+    joint_names.insert(joint_names.end(), limb.joint_names.begin(),
+                       limb.joint_names.end());
+  }
+  return joint_names;
+}
+
 void QuadKD2::assembleQFromBodyAndJoints(const Eigen::VectorXd& body_state,
                                          const Eigen::VectorXd& joint_positions,
                                          Eigen::VectorXd& q) const {

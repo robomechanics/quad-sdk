@@ -62,6 +62,8 @@ class ContactStatePublisher {
       toe_3_contact_state_sub_;
 
   std::array<double, 4> last_contact_time_;
+  std::array<std::string, 4> toe_frame_names_;
+  std::array<std::string, 4> toe_collision_names_;
 
   const double SYNC_THRESHOLD = 0.001;  // 1 ms
 

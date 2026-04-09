@@ -1,0 +1,1975 @@
+<?xml version='1.0'?>
+
+<sdf version='1.11' xmlns:xacro="http://www.ros.org/wiki/xacro">
+  <xacro:arg name="namespace" default="robot_1" />
+  <xacro:arg name="controller_config_path" default="/path/go1.yaml" />
+  <model name='go1'>
+    <link name='trunk'>
+      <inertial>
+        <pose>0.020872773233478661 0.001871982957079755 -0.00046815367764492619 0 0 0</pose>
+        <mass>5.5600799999999984</mass>
+        <inertia>
+          <ixx>0.018048023009394301</ixx>
+          <ixy>-0.00024455917389599162</ixy>
+          <ixz>-0.00029079387455181721</ixz>
+          <iyy>0.067901792599535646</iyy>
+          <iyz>-4.1533000284557517e-05</iyz>
+          <izz>0.077326490934319494</izz>
+        </inertia>
+      </inertial>
+      <collision name='trunk_collision'>
+        <pose>0 0 0 0 0 0</pose>
+        <geometry>
+          <box>
+            <size>0.37619999999999998 0.0935 0.114</size>
+          </box>
+        </geometry>
+        <surface>
+          <contact>
+            <ode>
+              <kp>1000000</kp>
+              <kd>1</kd>
+            </ode>
+          </contact>
+          <friction>
+            <ode>
+              <mu>0.20000000000000001</mu>
+              <mu2>0.20000000000000001</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <collision name='trunk_fixed_joint_lump__FL_hip_rotor_collision_1'>
+        <pose>0.11215 0.04675 0 0 1.5707963267948966 0</pose>
+        <geometry>
+          <cylinder>
+            <length>0.02</length>
+            <radius>0.035000000000000003</radius>
+          </cylinder>
+        </geometry>
+      </collision>
+      <collision name='trunk_fixed_joint_lump__FR_hip_rotor_collision_2'>
+        <pose>0.11215 -0.04675 0 0 1.5707963267948966 0</pose>
+        <geometry>
+          <cylinder>
+            <length>0.02</length>
+            <radius>0.035000000000000003</radius>
+          </cylinder>
+        </geometry>
+      </collision>
+      <collision name='trunk_fixed_joint_lump__RL_hip_rotor_collision_3'>
+        <pose>-0.11215 0.04675 0 0 1.5707963267948966 0</pose>
+        <geometry>
+          <cylinder>
+            <length>0.02</length>
+            <radius>0.035000000000000003</radius>
+          </cylinder>
+        </geometry>
+      </collision>
+      <collision name='trunk_fixed_joint_lump__RR_hip_rotor_collision_4'>
+        <pose>-0.11215 -0.04675 0 0 1.5707963267948966 0</pose>
+        <geometry>
+          <cylinder>
+            <length>0.02</length>
+            <radius>0.035000000000000003</radius>
+          </cylinder>
+        </geometry>
+      </collision>
+      <collision name='trunk_fixed_joint_lump__camera_chin_collision_5'>
+        <pose>0.25219999999999998 0.012500000000000001 -0.0436 3.1415926535897931 1.5707963267948966 0</pose>
+        <geometry>
+          <box>
+            <size>0.001 0.001 0.001</size>
+          </box>
+        </geometry>
+        <surface>
+          <contact>
+            <ode/>
+          </contact>
+          <friction>
+            <ode/>
+          </friction>
+        </surface>
+      </collision>
+      <collision name='trunk_fixed_joint_lump__camera_face_collision_6'>
+        <pose>0.27850000000000003 0.012500000000000001 0.0167 3.1415926535897931 0 0</pose>
+        <geometry>
+          <box>
+            <size>0.001 0.001 0.001</size>
+          </box>
+        </geometry>
+        <surface>
+          <contact>
+            <ode/>
+          </contact>
+          <friction>
+            <ode/>
+          </friction>
+        </surface>
+      </collision>
+      <collision name='trunk_fixed_joint_lump__camera_left_collision_7'>
+        <pose>-0.066000000000000003 0.082000000000000003 -0.017600000000000001 3.1415926535897931 0.26179999999999998 1.5707963267948957</pose>
+        <geometry>
+          <box>
+            <size>0.001 0.001 0.001</size>
+          </box>
+        </geometry>
+        <surface>
+          <contact>
+            <ode/>
+          </contact>
+          <friction>
+            <ode/>
+          </friction>
+        </surface>
+      </collision>
+      <collision name='trunk_fixed_joint_lump__camera_rearDown_collision_8'>
+        <pose>-0.082500000000000004 0.012500000000000001 -0.043650000000000001 3.1415926535897931 1.5707963267948966 0</pose>
+        <geometry>
+          <box>
+            <size>0.001 0.001 0.001</size>
+          </box>
+        </geometry>
+        <surface>
+          <contact>
+            <ode/>
+          </contact>
+          <friction>
+            <ode/>
+          </friction>
+        </surface>
+      </collision>
+      <collision name='trunk_fixed_joint_lump__camera_right_collision_9'>
+        <pose>-0.041000000000000002 -0.082000000000000003 -0.017600000000000001 3.1415926535897931 0.26179999999999998 -1.570796326794897</pose>
+        <geometry>
+          <box>
+            <size>0.001 0.001 0.001</size>
+          </box>
+        </geometry>
+        <surface>
+          <contact>
+            <ode/>
+          </contact>
+          <friction>
+            <ode/>
+          </friction>
+        </surface>
+      </collision>
+      <collision name='trunk_fixed_joint_lump__ultraSound_face_collision_10'>
+        <pose>0.2747 0 -0.0088000000000000005 0 0 0</pose>
+        <geometry>
+          <box>
+            <size>0.001 0.001 0.001</size>
+          </box>
+        </geometry>
+      </collision>
+      <collision name='trunk_fixed_joint_lump__ultraSound_left_collision_11'>
+        <pose>-0.053499999999999999 0.082600000000000007 0.0086800000000000002 0 0.26179999999999998 1.570796326794897</pose>
+        <geometry>
+          <box>
+            <size>0.001 0.001 0.001</size>
+          </box>
+        </geometry>
+      </collision>
+      <collision name='trunk_fixed_joint_lump__ultraSound_right_collision_12'>
+        <pose>-0.053499999999999999 -0.082600000000000007 0.0086800000000000002 0 0.26179999999999998 -1.570796326794897</pose>
+        <geometry>
+          <box>
+            <size>0.001 0.001 0.001</size>
+          </box>
+        </geometry>
+      </collision>
+      <visual name='trunk_visual'>
+        <pose>0 0 0 0 0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://go1/dae/trunk.dae</uri>
+          </mesh>
+        </geometry>
+        <material>
+          <diffuse>0.2 0.2 0.2 1</diffuse>
+          <ambient>0.2 0.2 0.2 1</ambient>
+        </material>
+      </visual>
+      <visual name='trunk_fixed_joint_lump__FL_hip_rotor_visual_1'>
+        <pose>0.11215 0.04675 0 0 1.5707963267948966 0</pose>
+        <geometry>
+          <cylinder>
+            <length>0.02</length>
+            <radius>0.035000000000000003</radius>
+          </cylinder>
+        </geometry>
+        <material>
+          <diffuse>0 1 0 1</diffuse>
+          <ambient>0 1 0 1</ambient>
+        </material>
+      </visual>
+      <visual name='trunk_fixed_joint_lump__FR_hip_rotor_visual_2'>
+        <pose>0.11215 -0.04675 0 0 1.5707963267948966 0</pose>
+        <geometry>
+          <cylinder>
+            <length>0.02</length>
+            <radius>0.035000000000000003</radius>
+          </cylinder>
+        </geometry>
+        <material>
+          <diffuse>0 1 0 1</diffuse>
+          <ambient>0 1 0 1</ambient>
+        </material>
+      </visual>
+      <visual name='trunk_fixed_joint_lump__RL_hip_rotor_visual_3'>
+        <pose>-0.11215 0.04675 0 0 1.5707963267948966 0</pose>
+        <geometry>
+          <cylinder>
+            <length>0.02</length>
+            <radius>0.035000000000000003</radius>
+          </cylinder>
+        </geometry>
+        <material>
+          <diffuse>0 1 0 1</diffuse>
+          <ambient>0 1 0 1</ambient>
+        </material>
+      </visual>
+      <visual name='trunk_fixed_joint_lump__RR_hip_rotor_visual_4'>
+        <pose>-0.11215 -0.04675 0 0 1.5707963267948966 0</pose>
+        <geometry>
+          <cylinder>
+            <length>0.02</length>
+            <radius>0.035000000000000003</radius>
+          </cylinder>
+        </geometry>
+        <material>
+          <diffuse>0 1 0 1</diffuse>
+          <ambient>0 1 0 1</ambient>
+        </material>
+      </visual>
+      <visual name='trunk_fixed_joint_lump__camera_chin_visual_5'>
+        <pose>0.25219999999999998 0.012500000000000001 -0.0436 3.1415926535897931 1.5707963267948966 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://go1/dae/depthCamera.dae</uri>
+          </mesh>
+        </geometry>
+        <material>
+          <diffuse>0.05 0.05 0.05 1</diffuse>
+          <ambient>0.05 0.05 0.05 1</ambient>
+        </material>
+      </visual>
+      <visual name='trunk_fixed_joint_lump__camera_face_visual_6'>
+        <pose>0.27850000000000003 0.012500000000000001 0.0167 3.1415926535897931 0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://go1/dae/depthCamera.dae</uri>
+          </mesh>
+        </geometry>
+        <material>
+          <diffuse>0.05 0.05 0.05 1</diffuse>
+          <ambient>0.05 0.05 0.05 1</ambient>
+        </material>
+      </visual>
+      <visual name='trunk_fixed_joint_lump__camera_left_visual_7'>
+        <pose>-0.066000000000000003 0.082000000000000003 -0.017600000000000001 3.1415926535897931 0.26179999999999998 1.5707963267948957</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://go1/dae/depthCamera.dae</uri>
+          </mesh>
+        </geometry>
+        <material>
+          <diffuse>0.05 0.05 0.05 1</diffuse>
+          <ambient>0.05 0.05 0.05 1</ambient>
+        </material>
+      </visual>
+      <visual name='trunk_fixed_joint_lump__camera_rearDown_visual_8'>
+        <pose>-0.082500000000000004 0.012500000000000001 -0.043650000000000001 3.1415926535897931 1.5707963267948966 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://go1/dae/depthCamera.dae</uri>
+          </mesh>
+        </geometry>
+        <material>
+          <diffuse>0.05 0.05 0.05 1</diffuse>
+          <ambient>0.05 0.05 0.05 1</ambient>
+        </material>
+      </visual>
+      <visual name='trunk_fixed_joint_lump__camera_right_visual_9'>
+        <pose>-0.041000000000000002 -0.082000000000000003 -0.017600000000000001 3.1415926535897931 0.26179999999999998 -1.570796326794897</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://go1/dae/depthCamera.dae</uri>
+          </mesh>
+        </geometry>
+        <material>
+          <diffuse>0.05 0.05 0.05 1</diffuse>
+          <ambient>0.05 0.05 0.05 1</ambient>
+        </material>
+      </visual>
+      <visual name='trunk_fixed_joint_lump__ultraSound_face_visual_10'>
+        <pose>0.2747 0 -0.0088000000000000005 0 0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://go1/dae/ultraSound.dae</uri>
+          </mesh>
+        </geometry>
+        <material>
+          <diffuse>0 0 0 1</diffuse>
+          <ambient>0 0 0 1</ambient>
+        </material>
+      </visual>
+      <visual name='trunk_fixed_joint_lump__ultraSound_left_visual_11'>
+        <pose>-0.053499999999999999 0.082600000000000007 0.0086800000000000002 0 0.26179999999999998 1.570796326794897</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://go1/dae/ultraSound.dae</uri>
+          </mesh>
+        </geometry>
+        <material>
+          <diffuse>0 0 0 1</diffuse>
+          <ambient>0 0 0 1</ambient>
+        </material>
+      </visual>
+      <visual name='trunk_fixed_joint_lump__ultraSound_right_visual_12'>
+        <pose>-0.053499999999999999 -0.082600000000000007 0.0086800000000000002 0 0.26179999999999998 -1.570796326794897</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://go1/dae/ultraSound.dae</uri>
+          </mesh>
+        </geometry>
+        <material>
+          <diffuse>0 0 0 1</diffuse>
+          <ambient>0 0 0 1</ambient>
+        </material>
+      </visual>
+      <sensor name='camera_chin_camera' type='depth'>
+        <update_rate>16</update_rate>
+        <camera>
+          <horizontal_fov>2.0939999999999999</horizontal_fov>
+          <image>
+            <width>928</width>
+            <height>800</height>
+            <format>R8G8B8</format>
+          </image>
+          <clip>
+            <near>0.10000000000000001</near>
+            <far>5</far>
+          </clip>
+        </camera>
+        <pose>0.25219999999999998 0.012500000000000001 -0.0436 3.1415926535897931 1.5707926536359933 2.6535897933410511e-06</pose>
+      </sensor>
+      <sensor name='camera_face_camera' type='depth'>
+        <update_rate>16</update_rate>
+        <camera>
+          <horizontal_fov>2.0939999999999999</horizontal_fov>
+          <image>
+            <width>928</width>
+            <height>800</height>
+            <format>R8G8B8</format>
+          </image>
+          <clip>
+            <near>0.10000000000000001</near>
+            <far>5</far>
+          </clip>
+        </camera>
+        <pose>0.27850000000000003 0.012500000000000001 0.0167 3.1415899999999999 0 0</pose>
+      </sensor>
+      <sensor name='camera_left_camera' type='depth'>
+        <update_rate>16</update_rate>
+        <camera>
+          <horizontal_fov>2.0939999999999999</horizontal_fov>
+          <image>
+            <width>928</width>
+            <height>800</height>
+            <format>R8G8B8</format>
+          </image>
+          <clip>
+            <near>0.10000000000000001</near>
+            <far>5</far>
+          </clip>
+        </camera>
+        <pose>-0.066000000000000003 0.082000000000000003 -0.017600000000000001 3.1415899999999999 0.26180000000000009 1.5708</pose>
+      </sensor>
+      <sensor name='camera_rearDown_camera' type='depth'>
+        <update_rate>16</update_rate>
+        <camera>
+          <horizontal_fov>2.0939999999999999</horizontal_fov>
+          <image>
+            <width>928</width>
+            <height>800</height>
+            <format>R8G8B8</format>
+          </image>
+          <clip>
+            <near>0.10000000000000001</near>
+            <far>5</far>
+          </clip>
+        </camera>
+        <pose>-0.082500000000000004 0.012500000000000001 -0.043650000000000001 3.1415926535897931 1.5707926536359933 2.6535897933410511e-06</pose>
+      </sensor>
+      <sensor name='camera_right_camera' type='depth'>
+        <update_rate>16</update_rate>
+        <camera>
+          <horizontal_fov>2.0939999999999999</horizontal_fov>
+          <image>
+            <width>928</width>
+            <height>800</height>
+            <format>R8G8B8</format>
+          </image>
+          <clip>
+            <near>0.10000000000000001</near>
+            <far>5</far>
+          </clip>
+        </camera>
+        <pose>-0.041000000000000002 -0.082000000000000003 -0.017600000000000001 3.1415899999999999 0.26179999999999998 -1.5707999999999998</pose>
+      </sensor>
+    </link>
+    <joint name='FL_hip_joint' type='revolute'>
+      <pose relative_to='trunk'>0.18809999999999999 0.04675 0 0 0 0</pose>
+      <parent>trunk</parent>
+      <child>FL_hip</child>
+      <axis>
+        <xyz>1 0 0</xyz>
+        <limit>
+          <lower>-0.86299999999999999</lower>
+          <upper>0.86299999999999999</upper>
+          <effort>23.699999999999999</effort>
+          <velocity>30.100000000000001</velocity>
+        </limit>
+        <dynamics>
+          <damping>0</damping>
+          <friction>0</friction>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+      </axis>
+    </joint>
+    <link name='FL_hip'>
+      <pose relative_to='FL_hip_joint'>0 0 0 0 0 0</pose>
+      <inertial>
+        <pose>-0.0049165985294117639 -0.0076261499999999991 -8.865e-05 0 0 0</pose>
+        <mass>0.67999999999999994</mass>
+        <inertia>
+          <ixx>0.0003993797857294</ixx>
+          <ixy>-1.4590105668949999e-05</ixy>
+          <ixz>1.2460991185500001e-06</ixz>
+          <iyy>0.00073341939237609854</iyy>
+          <iyz>1.5753255103e-06</iyz>
+          <izz>0.00046842209057609862</izz>
+        </inertia>
+      </inertial>
+      <collision name='FL_hip_collision'>
+        <pose>0 0.080000000000000002 0 1.5707963267948959 0 0</pose>
+        <geometry>
+          <cylinder>
+            <length>0.040000000000000001</length>
+            <radius>0.045999999999999999</radius>
+          </cylinder>
+        </geometry>
+        <surface>
+          <contact>
+            <ode/>
+          </contact>
+          <friction>
+            <ode>
+              <mu>0.20000000000000001</mu>
+              <mu2>0.20000000000000001</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <collision name='FL_hip_fixed_joint_lump__FL_thigh_rotor_collision_1'>
+        <pose>0 -0.00014999999999999999 0 1.5707963267948959 0 0</pose>
+        <geometry>
+          <cylinder>
+            <length>0.02</length>
+            <radius>0.035000000000000003</radius>
+          </cylinder>
+        </geometry>
+      </collision>
+      <visual name='FL_hip_visual'>
+        <pose>0 0 0 0 0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://go1/dae/hip.dae</uri>
+          </mesh>
+        </geometry>
+        <material>
+          <diffuse>0.2 0.2 0.2 1</diffuse>
+          <ambient>0.2 0.2 0.2 1</ambient>
+        </material>
+      </visual>
+      <visual name='FL_hip_fixed_joint_lump__FL_thigh_rotor_visual_1'>
+        <pose>0 -0.00014999999999999999 0 1.5707963267948959 0 0</pose>
+        <geometry>
+          <cylinder>
+            <length>0.02</length>
+            <radius>0.035000000000000003</radius>
+          </cylinder>
+        </geometry>
+        <material>
+          <diffuse>0 1 0 1</diffuse>
+          <ambient>0 1 0 1</ambient>
+        </material>
+      </visual>
+    </link>
+    <joint name='FL_thigh_joint' type='revolute'>
+      <pose relative_to='FL_hip'>0 0.080000000000000002 0 0 0 0</pose>
+      <parent>FL_hip</parent>
+      <child>FL_thigh</child>
+      <axis>
+        <xyz>0 1 0</xyz>
+        <limit>
+          <lower>-0.68600000000000005</lower>
+          <upper>4.5010000000000003</upper>
+          <effort>23.699999999999999</effort>
+          <velocity>30.100000000000001</velocity>
+        </limit>
+        <dynamics>
+          <damping>0</damping>
+          <friction>0</friction>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+      </axis>
+    </joint>
+    <link name='FL_thigh'>
+      <pose relative_to='FL_thigh_joint'>0 0 0 0 0 0</pose>
+      <inertial>
+        <pose>-0.0030472150644202181 -0.019314995044598611 -0.03050041625371655 0 0 0</pose>
+        <mass>1.0089999999999999</mass>
+        <inertia>
+          <ixx>0.0045987964610901466</ixx>
+          <ixy>6.1373912803924688e-05</ixy>
+          <ixz>-0.00022752911680967291</ixz>
+          <iyy>0.0046892240622995037</iyy>
+          <iyz>0.00061080828661791886</iyz>
+          <izz>0.00081744785689930629</izz>
+        </inertia>
+      </inertial>
+      <collision name='FL_thigh_collision'>
+        <pose>0 0 -0.1065 0 1.5707963267948966 0</pose>
+        <geometry>
+          <box>
+            <size>0.21299999999999999 0.024500000000000001 0.034000000000000002</size>
+          </box>
+        </geometry>
+        <surface>
+          <contact>
+            <ode>
+              <kp>1000000</kp>
+              <kd>1</kd>
+            </ode>
+          </contact>
+          <friction>
+            <ode>
+              <mu>0.20000000000000001</mu>
+              <mu2>0.20000000000000001</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <collision name='FL_thigh_fixed_joint_lump__FL_calf_rotor_collision_1'>
+        <pose>0 -0.032349999999999997 0 1.5707963267948959 0 0</pose>
+        <geometry>
+          <cylinder>
+            <length>0.02</length>
+            <radius>0.035000000000000003</radius>
+          </cylinder>
+        </geometry>
+      </collision>
+      <visual name='FL_thigh_visual'>
+        <pose>0 0 0 0 0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://go1/dae/thigh.dae</uri>
+          </mesh>
+        </geometry>
+        <material>
+          <diffuse>0.2 0.2 0.2 1</diffuse>
+          <ambient>0.2 0.2 0.2 1</ambient>
+        </material>
+      </visual>
+      <visual name='FL_thigh_fixed_joint_lump__FL_calf_rotor_visual_1'>
+        <pose>0 -0.032349999999999997 0 1.5707963267948959 0 0</pose>
+        <geometry>
+          <cylinder>
+            <length>0.02</length>
+            <radius>0.035000000000000003</radius>
+          </cylinder>
+        </geometry>
+        <material>
+          <diffuse>0 1 0 1</diffuse>
+          <ambient>0 1 0 1</ambient>
+        </material>
+      </visual>
+      <self_collide>true</self_collide>
+    </link>
+    <joint name='FL_calf_joint' type='revolute'>
+      <pose relative_to='FL_thigh'>0 0 -0.21299999999999999 0 0 0</pose>
+      <parent>FL_thigh</parent>
+      <child>FL_calf</child>
+      <axis>
+        <xyz>0 1 0</xyz>
+        <limit>
+          <lower>-2.8180000000000001</lower>
+          <upper>-0.88800000000000001</upper>
+          <effort>35.549999999999997</effort>
+          <velocity>20.059999999999999</velocity>
+        </limit>
+        <dynamics>
+          <damping>0</damping>
+          <friction>0</friction>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+      </axis>
+    </joint>
+    <link name='FL_calf'>
+      <pose relative_to='FL_calf_joint'>0 0 0 0 0 0</pose>
+      <inertial>
+        <pose>0.0061970000000000003 0.001408 -0.11669499999999999 0 0 0</pose>
+        <mass>0.13586200000000001</mass>
+        <inertia>
+          <ixx>0.001088793059</ixx>
+          <ixy>-2.55679e-07</ixy>
+          <ixz>7.1178139999999998e-06</ixz>
+          <iyy>0.0011004287479999999</iyy>
+          <iyz>2.0772639999999999e-06</iyz>
+          <izz>2.4787445999999998e-05</izz>
+        </inertia>
+      </inertial>
+      <collision name='FL_calf_collision'>
+        <pose>0 0 -0.1065 0 1.5707963267948966 0</pose>
+        <geometry>
+          <box>
+            <size>0.21299999999999999 0.016 0.016</size>
+          </box>
+        </geometry>
+        <surface>
+          <contact>
+            <ode/>
+          </contact>
+          <friction>
+            <ode>
+              <mu>0.20000000000000001</mu>
+              <mu2>0.20000000000000001</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name='FL_calf_visual'>
+        <pose>0 0 0 0 0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://go1/dae/calf.dae</uri>
+          </mesh>
+        </geometry>
+        <material>
+          <diffuse>0.2 0.2 0.2 1</diffuse>
+          <ambient>0.2 0.2 0.2 1</ambient>
+        </material>
+      </visual>
+      <sensor name='FL_foot_contact' type='contact'>
+        <update_rate>100</update_rate>
+        <contact>
+          <collision>FL_calf_fixed_joint_lump__FL_foot_collision_1</collision>
+          <topic>__default_topic__</topic>
+        </contact>
+      </sensor>
+      <self_collide>true</self_collide>
+    </link>
+    <joint name='FL_foot_fixed' type='fixed'>
+      <pose relative_to='FL_calf'>0 0 -0.21299999999999999 0 0 0</pose>
+      <parent>FL_calf</parent>
+      <child>FL_foot</child>
+      <axis>
+        <dynamics>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+        <xyz>0 0 1</xyz>
+        <limit>
+          <lower>-inf</lower>
+          <upper>inf</upper>
+        </limit>
+      </axis>
+      <physics>
+        <ode>
+          <limit>
+            <cfm>0</cfm>
+            <erp>0.20000000000000001</erp>
+          </limit>
+        </ode>
+      </physics>
+    </joint>
+    <link name='FL_foot'>
+      <pose relative_to='FL_foot_fixed'>0 0 0 0 0 0</pose>
+      <inertial>
+        <pose>0 0 0 0 0 0</pose>
+        <mass>0.059999999999999998</mass>
+        <inertia>
+          <ixx>9.6000000000000013e-06</ixx>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyy>9.6000000000000013e-06</iyy>
+          <iyz>0</iyz>
+          <izz>9.6000000000000013e-06</izz>
+        </inertia>
+      </inertial>
+      <collision name='FL_foot_collision'>
+        <pose>0 0 0 0 0 0</pose>
+        <geometry>
+          <sphere>
+            <radius>0.02</radius>
+          </sphere>
+        </geometry>
+        <surface>
+          <contact>
+            <ode>
+              <kp>1000000</kp>
+              <kd>1</kd>
+            </ode>
+          </contact>
+          <friction>
+            <ode>
+              <mu>0.59999999999999998</mu>
+              <mu2>0.59999999999999998</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name='FL_foot_visual'>
+        <pose>0 0 0 0 0 0</pose>
+        <geometry>
+          <sphere>
+            <radius>0.01</radius>
+          </sphere>
+        </geometry>
+        <material>
+          <diffuse>0.2 0.2 0.2 1</diffuse>
+          <ambient>0.2 0.2 0.2 1</ambient>
+        </material>
+      </visual>
+      <self_collide>true</self_collide>
+    </link>
+    <joint name='FR_hip_joint' type='revolute'>
+      <pose relative_to='trunk'>0.18809999999999999 -0.04675 0 0 0 0</pose>
+      <parent>trunk</parent>
+      <child>FR_hip</child>
+      <axis>
+        <xyz>1 0 0</xyz>
+        <limit>
+          <lower>-0.86299999999999999</lower>
+          <upper>0.86299999999999999</upper>
+          <effort>23.699999999999999</effort>
+          <velocity>30.100000000000001</velocity>
+        </limit>
+        <dynamics>
+          <damping>0</damping>
+          <friction>0</friction>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+      </axis>
+    </joint>
+    <link name='FR_hip'>
+      <pose relative_to='FR_hip_joint'>0 0 0 0 0 0</pose>
+      <inertial>
+        <pose>-0.0049165985294117639 0.0076261499999999991 -8.865e-05 0 0 0</pose>
+        <mass>0.67999999999999994</mass>
+        <inertia>
+          <ixx>0.0003993797857294</ixx>
+          <ixy>1.4590105668949999e-05</ixy>
+          <ixz>1.2460991185500001e-06</ixz>
+          <iyy>0.00073341939237609854</iyy>
+          <iyz>-1.5753255103e-06</iyz>
+          <izz>0.00046842209057609862</izz>
+        </inertia>
+      </inertial>
+      <collision name='FR_hip_collision'>
+        <pose>0 -0.080000000000000002 0 1.5707963267948959 0 0</pose>
+        <geometry>
+          <cylinder>
+            <length>0.040000000000000001</length>
+            <radius>0.045999999999999999</radius>
+          </cylinder>
+        </geometry>
+        <surface>
+          <contact>
+            <ode/>
+          </contact>
+          <friction>
+            <ode>
+              <mu>0.20000000000000001</mu>
+              <mu2>0.20000000000000001</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <collision name='FR_hip_fixed_joint_lump__FR_thigh_rotor_collision_1'>
+        <pose>0 0.00014999999999999999 0 1.5707963267948959 0 0</pose>
+        <geometry>
+          <cylinder>
+            <length>0.02</length>
+            <radius>0.035000000000000003</radius>
+          </cylinder>
+        </geometry>
+      </collision>
+      <visual name='FR_hip_visual'>
+        <pose>0 0 0 3.1415926535897931 0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://go1/dae/hip.dae</uri>
+          </mesh>
+        </geometry>
+        <material>
+          <diffuse>0.2 0.2 0.2 1</diffuse>
+          <ambient>0.2 0.2 0.2 1</ambient>
+        </material>
+      </visual>
+      <visual name='FR_hip_fixed_joint_lump__FR_thigh_rotor_visual_1'>
+        <pose>0 0.00014999999999999999 0 1.5707963267948959 0 0</pose>
+        <geometry>
+          <cylinder>
+            <length>0.02</length>
+            <radius>0.035000000000000003</radius>
+          </cylinder>
+        </geometry>
+        <material>
+          <diffuse>0 1 0 1</diffuse>
+          <ambient>0 1 0 1</ambient>
+        </material>
+      </visual>
+    </link>
+    <joint name='FR_thigh_joint' type='revolute'>
+      <pose relative_to='FR_hip'>0 -0.080000000000000002 0 0 0 0</pose>
+      <parent>FR_hip</parent>
+      <child>FR_thigh</child>
+      <axis>
+        <xyz>0 1 0</xyz>
+        <limit>
+          <lower>-0.68600000000000005</lower>
+          <upper>4.5010000000000003</upper>
+          <effort>23.699999999999999</effort>
+          <velocity>30.100000000000001</velocity>
+        </limit>
+        <dynamics>
+          <damping>0</damping>
+          <friction>0</friction>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+      </axis>
+    </joint>
+    <link name='FR_thigh'>
+      <pose relative_to='FR_thigh_joint'>0 0 0 0 0 0</pose>
+      <inertial>
+        <pose>-0.0030472150644202181 0.019314995044598611 -0.03050041625371655 0 0 0</pose>
+        <mass>1.0089999999999999</mass>
+        <inertia>
+          <ixx>0.0045987964610901466</ixx>
+          <ixy>-6.1373912803924688e-05</ixy>
+          <ixz>-0.00022752911680967291</ixz>
+          <iyy>0.0046892240622995037</iyy>
+          <iyz>-0.00061080828661791886</iyz>
+          <izz>0.00081744785689930629</izz>
+        </inertia>
+      </inertial>
+      <collision name='FR_thigh_collision'>
+        <pose>0 0 -0.1065 0 1.5707963267948966 0</pose>
+        <geometry>
+          <box>
+            <size>0.21299999999999999 0.024500000000000001 0.034000000000000002</size>
+          </box>
+        </geometry>
+        <surface>
+          <contact>
+            <ode>
+              <kp>1000000</kp>
+              <kd>1</kd>
+            </ode>
+          </contact>
+          <friction>
+            <ode>
+              <mu>0.20000000000000001</mu>
+              <mu2>0.20000000000000001</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <collision name='FR_thigh_fixed_joint_lump__FR_calf_rotor_collision_1'>
+        <pose>0 0.032349999999999997 0 1.5707963267948959 0 0</pose>
+        <geometry>
+          <cylinder>
+            <length>0.02</length>
+            <radius>0.035000000000000003</radius>
+          </cylinder>
+        </geometry>
+      </collision>
+      <visual name='FR_thigh_visual'>
+        <pose>0 0 0 0 0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://go1/dae/thigh_mirror.dae</uri>
+          </mesh>
+        </geometry>
+        <material>
+          <diffuse>0.2 0.2 0.2 1</diffuse>
+          <ambient>0.2 0.2 0.2 1</ambient>
+        </material>
+      </visual>
+      <visual name='FR_thigh_fixed_joint_lump__FR_calf_rotor_visual_1'>
+        <pose>0 0.032349999999999997 0 1.5707963267948959 0 0</pose>
+        <geometry>
+          <cylinder>
+            <length>0.02</length>
+            <radius>0.035000000000000003</radius>
+          </cylinder>
+        </geometry>
+        <material>
+          <diffuse>0 1 0 1</diffuse>
+          <ambient>0 1 0 1</ambient>
+        </material>
+      </visual>
+      <self_collide>true</self_collide>
+    </link>
+    <joint name='FR_calf_joint' type='revolute'>
+      <pose relative_to='FR_thigh'>0 0 -0.21299999999999999 0 0 0</pose>
+      <parent>FR_thigh</parent>
+      <child>FR_calf</child>
+      <axis>
+        <xyz>0 1 0</xyz>
+        <limit>
+          <lower>-2.8180000000000001</lower>
+          <upper>-0.88800000000000001</upper>
+          <effort>35.549999999999997</effort>
+          <velocity>20.059999999999999</velocity>
+        </limit>
+        <dynamics>
+          <damping>0</damping>
+          <friction>0</friction>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+      </axis>
+    </joint>
+    <link name='FR_calf'>
+      <pose relative_to='FR_calf_joint'>0 0 0 0 0 0</pose>
+      <inertial>
+        <pose>0.0061970000000000003 0.001408 -0.11669499999999999 0 0 0</pose>
+        <mass>0.13586200000000001</mass>
+        <inertia>
+          <ixx>0.001088793059</ixx>
+          <ixy>-2.55679e-07</ixy>
+          <ixz>7.1178139999999998e-06</ixz>
+          <iyy>0.0011004287479999999</iyy>
+          <iyz>2.0772639999999999e-06</iyz>
+          <izz>2.4787445999999998e-05</izz>
+        </inertia>
+      </inertial>
+      <collision name='FR_calf_collision'>
+        <pose>0 0 -0.1065 0 1.5707963267948966 0</pose>
+        <geometry>
+          <box>
+            <size>0.21299999999999999 0.016 0.016</size>
+          </box>
+        </geometry>
+        <surface>
+          <contact>
+            <ode/>
+          </contact>
+          <friction>
+            <ode>
+              <mu>0.20000000000000001</mu>
+              <mu2>0.20000000000000001</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name='FR_calf_visual'>
+        <pose>0 0 0 0 0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://go1/dae/calf.dae</uri>
+          </mesh>
+        </geometry>
+        <material>
+          <diffuse>0.2 0.2 0.2 1</diffuse>
+          <ambient>0.2 0.2 0.2 1</ambient>
+        </material>
+      </visual>
+      <sensor name='FR_foot_contact' type='contact'>
+        <update_rate>100</update_rate>
+        <contact>
+          <collision>FR_calf_fixed_joint_lump__FR_foot_collision_1</collision>
+          <topic>__default_topic__</topic>
+        </contact>
+      </sensor>
+      <self_collide>true</self_collide>
+    </link>
+    <joint name='FR_foot_fixed' type='fixed'>
+      <pose relative_to='FR_calf'>0 0 -0.21299999999999999 0 0 0</pose>
+      <parent>FR_calf</parent>
+      <child>FR_foot</child>
+      <axis>
+        <dynamics>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+        <xyz>0 0 1</xyz>
+        <limit>
+          <lower>-inf</lower>
+          <upper>inf</upper>
+        </limit>
+      </axis>
+      <physics>
+        <ode>
+          <limit>
+            <cfm>0</cfm>
+            <erp>0.20000000000000001</erp>
+          </limit>
+        </ode>
+      </physics>
+    </joint>
+    <link name='FR_foot'>
+      <pose relative_to='FR_foot_fixed'>0 0 0 0 0 0</pose>
+      <inertial>
+        <pose>0 0 0 0 0 0</pose>
+        <mass>0.059999999999999998</mass>
+        <inertia>
+          <ixx>9.6000000000000013e-06</ixx>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyy>9.6000000000000013e-06</iyy>
+          <iyz>0</iyz>
+          <izz>9.6000000000000013e-06</izz>
+        </inertia>
+      </inertial>
+      <collision name='FR_foot_collision'>
+        <pose>0 0 0 0 0 0</pose>
+        <geometry>
+          <sphere>
+            <radius>0.02</radius>
+          </sphere>
+        </geometry>
+        <surface>
+          <contact>
+            <ode>
+              <kp>1000000</kp>
+              <kd>1</kd>
+            </ode>
+          </contact>
+          <friction>
+            <ode>
+              <mu>0.59999999999999998</mu>
+              <mu2>0.59999999999999998</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name='FR_foot_visual'>
+        <pose>0 0 0 0 0 0</pose>
+        <geometry>
+          <sphere>
+            <radius>0.01</radius>
+          </sphere>
+        </geometry>
+        <material>
+          <diffuse>0.2 0.2 0.2 1</diffuse>
+          <ambient>0.2 0.2 0.2 1</ambient>
+        </material>
+      </visual>
+      <self_collide>true</self_collide>
+    </link>
+    <joint name='RL_hip_joint' type='revolute'>
+      <pose relative_to='trunk'>-0.18809999999999999 0.04675 0 0 0 0</pose>
+      <parent>trunk</parent>
+      <child>RL_hip</child>
+      <axis>
+        <xyz>1 0 0</xyz>
+        <limit>
+          <lower>-0.86299999999999999</lower>
+          <upper>0.86299999999999999</upper>
+          <effort>23.699999999999999</effort>
+          <velocity>30.100000000000001</velocity>
+        </limit>
+        <dynamics>
+          <damping>0</damping>
+          <friction>0</friction>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+      </axis>
+    </joint>
+    <link name='RL_hip'>
+      <pose relative_to='RL_hip_joint'>0 0 0 0 0 0</pose>
+      <inertial>
+        <pose>0.0049165985294117639 -0.0076261499999999991 -8.865e-05 0 0 0</pose>
+        <mass>0.67999999999999994</mass>
+        <inertia>
+          <ixx>0.0003993797857294</ixx>
+          <ixy>1.4590105668949999e-05</ixy>
+          <ixz>-1.2460991185500001e-06</ixz>
+          <iyy>0.00073341939237609854</iyy>
+          <iyz>1.5753255103e-06</iyz>
+          <izz>0.00046842209057609862</izz>
+        </inertia>
+      </inertial>
+      <collision name='RL_hip_collision'>
+        <pose>0 0.080000000000000002 0 1.5707963267948959 0 0</pose>
+        <geometry>
+          <cylinder>
+            <length>0.040000000000000001</length>
+            <radius>0.045999999999999999</radius>
+          </cylinder>
+        </geometry>
+        <surface>
+          <contact>
+            <ode/>
+          </contact>
+          <friction>
+            <ode>
+              <mu>0.20000000000000001</mu>
+              <mu2>0.20000000000000001</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <collision name='RL_hip_fixed_joint_lump__RL_thigh_rotor_collision_1'>
+        <pose>0 -0.00014999999999999999 0 1.5707963267948959 0 0</pose>
+        <geometry>
+          <cylinder>
+            <length>0.02</length>
+            <radius>0.035000000000000003</radius>
+          </cylinder>
+        </geometry>
+      </collision>
+      <visual name='RL_hip_visual'>
+        <pose>0 0 0 3.1415926535897931 1.224646799147353e-16 3.1415926535897931</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://go1/dae/hip.dae</uri>
+          </mesh>
+        </geometry>
+        <material>
+          <diffuse>0.2 0.2 0.2 1</diffuse>
+          <ambient>0.2 0.2 0.2 1</ambient>
+        </material>
+      </visual>
+      <visual name='RL_hip_fixed_joint_lump__RL_thigh_rotor_visual_1'>
+        <pose>0 -0.00014999999999999999 0 1.5707963267948959 0 0</pose>
+        <geometry>
+          <cylinder>
+            <length>0.02</length>
+            <radius>0.035000000000000003</radius>
+          </cylinder>
+        </geometry>
+        <material>
+          <diffuse>0 1 0 1</diffuse>
+          <ambient>0 1 0 1</ambient>
+        </material>
+      </visual>
+    </link>
+    <joint name='RL_thigh_joint' type='revolute'>
+      <pose relative_to='RL_hip'>0 0.080000000000000002 0 0 0 0</pose>
+      <parent>RL_hip</parent>
+      <child>RL_thigh</child>
+      <axis>
+        <xyz>0 1 0</xyz>
+        <limit>
+          <lower>-0.68600000000000005</lower>
+          <upper>4.5010000000000003</upper>
+          <effort>23.699999999999999</effort>
+          <velocity>30.100000000000001</velocity>
+        </limit>
+        <dynamics>
+          <damping>0</damping>
+          <friction>0</friction>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+      </axis>
+    </joint>
+    <link name='RL_thigh'>
+      <pose relative_to='RL_thigh_joint'>0 0 0 0 0 0</pose>
+      <inertial>
+        <pose>-0.0030472150644202181 -0.019314995044598611 -0.03050041625371655 0 0 0</pose>
+        <mass>1.0089999999999999</mass>
+        <inertia>
+          <ixx>0.0045987964610901466</ixx>
+          <ixy>6.1373912803924688e-05</ixy>
+          <ixz>-0.00022752911680967291</ixz>
+          <iyy>0.0046892240622995037</iyy>
+          <iyz>0.00061080828661791886</iyz>
+          <izz>0.00081744785689930629</izz>
+        </inertia>
+      </inertial>
+      <collision name='RL_thigh_collision'>
+        <pose>0 0 -0.1065 0 1.5707963267948966 0</pose>
+        <geometry>
+          <box>
+            <size>0.21299999999999999 0.024500000000000001 0.034000000000000002</size>
+          </box>
+        </geometry>
+        <surface>
+          <contact>
+            <ode>
+              <kp>1000000</kp>
+              <kd>1</kd>
+            </ode>
+          </contact>
+          <friction>
+            <ode>
+              <mu>0.20000000000000001</mu>
+              <mu2>0.20000000000000001</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <collision name='RL_thigh_fixed_joint_lump__RL_calf_rotor_collision_1'>
+        <pose>0 -0.032349999999999997 0 1.5707963267948959 0 0</pose>
+        <geometry>
+          <cylinder>
+            <length>0.02</length>
+            <radius>0.035000000000000003</radius>
+          </cylinder>
+        </geometry>
+      </collision>
+      <visual name='RL_thigh_visual'>
+        <pose>0 0 0 0 0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://go1/dae/thigh.dae</uri>
+          </mesh>
+        </geometry>
+        <material>
+          <diffuse>0.2 0.2 0.2 1</diffuse>
+          <ambient>0.2 0.2 0.2 1</ambient>
+        </material>
+      </visual>
+      <visual name='RL_thigh_fixed_joint_lump__RL_calf_rotor_visual_1'>
+        <pose>0 -0.032349999999999997 0 1.5707963267948959 0 0</pose>
+        <geometry>
+          <cylinder>
+            <length>0.02</length>
+            <radius>0.035000000000000003</radius>
+          </cylinder>
+        </geometry>
+        <material>
+          <diffuse>0 1 0 1</diffuse>
+          <ambient>0 1 0 1</ambient>
+        </material>
+      </visual>
+      <self_collide>true</self_collide>
+    </link>
+    <joint name='RL_calf_joint' type='revolute'>
+      <pose relative_to='RL_thigh'>0 0 -0.21299999999999999 0 0 0</pose>
+      <parent>RL_thigh</parent>
+      <child>RL_calf</child>
+      <axis>
+        <xyz>0 1 0</xyz>
+        <limit>
+          <lower>-2.8180000000000001</lower>
+          <upper>-0.88800000000000001</upper>
+          <effort>35.549999999999997</effort>
+          <velocity>20.059999999999999</velocity>
+        </limit>
+        <dynamics>
+          <damping>0</damping>
+          <friction>0</friction>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+      </axis>
+    </joint>
+    <link name='RL_calf'>
+      <pose relative_to='RL_calf_joint'>0 0 0 0 0 0</pose>
+      <inertial>
+        <pose>0.0061970000000000003 0.001408 -0.11669499999999999 0 0 0</pose>
+        <mass>0.13586200000000001</mass>
+        <inertia>
+          <ixx>0.001088793059</ixx>
+          <ixy>-2.55679e-07</ixy>
+          <ixz>7.1178139999999998e-06</ixz>
+          <iyy>0.0011004287479999999</iyy>
+          <iyz>2.0772639999999999e-06</iyz>
+          <izz>2.4787445999999998e-05</izz>
+        </inertia>
+      </inertial>
+      <collision name='RL_calf_collision'>
+        <pose>0 0 -0.1065 0 1.5707963267948966 0</pose>
+        <geometry>
+          <box>
+            <size>0.21299999999999999 0.016 0.016</size>
+          </box>
+        </geometry>
+        <surface>
+          <contact>
+            <ode/>
+          </contact>
+          <friction>
+            <ode>
+              <mu>0.20000000000000001</mu>
+              <mu2>0.20000000000000001</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name='RL_calf_visual'>
+        <pose>0 0 0 0 0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://go1/dae/calf.dae</uri>
+          </mesh>
+        </geometry>
+        <material>
+          <diffuse>0.2 0.2 0.2 1</diffuse>
+          <ambient>0.2 0.2 0.2 1</ambient>
+        </material>
+      </visual>
+      <sensor name='RL_foot_contact' type='contact'>
+        <update_rate>100</update_rate>
+        <contact>
+          <collision>RL_calf_fixed_joint_lump__RL_foot_collision_1</collision>
+          <topic>__default_topic__</topic>
+        </contact>
+      </sensor>
+      <self_collide>true</self_collide>
+    </link>
+    <joint name='RL_foot_fixed' type='fixed'>
+      <pose relative_to='RL_calf'>0 0 -0.21299999999999999 0 0 0</pose>
+      <parent>RL_calf</parent>
+      <child>RL_foot</child>
+      <axis>
+        <dynamics>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+        <xyz>0 0 1</xyz>
+        <limit>
+          <lower>-inf</lower>
+          <upper>inf</upper>
+        </limit>
+      </axis>
+      <physics>
+        <ode>
+          <limit>
+            <cfm>0</cfm>
+            <erp>0.20000000000000001</erp>
+          </limit>
+        </ode>
+      </physics>
+    </joint>
+    <link name='RL_foot'>
+      <pose relative_to='RL_foot_fixed'>0 0 0 0 0 0</pose>
+      <inertial>
+        <pose>0 0 0 0 0 0</pose>
+        <mass>0.059999999999999998</mass>
+        <inertia>
+          <ixx>9.6000000000000013e-06</ixx>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyy>9.6000000000000013e-06</iyy>
+          <iyz>0</iyz>
+          <izz>9.6000000000000013e-06</izz>
+        </inertia>
+      </inertial>
+      <collision name='RL_foot_collision'>
+        <pose>0 0 0 0 0 0</pose>
+        <geometry>
+          <sphere>
+            <radius>0.02</radius>
+          </sphere>
+        </geometry>
+        <surface>
+          <contact>
+            <ode>
+              <kp>1000000</kp>
+              <kd>1</kd>
+            </ode>
+          </contact>
+          <friction>
+            <ode>
+              <mu>0.59999999999999998</mu>
+              <mu2>0.59999999999999998</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name='RL_foot_visual'>
+        <pose>0 0 0 0 0 0</pose>
+        <geometry>
+          <sphere>
+            <radius>0.01</radius>
+          </sphere>
+        </geometry>
+        <material>
+          <diffuse>0.2 0.2 0.2 1</diffuse>
+          <ambient>0.2 0.2 0.2 1</ambient>
+        </material>
+      </visual>
+      <self_collide>true</self_collide>
+    </link>
+    <joint name='RR_hip_joint' type='revolute'>
+      <pose relative_to='trunk'>-0.18809999999999999 -0.04675 0 0 0 0</pose>
+      <parent>trunk</parent>
+      <child>RR_hip</child>
+      <axis>
+        <xyz>1 0 0</xyz>
+        <limit>
+          <lower>-0.86299999999999999</lower>
+          <upper>0.86299999999999999</upper>
+          <effort>23.699999999999999</effort>
+          <velocity>30.100000000000001</velocity>
+        </limit>
+        <dynamics>
+          <damping>0</damping>
+          <friction>0</friction>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+      </axis>
+    </joint>
+    <link name='RR_hip'>
+      <pose relative_to='RR_hip_joint'>0 0 0 0 0 0</pose>
+      <inertial>
+        <pose>0.0049165985294117639 0.0076261499999999991 -8.865e-05 0 0 0</pose>
+        <mass>0.67999999999999994</mass>
+        <inertia>
+          <ixx>0.0003993797857294</ixx>
+          <ixy>-1.4590105668949999e-05</ixy>
+          <ixz>-1.2460991185500001e-06</ixz>
+          <iyy>0.00073341939237609854</iyy>
+          <iyz>-1.5753255103e-06</iyz>
+          <izz>0.00046842209057609862</izz>
+        </inertia>
+      </inertial>
+      <collision name='RR_hip_collision'>
+        <pose>0 -0.080000000000000002 0 1.5707963267948959 0 0</pose>
+        <geometry>
+          <cylinder>
+            <length>0.040000000000000001</length>
+            <radius>0.045999999999999999</radius>
+          </cylinder>
+        </geometry>
+        <surface>
+          <contact>
+            <ode/>
+          </contact>
+          <friction>
+            <ode>
+              <mu>0.20000000000000001</mu>
+              <mu2>0.20000000000000001</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <collision name='RR_hip_fixed_joint_lump__RR_thigh_rotor_collision_1'>
+        <pose>0 0.00014999999999999999 0 1.5707963267948959 0 0</pose>
+        <geometry>
+          <cylinder>
+            <length>0.02</length>
+            <radius>0.035000000000000003</radius>
+          </cylinder>
+        </geometry>
+      </collision>
+      <visual name='RR_hip_visual'>
+        <pose>0 0 0 -1.224646799147353e-16 1.224646799147353e-16 3.1415926535897931</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://go1/dae/hip.dae</uri>
+          </mesh>
+        </geometry>
+        <material>
+          <diffuse>0.2 0.2 0.2 1</diffuse>
+          <ambient>0.2 0.2 0.2 1</ambient>
+        </material>
+      </visual>
+      <visual name='RR_hip_fixed_joint_lump__RR_thigh_rotor_visual_1'>
+        <pose>0 0.00014999999999999999 0 1.5707963267948959 0 0</pose>
+        <geometry>
+          <cylinder>
+            <length>0.02</length>
+            <radius>0.035000000000000003</radius>
+          </cylinder>
+        </geometry>
+        <material>
+          <diffuse>0 1 0 1</diffuse>
+          <ambient>0 1 0 1</ambient>
+        </material>
+      </visual>
+    </link>
+    <joint name='RR_thigh_joint' type='revolute'>
+      <pose relative_to='RR_hip'>0 -0.080000000000000002 0 0 0 0</pose>
+      <parent>RR_hip</parent>
+      <child>RR_thigh</child>
+      <axis>
+        <xyz>0 1 0</xyz>
+        <limit>
+          <lower>-0.68600000000000005</lower>
+          <upper>4.5010000000000003</upper>
+          <effort>23.699999999999999</effort>
+          <velocity>30.100000000000001</velocity>
+        </limit>
+        <dynamics>
+          <damping>0</damping>
+          <friction>0</friction>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+      </axis>
+    </joint>
+    <link name='RR_thigh'>
+      <pose relative_to='RR_thigh_joint'>0 0 0 0 0 0</pose>
+      <inertial>
+        <pose>-0.0030472150644202181 0.019314995044598611 -0.03050041625371655 0 0 0</pose>
+        <mass>1.0089999999999999</mass>
+        <inertia>
+          <ixx>0.0045987964610901466</ixx>
+          <ixy>-6.1373912803924688e-05</ixy>
+          <ixz>-0.00022752911680967291</ixz>
+          <iyy>0.0046892240622995037</iyy>
+          <iyz>-0.00061080828661791886</iyz>
+          <izz>0.00081744785689930629</izz>
+        </inertia>
+      </inertial>
+      <collision name='RR_thigh_collision'>
+        <pose>0 0 -0.1065 0 1.5707963267948966 0</pose>
+        <geometry>
+          <box>
+            <size>0.21299999999999999 0.024500000000000001 0.034000000000000002</size>
+          </box>
+        </geometry>
+        <surface>
+          <contact>
+            <ode>
+              <kp>1000000</kp>
+              <kd>1</kd>
+            </ode>
+          </contact>
+          <friction>
+            <ode>
+              <mu>0.20000000000000001</mu>
+              <mu2>0.20000000000000001</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <collision name='RR_thigh_fixed_joint_lump__RR_calf_rotor_collision_1'>
+        <pose>0 0.032349999999999997 0 1.5707963267948959 0 0</pose>
+        <geometry>
+          <cylinder>
+            <length>0.02</length>
+            <radius>0.035000000000000003</radius>
+          </cylinder>
+        </geometry>
+      </collision>
+      <visual name='RR_thigh_visual'>
+        <pose>0 0 0 0 0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://go1/dae/thigh_mirror.dae</uri>
+          </mesh>
+        </geometry>
+        <material>
+          <diffuse>0.2 0.2 0.2 1</diffuse>
+          <ambient>0.2 0.2 0.2 1</ambient>
+        </material>
+      </visual>
+      <visual name='RR_thigh_fixed_joint_lump__RR_calf_rotor_visual_1'>
+        <pose>0 0.032349999999999997 0 1.5707963267948959 0 0</pose>
+        <geometry>
+          <cylinder>
+            <length>0.02</length>
+            <radius>0.035000000000000003</radius>
+          </cylinder>
+        </geometry>
+        <material>
+          <diffuse>0 1 0 1</diffuse>
+          <ambient>0 1 0 1</ambient>
+        </material>
+      </visual>
+      <self_collide>true</self_collide>
+    </link>
+    <joint name='RR_calf_joint' type='revolute'>
+      <pose relative_to='RR_thigh'>0 0 -0.21299999999999999 0 0 0</pose>
+      <parent>RR_thigh</parent>
+      <child>RR_calf</child>
+      <axis>
+        <xyz>0 1 0</xyz>
+        <limit>
+          <lower>-2.8180000000000001</lower>
+          <upper>-0.88800000000000001</upper>
+          <effort>35.549999999999997</effort>
+          <velocity>20.059999999999999</velocity>
+        </limit>
+        <dynamics>
+          <damping>0</damping>
+          <friction>0</friction>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+      </axis>
+    </joint>
+    <link name='RR_calf'>
+      <pose relative_to='RR_calf_joint'>0 0 0 0 0 0</pose>
+      <inertial>
+        <pose>0.0061970000000000003 0.001408 -0.11669499999999999 0 0 0</pose>
+        <mass>0.13586200000000001</mass>
+        <inertia>
+          <ixx>0.001088793059</ixx>
+          <ixy>-2.55679e-07</ixy>
+          <ixz>7.1178139999999998e-06</ixz>
+          <iyy>0.0011004287479999999</iyy>
+          <iyz>2.0772639999999999e-06</iyz>
+          <izz>2.4787445999999998e-05</izz>
+        </inertia>
+      </inertial>
+      <collision name='RR_calf_collision'>
+        <pose>0 0 -0.1065 0 1.5707963267948966 0</pose>
+        <geometry>
+          <box>
+            <size>0.21299999999999999 0.016 0.016</size>
+          </box>
+        </geometry>
+        <surface>
+          <contact>
+            <ode/>
+          </contact>
+          <friction>
+            <ode>
+              <mu>0.20000000000000001</mu>
+              <mu2>0.20000000000000001</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name='RR_calf_visual'>
+        <pose>0 0 0 0 0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://go1/dae/calf.dae</uri>
+          </mesh>
+        </geometry>
+        <material>
+          <diffuse>0.2 0.2 0.2 1</diffuse>
+          <ambient>0.2 0.2 0.2 1</ambient>
+        </material>
+      </visual>
+      <sensor name='RR_foot_contact' type='contact'>
+        <update_rate>100</update_rate>
+        <contact>
+          <collision>RR_calf_fixed_joint_lump__RR_foot_collision_1</collision>
+          <topic>__default_topic__</topic>
+        </contact>
+      </sensor>
+      <self_collide>true</self_collide>
+    </link>
+    <joint name='RR_foot_fixed' type='fixed'>
+      <pose relative_to='RR_calf'>0 0 -0.21299999999999999 0 0 0</pose>
+      <parent>RR_calf</parent>
+      <child>RR_foot</child>
+      <axis>
+        <dynamics>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+        <xyz>0 0 1</xyz>
+        <limit>
+          <lower>-inf</lower>
+          <upper>inf</upper>
+        </limit>
+      </axis>
+      <physics>
+        <ode>
+          <limit>
+            <cfm>0</cfm>
+            <erp>0.20000000000000001</erp>
+          </limit>
+        </ode>
+      </physics>
+    </joint>
+    <link name='RR_foot'>
+      <pose relative_to='RR_foot_fixed'>0 0 0 0 0 0</pose>
+      <inertial>
+        <pose>0 0 0 0 0 0</pose>
+        <mass>0.059999999999999998</mass>
+        <inertia>
+          <ixx>9.6000000000000013e-06</ixx>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyy>9.6000000000000013e-06</iyy>
+          <iyz>0</iyz>
+          <izz>9.6000000000000013e-06</izz>
+        </inertia>
+      </inertial>
+      <collision name='RR_foot_collision'>
+        <pose>0 0 0 0 0 0</pose>
+        <geometry>
+          <sphere>
+            <radius>0.02</radius>
+          </sphere>
+        </geometry>
+        <surface>
+          <contact>
+            <ode>
+              <kp>1000000</kp>
+              <kd>1</kd>
+            </ode>
+          </contact>
+          <friction>
+            <ode>
+              <mu>0.59999999999999998</mu>
+              <mu2>0.59999999999999998</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name='RR_foot_visual'>
+        <pose>0 0 0 0 0 0</pose>
+        <geometry>
+          <sphere>
+            <radius>0.01</radius>
+          </sphere>
+        </geometry>
+        <material>
+          <diffuse>0.2 0.2 0.2 1</diffuse>
+          <ambient>0.2 0.2 0.2 1</ambient>
+        </material>
+      </visual>
+      <self_collide>true</self_collide>
+    </link>
+    <joint name='imu_joint' type='fixed'>
+      <pose relative_to='trunk'>-0.01592 -0.066589999999999996 -0.0061700000000000001 0 0 0</pose>
+      <parent>trunk</parent>
+      <child>imu::link</child>
+      <axis>
+        <dynamics>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+        <xyz>0 0 1</xyz>
+        <limit>
+          <lower>-inf</lower>
+          <upper>inf</upper>
+        </limit>
+      </axis>
+      <physics>
+        <ode>
+          <limit>
+            <cfm>0</cfm>
+            <erp>0.20000000000000001</erp>
+          </limit>
+        </ode>
+      </physics>
+    </joint>
+    <frame name='FL_hip_rotor_joint' attached_to='trunk'>
+      <pose>0.11215 0.04675 0 0 0 0</pose>
+    </frame>
+    <frame name='FL_hip_rotor' attached_to='FL_hip_rotor_joint'>
+      <pose>0 0 0 0 0 0</pose>
+    </frame>
+    <frame name='FR_hip_rotor_joint' attached_to='trunk'>
+      <pose>0.11215 -0.04675 0 0 0 0</pose>
+    </frame>
+    <frame name='FR_hip_rotor' attached_to='FR_hip_rotor_joint'>
+      <pose>0 0 0 0 0 0</pose>
+    </frame>
+    <frame name='RL_hip_rotor_joint' attached_to='trunk'>
+      <pose>-0.11215 0.04675 0 0 0 0</pose>
+    </frame>
+    <frame name='RL_hip_rotor' attached_to='RL_hip_rotor_joint'>
+      <pose>0 0 0 0 0 0</pose>
+    </frame>
+    <frame name='RR_hip_rotor_joint' attached_to='trunk'>
+      <pose>-0.11215 -0.04675 0 0 0 0</pose>
+    </frame>
+    <frame name='RR_hip_rotor' attached_to='RR_hip_rotor_joint'>
+      <pose>0 0 0 0 0 0</pose>
+    </frame>
+    <frame name='camera_optical_joint_chin' attached_to='camera_chin'>
+      <pose>0 0 0 -1.5707963267948959 -5.5511151231257827e-17 -1.5707963267948959</pose>
+    </frame>
+    <frame name='camera_optical_chin' attached_to='camera_optical_joint_chin'>
+      <pose>0 0 0 0 0 0</pose>
+    </frame>
+    <frame name='camera_joint_chin' attached_to='trunk'>
+      <pose>0.25219999999999998 0.012500000000000001 -0.0436 3.1415926535897931 1.5707963267948966 0</pose>
+    </frame>
+    <frame name='camera_chin' attached_to='camera_joint_chin'>
+      <pose>0 0 0 0 0 0</pose>
+    </frame>
+    <frame name='camera_optical_joint_face' attached_to='camera_face'>
+      <pose>0 0 0 -1.5707963267948959 -5.5511151231257827e-17 -1.5707963267948959</pose>
+    </frame>
+    <frame name='camera_optical_face' attached_to='camera_optical_joint_face'>
+      <pose>0 0 0 0 0 0</pose>
+    </frame>
+    <frame name='camera_joint_face' attached_to='trunk'>
+      <pose>0.27850000000000003 0.012500000000000001 0.0167 3.1415926535897931 0 0</pose>
+    </frame>
+    <frame name='camera_face' attached_to='camera_joint_face'>
+      <pose>0 0 0 0 0 0</pose>
+    </frame>
+    <frame name='camera_laserscan_joint_left' attached_to='camera_left'>
+      <pose>0 0 0 0 0.26180000000000031 0</pose>
+    </frame>
+    <frame name='camera_laserscan_link_left' attached_to='camera_laserscan_joint_left'>
+      <pose>0 0 0 0 0 0</pose>
+    </frame>
+    <frame name='camera_optical_joint_left' attached_to='camera_left'>
+      <pose>0 0 0 -1.5707963267948959 -5.5511151231257827e-17 -1.5707963267948959</pose>
+    </frame>
+    <frame name='camera_optical_left' attached_to='camera_optical_joint_left'>
+      <pose>0 0 0 0 0 0</pose>
+    </frame>
+    <frame name='camera_joint_left' attached_to='trunk'>
+      <pose>-0.066000000000000003 0.082000000000000003 -0.017600000000000001 3.1415926535897931 0.26179999999999998 1.5707963267948957</pose>
+    </frame>
+    <frame name='camera_left' attached_to='camera_joint_left'>
+      <pose>0 0 0 0 0 0</pose>
+    </frame>
+    <frame name='camera_optical_joint_rearDown' attached_to='camera_rearDown'>
+      <pose>0 0 0 -1.5707963267948959 -5.5511151231257827e-17 -1.5707963267948959</pose>
+    </frame>
+    <frame name='camera_optical_rearDown' attached_to='camera_optical_joint_rearDown'>
+      <pose>0 0 0 0 0 0</pose>
+    </frame>
+    <frame name='camera_joint_rearDown' attached_to='trunk'>
+      <pose>-0.082500000000000004 0.012500000000000001 -0.043650000000000001 3.1415926535897931 1.5707963267948966 0</pose>
+    </frame>
+    <frame name='camera_rearDown' attached_to='camera_joint_rearDown'>
+      <pose>0 0 0 0 0 0</pose>
+    </frame>
+    <frame name='camera_laserscan_joint_right' attached_to='camera_right'>
+      <pose>0 0 0 0 0.26180000000000031 0</pose>
+    </frame>
+    <frame name='camera_laserscan_link_right' attached_to='camera_laserscan_joint_right'>
+      <pose>0 0 0 0 0 0</pose>
+    </frame>
+    <frame name='camera_optical_joint_right' attached_to='camera_right'>
+      <pose>0 0 0 -1.5707963267948959 -5.5511151231257827e-17 -1.5707963267948959</pose>
+    </frame>
+    <frame name='camera_optical_right' attached_to='camera_optical_joint_right'>
+      <pose>0 0 0 0 0 0</pose>
+    </frame>
+    <frame name='camera_joint_right' attached_to='trunk'>
+      <pose>-0.041000000000000002 -0.082000000000000003 -0.017600000000000001 3.1415926535897931 0.26179999999999998 -1.570796326794897</pose>
+    </frame>
+    <frame name='camera_right' attached_to='camera_joint_right'>
+      <pose>0 0 0 0 0 0</pose>
+    </frame>
+    <frame name='ultraSound_joint_face' attached_to='trunk'>
+      <pose>0.2747 0 -0.0088000000000000005 0 0 0</pose>
+    </frame>
+    <frame name='ultraSound_face' attached_to='ultraSound_joint_face'>
+      <pose>0 0 0 0 0 0</pose>
+    </frame>
+    <frame name='ultraSound_joint_left' attached_to='trunk'>
+      <pose>-0.053499999999999999 0.082600000000000007 0.0086800000000000002 0 0.26179999999999998 1.570796326794897</pose>
+    </frame>
+    <frame name='ultraSound_left' attached_to='ultraSound_joint_left'>
+      <pose>0 0 0 0 0 0</pose>
+    </frame>
+    <frame name='ultraSound_joint_right' attached_to='trunk'>
+      <pose>-0.053499999999999999 -0.082600000000000007 0.0086800000000000002 0 0.26179999999999998 -1.570796326794897</pose>
+    </frame>
+    <frame name='ultraSound_right' attached_to='ultraSound_joint_right'>
+      <pose>0 0 0 0 0 0</pose>
+    </frame>
+    <frame name='FL_thigh_rotor_joint' attached_to='FL_hip'>
+      <pose>0 -0.00014999999999999999 0 0 0 0</pose>
+    </frame>
+    <frame name='FL_thigh_rotor' attached_to='FL_thigh_rotor_joint'>
+      <pose>0 0 0 0 0 0</pose>
+    </frame>
+    <frame name='FL_calf_rotor_joint' attached_to='FL_thigh'>
+      <pose>0 -0.032349999999999997 0 0 0 0</pose>
+    </frame>
+    <frame name='FL_calf_rotor' attached_to='FL_calf_rotor_joint'>
+      <pose>0 0 0 0 0 0</pose>
+    </frame>
+    <frame name='FR_thigh_rotor_joint' attached_to='FR_hip'>
+      <pose>0 0.00014999999999999999 0 0 0 0</pose>
+    </frame>
+    <frame name='FR_thigh_rotor' attached_to='FR_thigh_rotor_joint'>
+      <pose>0 0 0 0 0 0</pose>
+    </frame>
+    <frame name='FR_calf_rotor_joint' attached_to='FR_thigh'>
+      <pose>0 0.032349999999999997 0 0 0 0</pose>
+    </frame>
+    <frame name='FR_calf_rotor' attached_to='FR_calf_rotor_joint'>
+      <pose>0 0 0 0 0 0</pose>
+    </frame>
+    <frame name='RL_thigh_rotor_joint' attached_to='RL_hip'>
+      <pose>0 -0.00014999999999999999 0 0 0 0</pose>
+    </frame>
+    <frame name='RL_thigh_rotor' attached_to='RL_thigh_rotor_joint'>
+      <pose>0 0 0 0 0 0</pose>
+    </frame>
+    <frame name='RL_calf_rotor_joint' attached_to='RL_thigh'>
+      <pose>0 -0.032349999999999997 0 0 0 0</pose>
+    </frame>
+    <frame name='RL_calf_rotor' attached_to='RL_calf_rotor_joint'>
+      <pose>0 0 0 0 0 0</pose>
+    </frame>
+    <frame name='RR_thigh_rotor_joint' attached_to='RR_hip'>
+      <pose>0 0.00014999999999999999 0 0 0 0</pose>
+    </frame>
+    <frame name='RR_thigh_rotor' attached_to='RR_thigh_rotor_joint'>
+      <pose>0 0 0 0 0 0</pose>
+    </frame>
+    <frame name='RR_calf_rotor_joint' attached_to='RR_thigh'>
+      <pose>0 0.032349999999999997 0 0 0 0</pose>
+    </frame>
+    <frame name='RR_calf_rotor' attached_to='RR_calf_rotor_joint'>
+      <pose>0 0 0 0 0 0</pose>
+    </frame>
+    <!-- Publish imu sensor readings -->
+    <include>
+      <uri>model://imu</uri>
+      <name>imu</name>
+      <pose>0 0 0 0 0 0 </pose>
+    </include>
+
+    <!-- Setup ros control -->
+    <plugin 
+        filename="libgz_ros2_control-system.so"
+        name="gz_ros2_control::GazeboSimROS2ControlPlugin">
+        <controlPeriod>0.002</controlPeriod>
+        <parameters>$(arg controller_config_path)</parameters>
+            <ros>
+              <namespace>$(arg namespace)</namespace>
+          </ros>
+    </plugin>
+
+    <!-- Publish ground truth state data -->
+    <plugin filename="libground_truth_estimator.so" name="ground_truth_estimator">
+      <updateRateHZ>500.0</updateRateHZ>
+      <ground_truth_state_topic>state/ground_truth</ground_truth_state_topic>
+      <ground_truth_body_frame_topic>state/ground_truth_body_frame</ground_truth_body_frame_topic>
+      <parameters>$(arg controller_config_path)</parameters>
+      <ros>
+        <parameter name="use_sim_time">true</parameter>
+      </ros>
+    </plugin>
+  </model>
+</sdf>

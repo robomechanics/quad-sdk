@@ -3,6 +3,7 @@ $HOME/ros2_ws/install/gazebo_scripts/share/gazebo_scripts/models:\
 $HOME/ros2_ws/install/gazebo_scripts/share/gazebo_scripts/worlds:\
 $HOME/ros2_ws/install/spirit_description/share/spirit_description/models:\
 $HOME/ros2_ws/install/a1_description/share/a1_description/models:\
+$HOME/ros2_ws/install/go1_description/share/go1_description/models:\
 $HOME/ros2_ws/install/go2_description/share/go2_description/models:\
 $HOME/ros2_ws/install/go2w_description/share/go2w_description/models:\
 $HOME/ros2_ws/install/sensor_description/share/sensor_description/models:\
