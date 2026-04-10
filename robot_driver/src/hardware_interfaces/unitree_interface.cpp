@@ -6,7 +6,7 @@ constexpr int
 UnitreeInterface::UnitreeInterface() : HardwareInterface() {}
 
 void UnitreeInterface::loadInterface(int /*argc*/, char** /*argv*/) {
-  std::string net_iface = "eth0";
+  std::string net_iface = "enP8p1s0";
 
   unitree::robot::ChannelFactory::Instance()->Init(0,
                                                    net_iface);
