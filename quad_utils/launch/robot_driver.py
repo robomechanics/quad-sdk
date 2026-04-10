@@ -47,9 +47,9 @@ def load_robot_params(context, *args, **kwargs):
 def generate_launch_description():
 
     robot_type = DeclareLaunchArgument('robot_type', default_value='go2')
-    mocap = DeclareLaunchArgument('mocap', default_value='false')
+    mocap = DeclareLaunchArgument('mocap', default_value='true')
     logging = DeclareLaunchArgument('logging', default_value='false')
-    controller = DeclareLaunchArgument('controller', default_value='inverse_dynamics')
+    controller = DeclareLaunchArgument('controller', default_value='learned')
     model_path = DeclareLaunchArgument('model_path', default_value='./policies/models/***')
     provider = DeclareLaunchArgument('provider', default_value = "tensorrt")
     estimator = DeclareLaunchArgument('estimator', default_value="comp_filter")

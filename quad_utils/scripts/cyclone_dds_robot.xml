@@ -1,9 +1,11 @@
 <CycloneDDS>
-    <!-- ROS 2 domain: communicate with remote computer over eth1 -->
+    <!-- ROS 2 domain: communicate with remote computer over the 192.168.8.0/24 subnet.
+         ROBOT_ROS_IP is set by init_robot.sh based on whichever interface has
+         an address on that subnet, so this survives DHCP renewals and dongle swaps. -->
     <Domain Id="42">
         <General>
             <Interfaces>
-                <NetworkInterface address="192.168.8.18"/>
+                <NetworkInterface address="${ROBOT_ROS_IP}"/>
             </Interfaces>
         </General>
         <Discovery>
@@ -14,11 +16,12 @@
         </Discovery>
     </Domain>
 
-    <!-- Unitree SDK domain: communicate with MCU over eth0 -->
+    <!-- Unitree SDK domain: communicate with MCU (192.168.123.161) over the
+         192.168.123.0/24 subnet. ROBOT_MCU_IP is set by init_robot.sh. -->
     <Domain Id="0">
         <General>
             <Interfaces>
-                <NetworkInterface address="192.168.123.222"/>
+                <NetworkInterface address="${ROBOT_MCU_IP}"/>
             </Interfaces>
         </General>
         <Discovery>

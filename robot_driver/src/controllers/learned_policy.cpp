@@ -38,8 +38,11 @@ void LearnedPolicy::loadONNXModel() {
   /// Try loading and Initalizing an Onnx Runtime Session
   try {
     so_.SetGraphOptimizationLevel(GraphOptimizationLevel::ORT_ENABLE_ALL);
-    // For GPU
-    // OrtSessionOptionsAppendExecutionProvider_CUDA(session_options_, 0);
+
+    // Enable CUDA execution provider for GPU inference.
+    OrtCUDAProviderOptions cuda_options{};
+    cuda_options.device_id = 0;
+    so_.AppendExecutionProvider_CUDA(cuda_options);
 
     if (!std::filesystem::exists(model_path_)) {
       RCLCPP_ERROR(node_->get_logger(), "ONNX file not found: %s",
