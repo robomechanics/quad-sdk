@@ -64,6 +64,7 @@ def launch_visualization_plugins(context, *args, **kwargs):
     desc_pkg_map = {
         'spirit': 'spirit_description',
         'a1': 'a1_description',
+        'go1': 'go1_description',
         'go2': 'go2_description',
         'go2w': 'go2w_description',
         'b2': 'b2_description',

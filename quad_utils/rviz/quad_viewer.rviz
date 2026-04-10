@@ -74,207 +74,6 @@ Visualization Manager:
         Reliability Policy: Reliable
         Value: /robot_1/robot_description
       Enabled: true
-      Links:
-        All Links Enabled: true
-        Expand Joint Details: false
-        Expand Link Details: false
-        Expand Tree: false
-        Head_lower:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        Head_upper:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        Link Tree Style: Links in Alphabetic Order
-        body:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        front_camera:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-        hip0:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        hip0_rotor:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-        hip1:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        hip1_rotor:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-        hip2:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        hip2_rotor:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-        hip3:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        hip3_rotor:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-        imu:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-        lower0:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        lower0_lower:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        lower0_lower1:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        lower0_rotor:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-        lower1:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        lower1_lower:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        lower1_lower1:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        lower1_rotor:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-        lower2:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        lower2_lower:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        lower2_lower1:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        lower2_rotor:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-        lower3:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        lower3_lower:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        lower3_lower1:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        lower3_rotor:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-        radar:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-        toe0:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        toe1:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        toe2:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        toe3:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        upper0:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        upper0_rotor:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-        upper1:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        upper1_rotor:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-        upper2:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        upper2_rotor:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-        upper3:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        upper3_rotor:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
       Mass Properties:
         Inertia: false
         Mass: false
@@ -295,12 +94,6 @@ Visualization Manager:
         Reliability Policy: Reliable
         Value: ""
       Enabled: false
-      Links:
-        All Links Enabled: true
-        Expand Joint Details: false
-        Expand Link Details: false
-        Expand Tree: false
-        Link Tree Style: Links in Alphabetic Order
       Mass Properties:
         Inertia: false
         Mass: false
@@ -321,12 +114,6 @@ Visualization Manager:
         Reliability Policy: Reliable
         Value: ""
       Enabled: false
-      Links:
-        All Links Enabled: true
-        Expand Joint Details: false
-        Expand Link Details: false
-        Expand Tree: false
-        Link Tree Style: Links in Alphabetic Order
       Mass Properties:
         Inertia: false
         Mass: false
@@ -347,12 +134,6 @@ Visualization Manager:
         Reliability Policy: Reliable
         Value: ""
       Enabled: false
-      Links:
-        All Links Enabled: true
-        Expand Joint Details: false
-        Expand Link Details: false
-        Expand Tree: false
-        Link Tree Style: Links in Alphabetic Order
       Mass Properties:
         Inertia: false
         Mass: false

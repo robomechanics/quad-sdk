@@ -100,6 +100,7 @@ RVizInterface::RVizInterface(rclcpp::Node::SharedPtr node) : node_(node) {
                            trajectory_state_trace_viz_topic);
 
   // Setup rviz interface parameters
+  node_->declare_parameter<std::string>("body.frame");
   node_->declare_parameter<std::string>("map_frame");
   node_->declare_parameter<double>("rviz_interface.update_rate");
   node_->declare_parameter<std::vector<int>>(
@@ -113,6 +114,7 @@ RVizInterface::RVizInterface(rclcpp::Node::SharedPtr node) : node_(node) {
   node_->declare_parameter<std::vector<int>>(
       "rviz_interface.colors.individual_grf");
 
+  quad_utils::loadROSParam(node_, "body.frame", body_frame_);
   quad_utils::loadROSParam(node_, "map_frame", map_frame_);
   quad_utils::loadROSParam(node_, "rviz_interface.update_rate", update_rate_);
   quad_utils::loadROSParam(node_, "rviz_interface.colors.front_left",
@@ -623,7 +625,8 @@ void RVizInterface::robotStateCallback(
   quad_utils::pointMsgToEigen(msg->body.pose.position, current_pos);
 
   if (pub_id == ESTIMATE) {
-    transformStamped.child_frame_id = tf_prefix_ + "_estimate/body";
+    transformStamped.child_frame_id =
+        tf_prefix_ + "_estimate/" + body_frame_;
     estimate_base_tf_br_->sendTransform(transformStamped);
     estimate_joint_states_viz_pub_->publish(joint_msg);
 
@@ -644,7 +647,8 @@ void RVizInterface::robotStateCallback(
     state_estimate_trace_pub_->publish(state_estimate_trace_msg_);
 
   } else if (pub_id == GROUND_TRUTH) {
-    transformStamped.child_frame_id = tf_prefix_ + "_ground_truth/body";
+    transformStamped.child_frame_id =
+        tf_prefix_ + "_ground_truth/" + body_frame_;
 
     ground_truth_base_tf_br_->sendTransform(transformStamped);
     ground_truth_joint_states_viz_pub_->publish(joint_msg);
@@ -667,7 +671,8 @@ void RVizInterface::robotStateCallback(
     ground_truth_state_trace_pub_->publish(ground_truth_state_trace_msg_);
 
   } else if (pub_id == TRAJECTORY) {
-    transformStamped.child_frame_id = tf_prefix_ + "_trajectory/body";
+    transformStamped.child_frame_id =
+        tf_prefix_ + "_trajectory/" + body_frame_;
     trajectory_base_tf_br_->sendTransform(transformStamped);
     trajectory_joint_states_viz_pub_->publish(joint_msg);
 

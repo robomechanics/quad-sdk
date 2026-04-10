@@ -229,6 +229,9 @@ class RVizInterface {
   /// Handle for the map frame
   std::string map_frame_;
 
+  /// Root link name for the robot model
+  std::string body_frame_;
+
   /// Handle multiple robots
   std::string tf_prefix_;
 
