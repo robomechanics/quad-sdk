@@ -48,11 +48,9 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="package://go1_description/models/go1/meshes/trunk.dae" scale="1 1 1"/>
+        <mesh filename="package://go1_description/models/go1/dae/trunk.dae" scale="1 1 1"/>
       </geometry>
-      <material name="">
-        <color rgba="1.0 0.4235294117647059 0.0392156862745098 1.0"/>
-      </material>
+      <!-- <material name="orange"/> -->
     </visual>
     <collision>
       <origin rpy="0 0 0" xyz="0 0 0"/>
@@ -108,11 +106,9 @@
     <visual>
       <origin rpy="3.141592653589793 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="package://go1_description/models/go1/meshes/hip.dae" scale="1 1 1"/>
+        <mesh filename="package://go1_description/models/go1/dae/hip.dae" scale="1 1 1"/>
       </geometry>
-      <material name="">
-        <color rgba="1.0 0.4235294117647059 0.0392156862745098 1.0"/>
-      </material>
+      <!-- <material name="orange"/> -->
     </visual>
     <collision>
       <origin rpy="1.5707963267948966 0 0" xyz="0 -0.08 0"/>
@@ -132,9 +128,7 @@
       <geometry>
         <cylinder length="0.02" radius="0.035"/>
       </geometry>
-      <material name="">
-        <color rgba="0.0 0.8 0.0 1.0"/>
-      </material>
+      <material name="green"/>
     </visual>
     <collision>
       <origin rpy="0 1.5707963267948966 0" xyz="0 0 0"/>
@@ -165,11 +159,9 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="package://go1_description/models/go1/meshes/thigh_mirror.dae" scale="1 1 1"/>
+        <mesh filename="package://go1_description/models/go1/dae/thigh_mirror.dae" scale="1 1 1"/>
       </geometry>
-      <material name="">
-        <color rgba="1.0 0.4235294117647059 0.0392156862745098 1.0"/>
-      </material>
+      <!-- <material name="orange"/> -->
     </visual>
     <collision>
       <origin rpy="0 1.5707963267948966 0" xyz="0 0 -0.1065"/>
@@ -189,9 +181,7 @@
       <geometry>
         <cylinder length="0.02" radius="0.035"/>
       </geometry>
-      <material name="">
-        <color rgba="0.0 0.8 0.0 1.0"/>
-      </material>
+      <material name="green"/>
     </visual>
     <collision>
       <origin rpy="1.5707963267948966 0 0" xyz="0 0 0"/>
@@ -222,11 +212,9 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="package://go1_description/models/go1/meshes/calf.dae" scale="1 1 1"/>
+        <mesh filename="package://go1_description/models/go1/dae/calf.dae" scale="1 1 1"/>
       </geometry>
-      <material name="">
-        <color rgba="1.0 0.4235294117647059 0.0392156862745098 1.0"/>
-      </material>
+      <!-- <material name="orange"/> -->
     </visual>
     <collision>
       <origin rpy="0 1.5707963267948966 0" xyz="0 0 -0.1065"/>
@@ -246,9 +234,7 @@
       <geometry>
         <cylinder length="0.02" radius="0.035"/>
       </geometry>
-      <material name="">
-        <color rgba="0.0 0.8 0.0 1.0"/>
-      </material>
+      <material name="green"/>
     </visual>
     <collision>
       <origin rpy="1.5707963267948966 0 0" xyz="0 0 0"/>
@@ -273,9 +259,7 @@
       <geometry>
         <sphere radius="0.01"/>
       </geometry>
-      <material name="">
-        <color rgba="1.0 0.4235294117647059 0.0392156862745098 1.0"/>
-      </material>
+      <!-- <material name="orange"/> -->
     </visual>
     <collision>
       <origin rpy="0 0 0" xyz="0 0 0"/>
@@ -288,6 +272,36 @@
       <inertia ixx="9.600000000000001e-06" ixy="0.0" ixz="0.0" iyy="9.600000000000001e-06" iyz="0.0" izz="9.600000000000001e-06"/>
     </inertial>
   </link>
+  <transmission name="FR_hip_tran">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="FR_hip_joint">
+      <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="FR_hip_motor">
+      <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+  </transmission>
+  <transmission name="FR_thigh_tran">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="FR_thigh_joint">
+      <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="FR_thigh_motor">
+      <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+  </transmission>
+  <transmission name="FR_calf_tran">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="FR_calf_joint">
+      <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="FR_calf_motor">
+      <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+  </transmission>
   <joint name="FL_hip_joint" type="revolute">
     <origin rpy="0 0 0" xyz="0.1881 0.04675 0"/>
     <parent link="trunk"/>
@@ -305,11 +319,9 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="package://go1_description/models/go1/meshes/hip.dae" scale="1 1 1"/>
+        <mesh filename="package://go1_description/models/go1/dae/hip.dae" scale="1 1 1"/>
       </geometry>
-      <material name="">
-        <color rgba="1.0 0.4235294117647059 0.0392156862745098 1.0"/>
-      </material>
+      <!-- <material name="orange"/> -->
     </visual>
     <collision>
       <origin rpy="1.5707963267948966 0 0" xyz="0 0.08 0"/>
@@ -329,9 +341,7 @@
       <geometry>
         <cylinder length="0.02" radius="0.035"/>
       </geometry>
-      <material name="">
-        <color rgba="0.0 0.8 0.0 1.0"/>
-      </material>
+      <material name="green"/>
     </visual>
     <collision>
       <origin rpy="0 1.5707963267948966 0" xyz="0 0 0"/>
@@ -362,11 +372,9 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="package://go1_description/models/go1/meshes/thigh.dae" scale="1 1 1"/>
+        <mesh filename="package://go1_description/models/go1/dae/thigh.dae" scale="1 1 1"/>
       </geometry>
-      <material name="">
-        <color rgba="1.0 0.4235294117647059 0.0392156862745098 1.0"/>
-      </material>
+      <!-- <material name="orange"/> -->
     </visual>
     <collision>
       <origin rpy="0 1.5707963267948966 0" xyz="0 0 -0.1065"/>
@@ -386,9 +394,7 @@
       <geometry>
         <cylinder length="0.02" radius="0.035"/>
       </geometry>
-      <material name="">
-        <color rgba="0.0 0.8 0.0 1.0"/>
-      </material>
+      <material name="green"/>
     </visual>
     <collision>
       <origin rpy="1.5707963267948966 0 0" xyz="0 0 0"/>
@@ -419,11 +425,9 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="package://go1_description/models/go1/meshes/calf.dae" scale="1 1 1"/>
+        <mesh filename="package://go1_description/models/go1/dae/calf.dae" scale="1 1 1"/>
       </geometry>
-      <material name="">
-        <color rgba="1.0 0.4235294117647059 0.0392156862745098 1.0"/>
-      </material>
+      <!-- <material name="orange"/> -->
     </visual>
     <collision>
       <origin rpy="0 1.5707963267948966 0" xyz="0 0 -0.1065"/>
@@ -443,9 +447,7 @@
       <geometry>
         <cylinder length="0.02" radius="0.035"/>
       </geometry>
-      <material name="">
-        <color rgba="0.0 0.8 0.0 1.0"/>
-      </material>
+      <material name="green"/>
     </visual>
     <collision>
       <origin rpy="1.5707963267948966 0 0" xyz="0 0 0"/>
@@ -470,9 +472,7 @@
       <geometry>
         <sphere radius="0.01"/>
       </geometry>
-      <material name="">
-        <color rgba="1.0 0.4235294117647059 0.0392156862745098 1.0"/>
-      </material>
+      <!-- <material name="orange"/> -->
     </visual>
     <collision>
       <origin rpy="0 0 0" xyz="0 0 0"/>
@@ -485,6 +485,36 @@
       <inertia ixx="9.600000000000001e-06" ixy="0.0" ixz="0.0" iyy="9.600000000000001e-06" iyz="0.0" izz="9.600000000000001e-06"/>
     </inertial>
   </link>
+  <transmission name="FL_hip_tran">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="FL_hip_joint">
+      <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="FL_hip_motor">
+      <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+  </transmission>
+  <transmission name="FL_thigh_tran">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="FL_thigh_joint">
+      <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="FL_thigh_motor">
+      <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+  </transmission>
+  <transmission name="FL_calf_tran">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="FL_calf_joint">
+      <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="FL_calf_motor">
+      <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+  </transmission>
   <joint name="RR_hip_joint" type="revolute">
     <origin rpy="0 0 0" xyz="-0.1881 -0.04675 0"/>
     <parent link="trunk"/>
@@ -502,11 +532,9 @@
     <visual>
       <origin rpy="3.141592653589793 3.141592653589793 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="package://go1_description/models/go1/meshes/hip.dae" scale="1 1 1"/>
+        <mesh filename="package://go1_description/models/go1/dae/hip.dae" scale="1 1 1"/>
       </geometry>
-      <material name="">
-        <color rgba="1.0 0.4235294117647059 0.0392156862745098 1.0"/>
-      </material>
+      <!-- <material name="orange"/> -->
     </visual>
     <collision>
       <origin rpy="1.5707963267948966 0 0" xyz="0 -0.08 0"/>
@@ -526,9 +554,7 @@
       <geometry>
         <cylinder length="0.02" radius="0.035"/>
       </geometry>
-      <material name="">
-        <color rgba="0.0 0.8 0.0 1.0"/>
-      </material>
+      <material name="green"/>
     </visual>
     <collision>
       <origin rpy="0 1.5707963267948966 0" xyz="0 0 0"/>
@@ -559,11 +585,9 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="package://go1_description/models/go1/meshes/thigh_mirror.dae" scale="1 1 1"/>
+        <mesh filename="package://go1_description/models/go1/dae/thigh_mirror.dae" scale="1 1 1"/>
       </geometry>
-      <material name="">
-        <color rgba="1.0 0.4235294117647059 0.0392156862745098 1.0"/>
-      </material>
+      <!-- <material name="orange"/> -->
     </visual>
     <collision>
       <origin rpy="0 1.5707963267948966 0" xyz="0 0 -0.1065"/>
@@ -583,9 +607,7 @@
       <geometry>
         <cylinder length="0.02" radius="0.035"/>
       </geometry>
-      <material name="">
-        <color rgba="0.0 0.8 0.0 1.0"/>
-      </material>
+      <material name="green"/>
     </visual>
     <collision>
       <origin rpy="1.5707963267948966 0 0" xyz="0 0 0"/>
@@ -616,11 +638,9 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="package://go1_description/models/go1/meshes/calf.dae" scale="1 1 1"/>
+        <mesh filename="package://go1_description/models/go1/dae/calf.dae" scale="1 1 1"/>
       </geometry>
-      <material name="">
-        <color rgba="1.0 0.4235294117647059 0.0392156862745098 1.0"/>
-      </material>
+      <!-- <material name="orange"/> -->
     </visual>
     <collision>
       <origin rpy="0 1.5707963267948966 0" xyz="0 0 -0.1065"/>
@@ -640,9 +660,7 @@
       <geometry>
         <cylinder length="0.02" radius="0.035"/>
       </geometry>
-      <material name="">
-        <color rgba="0.0 0.8 0.0 1.0"/>
-      </material>
+      <material name="green"/>
     </visual>
     <collision>
       <origin rpy="1.5707963267948966 0 0" xyz="0 0 0"/>
@@ -667,9 +685,7 @@
       <geometry>
         <sphere radius="0.01"/>
       </geometry>
-      <material name="">
-        <color rgba="1.0 0.4235294117647059 0.0392156862745098 1.0"/>
-      </material>
+      <!-- <material name="orange"/> -->
     </visual>
     <collision>
       <origin rpy="0 0 0" xyz="0 0 0"/>
@@ -682,6 +698,36 @@
       <inertia ixx="9.600000000000001e-06" ixy="0.0" ixz="0.0" iyy="9.600000000000001e-06" iyz="0.0" izz="9.600000000000001e-06"/>
     </inertial>
   </link>
+  <transmission name="RR_hip_tran">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="RR_hip_joint">
+      <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="RR_hip_motor">
+      <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+  </transmission>
+  <transmission name="RR_thigh_tran">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="RR_thigh_joint">
+      <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="RR_thigh_motor">
+      <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+  </transmission>
+  <transmission name="RR_calf_tran">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="RR_calf_joint">
+      <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="RR_calf_motor">
+      <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+  </transmission>
   <joint name="RL_hip_joint" type="revolute">
     <origin rpy="0 0 0" xyz="-0.1881 0.04675 0"/>
     <parent link="trunk"/>
@@ -699,11 +745,9 @@
     <visual>
       <origin rpy="0 3.141592653589793 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="package://go1_description/models/go1/meshes/hip.dae" scale="1 1 1"/>
+        <mesh filename="package://go1_description/models/go1/dae/hip.dae" scale="1 1 1"/>
       </geometry>
-      <material name="">
-        <color rgba="1.0 0.4235294117647059 0.0392156862745098 1.0"/>
-      </material>
+      <!-- <material name="orange"/> -->
     </visual>
     <collision>
       <origin rpy="1.5707963267948966 0 0" xyz="0 0.08 0"/>
@@ -723,9 +767,7 @@
       <geometry>
         <cylinder length="0.02" radius="0.035"/>
       </geometry>
-      <material name="">
-        <color rgba="0.0 0.8 0.0 1.0"/>
-      </material>
+      <material name="green"/>
     </visual>
     <collision>
       <origin rpy="0 1.5707963267948966 0" xyz="0 0 0"/>
@@ -756,11 +798,9 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="package://go1_description/models/go1/meshes/thigh.dae" scale="1 1 1"/>
+        <mesh filename="package://go1_description/models/go1/dae/thigh.dae" scale="1 1 1"/>
       </geometry>
-      <material name="">
-        <color rgba="1.0 0.4235294117647059 0.0392156862745098 1.0"/>
-      </material>
+      <!-- <material name="orange"/> -->
     </visual>
     <collision>
       <origin rpy="0 1.5707963267948966 0" xyz="0 0 -0.1065"/>
@@ -780,9 +820,7 @@
       <geometry>
         <cylinder length="0.02" radius="0.035"/>
       </geometry>
-      <material name="">
-        <color rgba="0.0 0.8 0.0 1.0"/>
-      </material>
+      <material name="green"/>
     </visual>
     <collision>
       <origin rpy="1.5707963267948966 0 0" xyz="0 0 0"/>
@@ -813,11 +851,9 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="package://go1_description/models/go1/meshes/calf.dae" scale="1 1 1"/>
+        <mesh filename="package://go1_description/models/go1/dae/calf.dae" scale="1 1 1"/>
       </geometry>
-      <material name="">
-        <color rgba="1.0 0.4235294117647059 0.0392156862745098 1.0"/>
-      </material>
+      <!-- <material name="orange"/> -->
     </visual>
     <collision>
       <origin rpy="0 1.5707963267948966 0" xyz="0 0 -0.1065"/>
@@ -837,9 +873,7 @@
       <geometry>
         <cylinder length="0.02" radius="0.035"/>
       </geometry>
-      <material name="">
-        <color rgba="0.0 0.8 0.0 1.0"/>
-      </material>
+      <material name="green"/>
     </visual>
     <collision>
       <origin rpy="1.5707963267948966 0 0" xyz="0 0 0"/>
@@ -864,9 +898,7 @@
       <geometry>
         <sphere radius="0.01"/>
       </geometry>
-      <material name="">
-        <color rgba="1.0 0.4235294117647059 0.0392156862745098 1.0"/>
-      </material>
+      <!-- <material name="orange"/> -->
     </visual>
     <collision>
       <origin rpy="0 0 0" xyz="0 0 0"/>
@@ -877,6 +909,280 @@
     <inertial>
       <mass value="0.06"/>
       <inertia ixx="9.600000000000001e-06" ixy="0.0" ixz="0.0" iyy="9.600000000000001e-06" iyz="0.0" izz="9.600000000000001e-06"/>
+    </inertial>
+  </link>
+  <transmission name="RL_hip_tran">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="RL_hip_joint">
+      <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="RL_hip_motor">
+      <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+  </transmission>
+  <transmission name="RL_thigh_tran">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="RL_thigh_joint">
+      <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="RL_thigh_motor">
+      <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+  </transmission>
+  <transmission name="RL_calf_tran">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="RL_calf_joint">
+      <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="RL_calf_motor">
+      <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+  </transmission>
+  <joint name="camera_joint_face" type="fixed">
+    <origin rpy="3.141592653589793 0 0" xyz="0.2785 0.0125 0.0167"/>
+    <parent link="trunk"/>
+    <child link="camera_face"/>
+  </joint>
+  <link name="camera_face">
+    <collision>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <geometry>
+        <box size=".001 .001 .001"/>
+      </geometry>
+    </collision>
+    <visual>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <geometry>
+        <mesh filename="package://go1_description/models/go1/dae/depthCamera.dae" scale="1 1 1"/>
+      </geometry>
+    </visual>
+    <inertial>
+      <mass value="1e-5"/>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <inertia ixx="1e-6" ixy="0" ixz="0" iyy="1e-6" iyz="0" izz="1e-6"/>
+    </inertial>
+  </link>
+  <joint name="camera_optical_joint_face" type="fixed">
+    <origin rpy="-1.5707963267948966 0 -1.5707963267948966" xyz="0 0 0"/>
+    <parent link="camera_face"/>
+    <child link="camera_optical_face"/>
+  </joint>
+  <link name="camera_optical_face">
+        </link>
+  <joint name="camera_joint_chin" type="fixed">
+    <origin rpy="3.141592653589793 1.5707963267948966 0" xyz="0.2522 0.0125 -0.0436"/>
+    <parent link="trunk"/>
+    <child link="camera_chin"/>
+  </joint>
+  <link name="camera_chin">
+    <collision>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <geometry>
+        <box size=".001 .001 .001"/>
+      </geometry>
+    </collision>
+    <visual>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <geometry>
+        <mesh filename="package://go1_description/models/go1/dae/depthCamera.dae" scale="1 1 1"/>
+      </geometry>
+    </visual>
+    <inertial>
+      <mass value="1e-5"/>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <inertia ixx="1e-6" ixy="0" ixz="0" iyy="1e-6" iyz="0" izz="1e-6"/>
+    </inertial>
+  </link>
+  <joint name="camera_optical_joint_chin" type="fixed">
+    <origin rpy="-1.5707963267948966 0 -1.5707963267948966" xyz="0 0 0"/>
+    <parent link="camera_chin"/>
+    <child link="camera_optical_chin"/>
+  </joint>
+  <link name="camera_optical_chin">
+        </link>
+  <joint name="camera_joint_left" type="fixed">
+    <origin rpy="3.141592653589793 0.2618 1.5707963267948966" xyz="-0.066 0.082 -0.0176"/>
+    <parent link="trunk"/>
+    <child link="camera_left"/>
+  </joint>
+  <link name="camera_left">
+    <collision>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <geometry>
+        <box size=".001 .001 .001"/>
+      </geometry>
+    </collision>
+    <visual>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <geometry>
+        <mesh filename="package://go1_description/models/go1/dae/depthCamera.dae" scale="1 1 1"/>
+      </geometry>
+    </visual>
+    <inertial>
+      <mass value="1e-5"/>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <inertia ixx="1e-6" ixy="0" ixz="0" iyy="1e-6" iyz="0" izz="1e-6"/>
+    </inertial>
+  </link>
+  <joint name="camera_optical_joint_left" type="fixed">
+    <origin rpy="-1.5707963267948966 0 -1.5707963267948966" xyz="0 0 0"/>
+    <parent link="camera_left"/>
+    <child link="camera_optical_left"/>
+  </joint>
+  <link name="camera_optical_left">
+        </link>
+  <joint name="camera_joint_right" type="fixed">
+    <origin rpy="3.141592653589793 0.2618 -1.5707963267948966" xyz="-0.041 -0.082 -0.0176"/>
+    <parent link="trunk"/>
+    <child link="camera_right"/>
+  </joint>
+  <link name="camera_right">
+    <collision>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <geometry>
+        <box size=".001 .001 .001"/>
+      </geometry>
+    </collision>
+    <visual>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <geometry>
+        <mesh filename="package://go1_description/models/go1/dae/depthCamera.dae" scale="1 1 1"/>
+      </geometry>
+    </visual>
+    <inertial>
+      <mass value="1e-5"/>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <inertia ixx="1e-6" ixy="0" ixz="0" iyy="1e-6" iyz="0" izz="1e-6"/>
+    </inertial>
+  </link>
+  <joint name="camera_optical_joint_right" type="fixed">
+    <origin rpy="-1.5707963267948966 0 -1.5707963267948966" xyz="0 0 0"/>
+    <parent link="camera_right"/>
+    <child link="camera_optical_right"/>
+  </joint>
+  <link name="camera_optical_right">
+        </link>
+  <joint name="camera_joint_rearDown" type="fixed">
+    <origin rpy="3.141592653589793 1.5707963267948966 0" xyz="-0.0825 0.0125 -0.04365"/>
+    <parent link="trunk"/>
+    <child link="camera_rearDown"/>
+  </joint>
+  <link name="camera_rearDown">
+    <collision>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <geometry>
+        <box size=".001 .001 .001"/>
+      </geometry>
+    </collision>
+    <visual>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <geometry>
+        <mesh filename="package://go1_description/models/go1/dae/depthCamera.dae" scale="1 1 1"/>
+      </geometry>
+    </visual>
+    <inertial>
+      <mass value="1e-5"/>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <inertia ixx="1e-6" ixy="0" ixz="0" iyy="1e-6" iyz="0" izz="1e-6"/>
+    </inertial>
+  </link>
+  <joint name="camera_optical_joint_rearDown" type="fixed">
+    <origin rpy="-1.5707963267948966 0 -1.5707963267948966" xyz="0 0 0"/>
+    <parent link="camera_rearDown"/>
+    <child link="camera_optical_rearDown"/>
+  </joint>
+  <link name="camera_optical_rearDown">
+        </link>
+  <joint name="camera_laserscan_joint_left" type="fixed">
+    <origin rpy="0 0.2618 0" xyz="0 0 0"/>
+    <parent link="camera_left"/>
+    <child link="camera_laserscan_link_left"/>
+  </joint>
+  <link name="camera_laserscan_link_left">
+    </link>
+  <joint name="camera_laserscan_joint_right" type="fixed">
+    <origin rpy="0 0.2618 0" xyz="0 0 0"/>
+    <parent link="camera_right"/>
+    <child link="camera_laserscan_link_right"/>
+  </joint>
+  <link name="camera_laserscan_link_right">
+    </link>
+  <joint name="ultraSound_joint_left" type="fixed">
+    <origin rpy="0 0.2618 1.5707963267948966" xyz="-0.0535  0.0826 0.00868"/>
+    <parent link="trunk"/>
+    <child link="ultraSound_left"/>
+  </joint>
+  <link name="ultraSound_left">
+    <collision>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <geometry>
+        <box size=".001 .001 .001"/>
+      </geometry>
+    </collision>
+    <visual>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <geometry>
+        <mesh filename="package://go1_description/models/go1/dae/ultraSound.dae" scale="1 1 1"/>
+      </geometry>
+      <material name="black"/>
+    </visual>
+    <inertial>
+      <mass value="1e-5"/>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <inertia ixx="1e-6" ixy="0" ixz="0" iyy="1e-6" iyz="0" izz="1e-6"/>
+    </inertial>
+  </link>
+  <joint name="ultraSound_joint_right" type="fixed">
+    <origin rpy="0 0.2618 -1.5707963267948966" xyz="-0.0535 -0.0826 0.00868"/>
+    <parent link="trunk"/>
+    <child link="ultraSound_right"/>
+  </joint>
+  <link name="ultraSound_right">
+    <collision>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <geometry>
+        <box size=".001 .001 .001"/>
+      </geometry>
+    </collision>
+    <visual>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <geometry>
+        <mesh filename="package://go1_description/models/go1/dae/ultraSound.dae" scale="1 1 1"/>
+      </geometry>
+      <material name="black"/>
+    </visual>
+    <inertial>
+      <mass value="1e-5"/>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <inertia ixx="1e-6" ixy="0" ixz="0" iyy="1e-6" iyz="0" izz="1e-6"/>
+    </inertial>
+  </link>
+  <joint name="ultraSound_joint_face" type="fixed">
+    <origin rpy="0 0 0" xyz="0.2747 0.0 -0.0088"/>
+    <parent link="trunk"/>
+    <child link="ultraSound_face"/>
+  </joint>
+  <link name="ultraSound_face">
+    <collision>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <geometry>
+        <box size=".001 .001 .001"/>
+      </geometry>
+    </collision>
+    <visual>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <geometry>
+        <mesh filename="package://go1_description/models/go1/dae/ultraSound.dae" scale="1 1 1"/>
+      </geometry>
+      <material name="black"/>
+    </visual>
+    <inertial>
+      <mass value="1e-5"/>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <inertia ixx="1e-6" ixy="0" ixz="0" iyy="1e-6" iyz="0" izz="1e-6"/>
     </inertial>
   </link>
 
@@ -945,5 +1251,23 @@
       <state_interface name="position" />
     </joint>
   </ros2_control>
+
+  <link name="cmu_text">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="package://objects_description/models/cmu_text/meshes/Spirit40_CMU_Text_transformed.stl" scale="1.3 1 1.3"/>
+      </geometry>
+    </visual>
+    <inertial>
+      <mass value="0.0001"/>
+      <inertia ixx="1e-08" ixy="0" ixz="0" iyy="1e-08" iyz="0" izz="1e-08"/>
+    </inertial>
+  </link>
+  <joint name="cmu_text_joint" type="fixed">
+    <parent link="trunk"/>
+    <child link="cmu_text"/>
+    <origin xyz="0 0 -0.005" rpy="0 0 0"/>
+  </joint>
 
 </robot>

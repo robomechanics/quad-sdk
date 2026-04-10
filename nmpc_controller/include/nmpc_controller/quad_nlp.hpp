@@ -23,6 +23,7 @@
 #include "nmpc_controller/gen/eval_g_b2.h"
 #include "nmpc_controller/gen/eval_g_vision60.h"
 #include "nmpc_controller/gen/eval_g_spot.h"
+#include "nmpc_controller/gen/eval_g_go1.h"
 #include "nmpc_controller/gen/eval_g_leg_complex.h"
 #include "nmpc_controller/gen/eval_g_leg_complex_to_simple.h"
 #include "nmpc_controller/gen/eval_g_leg_simple.h"
@@ -33,6 +34,7 @@
 #include "nmpc_controller/gen/eval_hess_g_b2.h"
 #include "nmpc_controller/gen/eval_hess_g_vision60.h"
 #include "nmpc_controller/gen/eval_hess_g_spot.h"
+#include "nmpc_controller/gen/eval_hess_g_go1.h"
 #include "nmpc_controller/gen/eval_hess_g_leg_complex.h"
 #include "nmpc_controller/gen/eval_hess_g_leg_complex_to_simple.h"
 #include "nmpc_controller/gen/eval_hess_g_leg_simple.h"
@@ -43,6 +45,7 @@
 #include "nmpc_controller/gen/eval_jac_g_b2.h"
 #include "nmpc_controller/gen/eval_jac_g_vision60.h"
 #include "nmpc_controller/gen/eval_jac_g_spot.h"
+#include "nmpc_controller/gen/eval_jac_g_go1.h"
 #include "nmpc_controller/gen/eval_jac_g_leg_complex.h"
 #include "nmpc_controller/gen/eval_jac_g_leg_complex_to_simple.h"
 #include "nmpc_controller/gen/eval_jac_g_leg_simple.h"
@@ -61,6 +64,7 @@ enum SystemID {
   B2,
   VISION60,
   SPOT,
+  GO1,
   SIMPLE_TO_SIMPLE,
   SIMPLE_TO_COMPLEX,
   COMPLEX_TO_COMPLEX,
@@ -178,7 +182,7 @@ class quadNLP : public TNLP {
 
   /// Declare the number of possible system ids (must match size of SystemID
   /// enum)
-  static const int num_sys_id_ = 10;
+  static const int num_sys_id_ = 11;
 
   /// Declare the number of possible function ids (must match size of FunctionID
   /// enum)
@@ -203,7 +207,7 @@ class quadNLP : public TNLP {
   double mu_;
 
   /// Mass of the platform (set to zero to ignore nominal ff)
-  const double mass_ = 60.0;
+  double mass_ = 0.0;
 
   /// Mass of the feet (as modeled in casadi)
   const double foot_mass_ = 0.01;
@@ -315,8 +319,7 @@ class quadNLP : public TNLP {
           double panic_weights, double constraint_panic_weights,
           double Q_temporal_factor, double R_temporal_factor,
           const Eigen::VectorXi &fixed_complexity_schedule,
-          const NLPConfig &config,
-          rclcpp::Node::SharedPtr node,
+          const NLPConfig &config, double mass, rclcpp::Node::SharedPtr node,
           std::string robot_ns);
 
   /**

@@ -23,8 +23,13 @@ def generate_launch_description():
     urdf = LaunchConfiguration('robot_description')
     urdf_path = LaunchConfiguration('robot_urdf_path')
     quad_utils_share = FindPackageShare('quad_utils')
-    rviz_yaml_file = ParameterFile(PathJoinSubstitution([quad_utils_share, 'config', 'rviz_visualization.yaml']))
     robot_type = LaunchConfiguration('robot_type')
+    rviz_yaml_file = ParameterFile(
+        PathJoinSubstitution([quad_utils_share, 'config', 'rviz_visualization.yaml'])
+    )
+    robot_yaml_file = ParameterFile(
+        PathJoinSubstitution([quad_utils_share, 'config', [robot_type, '.yaml']])
+    )
 
 
     trajectory_state_urdf = Command([
@@ -84,10 +89,13 @@ def generate_launch_description():
         executable='rviz_interface_node',
         name='rviz_interface',
         parameters=[
-        rviz_yaml_file,
-        {'tf_prefix': namespace,
-         'use_sim_time' : LaunchConfiguration('use_sim_time')}
-    ],
+            rviz_yaml_file,
+            robot_yaml_file,
+            {
+                'tf_prefix': namespace,
+                'use_sim_time': LaunchConfiguration('use_sim_time')
+            }
+        ],
         # output='screen'
     )
 

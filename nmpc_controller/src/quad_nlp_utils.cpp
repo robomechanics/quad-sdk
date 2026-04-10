@@ -72,7 +72,7 @@ void quadNLP::loadCasadiFuncs() {
   eval_sparsity_vec_[A1][JAC] = eval_jac_g_a1_sparsity_out;
   eval_sparsity_vec_[A1][HESS] = eval_hess_g_a1_sparsity_out;
 
-  // Load basic leg controller functions for the A1 platform
+  // Load basic leg controller functions for the GO2 platform
   eval_vec_[GO2][FUNC] = eval_g_go2;
   eval_vec_[GO2][JAC] = eval_jac_g_go2;
   eval_vec_[GO2][HESS] = eval_hess_g_go2;
@@ -163,6 +163,29 @@ void quadNLP::loadCasadiFuncs() {
   eval_sparsity_vec_[SPOT][FUNC] = eval_g_spot_sparsity_out;
   eval_sparsity_vec_[SPOT][JAC] = eval_jac_g_spot_sparsity_out;
   eval_sparsity_vec_[SPOT][HESS] = eval_hess_g_spot_sparsity_out;
+
+// Load basic leg controller functions for the GO1 platform
+  eval_vec_[GO1][FUNC] = eval_g_go1;
+  eval_vec_[GO1][JAC] = eval_jac_g_go1;
+  eval_vec_[GO1][HESS] = eval_hess_g_go1;
+  eval_work_vec_[GO1][FUNC] = eval_g_go1_work;
+  eval_work_vec_[GO1][JAC] = eval_jac_g_go1_work;
+  eval_work_vec_[GO1][HESS] = eval_hess_g_go1_work;
+  eval_incref_vec_[GO1][FUNC] = eval_g_go1_incref;
+  eval_incref_vec_[GO1][JAC] = eval_jac_g_go1_incref;
+  eval_incref_vec_[GO1][HESS] = eval_hess_g_go1_incref;
+  eval_decref_vec_[GO1][FUNC] = eval_g_go1_decref;
+  eval_decref_vec_[GO1][JAC] = eval_jac_g_go1_decref;
+  eval_decref_vec_[GO1][HESS] = eval_hess_g_go1_decref;
+  eval_checkout_vec_[GO1][FUNC] = eval_g_go1_checkout;
+  eval_checkout_vec_[GO1][JAC] = eval_jac_g_go1_checkout;
+  eval_checkout_vec_[GO1][HESS] = eval_hess_g_go1_checkout;
+  eval_release_vec_[GO1][FUNC] = eval_g_go1_release;
+  eval_release_vec_[GO1][JAC] = eval_jac_g_go1_release;
+  eval_release_vec_[GO1][HESS] = eval_hess_g_go1_release;
+  eval_sparsity_vec_[GO1][FUNC] = eval_g_go1_sparsity_out;
+  eval_sparsity_vec_[GO1][JAC] = eval_jac_g_go1_sparsity_out;
+  eval_sparsity_vec_[GO1][HESS] = eval_hess_g_go1_sparsity_out;
 
   // Load simple to simple functions - for adaptive complexity
   eval_vec_[SIMPLE_TO_SIMPLE][FUNC] = eval_g_leg_simple;

@@ -75,12 +75,116 @@
           </cylinder>
         </geometry>
       </collision>
+      <collision name='trunk_fixed_joint_lump__camera_chin_collision_5'>
+        <pose>0.25219999999999998 0.012500000000000001 -0.0436 3.1415926535897931 1.5707963267948966 0</pose>
+        <geometry>
+          <box>
+            <size>0.001 0.001 0.001</size>
+          </box>
+        </geometry>
+        <surface>
+          <contact>
+            <ode/>
+          </contact>
+          <friction>
+            <ode/>
+          </friction>
+        </surface>
+      </collision>
+      <collision name='trunk_fixed_joint_lump__camera_face_collision_6'>
+        <pose>0.27850000000000003 0.012500000000000001 0.0167 3.1415926535897931 0 0</pose>
+        <geometry>
+          <box>
+            <size>0.001 0.001 0.001</size>
+          </box>
+        </geometry>
+        <surface>
+          <contact>
+            <ode/>
+          </contact>
+          <friction>
+            <ode/>
+          </friction>
+        </surface>
+      </collision>
+      <collision name='trunk_fixed_joint_lump__camera_left_collision_7'>
+        <pose>-0.066000000000000003 0.082000000000000003 -0.017600000000000001 3.1415926535897931 0.26179999999999998 1.5707963267948957</pose>
+        <geometry>
+          <box>
+            <size>0.001 0.001 0.001</size>
+          </box>
+        </geometry>
+        <surface>
+          <contact>
+            <ode/>
+          </contact>
+          <friction>
+            <ode/>
+          </friction>
+        </surface>
+      </collision>
+      <collision name='trunk_fixed_joint_lump__camera_rearDown_collision_8'>
+        <pose>-0.082500000000000004 0.012500000000000001 -0.043650000000000001 3.1415926535897931 1.5707963267948966 0</pose>
+        <geometry>
+          <box>
+            <size>0.001 0.001 0.001</size>
+          </box>
+        </geometry>
+        <surface>
+          <contact>
+            <ode/>
+          </contact>
+          <friction>
+            <ode/>
+          </friction>
+        </surface>
+      </collision>
+      <collision name='trunk_fixed_joint_lump__camera_right_collision_9'>
+        <pose>-0.041000000000000002 -0.082000000000000003 -0.017600000000000001 3.1415926535897931 0.26179999999999998 -1.570796326794897</pose>
+        <geometry>
+          <box>
+            <size>0.001 0.001 0.001</size>
+          </box>
+        </geometry>
+        <surface>
+          <contact>
+            <ode/>
+          </contact>
+          <friction>
+            <ode/>
+          </friction>
+        </surface>
+      </collision>
+      <collision name='trunk_fixed_joint_lump__ultraSound_face_collision_10'>
+        <pose>0.2747 0 -0.0088000000000000005 0 0 0</pose>
+        <geometry>
+          <box>
+            <size>0.001 0.001 0.001</size>
+          </box>
+        </geometry>
+      </collision>
+      <collision name='trunk_fixed_joint_lump__ultraSound_left_collision_11'>
+        <pose>-0.053499999999999999 0.082600000000000007 0.0086800000000000002 0 0.26179999999999998 1.570796326794897</pose>
+        <geometry>
+          <box>
+            <size>0.001 0.001 0.001</size>
+          </box>
+        </geometry>
+      </collision>
+      <collision name='trunk_fixed_joint_lump__ultraSound_right_collision_12'>
+        <pose>-0.053499999999999999 -0.082600000000000007 0.0086800000000000002 0 0.26179999999999998 -1.570796326794897</pose>
+        <geometry>
+          <box>
+            <size>0.001 0.001 0.001</size>
+          </box>
+        </geometry>
+      </collision>
       <visual name='trunk_visual'>
         <pose>0 0 0 0 0 0</pose>
         <geometry>
           <mesh>
             <scale>1 1 1</scale>
-            <uri>model://go1/meshes/trunk.dae</uri>
+            <uri>model://go1/dae/trunk.dae</uri>
           </mesh>
         </geometry>
         <material>
@@ -140,6 +244,190 @@
           <ambient>0 1 0 1</ambient>
         </material>
       </visual>
+      <visual name='trunk_fixed_joint_lump__camera_chin_visual_5'>
+        <pose>0.25219999999999998 0.012500000000000001 -0.0436 3.1415926535897931 1.5707963267948966 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://go1/dae/depthCamera.dae</uri>
+          </mesh>
+        </geometry>
+        <material>
+          <diffuse>0.05 0.05 0.05 1</diffuse>
+          <ambient>0.05 0.05 0.05 1</ambient>
+        </material>
+      </visual>
+      <visual name='trunk_fixed_joint_lump__camera_face_visual_6'>
+        <pose>0.27850000000000003 0.012500000000000001 0.0167 3.1415926535897931 0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://go1/dae/depthCamera.dae</uri>
+          </mesh>
+        </geometry>
+        <material>
+          <diffuse>0.05 0.05 0.05 1</diffuse>
+          <ambient>0.05 0.05 0.05 1</ambient>
+        </material>
+      </visual>
+      <visual name='trunk_fixed_joint_lump__camera_left_visual_7'>
+        <pose>-0.066000000000000003 0.082000000000000003 -0.017600000000000001 3.1415926535897931 0.26179999999999998 1.5707963267948957</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://go1/dae/depthCamera.dae</uri>
+          </mesh>
+        </geometry>
+        <material>
+          <diffuse>0.05 0.05 0.05 1</diffuse>
+          <ambient>0.05 0.05 0.05 1</ambient>
+        </material>
+      </visual>
+      <visual name='trunk_fixed_joint_lump__camera_rearDown_visual_8'>
+        <pose>-0.082500000000000004 0.012500000000000001 -0.043650000000000001 3.1415926535897931 1.5707963267948966 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://go1/dae/depthCamera.dae</uri>
+          </mesh>
+        </geometry>
+        <material>
+          <diffuse>0.05 0.05 0.05 1</diffuse>
+          <ambient>0.05 0.05 0.05 1</ambient>
+        </material>
+      </visual>
+      <visual name='trunk_fixed_joint_lump__camera_right_visual_9'>
+        <pose>-0.041000000000000002 -0.082000000000000003 -0.017600000000000001 3.1415926535897931 0.26179999999999998 -1.570796326794897</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://go1/dae/depthCamera.dae</uri>
+          </mesh>
+        </geometry>
+        <material>
+          <diffuse>0.05 0.05 0.05 1</diffuse>
+          <ambient>0.05 0.05 0.05 1</ambient>
+        </material>
+      </visual>
+      <visual name='trunk_fixed_joint_lump__ultraSound_face_visual_10'>
+        <pose>0.2747 0 -0.0088000000000000005 0 0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://go1/dae/ultraSound.dae</uri>
+          </mesh>
+        </geometry>
+        <material>
+          <diffuse>0 0 0 1</diffuse>
+          <ambient>0 0 0 1</ambient>
+        </material>
+      </visual>
+      <visual name='trunk_fixed_joint_lump__ultraSound_left_visual_11'>
+        <pose>-0.053499999999999999 0.082600000000000007 0.0086800000000000002 0 0.26179999999999998 1.570796326794897</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://go1/dae/ultraSound.dae</uri>
+          </mesh>
+        </geometry>
+        <material>
+          <diffuse>0 0 0 1</diffuse>
+          <ambient>0 0 0 1</ambient>
+        </material>
+      </visual>
+      <visual name='trunk_fixed_joint_lump__ultraSound_right_visual_12'>
+        <pose>-0.053499999999999999 -0.082600000000000007 0.0086800000000000002 0 0.26179999999999998 -1.570796326794897</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://go1/dae/ultraSound.dae</uri>
+          </mesh>
+        </geometry>
+        <material>
+          <diffuse>0 0 0 1</diffuse>
+          <ambient>0 0 0 1</ambient>
+        </material>
+      </visual>
+      <sensor name='camera_chin_camera' type='depth'>
+        <update_rate>16</update_rate>
+        <camera>
+          <horizontal_fov>2.0939999999999999</horizontal_fov>
+          <image>
+            <width>928</width>
+            <height>800</height>
+            <format>R8G8B8</format>
+          </image>
+          <clip>
+            <near>0.10000000000000001</near>
+            <far>5</far>
+          </clip>
+        </camera>
+        <pose>0.25219999999999998 0.012500000000000001 -0.0436 3.1415926535897931 1.5707926536359933 2.6535897933410511e-06</pose>
+      </sensor>
+      <sensor name='camera_face_camera' type='depth'>
+        <update_rate>16</update_rate>
+        <camera>
+          <horizontal_fov>2.0939999999999999</horizontal_fov>
+          <image>
+            <width>928</width>
+            <height>800</height>
+            <format>R8G8B8</format>
+          </image>
+          <clip>
+            <near>0.10000000000000001</near>
+            <far>5</far>
+          </clip>
+        </camera>
+        <pose>0.27850000000000003 0.012500000000000001 0.0167 3.1415899999999999 0 0</pose>
+      </sensor>
+      <sensor name='camera_left_camera' type='depth'>
+        <update_rate>16</update_rate>
+        <camera>
+          <horizontal_fov>2.0939999999999999</horizontal_fov>
+          <image>
+            <width>928</width>
+            <height>800</height>
+            <format>R8G8B8</format>
+          </image>
+          <clip>
+            <near>0.10000000000000001</near>
+            <far>5</far>
+          </clip>
+        </camera>
+        <pose>-0.066000000000000003 0.082000000000000003 -0.017600000000000001 3.1415899999999999 0.26180000000000009 1.5708</pose>
+      </sensor>
+      <sensor name='camera_rearDown_camera' type='depth'>
+        <update_rate>16</update_rate>
+        <camera>
+          <horizontal_fov>2.0939999999999999</horizontal_fov>
+          <image>
+            <width>928</width>
+            <height>800</height>
+            <format>R8G8B8</format>
+          </image>
+          <clip>
+            <near>0.10000000000000001</near>
+            <far>5</far>
+          </clip>
+        </camera>
+        <pose>-0.082500000000000004 0.012500000000000001 -0.043650000000000001 3.1415926535897931 1.5707926536359933 2.6535897933410511e-06</pose>
+      </sensor>
+      <sensor name='camera_right_camera' type='depth'>
+        <update_rate>16</update_rate>
+        <camera>
+          <horizontal_fov>2.0939999999999999</horizontal_fov>
+          <image>
+            <width>928</width>
+            <height>800</height>
+            <format>R8G8B8</format>
+          </image>
+          <clip>
+            <near>0.10000000000000001</near>
+            <far>5</far>
+          </clip>
+        </camera>
+        <pose>-0.041000000000000002 -0.082000000000000003 -0.017600000000000001 3.1415899999999999 0.26179999999999998 -1.5707999999999998</pose>
+      </sensor>
     </link>
     <joint name='FL_hip_joint' type='revolute'>
       <pose relative_to='trunk'>0.18809999999999999 0.04675 0 0 0 0</pose>
@@ -209,7 +497,7 @@
         <geometry>
           <mesh>
             <scale>1 1 1</scale>
-            <uri>model://go1/meshes/hip.dae</uri>
+            <uri>model://go1/dae/hip.dae</uri>
           </mesh>
         </geometry>
         <material>
@@ -301,7 +589,7 @@
         <geometry>
           <mesh>
             <scale>1 1 1</scale>
-            <uri>model://go1/meshes/thigh.dae</uri>
+            <uri>model://go1/dae/thigh.dae</uri>
           </mesh>
         </geometry>
         <material>
@@ -382,7 +670,7 @@
         <geometry>
           <mesh>
             <scale>1 1 1</scale>
-            <uri>model://go1/meshes/calf.dae</uri>
+            <uri>model://go1/dae/calf.dae</uri>
           </mesh>
         </geometry>
         <material>
@@ -541,7 +829,7 @@
         <geometry>
           <mesh>
             <scale>1 1 1</scale>
-            <uri>model://go1/meshes/hip.dae</uri>
+            <uri>model://go1/dae/hip.dae</uri>
           </mesh>
         </geometry>
         <material>
@@ -633,7 +921,7 @@
         <geometry>
           <mesh>
             <scale>1 1 1</scale>
-            <uri>model://go1/meshes/thigh_mirror.dae</uri>
+            <uri>model://go1/dae/thigh_mirror.dae</uri>
           </mesh>
         </geometry>
         <material>
@@ -714,7 +1002,7 @@
         <geometry>
           <mesh>
             <scale>1 1 1</scale>
-            <uri>model://go1/meshes/calf.dae</uri>
+            <uri>model://go1/dae/calf.dae</uri>
           </mesh>
         </geometry>
         <material>
@@ -873,7 +1161,7 @@
         <geometry>
           <mesh>
             <scale>1 1 1</scale>
-            <uri>model://go1/meshes/hip.dae</uri>
+            <uri>model://go1/dae/hip.dae</uri>
           </mesh>
         </geometry>
         <material>
@@ -965,7 +1253,7 @@
         <geometry>
           <mesh>
             <scale>1 1 1</scale>
-            <uri>model://go1/meshes/thigh.dae</uri>
+            <uri>model://go1/dae/thigh.dae</uri>
           </mesh>
         </geometry>
         <material>
@@ -1046,7 +1334,7 @@
         <geometry>
           <mesh>
             <scale>1 1 1</scale>
-            <uri>model://go1/meshes/calf.dae</uri>
+            <uri>model://go1/dae/calf.dae</uri>
           </mesh>
         </geometry>
         <material>
@@ -1205,7 +1493,7 @@
         <geometry>
           <mesh>
             <scale>1 1 1</scale>
-            <uri>model://go1/meshes/hip.dae</uri>
+            <uri>model://go1/dae/hip.dae</uri>
           </mesh>
         </geometry>
         <material>
@@ -1297,7 +1585,7 @@
         <geometry>
           <mesh>
             <scale>1 1 1</scale>
-            <uri>model://go1/meshes/thigh_mirror.dae</uri>
+            <uri>model://go1/dae/thigh_mirror.dae</uri>
           </mesh>
         </geometry>
         <material>
@@ -1378,12 +1666,12 @@
         <geometry>
           <mesh>
             <scale>1 1 1</scale>
-            <uri>model://go1/meshes/calf.dae</uri>
+            <uri>model://go1/dae/calf.dae</uri>
           </mesh>
         </geometry>
         <material>
-          <diffuse>1.0 0.4235294117647059 0.0392156862745098 1</diffuse>
-          <ambient>1.0 0.4235294117647059 0.0392156862745098 1</ambient>
+          <diffuse>0.2 0.2 0.2 1</diffuse>
+          <ambient>0.2 0.2 0.2 1</ambient>
         </material>
       </visual>
       <sensor name='RR_foot_contact' type='contact'>
@@ -1463,8 +1751,8 @@
           </sphere>
         </geometry>
         <material>
-          <diffuse>1.0 0.4235294117647059 0.0392156862745098 1</diffuse>
-          <ambient>1.0 0.4235294117647059 0.0392156862745098 1</ambient>
+          <diffuse>0.2 0.2 0.2 1</diffuse>
+          <ambient>0.2 0.2 0.2 1</ambient>
         </material>
       </visual>
       <self_collide>true</self_collide>
@@ -1515,6 +1803,96 @@
       <pose>-0.11215 -0.04675 0 0 0 0</pose>
     </frame>
     <frame name='RR_hip_rotor' attached_to='RR_hip_rotor_joint'>
+      <pose>0 0 0 0 0 0</pose>
+    </frame>
+    <frame name='camera_optical_joint_chin' attached_to='camera_chin'>
+      <pose>0 0 0 -1.5707963267948959 -5.5511151231257827e-17 -1.5707963267948959</pose>
+    </frame>
+    <frame name='camera_optical_chin' attached_to='camera_optical_joint_chin'>
+      <pose>0 0 0 0 0 0</pose>
+    </frame>
+    <frame name='camera_joint_chin' attached_to='trunk'>
+      <pose>0.25219999999999998 0.012500000000000001 -0.0436 3.1415926535897931 1.5707963267948966 0</pose>
+    </frame>
+    <frame name='camera_chin' attached_to='camera_joint_chin'>
+      <pose>0 0 0 0 0 0</pose>
+    </frame>
+    <frame name='camera_optical_joint_face' attached_to='camera_face'>
+      <pose>0 0 0 -1.5707963267948959 -5.5511151231257827e-17 -1.5707963267948959</pose>
+    </frame>
+    <frame name='camera_optical_face' attached_to='camera_optical_joint_face'>
+      <pose>0 0 0 0 0 0</pose>
+    </frame>
+    <frame name='camera_joint_face' attached_to='trunk'>
+      <pose>0.27850000000000003 0.012500000000000001 0.0167 3.1415926535897931 0 0</pose>
+    </frame>
+    <frame name='camera_face' attached_to='camera_joint_face'>
+      <pose>0 0 0 0 0 0</pose>
+    </frame>
+    <frame name='camera_laserscan_joint_left' attached_to='camera_left'>
+      <pose>0 0 0 0 0.26180000000000031 0</pose>
+    </frame>
+    <frame name='camera_laserscan_link_left' attached_to='camera_laserscan_joint_left'>
+      <pose>0 0 0 0 0 0</pose>
+    </frame>
+    <frame name='camera_optical_joint_left' attached_to='camera_left'>
+      <pose>0 0 0 -1.5707963267948959 -5.5511151231257827e-17 -1.5707963267948959</pose>
+    </frame>
+    <frame name='camera_optical_left' attached_to='camera_optical_joint_left'>
+      <pose>0 0 0 0 0 0</pose>
+    </frame>
+    <frame name='camera_joint_left' attached_to='trunk'>
+      <pose>-0.066000000000000003 0.082000000000000003 -0.017600000000000001 3.1415926535897931 0.26179999999999998 1.5707963267948957</pose>
+    </frame>
+    <frame name='camera_left' attached_to='camera_joint_left'>
+      <pose>0 0 0 0 0 0</pose>
+    </frame>
+    <frame name='camera_optical_joint_rearDown' attached_to='camera_rearDown'>
+      <pose>0 0 0 -1.5707963267948959 -5.5511151231257827e-17 -1.5707963267948959</pose>
+    </frame>
+    <frame name='camera_optical_rearDown' attached_to='camera_optical_joint_rearDown'>
+      <pose>0 0 0 0 0 0</pose>
+    </frame>
+    <frame name='camera_joint_rearDown' attached_to='trunk'>
+      <pose>-0.082500000000000004 0.012500000000000001 -0.043650000000000001 3.1415926535897931 1.5707963267948966 0</pose>
+    </frame>
+    <frame name='camera_rearDown' attached_to='camera_joint_rearDown'>
+      <pose>0 0 0 0 0 0</pose>
+    </frame>
+    <frame name='camera_laserscan_joint_right' attached_to='camera_right'>
+      <pose>0 0 0 0 0.26180000000000031 0</pose>
+    </frame>
+    <frame name='camera_laserscan_link_right' attached_to='camera_laserscan_joint_right'>
+      <pose>0 0 0 0 0 0</pose>
+    </frame>
+    <frame name='camera_optical_joint_right' attached_to='camera_right'>
+      <pose>0 0 0 -1.5707963267948959 -5.5511151231257827e-17 -1.5707963267948959</pose>
+    </frame>
+    <frame name='camera_optical_right' attached_to='camera_optical_joint_right'>
+      <pose>0 0 0 0 0 0</pose>
+    </frame>
+    <frame name='camera_joint_right' attached_to='trunk'>
+      <pose>-0.041000000000000002 -0.082000000000000003 -0.017600000000000001 3.1415926535897931 0.26179999999999998 -1.570796326794897</pose>
+    </frame>
+    <frame name='camera_right' attached_to='camera_joint_right'>
+      <pose>0 0 0 0 0 0</pose>
+    </frame>
+    <frame name='ultraSound_joint_face' attached_to='trunk'>
+      <pose>0.2747 0 -0.0088000000000000005 0 0 0</pose>
+    </frame>
+    <frame name='ultraSound_face' attached_to='ultraSound_joint_face'>
+      <pose>0 0 0 0 0 0</pose>
+    </frame>
+    <frame name='ultraSound_joint_left' attached_to='trunk'>
+      <pose>-0.053499999999999999 0.082600000000000007 0.0086800000000000002 0 0.26179999999999998 1.570796326794897</pose>
+    </frame>
+    <frame name='ultraSound_left' attached_to='ultraSound_joint_left'>
+      <pose>0 0 0 0 0 0</pose>
+    </frame>
+    <frame name='ultraSound_joint_right' attached_to='trunk'>
+      <pose>-0.053499999999999999 -0.082600000000000007 0.0086800000000000002 0 0.26179999999999998 -1.570796326794897</pose>
+    </frame>
+    <frame name='ultraSound_right' attached_to='ultraSound_joint_right'>
       <pose>0 0 0 0 0 0</pose>
     </frame>
     <frame name='FL_thigh_rotor_joint' attached_to='FL_hip'>
@@ -1571,6 +1949,17 @@
       <name>imu</name>
       <pose>0 0 0 0 0 0 </pose>
     </include>
+
+    <include>
+      <uri>model://cmu_text</uri>
+      <name>cmu_text</name>
+      <pose>0 0 0 0 0 0</pose>
+    </include>
+
+    <joint name="cmu_text_joint" type="fixed">
+      <child>cmu_text::text</child>
+      <parent>trunk</parent>
+    </joint>
 
     <!-- Setup ros control -->
     <plugin 

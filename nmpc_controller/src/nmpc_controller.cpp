@@ -32,6 +32,10 @@ NMPCController::NMPCController(rclcpp::Node::SharedPtr node, int robot_id,
       robot_ns_="spot";
       default_system = SPOT;
       break;
+    case 6:
+      robot_ns_="go1";
+      default_system = GO1; 
+      break;
     default:
       robot_ns_ = "spirit";
       default_system = SPIRIT;
@@ -43,8 +47,9 @@ NMPCController::NMPCController(rclcpp::Node::SharedPtr node, int robot_id,
   quad_utils::loadROSParam(node_, "local_planner.timestep", dt_);
 
   // Load system parameters
-  double mu, panic_weights, constraint_panic_weights, Q_temporal_factor,
+  double mu, mass, panic_weights, constraint_panic_weights, Q_temporal_factor,
       R_temporal_factor;
+  quad_utils::loadROSParam(node_, "global_body_planner.mass", mass);
   quad_utils::loadROSParam(node_, "nmpc_controller.friction_coefficient", mu);
   quad_utils::loadROSParam(node_, "nmpc_controller.panic_weights",
                            panic_weights);
@@ -232,7 +237,7 @@ NMPCController::NMPCController(rclcpp::Node::SharedPtr node, int robot_id,
   mynlp_ = new quadNLP(default_system, N_, dt_, mu, panic_weights,
                        constraint_panic_weights, Q_temporal_factor,
                        R_temporal_factor, fixed_complexity_schedule, config_,
-                       node_, robot_ns_);
+                       mass, node_, robot_ns_);
 
   app_ = IpoptApplicationFactory();
 

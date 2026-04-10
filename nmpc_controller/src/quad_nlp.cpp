@@ -14,7 +14,8 @@ quadNLP::quadNLP(SystemID default_system, int N, double dt, double mu,
                  double panic_weights, double constraint_panic_weights,
                  double Q_temporal_factor, double R_temporal_factor,
                  const Eigen::VectorXi& fixed_complexity_schedule,
-                 const NLPConfig& config, rclcpp::Node::SharedPtr node,
+                 const NLPConfig& config, double mass,
+                 rclcpp::Node::SharedPtr node,
                  std::string robot_ns) {
   // Load constant parameters
   node_ = node;
@@ -23,6 +24,7 @@ quadNLP::quadNLP(SystemID default_system, int N, double dt, double mu,
   dt_ = dt;
   mu_ = mu;
   N_ = N;
+  mass_ = mass;
   Q_temporal_factor_ = Q_temporal_factor;
   R_temporal_factor_ = R_temporal_factor;
   panic_weights_ = panic_weights;

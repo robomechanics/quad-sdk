@@ -1396,6 +1396,17 @@
       <parent>body</parent>
     </joint>
 
+    <include>
+      <uri>model://cmu_text</uri>
+      <name>cmu_text</name>
+      <pose>0 0 0 0 0 0</pose>
+    </include>
+
+    <joint name="cmu_text_joint" type="fixed">
+      <child>cmu_text::text</child>
+      <parent>body</parent>
+    </joint>
+
     <!-- Setup ros control -->
     <plugin 
         filename="libgz_ros2_control-system.so"
