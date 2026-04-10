@@ -24,8 +24,9 @@ void LearnedPolicy::init(const std::vector<double>& stance_kp,
   policy_inference_rate_ = policy_inference_rate;
   first_inference_ = true;
   loadONNXModel();
-  nominal_stance_pose_ << 0.0, 0.0, 0.0, 0.0, 0.8, 0.8, 0.8, 0.8, -1.5, -1.5,
-      -1.5, -1.5;  // For Go2 Change this to a Param Later On, IsaacLab
+  // Default pose in policy order: FL, FR, RL, RR (hip, thigh, calf per leg)
+  nominal_stance_pose_ << 0.0, 0.8, -1.5, 0.0, 0.8, -1.5, 0.0, 0.8, -1.5,
+      0.0, 0.8, -1.5;
   last_cmd_vel_msg_time_ = node_->now();
   last_inference_time_ = node_->now();
 
@@ -96,11 +97,7 @@ void LearnedPolicy::loadONNXModel() {
 
 void LearnedPolicy::computeObservations(
     const quad_msgs::msg::RobotState& robot_state_msg) {
-  // May Require Changes if your Policy has Different Inputs
-
-  // Define vectors for joint positions and velocities
-  Eigen::VectorXd joint_positions(3 * num_feet_),
-      joint_velocities(3 * num_feet_), raw_joint_positions(3 * num_feet_),
+  Eigen::VectorXd raw_joint_positions(3 * num_feet_),
       raw_joint_velocities(3 * num_feet_), body_state(12);
 
   quad_utils::vectorToEigen(robot_state_msg.joints.position,
@@ -109,75 +106,97 @@ void LearnedPolicy::computeObservations(
                             raw_joint_velocities);
   body_state = quad_utils::bodyStateMsgToEigen(robot_state_msg.body);
 
-  Eigen::Vector3d base_lin_vel, base_ang_vel, base_orientation, vel_cmd;
-  base_lin_vel << body_state(6), body_state(7), body_state(8);
-  base_ang_vel << body_state(9), body_state(10), body_state(11);
-  base_orientation << body_state(3), body_state(4), body_state(5);
-  vel_cmd << cmd_vel_msg_(0), cmd_vel_msg_(1), cmd_vel_msg_(5);
-  // vel_cmd << 0.5, 0.0, 0.0; // Debug with a Fixed Forward velocity
+  // bodyStateMsgToEigen layout (verified in quad_utils/src/ros_utils.cpp):
+  //   [0:3] position (x,y,z), [3:6] RPY, [6:9] lin_vel world-frame,
+  //   [9:12] ang_vel body-frame
+  //
+  // Per robot_state_msg convention: linear velocity is WORLD frame,
+  // angular velocity is already BODY frame — rotate only the linear part.
+  const Eigen::Vector3d base_lin_vel_world(body_state(6), body_state(7),
+                                           body_state(8));
+  const Eigen::Vector3d base_ang_vel(body_state(9), body_state(10),
+                                     body_state(11));
 
-  // Clip the Commanded Velocity within Trained Bounds
-  const Eigen::Vector3d vmin(-1.0, -0.4, -1.0);
-  const Eigen::Vector3d vmax(1.0, 0.4, 1.0);
-  vel_cmd = vel_cmd.cwiseMin(vmax).cwiseMax(vmin);
-
-  // Compute the Projected Gravity in the Body Frame
-  const Eigen::Matrix3d R_bw =
-      (Eigen::AngleAxisd(body_state(5), Eigen::Vector3d::UnitZ()) *
-       Eigen::AngleAxisd(body_state(4), Eigen::Vector3d::UnitY()) *
-       Eigen::AngleAxisd(body_state(3), Eigen::Vector3d::UnitX()))
-          .toRotationMatrix();
-  const Eigen::Vector3d g_world(
-      0.0, 0.0, -1.0);  // Change to  (0,0,-1.0) for Unit Proj Gravity
-  const Eigen::Vector3d proj_gravity1 = R_bw.transpose() * g_world;
-
+  // Use quaternion directly from the message (avoids re-computing from RPY)
   Eigen::Quaterniond quat(robot_state_msg.body.pose.orientation.w,
                           robot_state_msg.body.pose.orientation.x,
                           robot_state_msg.body.pose.orientation.y,
                           robot_state_msg.body.pose.orientation.z);
+
+  // Rotate world-frame linear velocity into body frame: R^T * v_world
+  const Eigen::Vector3d base_lin_vel_body = quat.conjugate() * base_lin_vel_world;
+
+  // Projected gravity: R_base^T @ [0,0,-1] — same rotation, applied to g
+  // (previously also computed via RPY rotation matrix; quaternion conjugate is
+  // equivalent and avoids the intermediate R_bw construction)
+  const Eigen::Vector3d g_world(0.0, 0.0, -1.0);
   const Eigen::Vector3d proj_gravity = quat.conjugate() * g_world;
 
-  // Reorder Raw Joint Positions and Raw Joint Velocities in Quad-SDK Notation
-  // to match Isaac Notation, See Below: QuadSDK Order FL(hip 0, thigh 1, knee
-  // 2), RL (hip 3, thigh 4, knee 5), FR(hip 6, thigh 7, knee 8), RR(hip 9,
-  // thigh 10, knee 11) IsaacLab Order FL, FR, RL, RR (hips, thighs, knees)
+  // cmd_vel_msg_ is a 6-element twist from robot_driver.cpp:
+  //   [0]=vx, [1]=vy, [2]=0, [3]=0, [4]=0, [5]=yaw_rate
+  Eigen::Vector3d vel_cmd(cmd_vel_msg_(0), cmd_vel_msg_(1), cmd_vel_msg_(5));
+  const Eigen::Vector3d vmin(-1.0, -0.4, -1.0);
+  const Eigen::Vector3d vmax(1.0, 0.4, 1.0);
+  vel_cmd = vel_cmd.cwiseMin(vmax).cwiseMax(vmin);
 
-  Eigen::VectorXd temp_joint_positions(3 * num_feet_),
-      temp_joint_velocities(3 * num_feet_);
+  // SDK joint order (verified via joint_names in quad_utils/src/ros_utils.cpp):
+  //   FL(0,1,2), RL(3,4,5), FR(6,7,8), RR(9,10,11)
+  //
+  // Policy joint order required:
+  //   FL(0,1,2), FR(3,4,5), RL(6,7,8), RR(9,10,11)
+  //
+  // SDK_TO_POLICY remap — swap RL and FR blocks:
+  //   old (IsaacLab grouped-by-type) remap was wrong for this policy
+  Eigen::VectorXd joint_positions(3 * num_feet_),
+      joint_velocities(3 * num_feet_);
 
-  joint_positions << raw_joint_positions(0), raw_joint_positions(6),
-      raw_joint_positions(3), raw_joint_positions(9), raw_joint_positions(1),
-      raw_joint_positions(7), raw_joint_positions(4), raw_joint_positions(10),
-      raw_joint_positions(2), raw_joint_positions(8), raw_joint_positions(5),
-      raw_joint_positions(11);
+  // clang-format off
+  joint_positions <<
+      raw_joint_positions(0), raw_joint_positions(1), raw_joint_positions(2),   // FL
+      raw_joint_positions(6), raw_joint_positions(7), raw_joint_positions(8),   // FR (was at SDK[6:9])
+      raw_joint_positions(3), raw_joint_positions(4), raw_joint_positions(5),   // RL (was at SDK[3:6])
+      raw_joint_positions(9), raw_joint_positions(10), raw_joint_positions(11); // RR
 
-  joint_velocities << raw_joint_velocities(0), raw_joint_velocities(6),
-      raw_joint_velocities(3), raw_joint_velocities(9), raw_joint_velocities(1),
-      raw_joint_velocities(7), raw_joint_velocities(4),
-      raw_joint_velocities(10), raw_joint_velocities(2),
-      raw_joint_velocities(8), raw_joint_velocities(5),
-      raw_joint_velocities(11);
+  joint_velocities <<
+      raw_joint_velocities(0), raw_joint_velocities(1), raw_joint_velocities(2),   // FL
+      raw_joint_velocities(6), raw_joint_velocities(7), raw_joint_velocities(8),   // FR
+      raw_joint_velocities(3), raw_joint_velocities(4), raw_joint_velocities(5),   // RL
+      raw_joint_velocities(9), raw_joint_velocities(10), raw_joint_velocities(11); // RR
+  // clang-format on
 
-  // Apply Scaling Factors, Make Joint Positions Relative to Base Stance Pose
+  // Offset from default pose (nominal_stance_pose_ is also in policy order)
   joint_positions -= nominal_stance_pose_;
-  base_ang_vel *= 0.2;
-  joint_velocities *= 0.05;
 
-  // Compute Prev Action
-  if (initialized_) {
-    prev_action_ = (joint_positions - nominal_stance_pose_) / scale_factor_;
-    initialized_ = false;
-  } else {
-    prev_action_ = raw_actions_;
-  }
+  // No obs normalization — feed raw numbers to the policy.
+  // Old code applied base_ang_vel *= 0.2 and joint_velocities *= 0.05 here;
+  // those were IsaacLab-specific scalings not used by this policy.
+  // base_ang_vel *= 0.2;    // REMOVED
+  // joint_velocities *= 0.05;  // REMOVED
 
-  // obs_.resize(48);
-  // obs_ << base_lin_vel, base_ang_vel, proj_gravity, vel_cmd, joint_positions,
-  // joint_velocities, prev_action_;
+  // last_act: raw ONNX output from previous runInference() call.
+  // raw_actions_ is initialized to zeros and updated after each inference,
+  // so it naturally holds the previous step's output here.
+  // Old logic recomputed prev_action_ from joint positions on first call
+  // (initialized_ flag); that is incorrect — just use the zero-init directly.
+  prev_action_ = raw_actions_;
 
-  obs_.resize(45);
-  obs_ << base_ang_vel, proj_gravity, vel_cmd, joint_positions,
-      joint_velocities, prev_action_;
+  // 48-dim observation (no normalization):
+  // [0:3]   linvel  — body-frame linear velocity
+  // [3:6]   gyro    — body-frame angular velocity (already body frame)
+  // [6:9]   gravity — projected gravity R^T @ [0,0,-1]
+  // [9:21]  joint_pos_offset — qpos - default_pose, policy order
+  // [21:33] joint_vel — policy order
+  // [33:45] last_act — previous raw ONNX output (zeros on startup)
+  // [45:48] command  — [vx, vy, yaw_rate]
+  obs_.resize(48);
+  obs_ << base_lin_vel_body, base_ang_vel, proj_gravity, joint_positions,
+      joint_velocities, prev_action_, vel_cmd;
+
+  // Old (broken) obs builds for reference:
+  // obs_.resize(45);  // wrong size
+  // obs_ << base_lin_vel_body, base_ang_vel, proj_gravity, vel_cmd,
+  //     joint_positions, joint_velocities, prev_action_, vel_cmd;
+  //     ^^^ vel_cmd duplicated and total was still wrong
 }
 
 void LearnedPolicy::runInference() {
@@ -219,21 +238,29 @@ void LearnedPolicy::runInference() {
   for (int64_t i = 0; i < out_elems; ++i)
     raw_actions_(i) = static_cast<double>(y[i]);
 
-  // Apply Scaling to Raw Action Offsets and Add Them to Nominal Stance
-  Eigen::VectorXd unordered_actions_ =
-      raw_actions_ * scale_factor_ + nominal_stance_pose_;
+  // joint_target = default_pose + scale_factor_ * raw_action
+  // scale_factor_ = 0.5 (set in header); tanh is inside the ONNX graph
+  // nominal_stance_pose_ is in policy order (FL, FR, RL, RR)
+  Eigen::VectorXd policy_actions =
+      nominal_stance_pose_ + scale_factor_ * raw_actions_;
 
-  // Reorder Actions to Match the Quad-SDK Joint Convention
-  // Quad SDK Convention FL(8, 0, 1), RL(9, 2, 3), FR(10, 4, 5), RR(11, 6, 7)
+  // POLICY_TO_SDK remap — inverse of SDK_TO_POLICY applied in computeObservations
+  // Policy order: FL(0,1,2), FR(3,4,5), RL(6,7,8), RR(9,10,11)
+  // SDK order:    FL(0,1,2), RL(3,4,5), FR(6,7,8), RR(9,10,11)
+  // clang-format off
+  actions_ <<
+      policy_actions(0), policy_actions(1), policy_actions(2),    // FL -> SDK[0:3]
+      policy_actions(6), policy_actions(7), policy_actions(8),    // RL -> SDK[3:6]
+      policy_actions(3), policy_actions(4), policy_actions(5),    // FR -> SDK[6:9]
+      policy_actions(9), policy_actions(10), policy_actions(11);  // RR -> SDK[9:12]
+  // clang-format on
 
-  // Isaac Lab Action Output Convention
-  // (FL hip 0, FR hip 1, RL hip 2, RR hip 3), (FL thigh 4, FR thigh 5, RL thigh
-  // 6, RR thigh 7), (FL calf 8, FR calf 9, RL calf 10, RR calf 11)
-  actions_ << unordered_actions_(0), unordered_actions_(4),
-      unordered_actions_(8), unordered_actions_(2), unordered_actions_(6),
-      unordered_actions_(10), unordered_actions_(1), unordered_actions_(5),
-      unordered_actions_(9), unordered_actions_(3), unordered_actions_(7),
-      unordered_actions_(11);
+  // Old IsaacLab grouped-by-type remap (wrong for this policy order):
+  // actions_ << unordered_actions_(0), unordered_actions_(4),
+  //     unordered_actions_(8), unordered_actions_(2), unordered_actions_(6),
+  //     unordered_actions_(10), unordered_actions_(1), unordered_actions_(5),
+  //     unordered_actions_(9), unordered_actions_(3), unordered_actions_(7),
+  //     unordered_actions_(11);
 
   // Print out Action Commands as a Debugging Step
   temp_actions_ << 0.0, 0.8, -1.5, 0.0, 0.8, -1.5, 0.0, 0.8, -1.5, 0.0, 0.8,

@@ -109,12 +109,12 @@ class LearnedPolicy : public LegController {
   /// Whether first inference has been run yet
   bool first_inference_ = true;
 
-  double scale_factor_ = 0.25;  // Grabbed Directly From IsaacLab Repo
+  // joint_target = default_pose + scale_factor_ * raw_action
+  double scale_factor_ = 0.5;
 
+  // Default pose in policy joint order: FL, FR, RL, RR (hip, thigh, calf each)
   Eigen::VectorXd nominal_stance_pose_{Eigen::VectorXd::Zero(12)};
 
   Eigen::VectorXd temp_actions_{Eigen::VectorXd::Zero(12)};
-
-  bool initialized_ = true;
 };
 #endif  // LEARNED_POLICY_H
