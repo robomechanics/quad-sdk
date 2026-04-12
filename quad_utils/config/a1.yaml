@@ -107,7 +107,7 @@
     body:
       frame: "body"
     motor_limits:
-      torque: [33.5, 33.5, 33.5]
+      torque: [100.0, 100.0, 100.0]
       speed: [21.0, 21.0, 21.0]
     leg_0:
       joints:

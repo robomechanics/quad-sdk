@@ -1189,7 +1189,7 @@
     <visual>
       <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
-        <mesh filename="package://objects_description/models/cmu_text/meshes/Spirit40_CMU_Text_transformed.stl" scale="1.3 1 1.3" />
+        <mesh filename="package://objects_description/models/cmu_text/meshes/Spirit40_CMU_Text_transformed.stl" scale="0.8 0.5 0.8" />
       </geometry>
     </visual>
     <inertial>
