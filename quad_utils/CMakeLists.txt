@@ -72,6 +72,15 @@ add_executable(rviz_interface_node
 #   src/trajectory_publisher.cpp
 #   )
 
+add_executable(remote_heartbeat_node
+  src/remote_heartbeat_node.cpp
+  src/remote_heartbeat.cpp)
+
+target_include_directories(remote_heartbeat_node PUBLIC
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+  $<INSTALL_INTERFACE:include>
+)
+
 add_executable(grid_map_filters_demo
   src/filters_demo.cpp
   src/filters_demo_node.cpp
@@ -162,6 +171,15 @@ ament_target_dependencies(rviz_interface_node
 #   grid_map_core  
 # )
 
+target_link_libraries(remote_heartbeat_node
+  quad_utils
+)
+
+ament_target_dependencies(remote_heartbeat_node
+  rclcpp
+  std_msgs
+)
+
 ament_target_dependencies(grid_map_filters_demo
   rclcpp
   grid_map_core
@@ -198,6 +216,7 @@ install(TARGETS
 install(TARGETS
   mesh_to_grid_map_node
   rviz_interface_node
+  remote_heartbeat_node
   # trajectory_publisher_node
   DESTINATION lib/${PROJECT_NAME}
 )
