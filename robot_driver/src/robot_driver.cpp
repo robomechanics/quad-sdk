@@ -192,7 +192,12 @@ RobotDriver::RobotDriver(std::shared_ptr<rclcpp::Node> node, int argc,
 }
 
 void RobotDriver::initStateEstimator() {
-  if (estimator_id_ == "comp_filter") {
+  if (estimator_id_ == "none") {
+    RCLCPP_INFO(node_->get_logger(),
+                "State estimator disabled (estimator_id='none')");
+    state_estimator_ = nullptr;
+    return;
+  } else if (estimator_id_ == "comp_filter") {
     RCLCPP_INFO_STREAM(node_->get_logger(), "Comp Filter");
     state_estimator_ =
         std::make_shared<CompFilterEstimator>(node_, robot_ns, quadKD2_);
@@ -443,14 +448,37 @@ bool RobotDriver::updateState() {
     bool fully_populated = hardware_interface_->recv(
         last_joint_state_msg_, last_imu_msg_, user_rx_data_);
 
-    // load robot sensor message to state estimator class
-    if (fully_populated) {
-      state_estimator_->loadSensorMsg(last_imu_msg_, last_joint_state_msg_);
-    } else {
+    if (!fully_populated) {
       RCLCPP_WARN_THROTTLE(node_->get_logger(), *node_->get_clock(), 500,
                            "updateState returning false: recv() not fully populated");
       return false;
     }
+
+    // For learned controllers on hardware, populate state directly from
+    // IMU + joint encoders without requiring mocap or a full state estimator.
+    // The learned policy only needs orientation, angular velocity, joint
+    // positions, and joint velocities — all available from onboard sensors.
+    if (controller_id_ == "learned") {
+      rclcpp::Time state_timestamp = node_->now();
+
+      // Joint state from encoders
+      last_robot_state_msg_.joints = last_joint_state_msg_;
+      last_robot_state_msg_.joints.header.stamp = state_timestamp;
+
+      // Orientation from IMU quaternion
+      last_robot_state_msg_.body.pose.orientation = last_imu_msg_.orientation;
+
+      // Angular velocity from IMU gyroscope
+      last_robot_state_msg_.body.twist.angular = last_imu_msg_.angular_velocity;
+
+      // Update headers
+      last_robot_state_msg_.header.stamp = state_timestamp;
+
+      return true;
+    }
+
+    // For other controllers, use the full state estimator (requires mocap)
+    state_estimator_->loadSensorMsg(last_imu_msg_, last_joint_state_msg_);
 
     if (last_mocap_msg_ != NULL) {
       state_estimator_->loadMocapMsg(last_mocap_msg_);
