@@ -169,6 +169,7 @@ def launch_robot_driver(context, *args, **kwargs):
     namespace = LaunchConfiguration('namespace').perform(context)
     robot_type = LaunchConfiguration('robot_type').perform(context)
     controller = LaunchConfiguration('controller').perform(context)
+    estimator = LaunchConfiguration('estimator').perform(context)
     urdf = LaunchConfiguration('robot_urdf').perform(context)
     sdf = LaunchConfiguration('robot_sdf').perform(context)
     quad_utils_path = FindPackageShare('quad_utils').perform(context)
@@ -180,10 +181,11 @@ def launch_robot_driver(context, *args, **kwargs):
             launch_arguments={
                 'robot_type': robot_type,
                 'controller': controller,
+                'estimator': estimator,
                 'mocap': 'false',
                 'is_hardware': 'false',
                 'namespace': namespace,
-                'robot_description': urdf, 
+                'robot_description': urdf,
             }.items()
         )
     return [robot_driver_node]
@@ -346,6 +348,7 @@ def generate_launch_description():
         DeclareLaunchArgument('robot_type', default_value = 'spirit', description='Robot type'),
         DeclareLaunchArgument('namespace', default_value = 'robot_1', description='Robot namespace'),
         DeclareLaunchArgument('controller', default_value = 'inverse_kinematics', description='Controller type'),
+        DeclareLaunchArgument('estimator', default_value = 'comp_filter', description='State estimator type (comp_filter or ekf_filter)'),
         DeclareLaunchArgument('init_pose', default_value = '-x 2.0 -y 0.0 -z 15', description= "Initial Robot Position"),
         DeclareLaunchArgument('is_hardware', default_value = 'false', description="Simulation or Hardware"),
         DeclareLaunchArgument('mocap', default_value = 'false', description='Launch the Motion Capture Node'),

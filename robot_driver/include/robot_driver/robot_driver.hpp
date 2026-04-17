@@ -386,7 +386,8 @@ class RobotDriver {
   /// QuadKD2 (Pinocchio-based kinematics)
   std::shared_ptr<quad_utils::QuadKD2> quadKD2_;
 
-  bool debugger = true;
+  /// Run state estimator in sim for debugging/testing
+  bool debug_estimator_ = false;
 
   /// Leg Controller template class
   std::shared_ptr<LegController> leg_controller_;
@@ -465,6 +466,15 @@ class RobotDriver {
 
   /// Required for some hardware interfaces
   char** argv_;
+
+  /// EKF estimate message (for sim testing, separate from control state)
+  quad_msgs::msg::RobotState ekf_estimate_msg_;
+
+  /// Whether the EKF has been initialized from ground truth
+  bool ekf_initialized_ = false;
+
+  /// Previous ground truth velocity for finite-difference accel computation
+  Eigen::Vector3d ekf_last_vel_ = Eigen::Vector3d::Zero();
 };
 
 #endif  // ROBOT_DRIVER_H
