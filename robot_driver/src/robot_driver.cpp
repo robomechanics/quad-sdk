@@ -78,7 +78,8 @@ RobotDriver::RobotDriver(std::shared_ptr<rclcpp::Node> node, int argc,
   found_torque_limits =
       quad_utils::loadROSParam(node_, "motor_limits.torque", torque_limits_);
   if (!found_torque_limits) {
-    quad_utils::loadROSParam(node_, "robot_driver.torque_limit", torque_limits_);
+    quad_utils::loadROSParam(node_, "robot_driver.torque_limit",
+                             torque_limits_);
     RCLCPP_WARN(node_->get_logger(),
                 "Using legacy parameter 'robot_driver.torque_limit'; migrate "
                 "to 'motor_limits.torque'");

@@ -6,6 +6,8 @@ $HOME/ros2_ws/install/a1_description/share/a1_description/models:\
 $HOME/ros2_ws/install/go1_description/share/go1_description/models:\
 $HOME/ros2_ws/install/go2_description/share/go2_description/models:\
 $HOME/ros2_ws/install/go2w_description/share/go2w_description/models:\
+$HOME/ros2_ws/install/spot_description/share/spot_description/models:\
+$HOME/ros2_ws/install/vision60_description/share/vision60_description/models:\
 $HOME/ros2_ws/install/sensor_description/share/sensor_description/models:\
 $HOME/ros2_ws/install/objects_description/share/objects_description/models:\
 $HOME/ros2_ws/install/underbrush_description/share/underbrush_description/models:\

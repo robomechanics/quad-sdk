@@ -18,6 +18,8 @@
   <exec_depend>ros2bag</exec_depend>
   <exec_depend>quad_utils</exec_depend>
 
+  <test_depend>python3-pytest</test_depend>
+
   <export>
     <build_type>ament_python</build_type>
   </export>

@@ -60,3 +60,16 @@ void LegController::init(const std::vector<double>& stance_kp,
   swing_kd_cart_ = swing_kd_cart;
   model_path_ = model_path;
 }
+
+void LegController::init(const std::vector<double>& stance_kp,
+                         const std::vector<double>& stance_kd,
+                         const std::vector<double>& swing_kp,
+                         const std::vector<double>& swing_kd,
+                         const std::vector<double>& swing_kp_cart,
+                         const std::vector<double>& swing_kd_cart,
+                         const std::string& model_path,
+                         double policy_inference_rate,
+                         const std::vector<double>& /*stand_joint_angles*/) {
+  init(stance_kp, stance_kd, swing_kp, swing_kd, swing_kp_cart, swing_kd_cart,
+       model_path, policy_inference_rate);
+}

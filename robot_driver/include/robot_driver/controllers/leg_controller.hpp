@@ -89,6 +89,28 @@ class LegController {
                     double policy_inference_rate = 50.0);
 
   /**
+   * @brief Set gains, model path, inference rate, and stand joint angles
+   * @param[in] stance_kp Stance phase proportional gains
+   * @param[in] stance_kd Stance phase derivative gains
+   * @param[in] swing_kp Swing phase proportional gains
+   * @param[in] swing_kd Swing phase derivative gains
+   * @param[in] swing_kp_cart Cartesian Swing phase proportional gains
+   * @param[in] swing_kd_cart Cartesian Swing phase derivative gains
+   * @param[in] model_path Absolute Path to ONNX Model Weights
+   * @param[in] policy_inference_rate Rate (Hz) at which learned policy runs
+   * @param[in] stand_joint_angles Default standing joint angles
+   */
+  virtual void init(const std::vector<double>& stance_kp,
+                    const std::vector<double>& stance_kd,
+                    const std::vector<double>& swing_kp,
+                    const std::vector<double>& swing_kd,
+                    const std::vector<double>& swing_kp_cart,
+                    const std::vector<double>& swing_kd_cart,
+                    const std::string& model_path,
+                    double policy_inference_rate,
+                    const std::vector<double>& stand_joint_angles);
+
+  /**
    * @brief Compute the leg command array message for a given current state and
    * reference plan
    * @param[in] local_plan_msg Message of the local referance plan

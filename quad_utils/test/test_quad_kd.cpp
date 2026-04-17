@@ -36,7 +36,10 @@ static std::string runXacro(const std::string& xacro_path) {
 struct RobotKinematicsConfig {
   std::string xacro_pkg;
   std::string xacro_relpath;  // relative inside pkg share
-  std::array<std::array<std::string, 3>, 4> leg_joint_names;  // [leg][3]
+  std::array<std::array<std::string, 3>, 4>
+      leg_joint_names;  // [leg][abad,hip,knee]
+  std::array<std::array<std::string, 4>, 4>
+      leg_frame_names;  // [leg][hip,upper,lower,toe]
   double abad_sign, abad_offset;
   double hip_sign, hip_offset;
   double knee_sign, knee_offset;
@@ -50,6 +53,10 @@ static RobotKinematicsConfig spiritCfg() {
                         {{"9", "2", "3"}},
                         {{"10", "4", "5"}},
                         {{"11", "6", "7"}}}};
+  c.leg_frame_names = {{{{"hip0", "upper0", "lower0", "toe0"}},
+                        {{"hip1", "upper1", "lower1", "toe1"}},
+                        {{"hip2", "upper2", "lower2", "toe2"}},
+                        {{"hip3", "upper3", "lower3", "toe3"}}}};
   c.abad_sign = 1.0;
   c.abad_offset = 0.0;
   c.hip_sign = 1.0;
@@ -64,10 +71,14 @@ static RobotKinematicsConfig go2Cfg() {
   RobotKinematicsConfig c;
   c.xacro_pkg = "go2_description";
   c.xacro_relpath = "models/go2/urdf/go2.urdf.xacro";
-  c.leg_joint_names = {{{{"FL_hip_joint", "FL_thigh_joint", "FL_calf_joint"}},
-                        {{"RL_hip_joint", "RL_thigh_joint", "RL_calf_joint"}},
-                        {{"FR_hip_joint", "FR_thigh_joint", "FR_calf_joint"}},
-                        {{"RR_hip_joint", "RR_thigh_joint", "RR_calf_joint"}}}};
+  c.leg_joint_names = {{{{"8", "0", "1"}},
+                        {{"9", "2", "3"}},
+                        {{"10", "4", "5"}},
+                        {{"11", "6", "7"}}}};
+  c.leg_frame_names = {{{{"hip0", "upper0", "lower0", "toe0"}},
+                        {{"hip1", "upper1", "lower1", "toe1"}},
+                        {{"hip2", "upper2", "lower2", "toe2"}},
+                        {{"hip3", "upper3", "lower3", "toe3"}}}};
   c.abad_sign = 1.0;
   c.abad_offset = 0.0;
   c.hip_sign = -1.0;
@@ -89,17 +100,21 @@ static void loadRobotParams(const rclcpp::Node::SharedPtr& node,
   for (int i = 0; i < 4; i++) {
     const std::string p = "leg_" + std::to_string(i);
 
-    std::vector<std::string> names = {cfg.leg_joint_names[i][0],
-                                      cfg.leg_joint_names[i][1],
-                                      cfg.leg_joint_names[i][2]};
-    node->declare_parameter(p + ".joint_names", names);
+    node->declare_parameter(p + ".joints.abad.name", cfg.leg_joint_names[i][0]);
+    node->declare_parameter(p + ".joints.hip.name", cfg.leg_joint_names[i][1]);
+    node->declare_parameter(p + ".joints.knee.name", cfg.leg_joint_names[i][2]);
 
-    node->declare_parameter(p + ".abad.sign", cfg.abad_sign);
-    node->declare_parameter(p + ".abad.offset", cfg.abad_offset);
-    node->declare_parameter(p + ".hip.sign", cfg.hip_sign);
-    node->declare_parameter(p + ".hip.offset", cfg.hip_offset);
-    node->declare_parameter(p + ".knee.sign", cfg.knee_sign);
-    node->declare_parameter(p + ".knee.offset", cfg.knee_offset);
+    node->declare_parameter(p + ".joints.abad.sign", cfg.abad_sign);
+    node->declare_parameter(p + ".joints.abad.offset", cfg.abad_offset);
+    node->declare_parameter(p + ".joints.hip.sign", cfg.hip_sign);
+    node->declare_parameter(p + ".joints.hip.offset", cfg.hip_offset);
+    node->declare_parameter(p + ".joints.knee.sign", cfg.knee_sign);
+    node->declare_parameter(p + ".joints.knee.offset", cfg.knee_offset);
+
+    node->declare_parameter(p + ".frames.hip", cfg.leg_frame_names[i][0]);
+    node->declare_parameter(p + ".frames.upper", cfg.leg_frame_names[i][1]);
+    node->declare_parameter(p + ".frames.lower", cfg.leg_frame_names[i][2]);
+    node->declare_parameter(p + ".frames.toe", cfg.leg_frame_names[i][3]);
   }
 }
 

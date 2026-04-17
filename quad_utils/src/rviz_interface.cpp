@@ -100,7 +100,7 @@ RVizInterface::RVizInterface(rclcpp::Node::SharedPtr node) : node_(node) {
                            trajectory_state_trace_viz_topic);
 
   // Setup rviz interface parameters
-  node_->declare_parameter<std::string>("body.frame");
+  node_->declare_parameter<std::string>("body.frame", "body");
   node_->declare_parameter<std::string>("map_frame");
   node_->declare_parameter<double>("rviz_interface.update_rate");
   node_->declare_parameter<std::vector<int>>(

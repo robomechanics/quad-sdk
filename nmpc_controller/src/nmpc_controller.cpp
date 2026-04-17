@@ -21,20 +21,20 @@ NMPCController::NMPCController(rclcpp::Node::SharedPtr node, int robot_id,
       default_system = GO2;
       break;
     case 3:
-      robot_ns_="b2";
+      robot_ns_ = "b2";
       default_system = B2;
       break;
     case 4:
-      robot_ns_="vision60";
+      robot_ns_ = "vision60";
       default_system = VISION60;
       break;
     case 5:
-      robot_ns_="spot";
+      robot_ns_ = "spot";
       default_system = SPOT;
       break;
     case 6:
-      robot_ns_="go1";
-      default_system = GO1; 
+      robot_ns_ = "go1";
+      default_system = GO1;
       break;
     default:
       robot_ns_ = "spirit";

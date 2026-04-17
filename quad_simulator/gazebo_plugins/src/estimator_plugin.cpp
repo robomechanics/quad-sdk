@@ -64,7 +64,8 @@ bool load_robot_names(const rclcpp::Node::SharedPtr& node,
     if (!load_leg_joint_names(node, leg_index, leg_joint_names)) {
       return false;
     }
-    if (lower_frame_names[leg_index].empty() || toe_frame_names[leg_index].empty()) {
+    if (lower_frame_names[leg_index].empty() ||
+        toe_frame_names[leg_index].empty()) {
       return false;
     }
 
@@ -270,14 +271,15 @@ void GroundTruthEstimator::PostUpdate(
   gz::sim::Link body_link(body_entity);
   std::array<gz::sim::Link, 4> toe_links;
   for (int i = 0; i < 4; ++i) {
-    auto lower_entity = this->model_.LinkByName(ecm, this->lower_frame_names_[i]);
+    auto lower_entity =
+        this->model_.LinkByName(ecm, this->lower_frame_names_[i]);
     auto toe_entity = this->model_.LinkByName(ecm, this->toe_frame_names_[i]);
     if (lower_entity == gz::sim::kNullEntity ||
         toe_entity == gz::sim::kNullEntity) {
-      RCLCPP_WARN_THROTTLE(this->node_->get_logger(), *this->node_->get_clock(),
-                           2000,
-                           "Can't find leg links in sdf. Make sure the lower "
-                           "and toe frame names in the robot yaml match the model.");
+      RCLCPP_WARN_THROTTLE(
+          this->node_->get_logger(), *this->node_->get_clock(), 2000,
+          "Can't find leg links in sdf. Make sure the lower "
+          "and toe frame names in the robot yaml match the model.");
       return;
     }
     toe_links[i] = gz::sim::Link(toe_entity);

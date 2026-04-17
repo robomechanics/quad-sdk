@@ -1,64 +1,8 @@
 #include "quad_utils/quad_kd2.hpp"
 
+#include "quad_utils/ros_utils.hpp"
+
 using namespace quad_utils;
-
-// Eigen::IOFormat CleanFmt(4, 0, ", ", "\n", "[", "]");
-
-namespace {
-
-template <typename ParamType>
-void declare_if_missing(const rclcpp::Node::SharedPtr& node,
-                        const std::string& param_name,
-                        const ParamType& default_value) {
-  if (!node->has_parameter(param_name)) {
-    node->declare_parameter<ParamType>(param_name, default_value);
-  }
-}
-
-bool load_joint_param(const rclcpp::Node::SharedPtr& node,
-                      const std::string& leg_ns,
-                      std::vector<std::string>& joint_names) {
-  std::string abad_name;
-  std::string hip_name;
-  std::string knee_name;
-  if (node->get_parameter(leg_ns + ".joints.abad.name", abad_name) &&
-      node->get_parameter(leg_ns + ".joints.hip.name", hip_name) &&
-      node->get_parameter(leg_ns + ".joints.knee.name", knee_name) &&
-      !abad_name.empty() && !hip_name.empty() && !knee_name.empty()) {
-    joint_names = {abad_name, hip_name, knee_name};
-    return true;
-  }
-  return node->get_parameter(leg_ns + ".joint_names", joint_names) &&
-         joint_names.size() == 3;
-}
-
-double load_scalar_param(const rclcpp::Node::SharedPtr& node,
-                         const std::string& primary_name,
-                         const std::string& legacy_name) {
-  double value = 0.0;
-  if (node->get_parameter(primary_name, value)) {
-    return value;
-  }
-  if (!legacy_name.empty()) {
-    node->get_parameter(legacy_name, value);
-  }
-  return value;
-}
-
-std::string load_string_param(const rclcpp::Node::SharedPtr& node,
-                              const std::string& primary_name,
-                              const std::string& legacy_name) {
-  std::string value;
-  if (node->get_parameter(primary_name, value) && !value.empty()) {
-    return value;
-  }
-  if (!legacy_name.empty()) {
-    node->get_parameter(legacy_name, value);
-  }
-  return value;
-}
-
-}  // namespace
 
 QuadKD2::QuadKD2(rclcpp::Node::SharedPtr node) : node_(node) { initModel(""); }
 
@@ -88,9 +32,9 @@ void QuadKD2::initModel(std::string ns) {
   }
 
   // Get the Body Frame ID
-  declare_if_missing<std::string>(node_, "body.frame", "body");
   std::string body_frame_name;
-  node_->get_parameter("body.frame", body_frame_name);
+  loadROSParamDefault(node_, std::string("body.frame"), body_frame_name,
+                      std::string("body"));
   if (body_frame_name.empty()) {
     RCLCPP_FATAL(node_->get_logger(),
                  "Parameter 'body.frame' must be set in the robot yaml.");
@@ -113,65 +57,55 @@ void QuadKD2::initModel(std::string ns) {
     std::string p = "leg_" + std::to_string(i);
     LimbInfo& limb = limbs_[i];
 
-    declare_if_missing<std::vector<std::string>>(
-        node_, p + ".joint_names", std::vector<std::string>({"", "", ""}));
-    declare_if_missing<std::string>(node_, p + ".joints.abad.name", "");
-    declare_if_missing<std::string>(node_, p + ".joints.hip.name", "");
-    declare_if_missing<std::string>(node_, p + ".joints.knee.name", "");
-    declare_if_missing<double>(node_, p + ".abad.sign", 1.0);
-    declare_if_missing<double>(node_, p + ".abad.offset", 0.0);
-    declare_if_missing<double>(node_, p + ".hip.sign", 1.0);
-    declare_if_missing<double>(node_, p + ".hip.offset", 0.0);
-    declare_if_missing<double>(node_, p + ".knee.sign", 1.0);
-    declare_if_missing<double>(node_, p + ".knee.offset", 0.0);
-    declare_if_missing<double>(node_, p + ".joints.abad.sign", 1.0);
-    declare_if_missing<double>(node_, p + ".joints.abad.offset", 0.0);
-    declare_if_missing<double>(node_, p + ".joints.hip.sign", 1.0);
-    declare_if_missing<double>(node_, p + ".joints.hip.offset", 0.0);
-    declare_if_missing<double>(node_, p + ".joints.knee.sign", 1.0);
-    declare_if_missing<double>(node_, p + ".joints.knee.offset", 0.0);
-    declare_if_missing<std::string>(node_, p + ".frames.hip", "");
-    declare_if_missing<std::string>(node_, p + ".frames.upper", "");
-    declare_if_missing<std::string>(node_, p + ".frames.lower", "");
-    declare_if_missing<std::string>(node_, p + ".frames.toe", "");
-
-    // Load Bridge Parameters which account for discrepencies between Robot URDF
-    // Models (Diff Axis of Rotation, Origin)
-    if (!load_joint_param(node_, p, limb.joint_names)) {
+    // Load joint names
+    std::string abad_name, hip_name, knee_name;
+    loadROSParamDefault(node_, p + ".joints.abad.name", abad_name,
+                        std::string(""));
+    loadROSParamDefault(node_, p + ".joints.hip.name", hip_name,
+                        std::string(""));
+    loadROSParamDefault(node_, p + ".joints.knee.name", knee_name,
+                        std::string(""));
+    if (abad_name.empty() || hip_name.empty() || knee_name.empty()) {
       RCLCPP_FATAL(node_->get_logger(),
-                   "Missing joint name config for %s. Expected either "
-                   "'%s.joints.(abad|hip|knee).name' or legacy '%s.joint_names'",
-                   p.c_str(), p.c_str(), p.c_str());
+                   "Missing joint name config for %s. Expected "
+                   "'%s.joints.(abad|hip|knee).name'",
+                   p.c_str(), p.c_str());
       rclcpp::shutdown();
       return;
     }
-    limb.abad_conv.sign =
-        load_scalar_param(node_, p + ".joints.abad.sign", p + ".abad.sign");
-    limb.abad_conv.origin_offset = load_scalar_param(
-        node_, p + ".joints.abad.offset", p + ".abad.offset");
+    limb.joint_names = {abad_name, hip_name, knee_name};
 
-    limb.hip_conv.sign =
-        load_scalar_param(node_, p + ".joints.hip.sign", p + ".hip.sign");
-    limb.hip_conv.origin_offset =
-        load_scalar_param(node_, p + ".joints.hip.offset", p + ".hip.offset");
+    // Load Bridge Parameters which account for discrepancies between Robot URDF
+    // Models (Diff Axis of Rotation, Origin)
+    loadROSParamDefault(node_, p + ".joints.abad.sign", limb.abad_conv.sign,
+                        1.0);
+    loadROSParamDefault(node_, p + ".joints.abad.offset",
+                        limb.abad_conv.origin_offset, 0.0);
 
-    limb.knee_conv.sign =
-        load_scalar_param(node_, p + ".joints.knee.sign", p + ".knee.sign");
-    limb.knee_conv.origin_offset = load_scalar_param(
-        node_, p + ".joints.knee.offset", p + ".knee.offset");
+    loadROSParamDefault(node_, p + ".joints.hip.sign", limb.hip_conv.sign, 1.0);
+    loadROSParamDefault(node_, p + ".joints.hip.offset",
+                        limb.hip_conv.origin_offset, 0.0);
 
-    const std::string hip_frame_name =
-        load_string_param(node_, p + ".frames.hip", "");
-    const std::string upper_frame_name =
-        load_string_param(node_, p + ".frames.upper", "");
-    const std::string lower_frame_name =
-        load_string_param(node_, p + ".frames.lower", "");
-    const std::string toe_frame_name =
-        load_string_param(node_, p + ".frames.toe", "");
+    loadROSParamDefault(node_, p + ".joints.knee.sign", limb.knee_conv.sign,
+                        1.0);
+    loadROSParamDefault(node_, p + ".joints.knee.offset",
+                        limb.knee_conv.origin_offset, 0.0);
+
+    std::string hip_frame_name, upper_frame_name, lower_frame_name,
+        toe_frame_name;
+    loadROSParamDefault(node_, p + ".frames.hip", hip_frame_name,
+                        std::string(""));
+    loadROSParamDefault(node_, p + ".frames.upper", upper_frame_name,
+                        std::string(""));
+    loadROSParamDefault(node_, p + ".frames.lower", lower_frame_name,
+                        std::string(""));
+    loadROSParamDefault(node_, p + ".frames.toe", toe_frame_name,
+                        std::string(""));
     if (hip_frame_name.empty() || upper_frame_name.empty() ||
         lower_frame_name.empty() || toe_frame_name.empty()) {
       RCLCPP_FATAL(node_->get_logger(),
-                   "Missing frame name config for %s. Expected '%s.frames.(hip|upper|lower|toe)'",
+                   "Missing frame name config for %s. Expected "
+                   "'%s.frames.(hip|upper|lower|toe)'",
                    p.c_str(), p.c_str());
       rclcpp::shutdown();
       return;
@@ -186,7 +120,7 @@ void QuadKD2::initModel(std::string ns) {
     limb.abad_jid = model_.getJointId(limb.joint_names[0]);
     limb.hip_jid = model_.getJointId(limb.joint_names[1]);
     limb.knee_jid = model_.getJointId(limb.joint_names[2]);
-    limb.toe_jid = limb.toe_fid;
+    limb.toe_jid = model_.getFrameId("j" + toe_frame_name);
 
     // Set Indicies for q and v vector creation (Pinocchio Internal Mapping)
     // i.e. Joint Order that Pinocchio Expects When Performing Updates
@@ -213,7 +147,7 @@ void QuadKD2::initModel(std::string ns) {
     l1_ = knee_offset_.cwiseAbs().maxCoeff();
 
     // Extract Length of Calf
-    foot_offset_ = model_.frames[limb.toe_fid].placement.translation();
+    foot_offset_ = model_.frames[limb.toe_jid].placement.translation();
     l2_ = foot_offset_.cwiseAbs().maxCoeff();
 
     // Extract Joint Limits for Each Leg
