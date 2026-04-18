@@ -1,0 +1,8 @@
+<library path="quad_rviz_plugins">
+  <class
+    name="quad_rviz_plugins/GRFArray"
+    type="quad_rviz_plugins::GRFArrayDisplay"
+    base_class_type="rviz_common::Display">
+    <description>Displays quad_msgs/GRFArray messages as force arrows.</description>
+  </class>
+</library>
