@@ -75,9 +75,9 @@
     robot_driver:
       sit_kp: [10.0, 10.0, 10.0]
       sit_kd: [1.0, 1.0, 1.0]
-      stand_kp: [35.0, 35.0, 35.0] #[20.0, 20.0, 20.0]
+      stand_kp: [35.0, 35.0, 35.0]
       stand_kd: [2.0, 2.0, 2.0]
-      stance_kp: [30.0, 30.0, 30.0] #[10.0, 10.0, 10.0]
+      stance_kp: [40.0, 40.0, 40.0] # 40 Learned, 30 MPC
       stance_kd: [1.0, 1.0, 1.0]
       swing_kp: [10.0, 10.0, 10.0] #[10.0, 10.0, 10.0]
       swing_kd: [1.0, 1.0, 1.0]
@@ -85,8 +85,6 @@
       swing_kd_cart: [0.0, 0.0, 0.0] # N/m
       safety_kp: [0.0, 0.0, 0.0]
       safety_kd: [2.0, 2.0, 2.0]
-      # stand_joint_angles: [0.0, 0.6, 1.6] # go2
-      # sit_joint_angles: [0.0, 0.2, 0.2]
       stand_joint_angles: [0.0, 0.8, -1.5] # go2 learned
       sit_joint_angles: [0.0, 1.36, -2.65]
 

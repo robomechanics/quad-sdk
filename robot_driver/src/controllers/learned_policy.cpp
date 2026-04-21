@@ -30,13 +30,12 @@ void LearnedPolicy::init(const std::vector<double>& stance_kp,
   double abd = stand_joint_angles.at(0);
   double hip = stand_joint_angles.at(1);
   double knee = stand_joint_angles.at(2);
-  nominal_stance_pose_ << abd, abd, abd, abd, hip, hip, hip, hip,
-      knee, knee, knee, knee;
+  nominal_stance_pose_ << abd, abd, abd, abd, hip, hip, hip, hip, knee, knee,
+      knee, knee;
   last_cmd_vel_msg_time_ = node_->now();
   last_inference_time_ = node_->now();
 
-  RCLCPP_INFO(node_->get_logger(),
-              "Loaded Learned Policy at %s (%.1f Hz)",
+  RCLCPP_INFO(node_->get_logger(), "Loaded Learned Policy at %s (%.1f Hz)",
               model_path_.c_str(), policy_inference_rate_);
 }
 

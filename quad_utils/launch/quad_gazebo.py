@@ -13,30 +13,32 @@ def launch_ignition_world(context, *args, **kwargs):
     world_name = LaunchConfiguration('world').perform(context)
     gui = LaunchConfiguration('gui').perform(context).lower() == 'true'
     verbose = LaunchConfiguration('verbose').perform(context).lower() == 'true'
-
-    pkg_share = FindPackageShare('gazebo_scripts').perform(context)
-    world_path = os.path.join(pkg_share, 'worlds', f"{world_name}")  
-    model_path = os.path.join(pkg_share, 'models')
-
     paused = LaunchConfiguration('paused').perform(context).lower() == 'true'
 
-    # Build the command for `ign gazebo`
-    cmd = ['gz', 'sim', world_path]
+    pkg_share = FindPackageShare('gazebo_scripts').perform(context)
+    world_path = os.path.join(pkg_share, 'worlds', f"{world_name}")
+
+    gz_args = [world_path]
     if not paused:
-        cmd.append('-r')
+        gz_args.append('-r')
     if not gui:
-        cmd.append('-s')
+        gz_args.append('-s')
     if verbose:
-        cmd.extend(['-v', '4'])  # Set verbosity level explicitly if requested
+        gz_args.extend(['-v', '4'])
+
+    gz_sim_launch = PathJoinSubstitution([
+        FindPackageShare('ros_gz_sim'), 'launch', 'gz_sim.launch.py'
+    ])
 
     return [
         GroupAction([
             PushRosNamespace('remote'),
-            ExecuteProcess(
-                cmd=cmd,
-                output='log',
-                additional_env={'GZ_SIM_RESOURCE_PATH': (EnvironmentVariable('GZ_SIM_RESOURCE_PATH')),
-                                'GZ_SIM_SYSTEM_PLUGIN_PATH': (EnvironmentVariable('GZ_SIM_SYSTEM_PLUGIN_PATH'))}
+            IncludeLaunchDescription(
+                PythonLaunchDescriptionSource(gz_sim_launch),
+                launch_arguments={
+                    'gz_args': ' '.join(gz_args),
+                    'on_exit_shutdown': 'true',
+                }.items()
             )
         ])
     ]
@@ -178,7 +180,7 @@ def generate_launch_description():
         DeclareLaunchArgument('use_sim_time', default_value='true', description='Whether to use Computer Clock or Sim Clock'),
         DeclareLaunchArgument(
             'robot_configs',
-            default_value='[{"name": "robot_1", "type": "go2", "controller": "inverse_dynamics", "init_pose" : "-x 0.0 -y 0.0 -z 15"}]',
+            default_value='[{"name": "robot_1", "type": "go2", "controller": "learned", "init_pose" : "-x 0.0 -y 0.0 -z 15"}]',
             description='A JSON List of robot configurations: MUST specify name, type, controller, and spawn pose'
         ),
         DeclareLaunchArgument('scenario', default_value="None", description='Custom Obstacle Scenario to Spawn e.g. Underbrush, Procedural Underbrush)'),
