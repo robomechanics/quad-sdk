@@ -1,6 +1,6 @@
 GZ_SIM_RESOURCE_PATH_UPDATE="export GZ_SIM_RESOURCE_PATH=\$GZ_SIM_RESOURCE_PATH:\
-$HOME/ros2_ws/install/gazebo_scripts/share/gazebo_scripts/models:\
-$HOME/ros2_ws/install/gazebo_scripts/share/gazebo_scripts/worlds:\
+$HOME/ros2_ws/install/quad_sim_scripts/share/quad_sim_scripts/models:\
+$HOME/ros2_ws/install/quad_sim_scripts/share/quad_sim_scripts/worlds:\
 $HOME/ros2_ws/install/spirit_description/share/spirit_description/models:\
 $HOME/ros2_ws/install/a1_description/share/a1_description/models:\
 $HOME/ros2_ws/install/go2_description/share/go2_description/models:\
@@ -54,4 +54,6 @@ sudo apt install -y \
     ros-jazzy-imu-tools \
     ros-jazzy-ros-gz \
     ros-jazzy-ros-gz-sim \
-    ros-jazzy-gz-ros2-control
+    ros-jazzy-gz-ros2-control \
+    ros-jazzy-mujoco-vendor \
+    ros-jazzy-mujoco-ros2-control

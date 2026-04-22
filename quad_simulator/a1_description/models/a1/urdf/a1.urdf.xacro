@@ -40,7 +40,7 @@
       <robotNamespace>/a1</robotNamespace>
       <robotSimType>gazebo_ros_control/DefaultRobotHWSim</robotSimType>
     </plugin>
-    <plugin filename="libground_truth_estimator.so" name="ground_truth_estimator">
+    <plugin filename="libgazebo_estimator_plugin.so" name="ground_truth_estimator">
       <updateRateHZ>500.0</updateRateHZ>
     </plugin>
   </gazebo>

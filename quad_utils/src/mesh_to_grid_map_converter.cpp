@@ -39,8 +39,7 @@ MeshToGridMapConverter::MeshToGridMapConverter(rclcpp::Node::SharedPtr node)
   advertiseServices();
 
   std::string package_path =
-      ament_index_cpp::get_package_share_directory("gazebo_scripts");
-  // std::string package_path = ros::package::getPath("gazebo_scripts");
+      ament_index_cpp::get_package_share_directory("quad_sim_scripts");
   std::string base_name = world_name_;
   std::string extension = ".sdf";
   if (base_name.size() >= extension.size() &&

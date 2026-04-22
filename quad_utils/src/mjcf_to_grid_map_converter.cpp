@@ -39,8 +39,7 @@ MjcfToGridMapConverter::MjcfToGridMapConverter(rclcpp::Node::SharedPtr node)
   advertiseServices();
 
   std::string package_path =
-      ament_index_cpp::get_package_share_directory("mujoco_scripts");
-  // std::string package_path = ros::package::getPath("gazebo_scripts");
+      ament_index_cpp::get_package_share_directory("quad_sim_scripts");
   std::string base_name = world_name_;
   std::string extension = ".xml";
   if (base_name.size() >= extension.size() &&
@@ -50,13 +49,16 @@ MjcfToGridMapConverter::MjcfToGridMapConverter(rclcpp::Node::SharedPtr node)
   }
   // std::cout << base_name <<std::endl;
   // std::cout << world_name_ << std::endl;
-  std::string full_path = package_path + "/models/" + base_name + "/meshes/" + base_name + ".ply";
+  std::string full_path =
+      package_path + "/models/" + base_name + "/meshes/" + base_name + ".ply";
 
-  RCLCPP_INFO(node_->get_logger(), "------------------------------------------------");
+  RCLCPP_INFO(node_->get_logger(),
+              "------------------------------------------------");
   RCLCPP_INFO(node_->get_logger(), "MjcfToGridMapConverter called!");
-  RCLCPP_INFO(node_->get_logger(), "Attempting to load FULL PATH: [%s]", full_path.c_str());
-  RCLCPP_INFO(node_->get_logger(), "------------------------------------------------");
-
+  RCLCPP_INFO(node_->get_logger(), "Attempting to load FULL PATH: [%s]",
+              full_path.c_str());
+  RCLCPP_INFO(node_->get_logger(),
+              "------------------------------------------------");
 
   RCLCPP_INFO(node_->get_logger(), "Loading mesh from: %s", full_path.c_str());
   bool success = loadMeshFromFile(full_path);

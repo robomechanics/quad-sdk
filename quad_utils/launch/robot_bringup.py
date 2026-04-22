@@ -81,7 +81,7 @@ def load_robot_params(context, *args, **kwargs):
         urdf_path = os.path.join(desc_path, 'models', robot_type, 'urdf', urdf_file)
         sdf_path = os.path.join(desc_path, 'models', robot_type, sdf_file)
 
-        controller_config_path = os.path.join(FindPackageShare('gazebo_scripts').perform(context), 'config', 'quad_control.yaml')
+        controller_config_path = os.path.join(FindPackageShare('quad_sim_scripts').perform(context), 'config', 'quad_control.yaml')
         robot_config_path = os.path.join(FindPackageShare('quad_utils').perform(context), 'config', config_file)
         urdf = xacro.process_file(urdf_path).toxml()
         sdf = xacro.process_file(sdf_path, mappings={
@@ -125,7 +125,7 @@ def launch_ros2_control(context, *args, **kwargs):
     mjcf_path = LaunchConfiguration('mjcf_path').perform(context)
     namespace = LaunchConfiguration('namespace').perform(context)
     controller_config = os.path.join(
-        FindPackageShare('gazebo_scripts').perform(context), 'config', 'quad_control.yaml'
+        FindPackageShare('quad_sim_scripts').perform(context), 'config', 'quad_control.yaml'
     )
     return [
         Node(
@@ -277,7 +277,7 @@ def launch_contact_state_publisher(context, *args, **kwargs):
     config_file = os.path.join(quad_utils_path, 'config', 'topics_robot.yaml')
     return [
         Node(
-            package='gazebo_scripts',
+            package='gazebo_plugins',
             executable='contact_state_publisher_node',
             parameters=[config_file, {
                 'namespace': namespace,
@@ -295,8 +295,8 @@ def launch_mujoco_ground_truth(context, *args, **kwargs):
     quad_utils_path = FindPackageShare('quad_utils').perform(context)
     ground_truth_node = Node(
         package='mujoco_plugins',
-        executable='mujoco_ground_truth_node',
-        name='mujoco_ground_truth_node',
+        executable='mujoco_estimator',
+        name='mujoco_estimator',
         parameters=[{'use_sim_time': True}]
     )
     return [ground_truth_node]

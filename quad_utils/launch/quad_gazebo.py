@@ -14,7 +14,7 @@ def launch_ignition_world(context, *args, **kwargs):
     gui = LaunchConfiguration('gui').perform(context).lower() == 'true'
     verbose = LaunchConfiguration('verbose').perform(context).lower() == 'true'
 
-    pkg_share = FindPackageShare('gazebo_scripts').perform(context)
+    pkg_share = FindPackageShare('quad_sim_scripts').perform(context)
     world_path = os.path.join(pkg_share, 'worlds', f"{world_name}")  
     model_path = os.path.join(pkg_share, 'models')
 

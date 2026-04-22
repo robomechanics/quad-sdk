@@ -1409,7 +1409,7 @@
     </plugin>
 
     <!-- Publish ground truth state data -->
-    <plugin filename="libground_truth_estimator.so" name="ground_truth_estimator">
+    <plugin filename="libgazebo_estimator_plugin.so" name="ground_truth_estimator">
       <updateRateHZ>500.0</updateRateHZ>
       <ground_truth_state_topic>state/ground_truth</ground_truth_state_topic>
       <ground_truth_body_frame_topic>state/ground_truth_body_frame</ground_truth_body_frame_topic>

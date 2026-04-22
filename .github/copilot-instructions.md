@@ -23,4 +23,4 @@
 - Launch orchestration: [quad_utils/launch](quad_utils/launch)
 - Robot parameters: [quad_utils/config](quad_utils/config)
 - Messages: [quad_msgs](quad_msgs)
-- Simulation plugins/scripts: [quad_simulator](quad_simulator) and [gazebo_scripts](gazebo_scripts)
+- Simulation plugins/scripts: [quad_simulator](quad_simulator) (gazebo_plugins, mujoco_plugins, quad_controllers, quad_sim_scripts)

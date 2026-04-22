@@ -47,7 +47,7 @@ def load_robot_params(context, *args, **kwargs):
     desc_path = FindPackageShare(desc_pkg).perform(context)
     urdf_path = os.path.join(desc_path, 'models', robot_type, 'urdf', urdf_file)
     sdf_path = os.path.join(desc_path, 'models', robot_type, sdf_file)
-    controller_config_path = os.path.join(FindPackageShare('gazebo_scripts').perform(context), 'config', 'quad_control.yaml')
+    controller_config_path = os.path.join(FindPackageShare('quad_sim_scripts').perform(context), 'config', 'quad_control.yaml')
     # Load URDF and SDF from disk, Might be Unnecessary
     urdf = xacro.process_file(urdf_path).toxml()
     sdf = xacro.process_file(sdf_path, mappings={"namespace": namespace, "controller_config_path": controller_config_path}).toxml()

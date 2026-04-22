@@ -11,11 +11,11 @@ Stephen Brawner (brawner@gmail.com)
       strippath="true" />
 
     <plugin name="mujoco_ros2_control" filename="libmujoco_ros2_control.so">
-      <parameters>$(find mujoco_ros2_control_demos)/config/controllers.yaml</parameters>
+      <parameters>$(find quad_sim_scripts)/config/quad_control.yaml</parameters>
     </plugin>
   </mujoco>
 
-  <link 
+  <link
     name="body">
     <inertial>
       <origin
@@ -1401,7 +1401,7 @@ Stephen Brawner (brawner@gmail.com)
 
     <hardware>
       <plugin>mujoco_ros2_control/MujocoSystemInterface</plugin>
-      <param name="mujoco_model">$(find mujoco_scripts)/worlds/flat.xml</param>
+      <param name="mujoco_model">$(find quad_sim_scripts)/worlds/flat.xml</param>
       <param name="odom_free_joint_name">floating_base</param>
       <param name="odom_topic">/robot_1/odom</param>
     </hardware>
@@ -1424,7 +1424,7 @@ Stephen Brawner (brawner@gmail.com)
 
   <!-- <mujoco>
     <plugin name="mujoco_ros2_control" filename="libmujoco_ros2_control.so">
-      <parameters>$(find mujoco_ros2_control_demos)/config/controllers.yaml</parameters>
+      <parameters>$(find quad_sim_scripts)/config/quad_control.yaml</parameters>
     </plugin>
   </mujoco> -->
 
