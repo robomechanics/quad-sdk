@@ -1,15 +1,13 @@
 #include "robot_driver/hardware_interfaces/unitree_interface.hpp"
 
-constexpr int
-    UnitreeInterface::kLegMap[kNumLegs][kJointsPerLeg];
+constexpr int UnitreeInterface::kLegMap[kNumLegs][kJointsPerLeg];
 
 UnitreeInterface::UnitreeInterface() : HardwareInterface() {}
 
 void UnitreeInterface::loadInterface(int /*argc*/, char** /*argv*/) {
   std::string net_iface = "enP8p1s0";
 
-  unitree::robot::ChannelFactory::Instance()->Init(0,
-                                                   net_iface);
+  unitree::robot::ChannelFactory::Instance()->Init(0, net_iface);
 
   // Disable sport mode so low-level commands are not overridden.
   // Uses MotionSwitcherClient with retry loop per Unitree's go2_stand_example.
@@ -45,18 +43,17 @@ void UnitreeInterface::loadInterface(int /*argc*/, char** /*argv*/) {
 
   // Create publisher on rt/lowcmd
   cmd_pub_.reset(
-      new unitree::robot::ChannelPublisher<
-          unitree_go::msg::dds_::LowCmd_>("rt/lowcmd"));
+      new unitree::robot::ChannelPublisher<unitree_go::msg::dds_::LowCmd_>(
+          "rt/lowcmd"));
   cmd_pub_->InitChannel();
 
   // Create subscriber on rt/lowstate
   state_sub_.reset(
-      new unitree::robot::ChannelSubscriber<
-          unitree_go::msg::dds_::LowState_>("rt/lowstate"));
-  state_sub_->InitChannel(
-      std::bind(&UnitreeInterface::lowStateHandler, this,
-                std::placeholders::_1),
-      1);
+      new unitree::robot::ChannelSubscriber<unitree_go::msg::dds_::LowState_>(
+          "rt/lowstate"));
+  state_sub_->InitChannel(std::bind(&UnitreeInterface::lowStateHandler, this,
+                                    std::placeholders::_1),
+                          1);
 
   initLowCmd();
 }
@@ -64,9 +61,8 @@ void UnitreeInterface::loadInterface(int /*argc*/, char** /*argv*/) {
 void UnitreeInterface::unloadInterface() {
   // Zero out commands before shutting down
   initLowCmd();
-  low_cmd_.crc() = crc32Core(
-      reinterpret_cast<uint32_t*>(&low_cmd_),
-      (sizeof(unitree_go::msg::dds_::LowCmd_) >> 2) - 1);
+  low_cmd_.crc() = crc32Core(reinterpret_cast<uint32_t*>(&low_cmd_),
+                             (sizeof(unitree_go::msg::dds_::LowCmd_) >> 2) - 1);
   cmd_pub_->Write(low_cmd_);
 }
 
@@ -88,13 +84,11 @@ void UnitreeInterface::initLowCmd() {
 
 void UnitreeInterface::lowStateHandler(const void* message) {
   std::lock_guard<std::mutex> lock(state_mutex_);
-  low_state_ =
-      *(const unitree_go::msg::dds_::LowState_*)message;
+  low_state_ = *(const unitree_go::msg::dds_::LowState_*)message;
   state_received_ = true;
 }
 
-uint32_t UnitreeInterface::crc32Core(uint32_t* ptr,
-                                     uint32_t len) {
+uint32_t UnitreeInterface::crc32Core(uint32_t* ptr, uint32_t len) {
   uint32_t xbit = 0;
   uint32_t data = 0;
   uint32_t CRC32 = 0xFFFFFFFF;
@@ -120,48 +114,41 @@ uint32_t UnitreeInterface::crc32Core(uint32_t* ptr,
 }
 
 bool UnitreeInterface::send(
-    const quad_msgs::msg::LegCommandArray&
-        leg_command_array_msg,
+    const quad_msgs::msg::LegCommandArray& leg_command_array_msg,
     const Eigen::VectorXd& /*user_tx_data*/) {
   for (int leg = 0; leg < kNumLegs; ++leg) {
-    const auto& leg_cmd =
-        leg_command_array_msg.leg_commands.at(leg);
+    const auto& leg_cmd = leg_command_array_msg.leg_commands.at(leg);
 
     for (int j = 0; j < kJointsPerLeg; ++j) {
       int motor_idx = kLegMap[leg][j];
       const auto& mc = leg_cmd.motor_commands.at(j);
 
       low_cmd_.motor_cmd()[motor_idx].mode() = 0x01;
-      low_cmd_.motor_cmd()[motor_idx].q() =
-          static_cast<float>(mc.pos_setpoint);
+      low_cmd_.motor_cmd()[motor_idx].q() = static_cast<float>(mc.pos_setpoint);
       low_cmd_.motor_cmd()[motor_idx].dq() =
           static_cast<float>(mc.vel_setpoint);
-      low_cmd_.motor_cmd()[motor_idx].tau() =
-          static_cast<float>(mc.torque_ff);
-      low_cmd_.motor_cmd()[motor_idx].kp() =
-          static_cast<float>(mc.kp);
-      low_cmd_.motor_cmd()[motor_idx].kd() =
-          static_cast<float>(mc.kd);
+      low_cmd_.motor_cmd()[motor_idx].tau() = static_cast<float>(mc.torque_ff);
+      low_cmd_.motor_cmd()[motor_idx].kp() = static_cast<float>(mc.kp);
+      low_cmd_.motor_cmd()[motor_idx].kd() = static_cast<float>(mc.kd);
     }
   }
 
   // CRC must be computed before every publish
-  low_cmd_.crc() = crc32Core(
-      reinterpret_cast<uint32_t*>(&low_cmd_),
-      (sizeof(unitree_go::msg::dds_::LowCmd_) >> 2) - 1);
+  low_cmd_.crc() = crc32Core(reinterpret_cast<uint32_t*>(&low_cmd_),
+                             (sizeof(unitree_go::msg::dds_::LowCmd_) >> 2) - 1);
 
   cmd_pub_->Write(low_cmd_);
   return true;
 }
 
-bool UnitreeInterface::recv(
-    sensor_msgs::msg::JointState& joint_state_msg,
-    sensor_msgs::msg::Imu& imu_msg,
-    Eigen::VectorXd& /*user_rx_data*/) {
+bool UnitreeInterface::recv(sensor_msgs::msg::JointState& joint_state_msg,
+                            sensor_msgs::msg::Imu& imu_msg,
+                            Eigen::VectorXd& /*user_rx_data*/) {
   std::lock_guard<std::mutex> lock(state_mutex_);
 
   if (!state_received_) {
-    std::cout << "Not recieving state information from Unitree Interface" << std::endl;
+    std::cout << "Not recieving state information from Unitree Interface"
+              << std::endl;
     return false;
   }
 
@@ -171,10 +158,8 @@ bool UnitreeInterface::recv(
     for (int j = 0; j < kJointsPerLeg; ++j) {
       int motor_idx = kLegMap[leg][j];
       joint_state_msg.name[idx] = joint_names_[idx];
-      joint_state_msg.position[idx] =
-          low_state_.motor_state()[motor_idx].q();
-      joint_state_msg.velocity[idx] =
-          low_state_.motor_state()[motor_idx].dq();
+      joint_state_msg.position[idx] = low_state_.motor_state()[motor_idx].q();
+      joint_state_msg.velocity[idx] = low_state_.motor_state()[motor_idx].dq();
       joint_state_msg.effort[idx] =
           low_state_.motor_state()[motor_idx].tau_est();
       idx++;
@@ -182,28 +167,18 @@ bool UnitreeInterface::recv(
   }
 
   // IMU — Unitree provides quaternion directly
-  imu_msg.orientation.x =
-      low_state_.imu_state().quaternion()[0];
-  imu_msg.orientation.y =
-      low_state_.imu_state().quaternion()[1];
-  imu_msg.orientation.z =
-      low_state_.imu_state().quaternion()[2];
-  imu_msg.orientation.w =
-      low_state_.imu_state().quaternion()[3];
+  imu_msg.orientation.x = low_state_.imu_state().quaternion()[0];
+  imu_msg.orientation.y = low_state_.imu_state().quaternion()[1];
+  imu_msg.orientation.z = low_state_.imu_state().quaternion()[2];
+  imu_msg.orientation.w = low_state_.imu_state().quaternion()[3];
 
-  imu_msg.angular_velocity.x =
-      low_state_.imu_state().gyroscope()[0];
-  imu_msg.angular_velocity.y =
-      low_state_.imu_state().gyroscope()[1];
-  imu_msg.angular_velocity.z =
-      low_state_.imu_state().gyroscope()[2];
+  imu_msg.angular_velocity.x = low_state_.imu_state().gyroscope()[0];
+  imu_msg.angular_velocity.y = low_state_.imu_state().gyroscope()[1];
+  imu_msg.angular_velocity.z = low_state_.imu_state().gyroscope()[2];
 
-  imu_msg.linear_acceleration.x =
-      low_state_.imu_state().accelerometer()[0];
-  imu_msg.linear_acceleration.y =
-      low_state_.imu_state().accelerometer()[1];
-  imu_msg.linear_acceleration.z =
-      low_state_.imu_state().accelerometer()[2];
+  imu_msg.linear_acceleration.x = low_state_.imu_state().accelerometer()[0];
+  imu_msg.linear_acceleration.y = low_state_.imu_state().accelerometer()[1];
+  imu_msg.linear_acceleration.z = low_state_.imu_state().accelerometer()[2];
 
   return true;
 }

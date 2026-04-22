@@ -2,17 +2,18 @@
 
 #include "quad_utils/ros_utils.hpp"
 
-RemoteHeartbeat::RemoteHeartbeat(rclcpp::Node::SharedPtr node)
-    : node_(node) {
+RemoteHeartbeat::RemoteHeartbeat(rclcpp::Node::SharedPtr node) : node_(node) {
   // Load parameters
   std::string remote_heartbeat_topic, robot_heartbeat_topic;
   quad_utils::loadROSParam(node_, "topics.heartbeat.remote",
                            remote_heartbeat_topic);
   quad_utils::loadROSParam(node_, "topics.heartbeat.robot",
                            robot_heartbeat_topic);
-  quad_utils::loadROSParam(node_, "remote_heartbeat.robot_latency_threshold_warn",
+  quad_utils::loadROSParam(node_,
+                           "remote_heartbeat.robot_latency_threshold_warn",
                            robot_latency_threshold_warn_);
-  quad_utils::loadROSParam(node_, "remote_heartbeat.robot_latency_threshold_error",
+  quad_utils::loadROSParam(node_,
+                           "remote_heartbeat.robot_latency_threshold_error",
                            robot_latency_threshold_error_);
   quad_utils::loadROSParam(node_, "remote_heartbeat.update_rate", update_rate_);
 
