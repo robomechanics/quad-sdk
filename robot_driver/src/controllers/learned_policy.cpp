@@ -43,8 +43,18 @@ void LearnedPolicy::loadONNXModel() {
   /// Try loading and Initalizing an Onnx Runtime Session
   try {
     so_.SetGraphOptimizationLevel(GraphOptimizationLevel::ORT_ENABLE_ALL);
-    // For GPU
-    // OrtSessionOptionsAppendExecutionProvider_CUDA(session_options_, 0);
+
+    // Specify thread counts explicitly. Without this, onnxruntime tries to pin
+    // its intra-op threads to specific cores via pthread_setaffinity_np, which
+    // fails on Jetson/Tegra (EINVAL) and floods the log. Setting the counts
+    // explicitly disables the affinity pinning.
+    so_.SetIntraOpNumThreads(1);
+    so_.SetInterOpNumThreads(1);
+
+    // Enable CUDA execution provider for GPU inference.
+    OrtCUDAProviderOptions cuda_options{};
+    cuda_options.device_id = 0;
+    so_.AppendExecutionProvider_CUDA(cuda_options);
 
     if (!std::filesystem::exists(model_path_)) {
       RCLCPP_ERROR(node_->get_logger(), "ONNX file not found: %s",

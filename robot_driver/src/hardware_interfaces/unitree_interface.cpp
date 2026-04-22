@@ -5,13 +5,43 @@ constexpr int
 
 UnitreeInterface::UnitreeInterface() : HardwareInterface() {}
 
-void UnitreeInterface::loadInterface(int argc, char** argv) {
-  // argv[0] is the node name; the network interface (e.g. "eth0")
-  // should be passed as a command-line argument or default to "eth0".
-  std::string net_iface = "eth0";
+void UnitreeInterface::loadInterface(int /*argc*/, char** /*argv*/) {
+  std::string net_iface = "enP8p1s0";
 
   unitree::robot::ChannelFactory::Instance()->Init(0,
                                                    net_iface);
+
+  // Disable sport mode so low-level commands are not overridden.
+  // Uses MotionSwitcherClient with retry loop per Unitree's go2_stand_example.
+  unitree::robot::b2::MotionSwitcherClient msc;
+  msc.SetTimeout(10.0f);
+  msc.Init();
+
+  auto queryMotionStatus = [&msc]() -> bool {
+    std::string robotForm, motionName;
+    int32_t ret = msc.CheckMode(robotForm, motionName);
+    if (ret != 0) {
+      std::cout << "CheckMode failed. Error code: " << ret << std::endl;
+      return true;
+    }
+    if (motionName.empty()) {
+      std::cout << "Motion control service deactivated." << std::endl;
+      return false;
+    }
+    std::cout << "Active motion service: " << motionName << std::endl;
+    return true;
+  };
+
+  while (queryMotionStatus()) {
+    std::cout << "Releasing motion control service..." << std::endl;
+    int32_t ret = msc.ReleaseMode();
+    if (ret == 0) {
+      std::cout << "ReleaseMode succeeded." << std::endl;
+    } else {
+      std::cout << "ReleaseMode failed. Error code: " << ret << std::endl;
+    }
+    sleep(5);
+  }
 
   // Create publisher on rt/lowcmd
   cmd_pub_.reset(
@@ -131,6 +161,7 @@ bool UnitreeInterface::recv(
   std::lock_guard<std::mutex> lock(state_mutex_);
 
   if (!state_received_) {
+    std::cout << "Not recieving state information from Unitree Interface" << std::endl;
     return false;
   }
 

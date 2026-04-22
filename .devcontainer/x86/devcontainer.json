@@ -1,0 +1,49 @@
+{
+  "name": "Quad-SDK x86 (Sim + Learned Dev)",
+  "remoteUser": "root",
+
+  "build": {
+    "dockerfile": "../Dockerfile.x86",
+    "context": ".."
+  },
+
+  "workspaceMount": "source=${localWorkspaceFolder},target=/root/ros2_ws/src/quad-sdk,type=bind",
+  "workspaceFolder": "/root/ros2_ws/src/quad-sdk",
+
+  "runArgs": [
+    "--privileged",
+    "--network=host",
+    "--ipc=host",
+    "--shm-size=4gb",
+    "--gpus=all"
+  ],
+
+  "mounts": [
+    "source=/tmp/.X11-unix,target=/tmp/.X11-unix,type=bind,readonly",
+    "source=/etc/localtime,target=/etc/localtime,type=bind,readonly",
+    "source=/etc/timezone,target=/etc/timezone,type=bind,readonly"
+  ],
+
+  "containerEnv": {
+    "DISPLAY": "${localEnv:DISPLAY}",
+    "ROS_AUTOMATIC_DISCOVERY_RANGE": "LOCALHOST",
+    "ROS_DOMAIN_ID": "42",
+    "XDG_RUNTIME_DIR": "/tmp/runtime-root",
+    "QT_X11_NO_MITSHM": "1"
+  },
+
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-vscode.cpptools",
+        "ms-vscode.cmake-tools",
+        "twxs.cmake",
+        "donjayamanne.python-extension-pack",
+        "eamodio.gitlens",
+        "ms-iot.vscode-ros"
+      ]
+    }
+  },
+
+  "postStartCommand": "bash -lc 'source /opt/ros/jazzy/setup.bash'"
+}

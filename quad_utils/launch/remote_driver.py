@@ -8,6 +8,25 @@ import os
 import xacro
 
 
+def launch_remote_heartbeat(context, *args, **kwargs):
+    namespace = LaunchConfiguration('namespace').perform(context)
+    quad_utils_pkg = FindPackageShare('quad_utils').perform(context)
+
+    return [
+        Node(
+            package='quad_utils',
+            executable='remote_heartbeat_node',
+            name='remote_heartbeat',
+            namespace=namespace,
+            output='screen',
+            parameters=[
+                os.path.join(quad_utils_pkg, 'config', 'remote_heartbeat.yaml'),
+                {'use_sim_time': LaunchConfiguration('use_sim_time')},
+            ],
+        )
+    ]
+
+
 def launch_robot_mapping(context, *args, **kwargs):
     mapping_launch_path = PathJoinSubstitution([
         FindPackageShare('quad_utils'),
@@ -109,6 +128,7 @@ def generate_launch_description():
     ]
 
     return LaunchDescription(declared_args + [
+        OpaqueFunction(function=launch_remote_heartbeat),
         OpaqueFunction(function=launch_robot_mapping),
         OpaqueFunction(function=access_terrain_map),
         OpaqueFunction(function=launch_visualization_plugins),

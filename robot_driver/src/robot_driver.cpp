@@ -201,7 +201,12 @@ RobotDriver::RobotDriver(std::shared_ptr<rclcpp::Node> node, int argc,
 }
 
 void RobotDriver::initStateEstimator() {
-  if (estimator_id_ == "comp_filter") {
+  if (estimator_id_ == "none") {
+    RCLCPP_INFO(node_->get_logger(),
+                "State estimator disabled (estimator_id='none')");
+    state_estimator_ = nullptr;
+    return;
+  } else if (estimator_id_ == "comp_filter") {
     RCLCPP_INFO_STREAM(node_->get_logger(), "Comp Filter");
     state_estimator_ =
         std::make_shared<CompFilterEstimator>(node_, robot_ns, quadKD2_);
@@ -358,9 +363,11 @@ void RobotDriver::mocapCallback(
         c->mocapCallBackHelper(msg, pos);
       }
     } else {
-      RCLCPP_WARN_THROTTLE(
-          node_->get_logger(), *node_->get_clock(), 100,
-          "Mocap time diff exceeds max dropout threshold, hold the last value");
+      RCLCPP_WARN_THROTTLE(node_->get_logger(), *node_->get_clock(), 500,
+                           "Mocap time diff exceeds max dropout threshold: "
+                           "t_diff=%.6f, expected=%.6f, threshold=%.6f",
+                           t_diff_mocap_msg, 1.0 / mocap_rate_,
+                           mocap_dropout_threshold_);
     }
   } else {
     RCLCPP_WARN_THROTTLE(
@@ -451,24 +458,59 @@ bool RobotDriver::updateState() {
     bool fully_populated = hardware_interface_->recv(
         last_joint_state_msg_, last_imu_msg_, user_rx_data_);
 
-    // load robot sensor message to state estimator class
-    if (fully_populated) {
-      state_estimator_->loadSensorMsg(last_imu_msg_, last_joint_state_msg_);
-    } else {
-      RCLCPP_WARN_THROTTLE(node_->get_logger(), *node_->get_clock(), 1000,
-                           "No imu or joint state (robot) recieved");
+    if (!fully_populated) {
+      RCLCPP_WARN_THROTTLE(
+          node_->get_logger(), *node_->get_clock(), 500,
+          "updateState returning false: recv() not fully populated");
+      return false;
     }
+
+    // For learned controllers on hardware, populate state directly from
+    // IMU + joint encoders without requiring mocap or a full state estimator.
+    // The learned policy only needs orientation, angular velocity, joint
+    // positions, and joint velocities — all available from onboard sensors.
+    if (controller_id_ == "learned") {
+      rclcpp::Time state_timestamp = node_->now();
+
+      // Joint state from encoders
+      last_robot_state_msg_.joints = last_joint_state_msg_;
+      last_robot_state_msg_.joints.header.stamp = state_timestamp;
+
+      // Orientation from IMU quaternion
+      last_robot_state_msg_.body.pose.orientation = last_imu_msg_.orientation;
+
+      // Angular velocity from IMU gyroscope
+      last_robot_state_msg_.body.twist.angular = last_imu_msg_.angular_velocity;
+
+      // Update headers
+      last_robot_state_msg_.header.stamp = state_timestamp;
+
+      return true;
+    }
+
+    // For other controllers, use the full state estimator (requires mocap)
+    state_estimator_->loadSensorMsg(last_imu_msg_, last_joint_state_msg_);
 
     if (last_mocap_msg_ != NULL) {
       state_estimator_->loadMocapMsg(last_mocap_msg_);
+    } else {
+      RCLCPP_WARN_THROTTLE(node_->get_logger(), *node_->get_clock(), 500,
+                           "updateState: no mocap message received yet");
     }
 
     // update robot state using state estimator
     if (state_estimator_ != nullptr) {
-      return state_estimator_->updateOnce(last_robot_state_msg_);
+      bool result = state_estimator_->updateOnce(last_robot_state_msg_);
+      if (!result) {
+        RCLCPP_WARN_THROTTLE(
+            node_->get_logger(), *node_->get_clock(), 500,
+            "updateState returning false: estimator updateOnce failed");
+      }
+      return result;
     } else {
-      RCLCPP_WARN_THROTTLE(node_->get_logger(), *node_->get_clock(), 1000,
-                           "No state estimator is initialized");
+      RCLCPP_WARN_THROTTLE(
+          node_->get_logger(), *node_->get_clock(), 500,
+          "updateState returning false: no state estimator initialized");
       return false;
     }
   } else {
@@ -517,15 +559,15 @@ bool RobotDriver::updateState() {
           last_robot_state_msg_.body.pose.orientation.z);
       Eigen::Matrix3d R_world_body = q_orient.toRotationMatrix();
       Eigen::Vector3d g_world(0.0, 0.0, 9.81);
-      Eigen::Vector3d accel_body = R_world_body.transpose() *
-                                   (accel_world + g_world);
+      Eigen::Vector3d accel_body =
+          R_world_body.transpose() * (accel_world + g_world);
       imu_from_gt.linear_acceleration.x = accel_body.x();
       imu_from_gt.linear_acceleration.y = accel_body.y();
       imu_from_gt.linear_acceleration.z = accel_body.z();
 
       // Feed ground truth sensor data to the estimator
       state_estimator_->loadSensorMsg(imu_from_gt,
-        last_robot_state_msg_.joints);
+                                      last_robot_state_msg_.joints);
       state_estimator_->updateOnce(ekf_estimate_msg_);
     }
     return true;
@@ -768,8 +810,11 @@ void RobotDriver::publishHeartbeat() {
 }
 
 void RobotDriver::testDynamics() {
-  if (rclcpp::Time(last_robot_state_msg_.header.stamp).seconds() != 0) {
-    quad_utils::updateDynamics(*quadKD2_, last_robot_state_msg_);
+  if (!is_hardware_) {
+    if (rclcpp::Time(last_robot_state_msg_.header.stamp).seconds() != 0) {
+      quad_utils::updateDynamics(*quadKD2_, last_robot_state_msg_);
+      // RCLCPP_INFO(node_->get_logger(), "Completed Dynamics State Update");
+    }
   }
 }
 
@@ -783,23 +828,43 @@ void RobotDriver::spin() {
   }
 
   while (rclcpp::ok()) {
+    rclcpp::Time t0 = node_->now();
     // Collect new messages on subscriber topics and publish heartbeat
     rclcpp::spin_some(node_);
+    double dt_spin = (node_->now() - t0).seconds();
 
     // Get the newest state information
-    updateState();
+    rclcpp::Time t1 = node_->now();
+    bool state_valid = updateState();
+    double dt_state = (node_->now() - t1).seconds();
 
+    if (!state_valid) {
+      publishHeartbeat();
+      r.sleep();
+      continue;
+    }
+
+    rclcpp::Time t2 = node_->now();
     testDynamics();
+    double dt_dynamics = (node_->now() - t2).seconds();
 
     // Compute the leg command and publish if valid
+    rclcpp::Time t3 = node_->now();
     bool is_valid = updateControl();
-    publishControl(is_valid);
+    double dt_control = (node_->now() - t3).seconds();
 
-    // Publish state and heartbeat
+    rclcpp::Time t4 = node_->now();
+    publishControl(is_valid);
     publishState();
     publishHeartbeat();
+    double dt_publish = (node_->now() - t4).seconds();
 
-    // Enforce update rate
+    double dt_total = (node_->now() - t0).seconds();
+    RCLCPP_INFO_THROTTLE(node_->get_logger(), *node_->get_clock(), 2000,
+                         "Loop: total=%.4f spin=%.4f state=%.4f dyn=%.4f "
+                         "ctrl=%.4f pub=%.4f (%.1f Hz)",
+                         dt_total, dt_spin, dt_state, dt_dynamics, dt_control,
+                         dt_publish, 1.0 / dt_total);
     r.sleep();
   }
 

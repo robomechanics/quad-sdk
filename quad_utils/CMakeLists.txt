@@ -43,11 +43,11 @@ add_library(quad_utils
   # src/trajectory_publisher.cpp
 )
 
-# Cap Pinocchio-heavy files at -O1 to reduce compiler RAM usage.
-# Pinocchio + Eigen template expansion at -O2/-O3 can exceed 8GB per TU.
+# Pinocchio + Eigen template expansion needs more RAM at higher optimization.
+# -O2 requires ~10-12GB; the Jetson Orin (16GB) can handle it.
 if(CMAKE_BUILD_TYPE MATCHES "Release|RelWithDebInfo")
   set_source_files_properties(src/quad_kd2.cpp
-    PROPERTIES COMPILE_OPTIONS "-O1"
+    PROPERTIES COMPILE_OPTIONS "-O2"
   )
 endif()
 
@@ -71,6 +71,15 @@ add_executable(rviz_interface_node
 #   src/trajectory_publisher_node.cpp
 #   src/trajectory_publisher.cpp
 #   )
+
+add_executable(remote_heartbeat_node
+  src/remote_heartbeat_node.cpp
+  src/remote_heartbeat.cpp)
+
+target_include_directories(remote_heartbeat_node PUBLIC
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+  $<INSTALL_INTERFACE:include>
+)
 
 add_executable(grid_map_filters_demo
   src/filters_demo.cpp
@@ -162,6 +171,15 @@ ament_target_dependencies(rviz_interface_node
 #   grid_map_core  
 # )
 
+target_link_libraries(remote_heartbeat_node
+  quad_utils
+)
+
+ament_target_dependencies(remote_heartbeat_node
+  rclcpp
+  std_msgs
+)
+
 ament_target_dependencies(grid_map_filters_demo
   rclcpp
   grid_map_core
@@ -198,6 +216,7 @@ install(TARGETS
 install(TARGETS
   mesh_to_grid_map_node
   rviz_interface_node
+  remote_heartbeat_node
   # trajectory_publisher_node
   DESTINATION lib/${PROJECT_NAME}
 )

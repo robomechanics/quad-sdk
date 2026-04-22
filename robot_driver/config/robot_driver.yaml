@@ -4,7 +4,7 @@
       update_rate: 500.0 
       publish_rate: 500.0
       mocap_rate: 360.0 # This must match the mocap frame rate or velocity estimates will be mis-scaled
-      mocap_dropout_threshold: 0.027 # s
+      mocap_dropout_threshold: 0.035 # s
       filter_time_constant: 0.01 # s
       input_timeout: 0.2
       state_timeout: 0.1
@@ -43,7 +43,7 @@
       thresh_out: 10.0  # innovation outlier rejection threshold
       foot_radius: 0.02 # toe radius
 
-      model_path: /home/rml/ros2_ws/src/quad-sdk/robot_driver/include/robot_driver/models/go2/policy.onnx
+      model_path: /home/rml/ros2_ws/src/quad-sdk/robot_driver/include/robot_driver/models/go2/policy.onnx # Path to Policy Onnx File
       policy_inference_rate: 50.0  # Hz, rate at which learned policy runs inference (PD tracking runs at update_rate)
       cmd_vel_filter_const: 0.10
       cmd_vel_scale: 1.0

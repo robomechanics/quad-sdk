@@ -1,4 +1,4 @@
-# Legged Controls Dockerfile
+# x86, CUDA + ONNX Runtime + ROS2 (sim + learned simulation development)
 FROM nvcr.io/nvidia/cuda:12.8.1-cudnn-devel-ubuntu24.04
 
 ARG USERNAME=USERNAME
@@ -15,8 +15,6 @@ RUN if id -u $USER_UID ; then userdel `id -un $USER_UID` ; fi
 # Create the user
 RUN groupadd --gid $USER_GID $USERNAME \
     && useradd --uid $USER_UID --gid $USER_GID -m $USERNAME \
-    #
-    # [Optional] Add sudo support. Omit if you don't need to install software after connecting.
     && apt-get update \
     && apt-get install -y sudo \
     && echo $USERNAME ALL=\(root\) NOPASSWD:ALL > /etc/sudoers.d/$USERNAME \
@@ -64,7 +62,6 @@ RUN cd /tmp && \
     rm -rf /tmp/*
 
 # Install ONNX Runtime (Policy Inference)
-# RUN pip install numpy==2.2.4 psutil==7.0.0 pytest==8.3.5 onnx==${ONNX_VERSION}
 RUN cd /tmp && \
     git clone --recursive --branch v${ONNXRUNTIME_VERSION} https://github.com/Microsoft/onnxruntime
 RUN cd /tmp && \
@@ -74,18 +71,12 @@ RUN cd /tmp && \
         --cuda_home /usr/local/cuda \
         --cudnn_home /usr/lib/x86_64-linux-gnu/ \
         --use_cuda \
-        # --use_tensorrt \
-        # --tensorrt_home /usr/lib/x86_64-linux-gnu/ \
         --config RelWithDebInfo \
         --build_shared_lib \
-        # Somehow --build_wheel cannot be used in Docker build because NumPy cannot be found.
-        # However, if this command is run in a Docker container, it works.
-        # --build_wheel \
         --skip_tests \
         --parallel ${NUM_JOBS} && \
     cd build/Linux/RelWithDebInfo && \
     make install && \
-    # pip install dist/* && \
     rm -rf /tmp/*
 ENV LD_LIBRARY_PATH=/usr/local/lib:$LD_LIBRARY_PATH 
 
