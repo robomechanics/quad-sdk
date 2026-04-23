@@ -2,65 +2,89 @@
 
 ## Overview
 
-This package simulates a quadruped robot in Gazebo.  It is heavily based on the [kodlab_gazebo](https://github.com/KodlabPenn/kodlab_gazebo) package.
-The included Spirit40 robot model was originally created by Ghost Robotics.  Spirit40 can be simulated either with realistic motor rotor inertia or with rotor inertia neglected.
+This directory is a meta-package that groups the Mujoco and Gazebo simulation infrastructure and all supported robot descriptions used by Quad-SDK. It contains:
 
-Important fiction parameters for the foot contact with the ground can be found in the URDF files. xacro file support is a work in progress.
+- **`gazebo_plugins/`** — Gazebo system plugins for controller bridging and state estimation injection.
+- **`gazebo_scripts/`** — terrain worlds, meshes, and bring-up scripts for Gazebo Harmonic.
+- **`*_description/`** — URDF/meshes for each supported platform (see below).
+
+The simulation side of Quad-SDK targets **Gazebo Harmonic** (via `ros_gz_bridge`) on ROS2 Jazzy; legacy Gazebo Classic support has been removed. A MuJoCo back-end is also available — see the top-level `quad_mujoco.py` launch file.
 
 ### License
 
-The source code is released under a [MIT License](quad-sdk/LICENSE).
+The source code is released under a [MIT License](../LICENSE). The Spirit40 model was originally created by Ghost Robotics. The Gazebo bring-up structure is based on [kodlab_gazebo](https://github.com/KodlabPenn/kodlab_gazebo).
 
-**Original [kodlab_gazebo] Author: Vasileios Vasilopoulos**
+**Original `kodlab_gazebo` author:** Vasileios Vasilopoulos
+**Maintainer:** Justin Yim (jkyim@andrew.cmu.edu)
+**Affiliation:** [Robomechanics Lab](https://www.cmu.edu/me/robomechanicslab/), Carnegie Mellon University
 
-**Maintainer: Justin Yim, jkyim@andrew.cmu.edu<br />
-Affiliation: [Robomechanics Lab](https://www.cmu.edu/me/robomechanicslab/)**
+Tested under [ROS2] Jazzy on Ubuntu 24.04 with Gazebo Harmonic.
 
-The Quad Simulator package has been tested under [ROS] Melodic 18.04.
-This is research code, expect that it changes often and any fitness for a particular purpose is disclaimed.
+## Supported Robots
+
+| Package | Platform |
+|---|---|
+| `a1_description` | Unitree A1 |
+| `b2_description` | Unitree B2 |
+| `go1_description` | Unitree Go1 |
+| `go2_description` | Unitree Go2 |
+| `go2w_description` | Unitree Go2-W (wheeled) |
+| `spirit_description` | Ghost Robotics Spirit40 |
+| `spot_description` | Boston Dynamics Spot |
+| `vision60_description` | Ghost Robotics Vision60 |
+
+Each description package ships URDF/Xacro files and collision/visual meshes. Friction and inertial parameters for foot contact are tuned in the URDF.
+
+## Subpackages
+
+### `gazebo_plugins`
+
+C++ Gazebo plugins:
+
+* **`controller_plugin`** — bridges between the Quad-SDK control stack and Gazebo's actuator interface, applying joint torques computed by `robot_driver`.
+* **`estimator_plugin`** — publishes ground-truth state from the simulator for use as `state/ground_truth` or as a reference for EKF evaluation.
+
+Plugins are registered via `controller_plugin.xml` and loaded into each simulated model by the URDF.
+
+### `gazebo_scripts`
+
+Terrain models, worlds, and utility scripts. Available terrain models (under `gazebo_scripts/models/`):
+
+```
+flat                 big_flat             slope_20             slope_20_hole
+step_10cm            step_15cm_local_min  step_20cm            step_25cm
+step_30cm            step_10cm_local_min
+gap_20cm             gap_40cm             gap_40cm_local_min   gap_80cm
+rough_25cm           rough_40cm_huge      parkour_local_min
+```
+
+## Build
+
+```bash
+colcon build --packages-select \
+  gazebo_plugins gazebo_scripts \
+  a1_description b2_description go1_description go2_description go2w_description \
+  spirit_description spot_description underbrush_description vision60_description
+```
 
 ## Usage
 
-Launch the Gazebo simulation with
+Launch Gazebo with the default robot (Go2) and flat terrain:
 
-	roslaunch quad_utils quad_gazebo.launch
+```bash
+ros2 launch quad_utils quad_gazebo.py
+```
 
-## Config files
+Launch with MuJoCo:
 
-* **spirit_control.yaml** sets joint controllers and contact publishing rates
+```bash
+ros2 launch quad_utils quad_mujoco.py
+```
 
-## Nodes
-
-### contact_state_publisher
-
-Publishes the Ground Reaction Forces from the feet.
-
-#### Subscribed Topics
-
-* **`/gazebo/toe[0-3]_contact_state`** ([gazebo_msgs/ContactsState])
-
-        These four topics report information about contact at each of the four feet.
-
-#### Published Topics
-
-* **`/state/grfs`** ([quad_msgs/GRFArray])
-
-        Ground reaction forces at all four feet.
-
-#### Parameters
-
-* **`update_rate`** (double, default: 500)
-
-        The update rate of the publisher (in Hz)
-
+Robot and terrain selection are set via launch arguments — see `quad_utils/launch/quad_gazebo.py` for the full argument list.
 
 ## Bugs & Feature Requests
 
 Please report bugs and request features using the [Issue Tracker](https://github.com/robomechanics/quad-sdk/issues).
 
-
-[ROS]: http://www.ros.org
-[rviz]: http://wiki.ros.org/rviz
-[Eigen]: http://eigen.tuxfamily.org
-[std_srvs/Trigger]: http://docs.ros.org/api/std_srvs/html/srv/Trigger.html
-[sensor_msgs/Temperature]: http://docs.ros.org/api/sensor_msgs/html/msg/Temperature.html
+[ROS2]: https://docs.ros.org/en/jazzy/
