@@ -114,9 +114,13 @@ void LearnedPolicy::computeObservations(
                             raw_joint_velocities);
   body_state = quad_utils::bodyStateMsgToEigen(robot_state_msg.body);
 
-  Eigen::Vector3d base_lin_vel, base_ang_vel, base_orientation, vel_cmd;
+  Eigen::Vector3d base_lin_vel, base_ang_vel, base_lin_accel,
+      base_orientation, vel_cmd;
   base_lin_vel << body_state(6), body_state(7), body_state(8);
   base_ang_vel << body_state(9), body_state(10), body_state(11);
+  base_lin_accel << last_imu_msg_.linear_acceleration.x,
+      last_imu_msg_.linear_acceleration.y,
+      last_imu_msg_.linear_acceleration.z;
   base_orientation << body_state(3), body_state(4), body_state(5);
   vel_cmd << cmd_vel_msg_(0), cmd_vel_msg_(1), cmd_vel_msg_(5);
 
@@ -175,13 +179,9 @@ void LearnedPolicy::computeObservations(
     prev_action_ = raw_actions_;
   }
 
-  // obs_.resize(48);
-  // obs_ << base_lin_vel, base_ang_vel, proj_gravity, vel_cmd, joint_positions,
-  // joint_velocities, prev_action_;
-
-  obs_.resize(45);
-  obs_ << base_ang_vel, proj_gravity, vel_cmd, joint_positions,
-      joint_velocities, prev_action_;
+  obs_.resize(48);
+  obs_ << base_ang_vel, base_lin_accel, proj_gravity, vel_cmd,
+      joint_positions, joint_velocities, prev_action_;
 }
 
 void LearnedPolicy::runInference() {
@@ -290,4 +290,9 @@ bool LearnedPolicy::computeLegCommandArray(
 void LearnedPolicy::updateCmdVelMsg(Eigen::VectorXd msg, rclcpp::Time& t_now) {
   cmd_vel_msg_ = msg;
   last_cmd_vel_msg_time_ = t_now;
+}
+
+void LearnedPolicy::updateImuMsg(
+    const sensor_msgs::msg::Imu& imu_msg) {
+  last_imu_msg_ = imu_msg;
 }

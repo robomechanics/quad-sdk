@@ -5,6 +5,7 @@
 #include <rclcpp/rclcpp.hpp>
 #include <quad_msgs/msg/robot_state.hpp>
 #include <quad_msgs/msg/leg_command_array.hpp>
+#include <sensor_msgs/msg/imu.hpp>
 #include <quad_utils/ros_utils.hpp>
 #include <onnxruntime_cxx_api.h>
 
@@ -67,6 +68,8 @@ class LearnedPolicy : public LegController {
 
   void updateCmdVelMsg(Eigen::VectorXd msg, rclcpp::Time& t_now);
 
+  void updateImuMsg(const sensor_msgs::msg::Imu& imu_msg);
+
   bool computeLegCommandArray(
       const quad_msgs::msg::RobotState& robot_state_msg,
       quad_msgs::msg::LegCommandArray& leg_command_array_msg,
@@ -85,6 +88,9 @@ class LearnedPolicy : public LegController {
 
   /// Unique Pointer to Onnx Runtime Session
   std::unique_ptr<Ort::Session> session_;
+
+  /// Cached IMU message (for acceleration access)
+  sensor_msgs::msg::Imu last_imu_msg_;
 
   /// Newest Velocity Command
   Eigen::VectorXd cmd_vel_msg_{Eigen::VectorXd::Zero(3)};
