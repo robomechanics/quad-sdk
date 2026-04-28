@@ -169,8 +169,8 @@ def launch_plot_juggler(context, *args, **kwargs):
 
 def generate_launch_description():
     declared_args = [
-        DeclareLaunchArgument('world', default_value='flat.sdf', description='SDF world file name to load into simulation'),
-        DeclareLaunchArgument('gui', default_value='true', description='Whether to launch the Gazebo GUI'),
+        DeclareLaunchArgument('world', default_value='big_flat.sdf', description='SDF world file name to load into simulation'),
+        DeclareLaunchArgument('gui', default_value='false', description='Whether to launch the Gazebo GUI. Defaults off — RViz is the primary viewer for the multi-robot demo, and the Gazebo GUI is heavyweight to render six robots at once. Override with gui:=true to bring it back.'),
         DeclareLaunchArgument('paused', default_value='false', description='Whether to start the simulation in a paused state'),
         DeclareLaunchArgument('verbose', default_value='false', description='Launch the simulator in verbose mode'),
         DeclareLaunchArgument('live_plot', default_value='false', description='Launch Plot Juggler'),
@@ -180,8 +180,45 @@ def generate_launch_description():
         DeclareLaunchArgument('use_sim_time', default_value='true', description='Whether to use Computer Clock or Sim Clock'),
         DeclareLaunchArgument(
             'robot_configs',
-            default_value='[{"name": "robot_1", "type": "go2", "controller": "learned", "init_pose" : "-x 0.0 -y 0.0 -z 15"}]',
-            description='A JSON List of robot configurations: MUST specify name, type, controller, and spawn pose'
+            # Eight-robot regular-octagon layout on big_flat at radius
+            # 8 m (bumped from the 6-robot hex's 7 m to give comparable
+            # lateral clearance with two extra bodies in the rotation;
+            # big_flat is 22 m × 22 m so ±8 m fits cleanly).
+            # multi_robot.py's default goal_states pair these up as
+            # diametrically-opposite swaps (vertex i goes to vertex
+            # i+4 mod 8), so all eight straight-line paths converge on
+            # the origin and CBS sees twenty-eight pairwise OBB
+            # conflicts to resolve.
+            #
+            # Each robot's -Y (yaw) is set to atan2(goal_y - start_y,
+            # goal_x - start_x) so it spawns ALREADY POINTED at its
+            # goal. Without this, the default Gazebo spawn faces +X and
+            # robots whose goal is behind them need an in-place 180°
+            # turn, which the GBP-L planner cannot represent (no
+            # in-place rotation primitive — yaw is derived from
+            # velocity direction). The result is a smoothly-curving
+            # reference yaw the NMPC cannot track, runaway joint
+            # efforts, fall. Pre-rotating eliminates the U-turn so
+            # each robot just walks forward to the opposite vertex.
+            #
+            # z=3.0 holds the body well above the slab so feet are
+            # clear of the ground while spawn_lock pins the chassis.
+            # Joints articulate freely (no foot-friction fight) while
+            # controllers come up and fold the legs into sit pose.
+            # The 8 s hold expires AFTER the legs are folded, so
+            # release drops the robot onto its already-sit-folded
+            # legs rather than onto an unstable extended-leg stance.
+            default_value=(
+                '[{"name": "robot_1", "type": "go2", "controller": "inverse_dynamics", "init_pose": "-x  8.00 -y  0.00 -z 3.0 -Y  3.14159"},'
+                ' {"name": "robot_2", "type": "go2", "controller": "inverse_dynamics", "init_pose": "-x  5.66 -y  5.66 -z 3.0 -Y -2.35619"},'
+                ' {"name": "robot_3", "type": "go2", "controller": "inverse_dynamics", "init_pose": "-x  0.00 -y  8.00 -z 3.0 -Y -1.57080"},'
+                ' {"name": "robot_4", "type": "go2", "controller": "inverse_dynamics", "init_pose": "-x -5.66 -y  5.66 -z 3.0 -Y -0.78540"},'
+                ' {"name": "robot_5", "type": "go2", "controller": "inverse_dynamics", "init_pose": "-x -8.00 -y  0.00 -z 3.0 -Y  0.00000"},'
+                ' {"name": "robot_6", "type": "go2", "controller": "inverse_dynamics", "init_pose": "-x -5.66 -y -5.66 -z 3.0 -Y  0.78540"},'
+                ' {"name": "robot_7", "type": "go2", "controller": "inverse_dynamics", "init_pose": "-x  0.00 -y -8.00 -z 3.0 -Y  1.57080"},'
+                ' {"name": "robot_8", "type": "go2", "controller": "inverse_dynamics", "init_pose": "-x  5.66 -y -5.66 -z 3.0 -Y  2.35619"}]'
+            ),
+            description='A JSON List of robot configurations: MUST specify name, type, controller, and spawn pose. init_pose accepts -x/-y/-z and optionally -R/-P/-Y for orientation.'
         ),
         DeclareLaunchArgument('scenario', default_value="None", description='Custom Obstacle Scenario to Spawn e.g. Underbrush, Procedural Underbrush)'),
         DeclareLaunchArgument('obstacles', default_value='[]',

@@ -7,6 +7,7 @@ from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch_ros.actions import Node, PushRosNamespace
 from launch_ros.substitutions import FindPackageShare
 from launch_ros.parameter_descriptions import ParameterValue
+import json
 import os
 import xacro
 
@@ -94,6 +95,31 @@ def launch_global_planner(context, *args, **kwargs):
     global_planner_topics_file = PathJoinSubstitution([global_planner_pkg, 'config', 'global_body_planner_topics.yaml'])
     robot_specific_param_file = os.path.join(quad_utils_pkg.perform(context), 'config', LaunchConfiguration('robot_type').perform(context) + '.yaml')
 
+    # Allow callers (e.g. multi_robot.py for the conflict_based_search case)
+    # to override the planner's goal_state per launch invocation. Empty
+    # string means "fall back to whatever global_body_planner.yaml says",
+    # preserving the prior single-robot behaviour.
+    extra_params = {
+        'enable_leaping': leaping == 'true',
+        'use_sim_time': LaunchConfiguration('use_sim_time'),
+        # cbs_mode tells the GBP to suppress its spin-loop solo planner
+        # from boot. multi_robot.py overrides this to 'true'; quad_plan.py
+        # (single-robot) leaves it false so the spin loop keeps publishing
+        # the way it always has.
+        'global_body_planner.cbs_mode':
+            LaunchConfiguration('cbs_mode').perform(context).lower() == 'true',
+    }
+    goal_state_str = LaunchConfiguration('goal_state').perform(context)
+    if goal_state_str:
+        try:
+            goal_state = json.loads(goal_state_str)
+            if (not isinstance(goal_state, list) or
+                    not all(isinstance(x, (int, float)) for x in goal_state)):
+                raise ValueError("goal_state must be a JSON list of numbers")
+            extra_params['global_body_planner.goal_state'] = [float(x) for x in goal_state]
+        except (json.JSONDecodeError, ValueError) as e:
+            print(f"[planning.py] Ignoring invalid goal_state={goal_state_str!r}: {e}")
+
     return [
         Node(
             package='global_body_planner',
@@ -104,12 +130,11 @@ def launch_global_planner(context, *args, **kwargs):
                 ('start_state', 'state/ground_truth'),
                 ('goal_state', 'clicked_point')
             ],
-            parameters=[local_planner_param_file, 
-                        global_planner_topics_file, 
-                        global_planner_param_file, 
+            parameters=[local_planner_param_file,
+                        global_planner_topics_file,
+                        global_planner_param_file,
                         robot_specific_param_file,
-                        {'enable_leaping': leaping == 'true',
-                         'use_sim_time' : LaunchConfiguration('use_sim_time')}],
+                        extra_params],
         )
     ]
 
@@ -264,6 +289,14 @@ def generate_launch_description():
         DeclareLaunchArgument('leaping', default_value='true'),
         DeclareLaunchArgument('ac', default_value='false'),
         DeclareLaunchArgument('use_sim_time', default_value='true'),
+        DeclareLaunchArgument(
+            'goal_state',
+            default_value='',
+            description='Optional JSON list "[x, y]" overriding the global_body_planner goal_state. Empty = use yaml default.'),
+        DeclareLaunchArgument(
+            'cbs_mode',
+            default_value='false',
+            description='If true, the GBP spin loop is suppressed from boot — the plan_with_constraints service path becomes the sole source of published plans. multi_robot.py overrides this to true; quad_plan.py leaves it false.'),
         OpaqueFunction(function=load_robot_params),
         OpaqueFunction(function=launch_logging), 
         OpaqueFunction(function=launch_global_planner),

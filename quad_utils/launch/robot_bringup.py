@@ -100,43 +100,85 @@ def launch_robot_urdf_node(context, *args, **kwargs):
     )
     return [set_qos_env, robot_state_urdf_node]
 
+def _parse_init_pose(init_pose):
+    """Parse a "-x X -y Y -z Z [-Y YAW] [-R ROLL] [-P PITCH]" init_pose
+    string into a flag->value dict. Position flags are required; rotation
+    flags are optional (default 0). The CBS hex-swap demo uses -Y to
+    spawn each robot pre-rotated toward its goal so NMPC isn't asked to
+    track 180° heading reversals."""
+    tokens = init_pose.split()
+    out = {}
+    i = 0
+    while i + 1 < len(tokens):
+        flag = tokens[i]
+        if flag in ('-x', '-y', '-z', '-R', '-P', '-Y'):
+            out[flag] = tokens[i + 1]
+            i += 2
+        else:
+            i += 1
+    return out
+
+
 def spawn_sdf_model(context, *args, **kwargs):
     namespace = LaunchConfiguration('namespace').perform(context)
     init_pose = LaunchConfiguration('init_pose').perform(context)
     sdf = LaunchConfiguration('robot_sdf').perform(context)
     sdf_path = LaunchConfiguration('robot_sdf_path').perform(context)
 
+    pose = _parse_init_pose(init_pose)
+    args = [
+        '-name', namespace,
+        '-string', sdf,
+        '-x', pose.get('-x', '0.0'),
+        '-y', pose.get('-y', '0.0'),
+        '-z', pose.get('-z', '0.5'),
+        '-allow_renaming', 'true',
+    ]
+    # Only forward rotation flags when the user actually supplied one;
+    # gz create defaults missing flags to 0 anyway, but keeping args
+    # tight makes the spawn command easier to read in the launch log.
+    for flag in ('-R', '-P', '-Y'):
+        if flag in pose:
+            args.extend([flag, pose[flag]])
+
     spawn_node = Node(
         package='ros_gz_sim',
         executable='create',
         # output='screen',
-        arguments=[
-            '-name', namespace,
-            '-string', sdf,
-            '-x', init_pose.split()[1],
-            '-y', init_pose.split()[3],
-            '-z', init_pose.split()[5],
-            '-allow_renaming', 'true',
-            # '--ros-args', '--log-level', 'debug'
-        ],
-        additional_env={  
+        arguments=args,
+        additional_env={
             'GZ_SIM_RESOURCE_PATH': (EnvironmentVariable('GZ_SIM_RESOURCE_PATH')),
             'GZ_SIM_SYSTEM_PLUGIN_PATH': (EnvironmentVariable('GZ_SIM_SYSTEM_PLUGIN_PATH')),
             'GZ_SIM_VERBOSE': '1'}
-            
+
     )
-    return [spawn_node] 
+    return [spawn_node]
 
 def spawn_controller_broadcasters(context, *args, **kwargs):
     namespace = LaunchConfiguration('namespace').perform(context)
     gazebo_scripts_path = FindPackageShare('gazebo_scripts').perform(context)
+    # ros2_control's spawner uses a single PROCESS-WIDE lock to serialise
+    # controller load/activation calls. With N robots × 2 controllers, 2N
+    # spawners race for that lock — at six robots that's twelve
+    # contenders, and even with bumped per-attempt timeouts the loser
+    # of the race can hit its retry budget and silently exit, leaving
+    # the robot whose lock-attempt failed with a controller_manager
+    # but ZERO loaded controllers. Robot stands at spawn, NMPC ticks,
+    # leg commands fall on the floor.
+    #
+    # Fix: chain joint_controller's spawn behind joint_state_broadcaster
+    # via OnProcessExit so for each robot the second spawner only fires
+    # after the first one exits (success or failure). This cuts the
+    # worst-case lock contention from 2N to N, and combined with the
+    # bumped 120 s timeouts gives every robot's controllers a fair shot
+    # even at the six-robot hexagon-swap demo.
     spawn_joint_state_broadcaster = ExecuteProcess(
         cmd=[
             'ros2', 'run', 'controller_manager', 'spawner',
             'joint_state_broadcaster',
             '--controller-manager', f'/{namespace}/controller_manager',
-            '--controller-manager-timeout', '30',
-            '--switch-timeout', '60',
+            '--controller-manager-timeout', '120',
+            '--switch-timeout', '180',
         ],
         # output='screen'
     )
@@ -146,19 +188,39 @@ def spawn_controller_broadcasters(context, *args, **kwargs):
             'ros2', 'run', 'controller_manager', 'spawner',
             'joint_controller',
             '--controller-manager', f'/{namespace}/controller_manager',
-            '--controller-manager-timeout', '30',
-            '--switch-timeout', '60',
+            '--controller-manager-timeout', '120',
+            '--switch-timeout', '180',
         ],
         # output='screen'
     )
 
-    # Optional delay to give controller_manager time to start
-    return[ 
+    # joint_controller fires only after joint_state_broadcaster exits.
+    # Per-robot serialisation; across robots the six joint_state_broadcaster
+    # spawners still go in parallel but at least each robot's own pair is
+    # ordered.
+    chain_jc_after_jsb = RegisterEventHandler(
+        OnProcessExit(
+            target_action=spawn_joint_state_broadcaster,
+            on_exit=[spawn_joint_controller],
+        )
+    )
+
+    # Short 0.5 s delay before the first spawner. The spawners themselves
+    # carry --controller-manager-timeout 120, so they're happy to wait for
+    # controller_manager to come up — we don't need to pre-stall them. The
+    # important thing is to start them ASAP, because every wall-clock
+    # second between physics-start and joint_controller-active is a second
+    # the robot is balanced on extended legs with no active stabilisation
+    # and a CoM above its contact polygon: metastable, tips at any
+    # perturbation, ends up on its back with toes pinned. Closing this
+    # window is what keeps the robot upright long enough for SIT to fold
+    # the legs cleanly.
+    return [
         TimerAction(
-            period=3.0,
+            period=0.5,
             actions=[
+                chain_jc_after_jsb,
                 spawn_joint_state_broadcaster,
-                spawn_joint_controller
             ]
         )
     ]

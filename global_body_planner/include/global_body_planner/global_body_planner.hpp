@@ -3,7 +3,9 @@
 
 #include <nav_msgs/msg/path.hpp>
 #include <quad_msgs/msg/robot_plan.hpp>
+#include <quad_msgs/msg/robot_plan_constraints.hpp>
 #include <quad_msgs/msg/robot_state.hpp>
+#include <quad_msgs/srv/plan_with_constraints.hpp>
 #include <quad_utils/ros_utils.hpp>
 #include <rclcpp/rclcpp.hpp>
 #include <tf2/LinearMath/Quaternion.h>
@@ -49,6 +51,17 @@ class GlobalBodyPlanner {
    * component
    */
   void spin();
+
+  /**
+   * @brief Service callback used by the conflict-based search node. Loads
+   * the supplied constraints into the planner config, optionally warm-starts
+   * from the previously cached trees, runs callPlanner(), and returns the
+   * resulting plan plus its path length.
+   */
+  void planWithConstraintsCallback(
+      const std::shared_ptr<quad_msgs::srv::PlanWithConstraints::Request>
+          request,
+      std::shared_ptr<quad_msgs::srv::PlanWithConstraints::Response> response);
 
  private:
   /**
@@ -151,6 +164,29 @@ class GlobalBodyPlanner {
 
   /// Publisher for goal reached signal
   rclcpp::Publisher<std_msgs::msg::Bool>::SharedPtr goal_reached_pub_;
+
+  /// Service offered to the conflict-based search node. Each call returns a
+  /// constraint-respecting plan (warm-starting from the previous solve when
+  /// requested).
+  rclcpp::Service<quad_msgs::srv::PlanWithConstraints>::SharedPtr
+      plan_with_constraints_srv_;
+
+  /// Persistent RRT-Connect planner kept across calls so that warm-started
+  /// replans can reuse the trees built on the previous service call.
+  GBPL gbpl_;
+
+  /// While set, the spin loop does not call callPlanner() /
+  /// publishCurrentPlan(), so the service path becomes the sole source
+  /// of published global plans. The first plan_with_constraints call
+  /// sets this true, but the constructor also reads the boolean
+  /// `global_body_planner.cbs_mode` parameter — when multi_robot.py
+  /// passes that as true, spin-loop publishing is suppressed from boot
+  /// and avoids the race where a robot whose waitForData() completes
+  /// early publishes a solo (no-constraint) plan before CBS has finished
+  /// its search. The local_planner subscribed to that solo plan then
+  /// receives a CBS plan as a second message, doesn't reset its internal
+  /// indexing, and segfaults indexing the new plan with stale state.
+  bool cbs_mode_ = false;
 
   /// Topic name for terrain map (needed to ensure data has been received)
   std::string terrain_map_topic_;

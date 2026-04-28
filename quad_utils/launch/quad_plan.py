@@ -25,6 +25,11 @@ def launch_robot_group(context, *args, **kwargs):
         robot_controller = config["controller_mode"]
         reference = config["reference"]
         twist_input = config["twist_input"]
+        # Optional per-robot global_body_planner goal override. Empty string
+        # leaves the yaml default in place (preserves single-robot behavior).
+        goal_state = config.get("goal_state", "")
+        if isinstance(goal_state, (list, tuple)):
+            goal_state = json.dumps(list(goal_state))
 
         planning_launch_file = PathJoinSubstitution([
             FindPackageShare('quad_utils'),
@@ -47,9 +52,11 @@ def launch_robot_group(context, *args, **kwargs):
                     'controller_mode' : TextSubstitution(text=robot_controller),
                     'reference': TextSubstitution(text=reference),
                     'twist_input': TextSubstitution(text=twist_input),
+                    'goal_state': TextSubstitution(text=goal_state),
                     'logging' : LaunchConfiguration('logging'),
                     'leaping' : LaunchConfiguration('leaping'),
-                    'ac' : LaunchConfiguration('ac'), 
+                    'ac' : LaunchConfiguration('ac'),
+                    'cbs_mode' : LaunchConfiguration('cbs_mode'),
                     'use_sim_time' : LaunchConfiguration('use_sim_time')
                 }.items()
             ),
@@ -76,6 +83,7 @@ def generate_launch_description():
         DeclareLaunchArgument('ac', default_value='false', description='Enable Adaptive Complexity Planner (Spirit ONLY)'),
         DeclareLaunchArgument('use_sim_time', default_value='false', description='Use Simulation Clock or Computer Clock'),
         DeclareLaunchArgument('force_app', default_value='false', description='Launch Force Applicator Alongside Planning'),
+        DeclareLaunchArgument('cbs_mode', default_value='false', description='Suppress GBP spin-loop solo planning (used by multi_robot.py for CBS).'),
         DeclareLaunchArgument(
             'robot_configs',
             default_value='[{"name": "robot_1", "type": "go2", "controller_mode" : "learned", "reference": "twist", "twist_input": "joy"}]',

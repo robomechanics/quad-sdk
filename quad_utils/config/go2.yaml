@@ -32,10 +32,17 @@
         g_dim: 28.0
         x_weights: [5.0, 5.0, 5.0, 0.5, 0.5, 0.5, 0.1, 0.1, 0.2, 0.05, 0.05, 0.01]
         u_weights: [!!float 5e-5, !!float 5e-5, !!float 5e-5, !!float 5e-5, !!float 5e-5, !!float 5e-5, !!float 5e-5, !!float 5e-5, !!float 5e-5, !!float 5e-5, !!float 5e-5, !!float 5e-5]
-        x_lb: [!!float -2e19, !!float -2e19, 0.0, -3.14159, -3.14159, -3.14159, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19]
-        x_ub: [!!float 2e19, !!float 2e19, !!float 2e19, 3.14159, 3.14159, 3.14159, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19]
-        x_lb_soft: [!!float -2e19, !!float -2e19, 0.0, -3.14159, -3.14159, -3.14159, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19]
-        x_ub_soft: [!!float 2e19, !!float 2e19, !!float 2e19, 3.14159, 3.14159, 3.14159, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19]
+        # Yaw bound (6th element) widened from ±π to ±10 rad to match
+        # PR #400 (Feature/fix yaw wrapping). The local_planner's NMPC
+        # reference yaw is unwrapped (math_utils::unwrapVector) so it
+        # passes through ±π smoothly when the robot turns more than 180°
+        # in a single plan; if the bound here is still ±π, NMPC clips
+        # the unwrapped reference and the controller can't track turns.
+        # Roll/pitch stay tight; this only widens yaw.
+        x_lb: [!!float -2e19, !!float -2e19, 0.0, -3.14159, -3.14159, -10.0, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19]
+        x_ub: [!!float 2e19, !!float 2e19, !!float 2e19, 3.14159, 3.14159, 10.0, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19]
+        x_lb_soft: [!!float -2e19, !!float -2e19, 0.0, -3.14159, -3.14159, -10.0, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19]
+        x_ub_soft: [!!float 2e19, !!float 2e19, !!float 2e19, 3.14159, 3.14159, 10.0, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19]
         u_lb: [!!float -2e19, !!float -2e19, 10.0, !!float -2e19, !!float -2e19, 10.0, !!float -2e19, !!float -2e19, 10.0, !!float -2e19, !!float -2e19, 10.0]
         u_ub: [!!float 2e19, !!float 2e19, 150.0, !!float 2e19, !!float 2e19, 150.0, !!float 2e19, !!float 2e19, 150.0, !!float 2e19, !!float 2e19, 150.0]
         g_lb: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19]

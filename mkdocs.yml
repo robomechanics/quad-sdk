@@ -1,0 +1,149 @@
+site_name: Quad-SDK
+site_description: Open-source full-stack framework for agile quadrupedal locomotion
+site_url: https://robomechanics.github.io/quad-sdk/
+repo_url: https://github.com/robomechanics/quad-sdk
+repo_name: robomechanics/quad-sdk
+edit_uri: edit/main/docs/
+
+copyright: Copyright &copy; Robomechanics Lab, Carnegie Mellon University
+
+theme:
+  name: material
+  language: en
+  logo: assets/quad_sdk_promo.png
+  favicon: assets/quad_sdk_promo.png
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: deep purple
+      accent: amber
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: deep purple
+      accent: amber
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+  features:
+    - navigation.instant
+    - navigation.tracking
+    - navigation.tabs
+    - navigation.tabs.sticky
+    - navigation.sections
+    - navigation.expand
+    - navigation.indexes
+    - navigation.top
+    - toc.follow
+    - search.suggest
+    - search.highlight
+    - search.share
+    - content.code.copy
+    - content.code.annotate
+    - content.action.edit
+    - content.tabs.link
+
+extra_css:
+  - stylesheets/extra.css
+
+plugins:
+  - search
+  - include-markdown:
+      rewrite_relative_urls: true
+      comments: false
+  - mkdoxy:
+      projects:
+        quad-sdk-api:
+          src-dirs: >-
+            body_force_estimator
+            force_applicator
+            global_body_planner
+            local_planner
+            nmpc_controller
+            quad_utils
+            robot_driver
+          full-doc: True
+          doxy-cfg:
+            FILE_PATTERNS: "*.cpp *.hpp *.h"
+            RECURSIVE: True
+            EXTRACT_ALL: True
+            GENERATE_HTML: False
+            GENERATE_LATEX: False
+
+markdown_extensions:
+  - admonition
+  - attr_list
+  - def_list
+  - footnotes
+  - md_in_html
+  - tables
+  - toc:
+      permalink: true
+  - pymdownx.details
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.tasklist:
+      custom_checkbox: true
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+
+nav:
+  - Home: index.md
+  - Getting Started:
+      - Installation: getting-started/installation.md
+      - Quickstart: getting-started/quickstart.md
+      - Hardware Bringup: getting-started/hardware-bringup.md
+  - Architecture:
+      - Overview: architecture/overview.md
+      - ROS2 Migration: architecture/ros2-migration.md
+      - Pinocchio Integration: architecture/pinocchio-integration.md
+  - Packages:
+      - Index: packages/index.md
+      - Planning:
+          - Global Body Planner: packages/global_body_planner.md
+          - Local Planner: packages/local_planner.md
+          - NMPC Controller: packages/nmpc_controller.md
+      - Control & Estimation:
+          - Robot Driver: packages/robot_driver.md
+          - Body Force Estimator: packages/body_force_estimator.md
+      - Simulation:
+          - Quad Simulator: packages/quad_simulator.md
+          - Force Applicator: packages/force_applicator.md
+      - Utilities:
+          - Quad Utils: packages/quad_utils.md
+          - Quad Msgs: packages/quad_msgs.md
+          - Quad Logger: packages/quad_logger.md
+          - Quad Training: packages/quad_training.md
+          - Quad Perf Tests: packages/quad_perf_tests.md
+          - Scripts: packages/scripts.md
+  - Tutorials:
+      - First Simulation Run: tutorials/first-run.md
+      - Logging & Playback: tutorials/logging.md
+      - Training Data Collection: tutorials/training.md
+  - API Reference:
+      - C++ API: quad-sdk-api/index.md
+  - Contributing: contributing.md
+
+extra:
+  version:
+    provider: mike
+    default: latest
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/robomechanics/quad-sdk
+    - icon: fontawesome/solid/globe
+      link: https://www.cmu.edu/me/robomechanicslab/

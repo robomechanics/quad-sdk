@@ -49,10 +49,11 @@ std::vector<int> PlannerClass::neighborhoodN(State q, int N) const {
 
   std::unordered_map<int, State>::const_iterator itr;
   for (itr = vertices.begin(); itr != vertices.end(); itr++) {
+    if (invalid_vertices_.count(itr->first)) continue;
     closest.push(std::make_pair(stateDistance(q, itr->second), itr->first));
   }
 
-  if (N > closest.size()) N = closest.size();
+  if (N > static_cast<int>(closest.size())) N = closest.size();
   std::vector<int> neighbors;
   for (int i = 0; i < N; i++) {
     neighbors.push_back(closest.top().second);
@@ -67,6 +68,7 @@ std::vector<int> PlannerClass::neighborhoodDist(State q, double dist) const {
 
   std::unordered_map<int, State>::const_iterator itr;
   for (itr = vertices.begin(); itr != vertices.end(); itr++) {
+    if (invalid_vertices_.count(itr->first)) continue;
     if ((stateDistance(q, itr->second) <= dist) &&
         stateDistance(q, itr->second) > 0) {
       neighbors.push_back(itr->first);
@@ -78,5 +80,52 @@ std::vector<int> PlannerClass::neighborhoodDist(State q, double dist) const {
 
 int PlannerClass::getNearestNeighbor(State q) const {
   std::vector<int> closest_q = neighborhoodN(q, 1);
+  // If every vertex has been invalidated by warm-start pruning, fall back to
+  // the raw graph so callers always get something to work with — the caller
+  // is responsible for re-checking validity before extending from it.
+  if (closest_q.empty()) {
+    std::priority_queue<Distance, std::vector<Distance>, std::greater<Distance>>
+        closest;
+    for (auto itr = vertices.begin(); itr != vertices.end(); itr++) {
+      closest.push(std::make_pair(stateDistance(q, itr->second), itr->first));
+    }
+    return closest.empty() ? 0 : closest.top().second;
+  }
   return closest_q.front();
+}
+
+void PlannerClass::markVertexInvalid(int idx) { invalid_vertices_.insert(idx); }
+
+bool PlannerClass::isVertexInvalid(int idx) const {
+  return invalid_vertices_.count(idx) > 0;
+}
+
+void PlannerClass::resetInvalidVertices() { invalid_vertices_.clear(); }
+
+int PlannerClass::pruneByConstraints(const PlannerConfig& planner_config) {
+  if (planner_config.dynamic_constraints.empty()) {
+    return 0;
+  }
+  // Pass 1: find vertices whose own location violates a new constraint.
+  std::queue<int> bfs;
+  for (auto itr = vertices.begin(); itr != vertices.end(); ++itr) {
+    if (invalid_vertices_.count(itr->first)) continue;
+    if (failsRobotConstraint(itr->second, planner_config)) {
+      bfs.push(itr->first);
+    }
+  }
+  // Pass 2: propagate invalidation to every descendant. A vertex whose
+  // ancestor is invalid sits on a path that crosses the constraint, so the
+  // path-from-root for that vertex is also forbidden.
+  int newly_invalid = 0;
+  while (!bfs.empty()) {
+    int v = bfs.front();
+    bfs.pop();
+    if (!invalid_vertices_.insert(v).second) continue;  // already invalid
+    ++newly_invalid;
+    for (int child : getSuccessors(v)) {
+      bfs.push(child);
+    }
+  }
+  return newly_invalid;
 }

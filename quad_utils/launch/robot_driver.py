@@ -3,10 +3,10 @@ from launch.actions import (
     DeclareLaunchArgument, IncludeLaunchDescription, GroupAction,
     OpaqueFunction, SetLaunchConfiguration
 )
-from launch.conditions import IfCondition
+from launch.conditions import IfCondition, UnlessCondition
 from launch.substitutions import LaunchConfiguration, PathJoinSubstitution, TextSubstitution
 from launch.launch_description_sources import PythonLaunchDescriptionSource
-from launch_ros.actions import Node
+from launch_ros.actions import Node, PushRosNamespace
 from launch_ros.substitutions import FindPackageShare
 from launch_ros.parameter_descriptions import ParameterValue
 import os
@@ -76,50 +76,78 @@ def generate_launch_description():
     robot_specific_param_file = [robot_specific_param_file, TextSubstitution(text='.yaml')]
 
 
-    # Publish TF from URDF + joint states (needed for TF lookups and RViz)
-    robot_state_publisher_node = Node(
-        package='robot_state_publisher',
-        executable='robot_state_publisher',
-        name='robot_state_publisher',
-        namespace=LaunchConfiguration('namespace'),
-        parameters=[{
-            'robot_description': ParameterValue(LaunchConfiguration('robot_description'), value_type=str),
-            'use_sim_time': LaunchConfiguration('use_sim_time')
-        }],
-        remappings=[('joint_states', 'state/joints')]
-    )
+    # Helper: build the robot_state_publisher Node. The Node namespace is
+    # left unset because the surrounding GroupAction pushes the namespace
+    # explicitly via PushRosNamespace; this avoids double-namespacing
+    # (e.g. /robot_1/robot_1/robot_state_publisher).
+    def _make_rsp_node():
+        return Node(
+            package='robot_state_publisher',
+            executable='robot_state_publisher',
+            name='robot_state_publisher',
+            parameters=[{
+                'robot_description': ParameterValue(
+                    LaunchConfiguration('robot_description'), value_type=str),
+                'use_sim_time': LaunchConfiguration('use_sim_time')
+            }],
+            remappings=[('joint_states', 'state/joints')]
+        )
 
-    # Main robot driver node
-    robot_driver_node = Node(
-        package='robot_driver',
-        executable='robot_driver_node',
-        name='robot_driver',
-        namespace=LaunchConfiguration('namespace'),
-        output='screen',
-        parameters=[
-            robot_driver_param_file,
-            robot_driver_topics_file,
-            robot_specific_param_file,
-            {
-            'controller': LaunchConfiguration('controller'),
-            'is_hardware': LaunchConfiguration('is_hardware'),
-            'mocap':LaunchConfiguration('mocap'),
-            'namespace': LaunchConfiguration('namespace'),
-            'robot_type': LaunchConfiguration('robot_type'),
-            'estimator_id' : LaunchConfiguration('estimator'),
-            'model_path' : LaunchConfiguration('model_path'),
-            'provider' : LaunchConfiguration('provider'),
-            'robot_description': ParameterValue(LaunchConfiguration('robot_description'), value_type=str),
-            'use_sim_time' : LaunchConfiguration('use_sim_time')
-        }]
-    )
+    # Helper: build the robot_driver Node. Same rationale as above — no
+    # `namespace=` here, the caller provides it via PushRosNamespace (or
+    # inherits one already on the stack in the sim case).
+    def _make_robot_driver_node():
+        return Node(
+            package='robot_driver',
+            executable='robot_driver_node',
+            name='robot_driver',
+            output='screen',
+            parameters=[
+                robot_driver_param_file,
+                robot_driver_topics_file,
+                robot_specific_param_file,
+                {
+                    'controller': LaunchConfiguration('controller'),
+                    'is_hardware': LaunchConfiguration('is_hardware'),
+                    'mocap': LaunchConfiguration('mocap'),
+                    'namespace': LaunchConfiguration('namespace'),
+                    'robot_type': LaunchConfiguration('robot_type'),
+                    'estimator_id': LaunchConfiguration('estimator'),
+                    'model_path': LaunchConfiguration('model_path'),
+                    'provider': LaunchConfiguration('provider'),
+                    'robot_description': ParameterValue(
+                        LaunchConfiguration('robot_description'),
+                        value_type=str),
+                    'use_sim_time': LaunchConfiguration('use_sim_time')
+                }
+            ]
+        )
+
+    # Hardware mode: this launch is invoked directly (no parent
+    # PushRosNamespace) so we push the namespace ourselves. Also brings up
+    # robot_state_publisher, since hardware bringup does not have a
+    # gazebo-side TF chain.
+    hardware_group = GroupAction([
+        PushRosNamespace(LaunchConfiguration('namespace')),
+        _make_rsp_node(),
+        _make_robot_driver_node(),
+    ], condition=IfCondition(LaunchConfiguration('is_hardware')))
+
+    # Sim mode: robot_bringup.py is included from quad_gazebo.py inside a
+    # PushRosNamespace(robot_ns), and robot_bringup.py in turn includes
+    # this launch. The namespace is therefore already on the stack — DO
+    # NOT push it again. robot_state_publisher is owned by robot_bringup
+    # in this path.
+    sim_group = GroupAction([
+        _make_robot_driver_node(),
+    ], condition=UnlessCondition(LaunchConfiguration('is_hardware')))
 
     return LaunchDescription([
         robot_type,
         mocap,
         logging,
         controller,
-        model_path, 
+        model_path,
         provider,
         estimator,
         is_hardware,
@@ -130,10 +158,8 @@ def generate_launch_description():
         # Parse URDF from robot_type
         OpaqueFunction(function=load_robot_params),
 
-        # Only launch robot_state_publisher on hardware (robot_bringup handles it in sim)
-        GroupAction([robot_state_publisher_node],
-                    condition=IfCondition(LaunchConfiguration('is_hardware'))),
-        robot_driver_node,
+        hardware_group,
+        sim_group,
 
         # Optional: logging
         GroupAction([

@@ -1,4 +1,6 @@
-docs/
+# docs/ holds the MkDocs Material site source (checked in).
+# MkDocs build output goes to site/ and is ignored.
+site/
 *.pyc
 *.vscode
 **/build/

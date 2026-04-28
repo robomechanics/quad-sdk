@@ -9,7 +9,9 @@ This package determines the contact timing, foothold locations, and ground react
 The source code is released under a [MIT License](../LICENSE).
 
 **Authors:** Joe Norby, Yanhao Yang
+
 **Affiliation:** [Robomechanics Lab](https://www.cmu.edu/me/robomechanicslab/), Carnegie Mellon University
+
 **Maintainers:** Yanhao Yang (yanhaoy@andrew.cmu.edu), Alex Stutt (astutt@andrew.cmu.edu)
 
 Tested under [ROS2] Jazzy on Ubuntu 24.04. This is research code; expect frequent changes and no fitness for any particular purpose.

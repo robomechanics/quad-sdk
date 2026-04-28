@@ -1,0 +1,22 @@
+# Request a global body plan that respects pose-based collision constraints
+# from other robots' plans. Used by the conflict_based_search node when
+# servicing per-robot replan requests.
+#
+# Each constrained pose is treated as a forbidden region: the returned plan's
+# body must not overlap (oriented-bounding-box test) any constrained pose.
+# An empty constraint set is the same as a normal "plan from current state to
+# current goal" request.
+
+quad_msgs/RobotPlanConstraints constraints
+
+# When true the planner is permitted to warm-start from the trees it built on
+# the previous request (lazy-pruning vertices that violate the new
+# constraints). When false the planner builds new RRT-Connect trees from
+# scratch — this matches the original ROS1 behavior.
+bool warm_start
+
+---
+
+quad_msgs/RobotPlan plan
+float64 path_length
+bool success
