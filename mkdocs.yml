@@ -7,28 +7,42 @@ edit_uri: edit/main/docs/
 
 copyright: Copyright &copy; Robomechanics Lab, Carnegie Mellon University
 
+# Per-package READMEs (included verbatim) link to source files outside docs/
+# (e.g. ../quad_msgs/msg/RobotState.msg) — these render fine on GitHub but
+# don't resolve as docs pages. Demote those to info so --strict still passes.
+validation:
+  links:
+    unrecognized_links: info
+    not_found: info
+
 theme:
   name: material
+  custom_dir: docs/overrides
   language: en
   logo: assets/quad_sdk_promo.png
   favicon: assets/quad_sdk_promo.png
+  icon:
+    repo: fontawesome/brands/github
+    edit: material/pencil
+    view: material/eye
   palette:
+    # CMU Carnegie Red (#C41230) is a custom hex; we set primary/accent to
+    # `custom` and define the actual values via CSS vars in extra.css.
     - media: "(prefers-color-scheme: light)"
       scheme: default
-      primary: deep purple
-      accent: amber
+      primary: custom
+      accent: custom
       toggle:
         icon: material/brightness-7
         name: Switch to dark mode
     - media: "(prefers-color-scheme: dark)"
       scheme: slate
-      primary: deep purple
-      accent: amber
+      primary: custom
+      accent: custom
       toggle:
         icon: material/brightness-4
         name: Switch to light mode
   features:
-    - navigation.instant
     - navigation.tracking
     - navigation.tabs
     - navigation.tabs.sticky
@@ -36,6 +50,7 @@ theme:
     - navigation.expand
     - navigation.indexes
     - navigation.top
+    - navigation.footer
     - toc.follow
     - search.suggest
     - search.highlight
@@ -44,33 +59,62 @@ theme:
     - content.code.annotate
     - content.action.edit
     - content.tabs.link
+    - content.tooltips
 
 extra_css:
   - stylesheets/extra.css
 
+extra_javascript:
+  - https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js
+
 plugins:
-  - search
+  - search:
+      separator: '[\s​\-_,:!=\[\]()"`/]+|\.(?!\d)|&[lg]t;|(?!\b)(?=[A-Z][a-z])'
+  - social:
+      cards_layout_options:
+        background_color: "#C41230"
+        color: "#FFFFFF"
+  - glightbox:
+      touchNavigation: true
+      loop: false
+      effect: zoom
+      slide_effect: slide
+      width: 90%
+      height: auto
+      zoomable: true
+      draggable: true
+  - git-revision-date-localized:
+      enable_creation_date: false
+      type: timeago
+      fallback_to_build_date: true
+      strict: false
+      exclude:
+        - assets/.doxy/**
+        - quad-sdk-api/**
+        - tags.md
+        - 404.md
+  # Client-side AES encryption — scoped to pages that opt in via `password:`
+  # front-matter. The RML lab section uses this; everything else is unaffected.
+  # NOTE: no `global_password` — that would encrypt everything.
+  - encryptcontent:
+      title_prefix: '🔒 '
+      summary: 'Robomechanics Lab — internal'
+      placeholder: 'Lab password'
+      decryption_failure_message: 'That password did not unlock this page.'
+      encryption_info_message: 'This page is encrypted. Ask an RML lead for the password.'
+      # Cache the unlock in browser localStorage so RML members enter the
+      # password once per browser, not once per page.
+      remember_password: true
+      session_storage: false
+      password_button: true
+      password_button_text: 'Unlock'
+      reload_scripts:
+        - https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js
   - include-markdown:
       rewrite_relative_urls: true
       comments: false
-  - mkdoxy:
-      projects:
-        quad-sdk-api:
-          src-dirs: >-
-            body_force_estimator
-            force_applicator
-            global_body_planner
-            local_planner
-            nmpc_controller
-            quad_utils
-            robot_driver
-          full-doc: True
-          doxy-cfg:
-            FILE_PATTERNS: "*.cpp *.hpp *.h"
-            RECURSIVE: True
-            EXTRACT_ALL: True
-            GENERATE_HTML: False
-            GENERATE_LATEX: False
+  # mkdoxy (Doxygen → Markdown C++ API) is disabled for now. Enable later
+  # under an "API Reference" nav entry if/when we want it back.
 
 markdown_extensions:
   - admonition
@@ -84,8 +128,6 @@ markdown_extensions:
   - pymdownx.details
   - pymdownx.highlight:
       anchor_linenums: true
-      line_spans: __span
-      pygments_lang_class: true
   - pymdownx.inlinehilite
   - pymdownx.snippets
   - pymdownx.superfences:
@@ -134,16 +176,31 @@ nav:
       - First Simulation Run: tutorials/first-run.md
       - Logging & Playback: tutorials/logging.md
       - Training Data Collection: tutorials/training.md
-  - API Reference:
-      - C++ API: quad-sdk-api/index.md
+      - Adding a New Robot: tutorials/adding-a-robot.md
+      - Custom Terrain Maps: tutorials/custom-terrain.md
+      - Writing Your Own Controller: tutorials/writing-controller.md
+      - Specialized Controllers: tutorials/specialized-controllers.md
+  - Platforms: platforms.md
+  - FAQ: faq.md
+  - 🔒 RML:
+      - Lab Hub: rml/index.md
+      - Network & IPs: rml/networking.md
+      - Time Sync: rml/time-sync.md
+      - Motion Capture: rml/mocap.md
+      - Robot Bringup: rml/robot-bringup.md
+      - Hardware Design: rml/hardware-design.md
+  - Cite: cite.md
+  - Roadmap: roadmap.md
   - Contributing: contributing.md
 
 extra:
   version:
     provider: mike
-    default: latest
+    default: ros2
+    alias: true
   social:
     - icon: fontawesome/brands/github
       link: https://github.com/robomechanics/quad-sdk
     - icon: fontawesome/solid/globe
       link: https://www.cmu.edu/me/robomechanicslab/
+  generator: false

@@ -1,6 +1,9 @@
 # docs/ holds the MkDocs Material site source (checked in).
 # MkDocs build output goes to site/ and is ignored.
 site/
+.venv-docs/
+.cache/
+encryptcontent.cache
 *.pyc
 *.vscode
 **/build/

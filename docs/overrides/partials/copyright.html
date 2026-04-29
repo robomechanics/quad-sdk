@@ -1,0 +1,12 @@
+{% if config.copyright %}
+  <div class="md-copyright">
+    {% if config.copyright is string %}
+      <div class="md-copyright__highlight">
+        {{ config.copyright }}
+      </div>
+    {% endif %}
+    Built with <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">Material for MkDocs</a>
+    &middot; <a href="https://github.com/robomechanics/quad-sdk/blob/main/LICENSE">MIT License</a>
+    &middot; <a href="cite.md">Cite</a>
+  </div>
+{% endif %}

@@ -1,0 +1,77 @@
+name: Docs
+
+on:
+  push:
+    branches:
+      - main
+      - feature/wiki-upgrade
+    paths:
+      - 'docs/**'
+      - 'mkdocs.yml'
+      - '**/README.md'
+      - '.github/workflows/docs.yml'
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'mike version label to deploy (e.g. ros2, ros1)'
+        default: 'ros2'
+        required: true
+      alias:
+        description: 'Alias to assign (e.g. latest)'
+        default: 'latest'
+        required: false
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Configure git for mike
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: 'pip'
+          cache-dependency-path: 'docs/requirements.txt'
+
+      - name: Install Doxygen (for mkdoxy)
+        run: sudo apt-get update && sudo apt-get install -y doxygen graphviz
+
+      - name: Install docs deps
+        run: pip install -r docs/requirements.txt
+
+      - name: Determine version label
+        id: ver
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "version=${{ inputs.version }}" >> "$GITHUB_OUTPUT"
+            echo "alias=${{ inputs.alias }}" >> "$GITHUB_OUTPUT"
+          else
+            echo "version=ros2" >> "$GITHUB_OUTPUT"
+            echo "alias=latest" >> "$GITHUB_OUTPUT"
+          fi
+
+      # Note: not using --strict because mkdocs-encryptcontent always emits
+      # a password-entropy warning that we accept (lab-shared password by design).
+      # Link/nav validation is configured in mkdocs.yml directly.
+      - name: Build site
+        run: mkdocs build
+
+      - name: Deploy with mike
+        if: github.ref == 'refs/heads/main' || github.event_name == 'workflow_dispatch'
+        run: |
+          git fetch origin gh-pages --depth=1 || true
+          mike deploy --push --update-aliases \
+            "${{ steps.ver.outputs.version }}" \
+            "${{ steps.ver.outputs.alias }}"
+          mike set-default --push "${{ steps.ver.outputs.alias }}"
