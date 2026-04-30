@@ -1,0 +1,302 @@
+/* Quad-SDK custom theme — CMU Carnegie Red */
+
+:root {
+  /* Carnegie Red #C41230 / Iron Gray #6D6E71 — official CMU brand colors */
+  --md-primary-fg-color:        #C41230;
+  --md-primary-fg-color--light: #D63A52;
+  --md-primary-fg-color--dark:  #8E0D22;
+  --md-accent-fg-color:         #6D6E71;
+  --md-typeset-a-color:         #C41230;
+
+  /* Subtle gradient used in hero text + tab underline */
+  --qsdk-gradient: linear-gradient(90deg, #8E0D22 0%, #C41230 50%, #6D6E71 100%);
+}
+
+[data-md-color-scheme="slate"] {
+  /* Dark mode: keep CMU red — no pink. Slightly lift for link contrast only. */
+  --md-default-bg-color: #141414;
+  --md-code-bg-color:    #1d1d1d;
+  --md-primary-fg-color:        #C41230;
+  --md-primary-fg-color--light: #C41230;
+  --md-primary-fg-color--dark:  #8E0D22;
+  --md-accent-fg-color:         #C41230;
+  --md-typeset-a-color:         #D63A52;
+}
+
+/* ---------- Layout polish ---------- */
+
+/* Smaller body text — gives heading sizes more punch */
+.md-typeset {
+  font-size: 0.78rem;       /* default is 0.8rem */
+  line-height: 1.65;
+}
+
+/* Heading scale — bigger, bolder, with more weight contrast vs body */
+.md-typeset h1 {
+  font-size: 2.2rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  margin-bottom: 0.6em;
+}
+.md-typeset h2 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  letter-spacing: -0.015em;
+  margin-top: 2.4rem;
+  margin-bottom: 0.7em;
+  padding-bottom: 0.35em;
+  border-bottom: 1px solid var(--md-default-fg-color--lightest);
+}
+.md-typeset h3 {
+  font-size: 1.15rem;
+  font-weight: 700;
+  margin-top: 1.8rem;
+  margin-bottom: 0.5em;
+  letter-spacing: -0.005em;
+}
+.md-typeset h4 {
+  font-size: 0.95rem;
+  font-weight: 700;
+  margin-top: 1.4rem;
+  margin-bottom: 0.4em;
+  text-transform: none;
+}
+
+/* List + paragraph spacing */
+.md-typeset p,
+.md-typeset li {
+  font-size: 0.78rem;
+}
+
+/* ---------- Hero on landing page ---------- */
+
+.hero {
+  text-align: center;
+  padding: 3rem 0 2rem 0;
+  position: relative;
+}
+
+/* Soft red glow behind hero on landing */
+.hero::before {
+  content: "";
+  position: absolute;
+  top: -10%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 80%;
+  height: 120%;
+  background: radial-gradient(ellipse at center,
+              rgba(196, 18, 48, 0.10) 0%,
+              transparent 60%);
+  z-index: -1;
+  pointer-events: none;
+}
+
+.hero h1 {
+  font-size: 3.4rem;
+  font-weight: 800;
+  margin-bottom: 0.4rem;
+  letter-spacing: -0.025em;
+  background: var(--qsdk-gradient);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: hero-fade 0.7s ease-out both;
+}
+
+.hero p:first-of-type {
+  font-size: 1.2rem;
+  font-weight: 400;
+  max-width: 720px;
+  margin: 0 auto 1.6rem auto;
+  color: var(--md-default-fg-color--light);
+  animation: hero-fade 0.7s 0.1s ease-out both;
+}
+
+.hero .md-button {
+  margin: 0.3rem 0.3rem 1.6rem 0.3rem;
+  animation: hero-fade 0.7s 0.2s ease-out both;
+}
+
+.hero .md-button--primary {
+  background-color: var(--md-primary-fg-color);
+  border-color: var(--md-primary-fg-color);
+  box-shadow: 0 4px 14px rgba(196, 18, 48, 0.30);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+.hero .md-button--primary:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 22px rgba(196, 18, 48, 0.40);
+  background-color: var(--md-primary-fg-color--dark);
+  border-color: var(--md-primary-fg-color--dark);
+}
+
+.hero-image {
+  max-width: min(960px, 100%);
+  margin: 1.8rem auto;
+  border-radius: 14px;
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.18);
+  display: block;
+  animation: hero-fade 0.9s 0.3s ease-out both;
+}
+
+[data-md-color-scheme="slate"] .hero-image {
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.6);
+}
+
+@keyframes hero-fade {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ---------- Card grid ---------- */
+
+.md-typeset .grid.cards > :is(ul, ol) > li,
+.md-typeset .grid > .card {
+  border-radius: 12px;
+  border: 1px solid var(--md-default-fg-color--lightest);
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.md-typeset .grid.cards > :is(ul, ol) > li:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.10);
+  border-color: var(--md-primary-fg-color);
+}
+
+[data-md-color-scheme="slate"] .md-typeset .grid.cards > :is(ul, ol) > li:hover {
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.40);
+}
+
+/* ---------- Footer credit (custom on home) ---------- */
+
+.footer-credit {
+  text-align: center;
+  font-size: 0.85rem;
+  color: var(--md-default-fg-color--light);
+  margin-top: 2rem;
+}
+
+/* ---------- Code blocks ---------- */
+
+.md-typeset pre > code,
+.md-typeset code {
+  font-size: 0.66rem;
+  border-radius: 8px;
+}
+
+/* BibTeX / citation blocks — long lines, give them tighter line-height too */
+.md-typeset .language-bibtex,
+.md-typeset code.language-bibtex {
+  font-size: 0.60rem;
+  line-height: 1.45;
+}
+
+/* Inline code — sit slightly inset from body text */
+.md-typeset :not(pre) > code {
+  padding: 0.05em 0.4em;
+}
+
+.md-typeset .highlight + .highlight,
+.md-typeset .highlight + p > .highlight {
+  margin-top: 0.6rem;
+}
+
+/* Filename / language tab on code blocks */
+.md-typeset .highlight > .filename {
+  background: var(--md-primary-fg-color);
+  color: white;
+}
+
+/* ---------- Tables ---------- */
+
+.md-typeset table:not([class]) {
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+}
+
+.md-typeset table:not([class]) th {
+  background: var(--md-primary-fg-color);
+  color: white;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+}
+
+.md-typeset table:not([class]) tr:nth-child(2n) {
+  background: var(--md-default-fg-color--lightest);
+}
+
+[data-md-color-scheme="slate"] .md-typeset table:not([class]) tr:nth-child(2n) {
+  background: rgba(255, 255, 255, 0.025);
+}
+
+/* ---------- Admonitions ---------- */
+
+.md-typeset .admonition {
+  border-radius: 10px;
+  border-left-width: 4px;
+}
+
+/* ---------- Mermaid ---------- */
+
+.mermaid {
+  text-align: center;
+  margin: 1.5rem 0;
+}
+
+/* ---------- Nav tabs (top bar) ---------- */
+
+.md-tabs {
+  background-color: var(--md-primary-fg-color--dark);
+}
+
+/* Subtle accent line under the active tab */
+.md-tabs__link--active {
+  position: relative;
+}
+.md-tabs__link--active::after {
+  content: "";
+  position: absolute;
+  left: 0.6rem;
+  right: 0.6rem;
+  bottom: -2px;
+  height: 3px;
+  background: white;
+  border-radius: 2px;
+}
+
+/* ---------- Code annotations ---------- */
+
+.md-typeset .md-annotation__index {
+  background-color: var(--md-primary-fg-color);
+}
+
+/* ---------- Search ---------- */
+
+.md-search__input {
+  background-color: rgba(255, 255, 255, 0.15);
+}
+.md-search__input::placeholder {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+/* ---------- Pagination buttons (Prev/Next) ---------- */
+
+.md-footer__inner.md-grid {
+  background: var(--md-primary-fg-color--dark);
+}
+
+/* ---------- TOC active item ---------- */
+
+.md-nav__link--active {
+  color: var(--md-primary-fg-color);
+  font-weight: 600;
+}
+
+/* ---------- Glightbox overrides for clean look ---------- */
+
+.glightbox-clean .gslide-description {
+  background: var(--md-default-bg-color);
+  color: var(--md-default-fg-color);
+}

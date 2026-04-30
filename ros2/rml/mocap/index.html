@@ -1,0 +1,2261 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Open-source full-stack framework for agile quadrupedal locomotion">
+      
+      
+      
+        <link rel="canonical" href="https://robomechanics.github.io/quad-sdk/ros2/rml/mocap/">
+      
+      
+        <link rel="prev" href="../time-sync/">
+      
+      
+        <link rel="next" href="../robot-bringup/">
+      
+      
+      <link rel="icon" href="../../assets/quad_sdk_promo.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.5.49">
+    
+    
+      
+        <title>Motion Capture Setup - Quad-SDK</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.6f8fc17f.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../css/timeago.css">
+    
+      <link rel="stylesheet" href="../../stylesheets/extra.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+      
+        <meta  property="og:type"  content="website" >
+      
+        <meta  property="og:title"  content="Motion Capture Setup - Quad-SDK" >
+      
+        <meta  property="og:description"  content="Open-source full-stack framework for agile quadrupedal locomotion" >
+      
+        <meta  property="og:image"  content="https://robomechanics.github.io/quad-sdk/ros2/assets/images/social/rml/mocap.png" >
+      
+        <meta  property="og:image:type"  content="image/png" >
+      
+        <meta  property="og:image:width"  content="1200" >
+      
+        <meta  property="og:image:height"  content="630" >
+      
+        <meta  property="og:url"  content="https://robomechanics.github.io/quad-sdk/ros2/rml/mocap/" >
+      
+        <meta  name="twitter:card"  content="summary_large_image" >
+      
+        <meta  name="twitter:title"  content="Motion Capture Setup - Quad-SDK" >
+      
+        <meta  name="twitter:description"  content="Open-source full-stack framework for agile quadrupedal locomotion" >
+      
+        <meta  name="twitter:image"  content="https://robomechanics.github.io/quad-sdk/ros2/assets/images/social/rml/mocap.png" >
+      
+    
+    
+   <link href="../../assets/stylesheets/glightbox.min.css" rel="stylesheet"/><style>
+    html.glightbox-open { overflow: initial; height: 100%; }
+    .gslide-title { margin-top: 0px; user-select: text; }
+    .gslide-desc { color: #666; user-select: text; }
+    .gslide-image img { background: white; }
+    .gscrollbar-fixer { padding-right: 15px; }
+    .gdesc-inner { font-size: 0.75rem; }
+    body[data-md-color-scheme="slate"] .gdesc-inner { background: var(--md-default-bg-color);}
+    body[data-md-color-scheme="slate"] .gslide-title { color: var(--md-default-fg-color);}
+    body[data-md-color-scheme="slate"] .gslide-desc { color: var(--md-default-fg-color);}</style> <script src="../../assets/javascripts/glightbox.min.js"></script></head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="custom" data-md-color-accent="custom">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#motion-capture-setup" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+      <div data-md-color-scheme="default" data-md-component="outdated" hidden>
+        
+      </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow md-header--lifted" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="Quad-SDK" class="md-header__button md-logo" aria-label="Quad-SDK" data-md-component="logo">
+      
+  <img src="../../assets/quad_sdk_promo.png" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Quad-SDK
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Motion Capture Setup
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="custom" data-md-color-accent="custom"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="custom" data-md-color-accent="custom"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+          <a href="javascript:void(0)" class="md-search__icon md-icon" title="Share" aria-label="Share" data-clipboard data-clipboard-text="" data-md-component="search-share" tabindex="-1">
+            
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9a3 3 0 0 0-3 3 3 3 0 0 0 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.15c-.05.21-.08.43-.08.66 0 1.61 1.31 2.91 2.92 2.91s2.92-1.3 2.92-2.91A2.92 2.92 0 0 0 18 16.08"/></svg>
+          </a>
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/robomechanics/quad-sdk" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.7.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8M97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    robomechanics/quad-sdk
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+    
+      
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../getting-started/installation/" class="md-tabs__link">
+          
+  
+    
+  
+  Getting Started
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../architecture/overview/" class="md-tabs__link">
+          
+  
+    
+  
+  Architecture
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../packages/" class="md-tabs__link">
+          
+  
+    
+  
+  Packages
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../tutorials/first-run/" class="md-tabs__link">
+          
+  
+    
+  
+  Tutorials
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../platforms/" class="md-tabs__link">
+        
+  
+    
+  
+  Platforms
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../faq/" class="md-tabs__link">
+        
+  
+    
+  
+  FAQ
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../" class="md-tabs__link">
+          
+  
+    
+  
+  🔒 RML
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../cite/" class="md-tabs__link">
+        
+  
+    
+  
+  Cite
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../roadmap/" class="md-tabs__link">
+        
+  
+    
+  
+  Roadmap
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../contributing/" class="md-tabs__link">
+        
+  
+    
+  
+  Contributing
+
+      </a>
+    </li>
+  
+
+      
+    </ul>
+  </div>
+</nav>
+    
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="Quad-SDK" class="md-nav__button md-logo" aria-label="Quad-SDK" data-md-component="logo">
+      
+  <img src="../../assets/quad_sdk_promo.png" alt="logo">
+
+    </a>
+    Quad-SDK
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/robomechanics/quad-sdk" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.7.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8M97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    robomechanics/quad-sdk
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Home
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Getting Started
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            Getting Started
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../getting-started/installation/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Installation
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../getting-started/quickstart/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Quickstart
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../getting-started/hardware-bringup/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Hardware Bringup
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Architecture
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            Architecture
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/overview/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Overview
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/ros2-migration/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    ROS2 Migration
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/pinocchio-integration/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Pinocchio Integration
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4" >
+        
+          
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../packages/" class="md-nav__link ">
+              
+  
+  <span class="md-ellipsis">
+    Packages
+  </span>
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_4" id="__nav_4_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            Packages
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_4_2" id="__nav_4_2_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Planning
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_2">
+            <span class="md-nav__icon md-icon"></span>
+            Planning
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../packages/global_body_planner/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Global Body Planner
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../packages/local_planner/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Local Planner
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../packages/nmpc_controller/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    NMPC Controller
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../packages/conflict_based_search/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Conflict Based Search
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_4_3" id="__nav_4_3_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Control & Estimation
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_3">
+            <span class="md-nav__icon md-icon"></span>
+            Control & Estimation
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../packages/robot_driver/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Robot Driver
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../packages/body_force_estimator/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Body Force Estimator
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4_4" id="__nav_4_4_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Simulation
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_4">
+            <span class="md-nav__icon md-icon"></span>
+            Simulation
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../packages/quad_simulator/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Quad Simulator
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../packages/force_applicator/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Force Applicator
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_4_5" id="__nav_4_5_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Utilities
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_5">
+            <span class="md-nav__icon md-icon"></span>
+            Utilities
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../packages/quad_utils/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Quad Utils
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../packages/quad_msgs/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Quad Msgs
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../packages/quad_logger/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Quad Logger
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../packages/quad_training/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Quad Training
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../packages/quad_perf_tests/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Quad Perf Tests
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../packages/scripts/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Scripts
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Tutorials
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            Tutorials
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/first-run/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    First Simulation Run
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/multi-robot/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Multi-Robot with CBS
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/logging/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Logging & Playback
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/training/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Training Data Collection
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/adding-a-robot/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Adding a New Robot
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/custom-terrain/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Custom Terrain Maps
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/writing-controller/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Writing Your Own Controller
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/specialized-controllers/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Specialized Controllers
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../platforms/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Platforms
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../faq/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    FAQ
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+      
+        
+        
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8" checked>
+        
+          
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../" class="md-nav__link ">
+              
+  
+  <span class="md-ellipsis">
+    🔒 RML
+  </span>
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_8" id="__nav_8_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_8">
+            <span class="md-nav__icon md-icon"></span>
+            🔒 RML
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../networking/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Network & IPs
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../time-sync/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Time Sync
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    🔒 Motion Capture
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  <span class="md-ellipsis">
+    🔒 Motion Capture
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#natnet-streaming-settings" class="md-nav__link">
+    <span class="md-ellipsis">
+      NatNet streaming settings
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#defining-a-robot-rigid-body-in-motive" class="md-nav__link">
+    <span class="md-ellipsis">
+      Defining a robot rigid body in Motive
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#camera-frame-rate-esync-2" class="md-nav__link">
+    <span class="md-ellipsis">
+      Camera frame rate (eSync 2)
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#udp-buffer-sizing-on-the-laptop" class="md-nav__link">
+    <span class="md-ellipsis">
+      UDP buffer sizing on the laptop
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#common-failure-modes" class="md-nav__link">
+    <span class="md-ellipsis">
+      Common failure modes
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../robot-bringup/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Robot Bringup
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../hardware-design/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    🔒 Hardware Design
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../cite/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Cite
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../roadmap/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Roadmap
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../contributing/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Contributing
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#natnet-streaming-settings" class="md-nav__link">
+    <span class="md-ellipsis">
+      NatNet streaming settings
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#defining-a-robot-rigid-body-in-motive" class="md-nav__link">
+    <span class="md-ellipsis">
+      Defining a robot rigid body in Motive
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#camera-frame-rate-esync-2" class="md-nav__link">
+    <span class="md-ellipsis">
+      Camera frame rate (eSync 2)
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#udp-buffer-sizing-on-the-laptop" class="md-nav__link">
+    <span class="md-ellipsis">
+      UDP buffer sizing on the laptop
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#common-failure-modes" class="md-nav__link">
+    <span class="md-ellipsis">
+      Common failure modes
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+  
+    <a href="https://github.com/robomechanics/quad-sdk/edit/main/docs/rml/mocap.md" title="Edit this page" class="md-content__button md-icon">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20.71 7.04c.39-.39.39-1.04 0-1.41l-2.34-2.34c-.37-.39-1.02-.39-1.41 0l-1.84 1.83 3.75 3.75M3 17.25V21h3.75L17.81 9.93l-3.75-3.75z"/></svg>
+    </a>
+  
+  
+
+
+<div id="mkdocs-encrypted-content" style="display:none">VzQCIY+H5pgYMvexVUBkfQ==;x4AJNqou37bivZawsyxz+MSub4Ur13xoKkzQzYFbzV5ELd5UfPDJVlw10Tk/OcYxfonrg7tvciU5uvEoncBGe4Ymq6hydg5Qm1eRFLtBQAG+pCABNd1+FwgpGi44DjcNQFQaFwJyvN6ovl0/wccfC/fjU5rO160j4am5z43/Kcfos4u1hAZMaLk0EorHtsRjDkpoU0ruUFE8+7mn6c+7Nhil5CaUw+Et2DWDDlE26TpL8Xmqxee2xKs3O17BQWFCS2bRzuX1fGZuWvscKgAGvZnniSV/toVAApkJyacJT5ZATuVVIf5AojwTsQ82HMYgNknZkSwYZg/PEjfCStYY9QN4zLWoK7fRamoMUYED9QyQhtkwRXXEDS/jjWogP1NtfwLRCwKnjwAsgnMluNmAJ17mQQALA6EQAKoobr8RY3XXXuThHOIaHNmYpP8CWFtZq2AUIeds8Irjku3Fi6RWbtOMpS46f37NhBTH3TRDPeM6hVeg+zamolPyCTn8Z2xuW4xb47phYHF57aexzUxs4sjxQ/iaQC/+LiHjSJekBjkQBFC1GfAXnEYVqBEYsMTdfhB0kiOCD9vMp0Eb8QgPpC5gfg7GRLn+BBSROhbxA4reeTka9kBEdjAV33t6KkVDXXH554FlYvIlbc9TZrQcPXDyVX6SBhcuITfZlYaa8v+eW1JRcfdKa+UB2fUkeEdAIGkFR7GY6ANfUW5VpiGzH9CIrJQjCDjxkk2BFlOFiCqQ9AHF7FdE4BzQMJ384XXpjBUNBTIb+VANMQImKQZAb5r+loq/IGzkMTaZLbNGv4896CVQYhxjJVP40QjixtYF92VGQ7r+LN+zwVxsVM6z+M7+2JShL4v5TkgA1nSo/+XJkP8VvEeZpqMlyXe7Nf+jSN7aEYRiLupLfOaBy9kYDvLWiq4rSTx30iQN2oPliD822YoTE00biJ/jbQULspS0pPYBo993jn82L7X0NAO0nlHNxIFHB8ijJXji9v8DujNZ2RBxCrphy1GRjlupZoLFuAmcCloCiVEQvMXJkhHVKS/gzkUYwA5X3wAQSTZ6jqOk3ISnZTo/GrxqQHVBbAMZ03K100NxxoBWgIWtyPbDAOuTDmyhrOqzU2mK7Le2HzreqiTrUt1cj82vrTQOQdirkPWEZMvZ0VUz8Mo6ZtaynsVo4dlwrrj3o0ruBXTkKbu+F65ERlCmBFdL6TdoEEIB40nvrMkA2Bu/tDMDdxC06dfrl+hrW3X2pl7Ct4MUU+lRYCvCjiI7yj3AWj2Q5f58W83ZtxwUy1mv+VAeMVS15MtoCWKPuYtgRPmAItqh994doG6mN9FtiQJOj47IQNwekqXVdo/h773VFjaeiB1NrN83eVX8ziqZtTpYrdkrzYlBolhDqPYGVKaB8SrX7Fn8ME6lfvON4Pv+ztTBg/56y1SEqchzJrDnjXnyot7zo55tqiMp+uZxgWaI3x+XSs+4BBckXeDGrlIXwfDkrlKHS+7p10eBywdTeni9VWeIzd25Kv9uD1K2QcxOBmu8eIHiCGjLRBcJWUfQDuNAKNGQu6Kgo4a+RiPjucQ+BuAJn5mVStJzLh9DRyQZL9iLOIJZ5QFSdcPFs4PjeGXe19XTyr0vkhcb28EO+OuruF7+MtN893g2rZdB3aTFwZ9zBCZiDicnN/B+n7RTcF8HfgSYRCDmAtioBU3JOyItY9yI+RdEITNdpi5Dh3QQ9poDbm11OBHvAYTFQFv2BqFg9CJRqWdSXDAgm49W0qfyn/323dKlTp+kVET7Eb7lmBF8YkRl7FyiktazvUX29y/5g9QraRqGcxQMS7r+7t/t1QpKPJFePChLkGNn472L+7nYBu9GszvEGLWGcBLAQ/5ATC7QlU2SAUPQ7XRZ69iibJ+5CSsYT5TGrEf5RSRkxQB/91nHKnXl1F6jK9rnnVGznjiMM08qyBsDsqhNhswU0PTSfrXrXVKXdqEUDIRrU4Wyi3wveXZopaOfxZnjz2APfAtE8/QuublYP/K7SKPxmpk3Dd7T+Xni+DuiRPLM8US/hdLbjQ2jfhadCTdDUSUxbcKnPbsVSuFzIwtFsFMnmn/D1Dk5c7wO3XvwFlQq++SNcrqjLLLPWf6kWlx5RmbOtXA7NvxN+d6Lr0A1oNKwGlVgVw+arqhCc4hxKKRx+ASXpF7wDlKIgjxS01dF3Gw9osBL+j44taRDqRmlbos7WKEWt2sbYgU7x+YSRNIglyfGmsxxRDW1NcZ2zch/biztO/BP99PTpg+uDc4n1cBLIuV0Gr55O4CbkpviwqHIVylxNiqVmpikXpt+hPqi35sY1vc3RO6wdltFMXBJZ/hr7kOIuf44IfDYWJv5lGp3sXZoSz4oaZzz4ZrQVKnrJUJDwEFQAxvRma8Ljn4HkYXWuk+ghApB619AXUuyvsMGhVjEJ8ABNBQRFWlL6HE766G0VVqZoEH7s7a01u5jAumEQi9oMn35aoGsJ/ZlocVQQ/RsDgso44hQKfcpeMXi4AatAMEl/F/daT+DnlFkmPZfQLcJHyIxM/6o3SKExKnw4A4vxLhYbS1q/Biua9Amulke8R+D1aNLrTRnAdheRDg1D4twPhoDeLFfJsf0SslsN2EePtUVKyZUKoomWKgHk5kc/aDs48+QlXJt3BE5dz6a4nxrDiR7cC67an+QyazOc8j7fijnLIMpzVLIxDK1Eb16Fts2/QbFAZVQ0/mWo7tusQeEJfuJIGiEycUAwR/CyzEOQoZpDsvLuf8lvSRJCy6ah2p76/UiB+PkVRxNl9JTHXeFA4fwSlpvVoeXXOQ8qj2LVrTrhNPwseAf4tinKyfZYMA37gD17csKccaaT8A0HyVglVwwQWgQO3qv+ToM90VnwPmDlqFNE8aWMJlnAAhA0yZ53kfmOWYBOl78rAV/SrojkT65zDLo6sq/agMyObkA80Fo+YcUUdjCoBpU1Aoay81djxcoK9YjSFwWixjQpT0wHOOG/sWsoNZXTcOtCeEMn8EUCspH+IBJPMzVt4D5ZuZ7CTekazhnAZCcZOIA9tg+xXM5XY46bLNWETBEo7kjJawa7jrm10XYWzpqDXBcmvw8NuPBqxUU7OYdZW5d1S3TeJSwLWdSZSR68PK5UVdmZajc7o6bD2vvU/URFDxPElAlKUxyV/7bCpy8OK9bAzSkJ4WgApHKSdoBtR8/frpXNYg6a6gUveKhfKZ+AHnay/zUKy5rub/dQt1upayaVkehrs8gLuFFuKoqM67ZbsJG3egbzikxWaXm2JGxufKivf1ymBIwmEYbZDVJJKN6VOriIffv0/riN4nAj20ZSXJRzLa01QpJXK7Qx9BGs815NUgN6jCAo/CmwbP5v2hp9T1biM4XDYcHVYNSgRpt7ZCoB1jjA+TXNCqNJWUadwC6oiEkBUzk/985bd/RtY8QvLMJDctOG/scrWxCa6iEJ8vDjDB7gPujzqdpYVz7/nchY4CNkRpCZYOEX1o5YWOBdeEdQypFCOs7L8aIrMaTg5e59xphA/wjRfXU75nr73HUtak/6CrZmgyfhQ/bOfdmAmJS5NOeTmkIHSUtVp4sIdQnzWZPZr0MgE5eAVa9M4+IOgZK1Bw1TT2rNwiPrlXWE5gj4raPCT7SDTnKlHRz9pXmrNbjHyLKoArhVofMhxdPJqqJAElUmVI3/KK6iBCkdywgH7GFGt3GYi8q964MWk1LZDFCMoHxdQCXU6h9pppkoGIodWNTTeQfikhqDPqSexJ/OmONZG0teTMwgO7FS5c89LsZzYMvhD/lMDikUqNPrkJfqc1iApbtqW+LHgD7zKmVz9BsstQFtJ3IzybTsoG2qlKaaUCneCovkM1Xt41+GymjqpinuRsFUFMwxlOywUTf8O0NxG71m4lJdxA6XXJc5d7F6Ix3If/KZhm+96RRvyZSByxSVcogEpqrAFoG1UBzk+NoSdYgCisSfkXbQw0IWXBvrr0LNdeDYsFYhe4FuXVDDbOQjvZL8+Za2D0BvS/cL+/dAgVeuwE5PWvch3RkvGUPZoY4JfTiwsomAPLZAiUBmDR60p6yiKhSCP6WJgKebL0bFElvu9VAiiATZV1cbDGPm/a5l+2guxXxdlwyPJ8pvfOIXAUkYW9hzT+wDisDuGww7XUZBwsWn3YGfkkJOJJ5sRSnSFmWbSen4klYOEORYCwyZ8i5gcLA3n0XmUJWJ4EMIzdRikLNh3MuoTYkw7ZwwGkTcnPwIUutcExIP+PWJtVymP2DNJO4fAkkgUPtTpdRBJsia65TByYc4BseJ56AbdHX4vXL8nE5XOiFhNamiszBlEny6xKS55ECfLkJQZrb3lgKrF5gfh5CHUGn2lzf2WTA+474bX1xTu8kF1a+LNtpXXa9PAZXoYLXcuVqJOQ1c3isvQafAHmiccPTeX8JmMnA2rvl0TdvDq4MbnDOUptNmNqrydtsOnBqmI9Y2NQmDsI0DD00jLX+ksPN4hk1pELCllopSJXqnQhtUUIEsF4HJvVb3Yf2CCHU7IT6hyf4sGOTaArIxZuwVNinqCqyAod5EvQfv4CMRiDNvPbCvJxRLP6kk8fuCfRKmJY05Q0NhmVz5k3eAzomTpLZB5pWgG6V8bpbOYnxaNiGrCSc61KraZU40m/4rLTIrdzffiBW2cxq+VRO8VwiY4P0rWQAyVP8qz1KghUJcRUTA2/DxjyUxUhNDymq9SWQJiTDYlEgN2dQL8yRHoTIK2JOIE9+DZSk2wp/K9ds1oiWwYHoIo3vdwQ/0twy3TgLqLCDEFk7Q/T6HecfTbwnGAdV9o+8OgYumSrGGn+tSEzuRRvOMZ+tEmFk9hCebKq2VZUcOyiIMRrkH5507HaqHk+r5lMtEuhF6bvjJqqev0s5zFVZLyCDZJcDxyTm0/L7W5F+1PLprjYax/sBcj+rhV9xGFiZOFXm4OQEllCDiyiTmwZNZ1kvYl033QBOXGVLfFtb/p+9T1IGau+Hw5DMd/i+cvOcohd1hinQ+rlhk+tW+Y/EE+rHw6Q7kS9VJHcthul/jfbqiJiQfA//1UATsGiSPle6yvi5KwF5Z40HrCfw6AYmtrzeEwtmRT/ahaJBipNJmOvWaivCsd0s4sWMRIc7ef+Gt0nBjTjxKatttZt08gjZ5X4UuaIVYOKR2g1omS7jOTY0Z3VD9UKbByrDdQGnZgutWjZeP/WOJ1ONBOhVJoqhu8XEWnC9swWfAicLz1r4IKGV1AtGiGm1bXGlqfpp4pQK5T9lsQ4HdASwwuEK3N3+EBz7yslmOTaonzMuN3CkvGAalOZvyaVeT2AxBwmYfnvQjid5BduSRW+i0mDf3WCrpRY5wNFUa2uIvDvSW2zPXzE3Vh1csktp6UVdCInvRMz+3XujDyQJGB7GihkJVYiZ/gtuAv8BTy5p+OZe9t+N8iZpzu6cJ5NQ5BzIMZmVtvFSI3Uv7jSOvtevQBd9A++8ijUA3AdxwruM/foIJpfsB9w7rsP2uUGJu3FOuvgfaTn4WuiruXX+QfK7k0xEmLrbL6dEkYnOeFQIi35N50i7RsaEh+yLHM3Dsw44VwaAcuDqjZHr/Uo3Kz4kGRSf6qJE/m6PSChHMsjNpRtXc6B9ZYaGn62uI+QLZjB5B/f9D5SIRNFEONrXcSDOulcBpk49SYAawgh3UgGgB2GYbG2uEgvGFlhurBazDbMe1VUEjKGT/SrVHkIwbF8XewBnuPIqNeFtkDF8TdCr7g8MHHWlYl7a7fhSlCHIT3xFEUU7bgTXQ6ilPUH8zeLXHfDc3phwvZHFwUWYK3YYhTpuSQq6bqWg+w1UPt1P91XX8yL26nUddTGuNaV8dVELV7Sl1PEV5uDN0NGeSEP73YnS/tvUYUmroF30beS3CKidPZGdZCDTk9FlK+sm4TRsX2rcbDhwUEMqOd+aqZw1VTev2JpEqwcTIdoINYGfjPMmmXL6wv7P5obFA30y0JJ4QCxdrKjPs816L6yBehzHV3a5LM9yRpEoy+GThER1viFljuAJ8Gthz9nYdXtiXT5y4kM9HQY5gu/Ntq73J4ncxvj8zAOCsNLd+qBltZYbg/CmH7N7HxAdk7Qq3914nsdiUEHV6wQ0AggZFnMiTO+A5KbJ8ihDxwU9ajPyHwb8SgjOzEbBlarnwL5nBsry9ExC/WsmIKoZ3cGUT52Ho1lMSqZb1no05wbPlva6Peo2aT4u4IEc1q4VEtH59KwNrLahpQ6CZH/ZaDj5zSXYdAf8/6NXV4alAT0d/XRpSzMSOH8sp77MThelo1pyWoNEOrru09reIoKv56cN2RHgqoIFzvyO2+fUUmsm0Mke7tJvJqCGGKaUu0LQJClT7iJJtqMKj42QJgaW0GAaQ8KBt7uns/2nlM5hWdZRDGmDc4WAm4hbQA99DU0GkQn7UF5+jblB7hAlt12GpIKwaP9skbmIUAf2wAGkzwcRaDkzR6uWR+/DlxRR6ed9oX36z7O01TJptN7h/BY6is16wlugcyABMYRIn4OSbRQdRxHlAwWDJO9XTC7eKXhCAgIuHdi4Ik2Phd9mvUGlrvLCeYOzadPwFErXaLa3hI35PH5xrbtWzQtCSB4tlS5jCWqwFqlpOkOM/NNy6RAnW5xVHq15nyV/XkzS3EOy8OATKWGBz/I1koyKaickNH9lcbLC4LBM26ORU76pJ56zJZSVXRD1rj8ibZQ3PVt/6tDexq7GURrk0IbsHZZsMJrlJwl3xspw0yVGSs34Y+XUDbzLT3uFDWzOCwL0WIjn69WQ1YQdO1MxNyd8rww3SavMI2f9LyjmgsJ85PPDIIw2+nr8i6RG3b+51m0L9Z0y7ocaM3QP/tL5UpdWs2zU9fIqjSi6PXXJTV3yURJokhXjo7U9EefZZZ6QtRKEWVMCgut6JtYbwLeiW5e7MEdM1AVP/d8gaHOHrHhnPC8coQTpAqx7vi4CCeToCjTlMLVfdheIeud0vRtdYKe5ak11EZERBMJ++VDwVBCCxu2MvAPr46Vl4iGaG64uEhOLypef/ezNF0iaVd+bKmo1LgV6RXFOsffbKSbJdnEiZfsa3LORZ+wNFYRnpI1PeoyaxMeXa+F7Y5hsDX2bzuE2c2bnN1F4+PxV7ROwkZZr5tGpZSnr/aRVskYfVsMKSykeiF0bm+aVwJ/vsVLfXxgxfY0Ik+KvSgQtKwNDWQJfr8RYB3Qcz68GgxODdNQzO3ZRFFaWB+yINJzOEVVYq1iOk3bVF3z0w3pQcTkI4Rv1WA6G91k+znsrvwzt1jf1/6blNSOFB0FELLoziU3+retHP+CoVIR64O9Oo1dR/x9UU2MjwoUgSvHZIT34eh9MiBqA7YUFGljKE0/v974TJ5sNu7GHqgjlzxWxiKd6rDuB6tZMNHTlONLrZ83UoTIAd/9R/7DVUXgDhPmIc+UH/U2vmjGcAARKEyy2C9VWgR+/wYOVzQ8YroeHLVp++snpDmBt1SDn/NA4ymu9+wmkKXVhkLBkHHbBrbSt6NkDTWJzUUb9NKYgn2uu3i8dJ9RsLdbeqXxHAXFVJbXtyYtvdc06vZkwwYj8jSF3+/ttf1DNMrenEe4KmO72HAzymAN3HawHezw5nwixl179/Q7z1T1PWtt1NwNVEzByepvpzYK5AfkbQmxYyHFg9dGwhuos2COk1MBGey/ymN3hzmzWuOJNd9iUsMg4gJgTCHqzp4bpf4ilE0axAgxGovTrdgnBB1GbyEhqvvvioUGBbBZAtSF5RJom/DFVbzvUJPkPZevF/4ea91HG5fE3cnfSV2334ozij8JeC+Z0utnJBkzJJn696wusnjJzGT0IBYtJ9UB8imoKCycTCnw+xICRsfN+iJGeSmvfzw0i5vgiC7VlvahCzlmPxm9xQrqVpu1cT2iz0P4BtmajifOKbdiqvUbMRzmt7/Zb7mVl3N28M5SqvVvh1IQvECMHeTOjj2fCfH0CfOywn0OGQrmPhU5jChRMjPYmJIyfeG3uYKSe6IrcOPZAbB2UNog5i9t0+KNN7aKDcF7k1QVYqHH3YWMG+huDbZrsUni/zlmdb251xxM/KKv98V4jOF83G3b4XI9+hLv1dwgNJtOjeYWubJvvHkqUp3HkyA5VDiKebvSNMMbrEoWekGpH/sq2blL3NI9106oZX5bfLWdo4Su2hwWU9QNeaakznb531YqOzujbDaVFPWTXUEN0q1zc7SoKoriewkQzdqpvR2pe9wpyXVKQWwGFrYgtcqCq0jQtpljH1r0ienIAjKa+Oz29668Hgmm94MOG0puNGO6GZpPEPAV3G9hyJkCLio9Luo12G05H2Th3/hpD1cqTsXdbHhUbjKxpEqy/EZAgv7MvzcgtkaHy6tA3QRIAyKof7fymVQd7ob4h6q2sB3oVMuZijhO1Z8dKQwCYtc3zSg/qGQQOydh6a4PRYGSTseN4pTUA8/WZwJDSMsc5Jv+Kz0AteVEBntaf8aBHoWXCHQMiXCDlN9Mtgnhu5LmbYa2TLKPPjnX5cgmBEZqmFKtgXVrfTNpyQXkmd8BfvIFBM3gEXmT75JA9tAur4Z2AkY8Jmlp1/hTftLM9aejKZqzXfvW11dJCvJ0YVWc9UubQFnrivNXVym4tqi/kiGgyCAtCMWPf2XVKSMtDXgU2CWQxerp7Cn65Hz1U0FJFAcvJ/TYyNFP/6Ab/z41OIzn0y8OqposKoDilcH1SbD6GAqFsr0rR0eVz9FnlH3z8aBQ8YLxq8dDMTcjPrt6fle1gIE7fmvO6LlLZv84Hn8IVdUvRreb1XXftLr/zh3BWx8PeU52+V9tmMGBeDdr9pTzDSVycqUGlGw5aBTCwHdk4NNcy+NTo04Vttx+zVTapMU05U0qO9oQ6RVTCi2/BJHJzbv0+vtOJk4PoD+JFD6YU7lU2364I6fEDHyqqKjaneL7No4PmHT2p3UL04Hbhs3Pks/eNd1/JCgByKpFh8DTMYbt4BOQdjjcodRB7KOo7ThI4pW+Mfd3OoHKH5sPEguRkb6haWOv4RPa6gXbda8y2hdBIifvRfZeIkavzuiYVXXHPe7RjWxTw2mruRA0cXUs+gbECpSSrL3DW3Wzej33XV2CHMqVkuBdifxZl9YDF9c5gan7dLpaoa3IuI4d6t5XCV74IKAa64I6Hv6P0JGRT+kqoZGcTKBv69IbxqA/g/NOQgoAWcb5gsDjjkeFr0Dxq+j2C4W6E0qWP0oWxgGtYfb9p4TIEkQcioRArPvqJDIPRrE/S1Q2oX2Baj08YoLDoVxtuOtMFi3f3dDLYu/rsH7Vvs4w9GYKvqEcq12w3ic4Emw4jPCVORWVEqq/kw51bSLd9x8JgXtubyUxj3cvm+CpX5VAVww+35oZjo6qiYZhx/DSs3nvSkXZy7pgDBEmAO1pWlVom2G4TTit0f0lC2tf27fXG4rBScWsuvnXreYZvK+PpcEYo7RpRZKMumdq7MYLwpoDhAt1KL7+RB8uBeAgs5QIHafOOomN8UhY2HtqvNs/HieIG9zZiBXoLWgYfFXEeTgcibGMs7v1ISLV6b9Pr5gnIia/+42rV9ZBakrGPVnGzgo8mD2wf9tmKyi7JcZbPNuejZO7syAtPTeAi7oKE4zmpBSDV7TqRRo24JQPtFx87RrDj3T2p1x4mAc2KM+GGvGdjamKUfydygHkIvEqWqyM02sCC57fHC68U5YxJsoFj/eNnOA3fDZi0S/OTJsSjp+eAb0CBObmK6RCI811BZKACgFMueSK4xa6g4OV6s7N537YpiN90BHf/YUpMIZm7+RGqq1KncFff7MvB2ARgfezqwYNwvMb+0OjTQJQ+ObuZqxYvKWziyXhJJKT09IR3smE4dgrIKuiQwd1YHikh9635lxX2Xgf567ywkR/RwuJlWndLYpMyFeOwGoIiyPEzibRO/Ni+gheS4Mj4JUjIF5v/0QP8E7K6e+QqUoVrzMnUFohwvnSk59COMQPZOJaNqW7Bc9DHuHBzeIu0Eq0WHhqTzV97f7hMiNr4Yv+k3+z0ioAlzuczHjaDFD0Gor+MtLlHYlwZDpkllN5LBNfELcs03hAme+NuhVqO85U225IZb7lyIxZAup+anYI8aVcr+YlbJVIDMY7vahgjyoXdYsRzv55OgrL+H8RGNNblDWseHLGBSlNWC5Wv6uwqJ50dnJ/ky8HhY8QeZNH+S4XJSuGdCXib07VgcmIXVPNuMLMDJNdmu/R+p7dYb6Ym/A8WZCJbYllZc0sJfyuDWbdyBrFewGjiLmX64PB83oWgVxLFdvxwuPW5SBpTXK3AnGmuSj0lx23xfaJGHNnsPT55Tk+kSwjLOtddrK0GWEHJK0LRCxNADCVmWZAqGUZsJrTwiVwEDCCIQjhPu9k/MYDTtArE3jZoouITLIFXSYbLw1gmHuMEB9BGNQz7LltD+8S5vB8P4yw29Q3uaD8WyzXoGpZ7F+rJSjp+EE4Hm3dm8IwxoT+qE61tW5TYQnNvO1YRwhDd7p8ncZouuA0KbKkKu+8plxDZcm571UVDg3RyTuuXYvHn5MCZzEPHjxC+vNuoEXp9vbsi5yU/DsUi7uRf36Xzdntjdn4JYGUPkfzH3Eq9t7hwOPVK8PTlUXP5sO8EMSxZBeikvGqsJNcIBmqj7kARNYGNx6Fg7RSB0DoRhTka40/sgrZJU0itko3fGcie29JGDdSzmROYbK1CkLi0cGf85QGq7tFz7h64uG//AOddQ/Ap/xPW2NAZ5vzEojNBZEnyaIT26+SZ2PLQhtwnkE+uqD1gEjwdxApCZf8hI94pXW6zy5Fmi31bmG+BTozjOio4Elf/KKbsnJpCFYdJLCRff8q8p4BTDyxW5QcMZk3XaFzhKrSx+rfN7s8IKSM+K3G7Z+u8gLbbDJcqPOlN/2aHDhH5dbMGMx7eCjnyD74+VPPFh2uM9UBjPqexYiil2dSvIC6FDo6luIz/cc/HkbfwKJmykDkecIqyJLRVi09GQNqB8twCOHB8YwV9SXWZLR5MYkS3hk0WytVnDftIAAUbW8mZdOb3sy0gFgkKbl2AqXi/w0d7fg2gk40d0/SwA6ead7I+FvlHp1rKhTNjlqTvbCjLHLKYgZdN7sWfHY7qJqVLfNo5zbkbH+TCB09mFQ7n/4/ksSrqHweK8iuT5r/ajbQ1Z0UoUftZ6Tl54sr3VDSJPHUlCcEzwn59zBGDgGZZPXADr44TIkHultJar7bWHS48uahbRJuCrTcV6q5tp1UrJxksq2vhOfLQKPSMlOFk9/GuQRde8sbk+q+DLc0lmomZGtdfUcOzEU+k8gnN5HH77bzYSui5KtrzyCGwv+icQAWHghSaKbYM5CDwBEmPRZWSNrml8tggEvpJjlQwfyfVLuK5oQ6fwgxGW43oAvsl4VKXaqKIfdH+Uo6LeF0kwG0ctGnqjgFDeIhvuSAULltjxJvh8tbKfjFeoO0maA5VTBWsoNRvjdOpu+t14alAlZ+jb33dVydfn8SL4ONuCN+s8cIcCGAO4svpVTdF+9O0R6qzHip9CRP0MKBCh6OMbDQh6qQX8zkSKWdd1qzq0bTUw4JFKtx2Yg1V3c5p/OtvVCbUQRgAfs8W7WWRHTo5Gy0dWaPw4cAWdeNl0JOJq/Mi0/coZf8AY0pd1Q0yDerkpAQPDZWjNe26ebjSE4s/edImrn7JBTDqpo/YQCufwTjsZ2btqI2Dg0T1pJ6mS84lMzeTBYCklk3QupN9IxR8lbCJV2GrnZXQsSws/VpZk/Fq0Fnxx9rh8iJtYH0GMuR+bowT6hwqXaz5zTFmz/RjDY1axzOsVm8AydMQ5mlKnXTyBhyiH+9lnF+bHQ073AWVVy0Wp+Fea92pxKaajoGfHzrS/2ZC58fnaYmv9Gr/A6LhD+KwjcpNbs14vHpvfWp6pdqEV2/TWK3T+URvfH2VfYr+nZph7h5JYV2pQ483XIx9HjN5IA4dxJ1ZrkkwutYZW/esL0d3C/44SfVwxMGjBok/16JMFkK2AfvWCMZ8+RULLvTvLnKwyF6ieo57u5Qy+XT6WiicQzRG4Pub39SnU8pgY7thRBQGLaDurZ/KkNPWyJv0A8JCSBcawikFQgQTMaA9TFd2jqnfdMuszSIQseHnHiJJ7X4iZVDNYG5g8uyZCyUS3EeJ0KfSFEA+nOc/dHKULlsp9XQAig2r5OuQmq0OZ6chYr3Zw7sUQ/BIPZ7nVIgHYPp+4Mw6Qf2UxImyMIL4X84YOGNQ7E3n0Dp+uyGrkmeXA/KXOnJNq5IoYzlrdhnqCgfmt9eG5KdKswjhfHzW7t+V9s7DSfQ4y1kt/eZ7EBkVr2Nt7NKxTYTheWS+COLxnXqUk4HEs1j+CHI27a29WEaP7Tj27DCIewsJCrHiq8BKxj7BDwuEtfnrO4cRma6Lf8sFfx+pLTdI5Y+Ufd+d6xFZkOM5hEocxXmWYp73FK/dyolDZVoGXoqgv+sYB38VWxUTNT9EDKJRXfnjtVrqBhUm1myvrlaoB6RJbfA0x2r0bQhzvfRB6sCy/xuSNfZ4/wmEAjdyHipMilEd99MXahYtZ4wdtCGEhurHAQkrkRKBs9yXLAVv3Q31QD3UDQ4RppNzuCS6363F1si5A/U7S6S/ybqKC7+t9nR8QpJ9efz7tX4TgxB3EiyL9lx783xFZlnOwc5bKtvNEC8AhZqgP4FNQZ7otOS0AN13fGrEHY4BTqJjGxAABQ//suXHFnmq4U/fW6FULyZTjn1fiaCwtgkjTd7yILILL8eXlIBaLCYoKvKw+pi1fqkORRhY1dANwcER9yFdg1Wy1O0B0eGOLzsro+U2IYdhZ8q4doQdzub6zdZmg04Rha6twc8olBt6G/v2l2vQqQPvBRhyWqrmbYQmnQFnmmIeq/V0lhaVNq6779N5ED0wiDmt/BEpGfHPKuNa+oZ+z62X2mQq9h0VouPvL+IU8YktlaaH</div>
+<div id="mkdocs-decrypted-content" style="display:none">
+    <form id="mkdocs-decrypt-form" class="md-content__inner md-typeset">
+        <h1>Robomechanics Lab — internal</h1>
+        <p>This page is encrypted. Ask an RML lead for the password.</p>
+        <input class="md-input" type="password" id="mkdocs-content-password" placeholder="Lab password">
+        <button class="md-button md-button--primary" id="mkdocs-decrypt-button">Unlock</button>
+        <p id="mkdocs-decrypt-msg"></p>
+    </form>
+</div>
+
+<script type="text/javascript">
+var encryptcontent_id = "encryptcontent_1";
+var encryptcontent_path = "quad-sdk/ros2rml/mocap/";
+var decryption_failure_message = "That password did not unlock this page.";
+var encryptcontent_keystore = ["0Do70TXUtwnMR6ly4CLYrw==;MRqpuZNl0Fma08z9ji6nuWVR4NAUUHFplghd91iLW2BXeQEDFf5q53QXBZFHsIi8N7vXgSajsBSJsCwg36g6kwBXMfTPXu4gXrX4W3cJDfZbfI4thqJBTTgf6nK1Ju0L;8/IgLloM5uX1jvYQ/wsC9Q=="];
+var encryptcontent_obfuscate = 0;
+
+const encryptcontent_event = new Event("encryptcontent_event");
+var encryptcontent_done = false;
+</script>
+<script type="module">
+if (!window.hasOwnProperty("init_decryptor")) {
+    import("../../assets/javascripts/decrypt-contents.js");
+} else {
+    init_decryptor();
+}
+</script>
+
+
+
+
+
+
+
+  
+    
+  
+  
+
+
+  <aside class="md-source-file">
+    
+      
+  <span class="md-source-file__fact">
+    <span class="md-icon" title="Last update">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
+    </span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-timeago"><span class="timeago" datetime="2026-04-29T23:15:14+00:00" locale="en"></span></span><span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-iso_date">2026-04-29</span>
+  </span>
+
+    
+    
+    
+    
+  </aside>
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+  <script>var tabs=__md_get("__tabs");if(Array.isArray(tabs))e:for(var set of document.querySelectorAll(".tabbed-set")){var labels=set.querySelector(".tabbed-labels");for(var tab of tabs)for(var label of labels.getElementsByTagName("label"))if(label.innerText.trim()===tab){var input=document.getElementById(label.htmlFor);input.checked=!0;continue e}}</script>
+
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+      
+      <nav class="md-footer__inner md-grid" aria-label="Footer" >
+        
+          
+          <a href="../time-sync/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Time Sync">
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              <div class="md-ellipsis">
+                Time Sync
+              </div>
+            </div>
+          </a>
+        
+        
+          
+          <a href="../robot-bringup/" class="md-footer__link md-footer__link--next" aria-label="Next: Robot Bringup">
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              <div class="md-ellipsis">
+                Robot Bringup
+              </div>
+            </div>
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      
+  <div class="md-copyright">
+    
+      <div class="md-copyright__highlight">
+        Copyright &copy; Robomechanics Lab, Carnegie Mellon University
+      </div>
+    
+    Built with <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">Material for MkDocs</a>
+    &middot; <a href="https://github.com/robomechanics/quad-sdk/blob/main/LICENSE">MIT License</a>
+    &middot; <a href="cite.md">Cite</a>
+  </div>
+
+      
+        <div class="md-social">
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://github.com/robomechanics/quad-sdk" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.7.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8M97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+    </a>
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://www.cmu.edu/me/robomechanicslab/" target="_blank" rel="noopener" title="www.cmu.edu" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.7.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M352 256c0 22.2-1.2 43.6-3.3 64H163.4c-2.2-20.4-3.3-41.8-3.3-64s1.2-43.6 3.3-64h185.3c2.2 20.4 3.3 41.8 3.3 64m28.8-64h123.1c5.3 20.5 8.1 41.9 8.1 64s-2.8 43.5-8.1 64H380.8c2.1-20.6 3.2-42 3.2-64s-1.1-43.4-3.2-64m112.6-32H376.7c-10-63.9-29.8-117.4-55.3-151.6 78.3 20.7 142 77.5 171.9 151.6zm-149.1 0H167.7c6.1-36.4 15.5-68.6 27-94.7 10.5-23.6 22.2-40.7 33.5-51.5C239.4 3.2 248.7 0 256 0s16.6 3.2 27.8 13.8c11.3 10.8 23 27.9 33.5 51.5 11.6 26 20.9 58.2 27 94.7m-209 0H18.6c30-74.1 93.6-130.9 172-151.6-25.5 34.2-45.3 87.7-55.3 151.6M8.1 192h123.1c-2.1 20.6-3.2 42-3.2 64s1.1 43.4 3.2 64H8.1C2.8 299.5 0 278.1 0 256s2.8-43.5 8.1-64m186.6 254.6c-11.6-26-20.9-58.2-27-94.6h176.6c-6.1 36.4-15.5 68.6-27 94.6-10.5 23.6-22.2 40.7-33.5 51.5-11.2 10.7-20.5 13.9-27.8 13.9s-16.6-3.2-27.8-13.8c-11.3-10.8-23-27.9-33.5-51.5zM135.3 352c10 63.9 29.8 117.4 55.3 151.6-78.4-20.7-142-77.5-172-151.6zm358.1 0c-30 74.1-93.6 130.9-171.9 151.6 25.5-34.2 45.2-87.7 55.3-151.6h116.7z"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.tracking", "navigation.tabs", "navigation.tabs.sticky", "navigation.sections", "navigation.expand", "navigation.indexes", "navigation.top", "navigation.footer", "toc.follow", "search.suggest", "search.highlight", "search.share", "content.code.copy", "content.code.annotate", "content.action.edit", "content.tabs.link", "content.tooltips"], "search": "../../assets/javascripts/workers/search.6ce7567c.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"alias": true, "default": "ros2", "provider": "mike"}}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.88dd0f4e.min.js"></script>
+      
+        <script src="../../js/timeago.min.js"></script>
+      
+        <script src="../../js/timeago_mkdocs_material.js"></script>
+      
+        <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+      
+    
+  <script id="init-glightbox">const lightbox = GLightbox({"touchNavigation": true, "loop": false, "zoomable": true, "draggable": true, "openEffect": "zoom", "closeEffect": "zoom", "slideEffect": "slide"});
+document$.subscribe(() => { lightbox.reload() });
+</script></body>
+</html>
