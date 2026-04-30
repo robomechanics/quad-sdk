@@ -131,9 +131,10 @@ void BodyForceEstimator::update() {
   // ref_state_msg whose feet vector wasn't populated (eg. an upstream that
   // publishes a malformed RobotState).
   if (ref_state_msg.feet.feet.size() < 4) {
-    RCLCPP_WARN_THROTTLE(node_->get_logger(), *node_->get_clock(), 1000,
-                         "ref_state_msg.feet.feet has %zu entries, expected 4; skipping update",
-                         ref_state_msg.feet.feet.size());
+    RCLCPP_WARN_THROTTLE(
+        node_->get_logger(), *node_->get_clock(), 1000,
+        "ref_state_msg.feet.feet has %zu entries, expected 4; skipping update",
+        ref_state_msg.feet.feet.size());
     return;
   }
 

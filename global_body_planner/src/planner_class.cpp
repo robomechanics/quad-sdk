@@ -106,11 +106,13 @@ int PlannerClass::pruneByConstraints(const PlannerConfig& planner_config) {
   if (planner_config.dynamic_constraints.empty()) {
     return 0;
   }
-  // Pass 1: find vertices whose own location violates a new constraint.
+  // Pass 1: find vertices whose own location+arrival-time violates a
+  // new constraint (time-windowed via getTime(idx)).
   std::queue<int> bfs;
   for (auto itr = vertices.begin(); itr != vertices.end(); ++itr) {
     if (invalid_vertices_.count(itr->first)) continue;
-    if (failsRobotConstraint(itr->second, planner_config)) {
+    if (failsRobotConstraint(itr->second, getTime(itr->first),
+                             planner_config)) {
       bfs.push(itr->first);
     }
   }

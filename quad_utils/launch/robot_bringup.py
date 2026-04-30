@@ -395,7 +395,7 @@ def launch_pinocchio_test_node(context, *args, **kwargs):
          package='quad_pinocchio',
          executable='test_quad_kd_node',
          name='quad_pinocchio',
-         output='screen',
+         # output='screen',  # only needed when debugging the kinematics test node
          parameters=[{
               'namespace': namespace,
               'robot_description' : urdf,

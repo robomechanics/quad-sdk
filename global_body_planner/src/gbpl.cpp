@@ -13,16 +13,19 @@ int GBPL::connect(
   flipDirection(s);
   int s_near_index = T.getNearestNeighbor(s);
   State s_near = T.getVertex(s_near_index);
+  const double t_near = T.getTime(s_near_index);
   StateActionResult result;
 
   // Try to connect to nearest neighbor, add to graph if REACHED or ADVANCED
-  int connect_result =
-      attemptConnect(s_near, s, result, planner_config, direction);
+  int connect_result = attemptConnect(s_near, s, result, planner_config,
+                                      direction, t_near);
   if (connect_result != TRAPPED) {
     int s_new_index = T.getNumVertices();
     T.addVertex(s_new_index, result.s_new);
     T.addEdge(s_near_index, s_new_index, result.length);
     T.addAction(s_new_index, result.a_new);
+    T.setTime(s_new_index,
+              T.getTime(s_near_index) + actionDuration(result.a_new));
 
 #ifdef VISUALIZE_TREE
     publishStateActionPair(s_near, result.a_new, s, planner_config,

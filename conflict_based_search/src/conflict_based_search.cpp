@@ -68,12 +68,11 @@ bool ConflictBasedSearch::callPlanWithConstraints(
   // executor through async_send_request.
   const auto deadline = std::chrono::steady_clock::now() +
                         std::chrono::duration<double>(service_timeout_s_);
-  while (rclcpp::ok() &&
-         future.wait_for(std::chrono::milliseconds(0)) !=
-             std::future_status::ready) {
+  while (rclcpp::ok() && future.wait_for(std::chrono::milliseconds(0)) !=
+                             std::future_status::ready) {
     if (std::chrono::steady_clock::now() > deadline) {
-      RCLCPP_WARN(node_->get_logger(),
-                  "plan_with_constraints timed out for %s", robot.c_str());
+      RCLCPP_WARN(node_->get_logger(), "plan_with_constraints timed out for %s",
+                  robot.c_str());
       return false;
     }
     rclcpp::spin_some(node_);
@@ -159,9 +158,9 @@ bool ConflictBasedSearch::requestReplan(CBSNode& node,
 ConflictBasedSearch::BodyPose ConflictBasedSearch::poseFromState(
     const quad_msgs::msg::RobotState& state) {
   BodyPose p;
-  p.pos = Eigen::Vector3d(state.body.pose.position.x,
-                          state.body.pose.position.y,
-                          state.body.pose.position.z);
+  p.pos =
+      Eigen::Vector3d(state.body.pose.position.x, state.body.pose.position.y,
+                      state.body.pose.position.z);
   // Convert quaternion to yaw. The plan's body messages use orientation in
   // standard ROS convention (x,y,z,w).
   const auto& q = state.body.pose.orientation;
@@ -182,7 +181,8 @@ ConflictBasedSearch::BodyPose ConflictBasedSearch::samplePoseAtTime(
     return p;
   }
 
-  const double t_first = rclcpp::Time(plan.states.front().header.stamp).seconds();
+  const double t_first =
+      rclcpp::Time(plan.states.front().header.stamp).seconds();
   const double t_last = rclcpp::Time(plan.states.back().header.stamp).seconds();
   if (t <= t_first) return poseFromState(plan.states.front());
   if (t >= t_last) return poseFromState(plan.states.back());
@@ -288,18 +288,15 @@ bool ConflictBasedSearch::findFirstConflict(const CBSNode& node,
       // where each individual sample is just outside the other body but
       // the segment between them slices through.
       int collision_run_start = -1;
-      auto check_pair = [&](const BodyPose& pa, const BodyPose& pb,
-                            int idx) {
-        const bool overlap =
-            obbsOverlap(pa, half_extents_, pb, half_extents_);
+      auto check_pair = [&](const BodyPose& pa, const BodyPose& pb, int idx) {
+        const bool overlap = obbsOverlap(pa, half_extents_, pb, half_extents_);
         if (overlap) {
           if (collision_run_start < 0) {
             collision_run_start = idx;
           }
         } else if (collision_run_start >= 0) {
           // Run just ended at idx; record the conflict.
-          if (pa.t < best_t_start ||
-              (!found && pa.t == best_t_start)) {
+          if (pa.t < best_t_start || (!found && pa.t == best_t_start)) {
             best.robot_a = ra;
             best.robot_b = rb;
             best.t_start_idx = collision_run_start;
@@ -323,9 +320,8 @@ bool ConflictBasedSearch::findFirstConflict(const CBSNode& node,
           const BodyPose pa_next = poseFromState(plan_a.states[k + 1]);
           BodyPose pa_mid;
           pa_mid.pos = 0.5 * (pa.pos + pa_next.pos);
-          const Eigen::Vector2d v(
-              std::cos(pa.yaw) + std::cos(pa_next.yaw),
-              std::sin(pa.yaw) + std::sin(pa_next.yaw));
+          const Eigen::Vector2d v(std::cos(pa.yaw) + std::cos(pa_next.yaw),
+                                  std::sin(pa.yaw) + std::sin(pa_next.yaw));
           pa_mid.yaw = std::atan2(v.y(), v.x());
           pa_mid.t = 0.5 * (pa.t + pa_next.t);
           const BodyPose pb_mid = samplePoseAtTime(plan_b, pa_mid.t);
@@ -340,8 +336,8 @@ bool ConflictBasedSearch::findFirstConflict(const CBSNode& node,
       }
       // Trailing run that runs to plan end.
       if (collision_run_start >= 0) {
-        const double t_a = rclcpp::Time(plan_a.states.front().header.stamp)
-                               .seconds();
+        const double t_a =
+            rclcpp::Time(plan_a.states.front().header.stamp).seconds();
         if (t_a < best_t_start || !found) {
           best.robot_a = ra;
           best.robot_b = rb;
@@ -365,9 +361,9 @@ ConflictBasedSearch::buildConstraintFromConflict(
   // are about to replan. The time window is taken from the conflict's
   // span in robot_a's plan; we sample the other robot's plan at the
   // matching times so the resulting constraint is time-aligned.
-  const std::string& other =
-      (robot_to_constrain == conflict.robot_a) ? conflict.robot_b
-                                                : conflict.robot_a;
+  const std::string& other = (robot_to_constrain == conflict.robot_a)
+                                 ? conflict.robot_b
+                                 : conflict.robot_a;
   const auto& plan_a = node.robot_plan_map.at(conflict.robot_a);
   const auto& plan_other = node.robot_plan_map.at(other);
 
@@ -396,23 +392,12 @@ void ConflictBasedSearch::publishPlans(const CBSNode& node) {
     auto plan = node.robot_plan_map.at(robot);
     if (plan.states.empty()) continue;
 
-    // Re-base each per-state timestamp so states[0] aligns with "now"
-    // and the inter-state intervals are preserved. We treat
-    // states[0].stamp as the local origin and rewrite every state's
-    // stamp relative to new_ts; this is robust against the GBP service
-    // returning plans with absolute or relative stamps (both occur,
-    // depending on which code path generated the plan), where a naive
-    // additive shift based on plan.global_plan_timestamp produced
-    // states[0]==0 for some robots and states[0]==now for others. The
-    // local_planner and body_force_estimator both do time-based
-    // lookups into states[]; stale states[0] meant lookup-at-now fell
-    // off the end of the plan, returned no ref state, and downstream
-    // nodes segfaulted ("ID node couldn't find the correct ref state").
-    // Idempotent: re-running on an already-rebased plan is a no-op.
+    // Re-base every state stamp so states[0] = now while preserving
+    // inter-state intervals. Frame-agnostic (works whether GBP returned
+    // absolute or relative stamps) and idempotent.
     const rclcpp::Time origin(plan.states.front().header.stamp);
     for (auto& state : plan.states) {
-      const rclcpp::Duration offset =
-          rclcpp::Time(state.header.stamp) - origin;
+      const rclcpp::Duration offset = rclcpp::Time(state.header.stamp) - origin;
       state.header.stamp = new_ts + offset;
     }
 
@@ -424,8 +409,8 @@ void ConflictBasedSearch::publishPlans(const CBSNode& node) {
 
 void ConflictBasedSearch::run() {
   createServiceClients();
-  if (!waitForServices(std::chrono::seconds(
-          static_cast<int>(service_timeout_s_)))) {
+  if (!waitForServices(
+          std::chrono::seconds(static_cast<int>(service_timeout_s_)))) {
     return;
   }
 
@@ -441,7 +426,12 @@ void ConflictBasedSearch::run() {
   }
   open.push(root);
 
+  // Per-expansion conflict-resolution logs are at DEBUG; one summary
+  // line at termination. Enable with --log-level conflict_based_search:=DEBUG.
+  const auto t_solve_start = std::chrono::steady_clock::now();
   int iters = 0;
+  int total_replans = 0;
+
   while (!open.empty() && rclcpp::ok() && iters < max_iterations_) {
     ++iters;
     auto current = open.top();
@@ -449,14 +439,20 @@ void ConflictBasedSearch::run() {
 
     Conflict conflict;
     if (!findFirstConflict(*current, conflict)) {
+      const double solve_s =
+          std::chrono::duration<double>(std::chrono::steady_clock::now() -
+                                        t_solve_start)
+              .count();
       RCLCPP_INFO(node_->get_logger(),
-                  "CBS converged in %d expansions, publishing plans",
-                  iters);
+                  "CBS converged | expansions=%d | replans=%d | "
+                  "robots=%zu | final_cost=%.2f | solve=%.2fs",
+                  iters, total_replans, current->robot_names.size(),
+                  current->cost, solve_s);
       publishPlans(*current);
       return;
     }
 
-    RCLCPP_INFO(
+    RCLCPP_DEBUG(
         node_->get_logger(),
         "Resolving conflict between %s and %s, idx [%d, %d] (cost=%.2f)",
         conflict.robot_a.c_str(), conflict.robot_b.c_str(),
@@ -472,19 +468,24 @@ void ConflictBasedSearch::run() {
           buildConstraintFromConflict(*current, conflict, replan_robot);
       if (requestReplan(*child, replan_robot)) {
         open.push(child);
+        ++total_replans;
       }
     }
   }
 
+  const double solve_s = std::chrono::duration<double>(
+                             std::chrono::steady_clock::now() - t_solve_start)
+                             .count();
   if (open.empty()) {
     RCLCPP_WARN(node_->get_logger(),
-                "CBS exhausted open list without finding a conflict-free "
-                "solution");
+                "CBS gave up | expansions=%d | replans=%d | "
+                "open list empty | solve=%.2fs",
+                iters, total_replans, solve_s);
   } else {
     RCLCPP_WARN(node_->get_logger(),
-                "CBS exceeded max_iterations (%d) without resolving all "
-                "conflicts; publishing best-known plan",
-                max_iterations_);
+                "CBS hit cap | expansions=%d | replans=%d | "
+                "max_iterations=%d | publishing best-known | solve=%.2fs",
+                iters, total_replans, max_iterations_, solve_s);
     publishPlans(*open.top());
   }
 }

@@ -20,15 +20,13 @@
 
 namespace gz_plugins {
 
-// Pins a model's body link at its spawn pose for a fixed duration, then
-// releases it to normal physics. Joints articulate freely throughout, so
-// ros2_control's joint controllers can fold the legs into sit pose while
-// the body is held — by the time the lock releases, the robot is in a
-// kinematically stable configuration and doesn't tip.
+// Pins a model's body link at its spawn pose for hold_duration, then
+// releases. Joints articulate freely so controllers can fold legs into
+// sit pose before release.
 //
-// SDF parameters:
-//   <body_link>      name of the link to pin (default: "body")
-//   <hold_duration>  seconds of sim-time to hold (default: 8.0)
+// SDF: <body_link> (default "body"), <hold_duration> seconds (default 8.0).
+// Releases when sim-time OR wall-clock elapsed crosses hold_duration —
+// wall-clock fallback covers gz-sim sim-time stalls.
 class SpawnLock : public gz::sim::System,
                   public gz::sim::ISystemConfigure,
                   public gz::sim::ISystemPreUpdate {
@@ -52,6 +50,7 @@ class SpawnLock : public gz::sim::System,
   bool released_{false};
   gz::math::Pose3d initial_pose_;
   std::chrono::steady_clock::duration start_time_{};
+  std::chrono::steady_clock::time_point wall_start_time_{};
 };
 
 }  // namespace gz_plugins

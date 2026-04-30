@@ -102,10 +102,6 @@ def launch_global_planner(context, *args, **kwargs):
     extra_params = {
         'enable_leaping': leaping == 'true',
         'use_sim_time': LaunchConfiguration('use_sim_time'),
-        # cbs_mode tells the GBP to suppress its spin-loop solo planner
-        # from boot. multi_robot.py overrides this to 'true'; quad_plan.py
-        # (single-robot) leaves it false so the spin loop keeps publishing
-        # the way it always has.
         'global_body_planner.cbs_mode':
             LaunchConfiguration('cbs_mode').perform(context).lower() == 'true',
     }
@@ -194,7 +190,7 @@ def launch_local_planner(context, *args, **kwargs):
             package='local_planner',
             executable='local_planner_node',
             name='local_planner',
-            output='screen',
+            # output='screen',  # noisy: per-tick "LocalPlanner took N ms" plus IPOPT banner per robot. Re-enable if NMPC tracking debug is needed.
             parameters=[local_planner_param_file,
                 nmpc_controller_param_file, 
                 local_planner_topics_file,
@@ -239,7 +235,7 @@ def launch_plan_publisher(context, *args, **kwargs):
             package='quad_utils',
             executable='trajectory_publisher_node',
             name='trajectory_publisher',
-            output='screen',
+            # output='screen',  # quiet by default; uncomment when debugging trajectory publisher.
             parameters=[plan_publisher_param_file,
             {
             'robot_description': ParameterValue(urdf, value_type=str),

@@ -482,6 +482,12 @@ bool RobotDriver::updateState() {
       // Angular velocity from IMU gyroscope
       last_robot_state_msg_.body.twist.angular = last_imu_msg_.angular_velocity;
 
+      // Pass IMU to learned policy for acceleration access
+      if (auto c = std::dynamic_pointer_cast<LearnedPolicy>(
+              leg_controller_)) {
+        c->updateImuMsg(last_imu_msg_);
+      }
+
       // Update headers
       last_robot_state_msg_.header.stamp = state_timestamp;
 

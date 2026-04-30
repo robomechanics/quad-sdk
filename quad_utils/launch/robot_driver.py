@@ -58,15 +58,12 @@ def generate_launch_description():
     is_hardware = DeclareLaunchArgument('is_hardware', default_value='true')
     namespace = DeclareLaunchArgument('namespace', default_value='robot_1')
     robot_description = DeclareLaunchArgument('robot_description', default_value='')
-    use_sim_time = DeclareLaunchArgument('use_sim_time', default_value = 'false')
+    use_sim_time = DeclareLaunchArgument('use_sim_time', default_value = 'true')
 
 
     # Paths to included launch files
     quad_utils_pkg = FindPackageShare('quad_utils')
     robot_driver_pkg = FindPackageShare('robot_driver')
-    # load_robot_params_path = PythonLaunchDescriptionSource(
-    #     [quad_utils_pkg, '/launch/load_robot_params.launch.py']
-    # )
     logging_launch_path = PythonLaunchDescriptionSource(
         [quad_utils_pkg, '/launch/logging.py']
     )
@@ -75,11 +72,6 @@ def generate_launch_description():
     robot_specific_param_file = PathJoinSubstitution([quad_utils_pkg, 'config', LaunchConfiguration('robot_type')])
     robot_specific_param_file = [robot_specific_param_file, TextSubstitution(text='.yaml')]
 
-
-    # Helper: build the robot_state_publisher Node. The Node namespace is
-    # left unset because the surrounding GroupAction pushes the namespace
-    # explicitly via PushRosNamespace; this avoids double-namespacing
-    # (e.g. /robot_1/robot_1/robot_state_publisher).
     def _make_rsp_node():
         return Node(
             package='robot_state_publisher',
@@ -93,15 +85,12 @@ def generate_launch_description():
             remappings=[('joint_states', 'state/joints')]
         )
 
-    # Helper: build the robot_driver Node. Same rationale as above — no
-    # `namespace=` here, the caller provides it via PushRosNamespace (or
-    # inherits one already on the stack in the sim case).
     def _make_robot_driver_node():
         return Node(
             package='robot_driver',
             executable='robot_driver_node',
             name='robot_driver',
-            output='screen',
+            # output='screen', 
             parameters=[
                 robot_driver_param_file,
                 robot_driver_topics_file,

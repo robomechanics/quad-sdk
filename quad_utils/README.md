@@ -37,9 +37,11 @@ All top-level Quad-SDK launch files live here. The most common entry points:
 
 | Launch file | Purpose |
 |---|---|
-| `quad_gazebo.py` | Spin up Gazebo Harmonic + bridges + robot driver. |
+| `quad_gazebo.py` | Single-robot Gazebo Harmonic + bridges + robot driver. |
+| `quad_multi.py` | N-robot Gazebo bringup (defaults to an 8-robot octagon-swap demo on `big_flat`). |
 | `quad_mujoco.py` | MuJoCo alternative to Gazebo. |
 | `quad_plan.py` | Full planning stack (global planner + local planner + NMPC). |
+| `multi_robot.py` | Per-robot planning stack + central `conflict_based_search` node for the multi-robot demo. Wraps `quad_plan.py`, enforces `goal_state` per robot, forces `reference=gbpl`. |
 | `robot_bringup.py` | Bring up the driver and robot-side nodes (sim or hardware). |
 | `robot_driver.py` | Just the `robot_driver` node with config. |
 | `remote_driver.py` | Operator-side remote driver (used for teleop over network). |
@@ -49,6 +51,7 @@ All top-level Quad-SDK launch files live here. The most common entry points:
 | `mocap.py` | OptiTrack / motion-capture integration. |
 | `planning.py` | Planner stack without bringup (for attaching to an existing driver). |
 | `logging.py` | `ros2 bag record` with the default Quad-SDK topic preset. |
+| `logging_cbs.py` | Focused per-robot `ros2 bag record` for diagnosing CBS multi-robot tracking (lighter topic list than `logging.py`). Invoked per-robot by `multi_robot.py logging_cbs:=true`. |
 | `force_applicator.py` / `force_app_single.py` | Runtime wrench disturbance for robustness tests. |
 | `spawn_obstacles.py` | Spawn obstacles into a running Gazebo world. |
 | `testing.py` | CI/testing harness. |

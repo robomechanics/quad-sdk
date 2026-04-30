@@ -12,7 +12,6 @@ thread_local ValidityStats g_validity_stats;
 void resetValidityStats() { g_validity_stats = ValidityStats{}; }
 ValidityStats getValidityStats() { return g_validity_stats; }
 
-
 State fullStateToState(const FullState& full_state) {
   State state;
   state.pos = full_state.pos;
@@ -822,7 +821,7 @@ bool isValidState(const State& s, const PlannerConfig& planner_config,
 }
 
 bool isValidState(const State& s, const PlannerConfig& planner_config,
-                  int phase, double& max_valid_z) {
+                  int phase, double& max_valid_z, double t) {
   g_validity_stats.total++;
   // Check elevation independent constraints first (out of range, velocity)
   if (!isInMap(s, planner_config)) {
@@ -966,11 +965,10 @@ bool isValidState(const State& s, const PlannerConfig& planner_config,
     }
   }
 
-  // OBB-OBB collision check against any dynamic constraints supplied by
-  // the conflict-based search node. Skipped when the constraint vector is
-  // empty (the common single-robot case).
+  // OBB-OBB check vs CBS dynamic constraints; t (NaN = unknown) gates
+  // each constraint's [t_start, t_end] window inside failsRobotConstraint.
   if (!planner_config.dynamic_constraints.empty()) {
-    if (failsRobotConstraint(s, planner_config)) {
+    if (failsRobotConstraint(s, t, planner_config)) {
       g_validity_stats.constraint_rejects++;
       return false;
     }
@@ -981,7 +979,8 @@ bool isValidState(const State& s, const PlannerConfig& planner_config,
 
 bool isValidStateActionPair(const State& s_in, const Action& a,
                             StateActionResult& result,
-                            const PlannerConfig& planner_config) {
+                            const PlannerConfig& planner_config,
+                            double t_action_start) {
   // Declare stance and flight times
   double t_s = a.t_s_leap;
   double t_f = a.t_f;
@@ -999,6 +998,13 @@ bool isValidStateActionPair(const State& s_in, const Action& a,
   // Initialize phase
   int phase = (t_f == 0) ? CONNECT : LEAP_STANCE;
 
+  // Within-action offset → absolute time; NaN propagates.
+  auto t_abs = [t_action_start](double offset) {
+    return std::isnan(t_action_start) ? std::numeric_limits<double>::quiet_NaN()
+                                      : t_action_start + offset;
+  };
+  double max_z_unused;  // 5-arg isValidState writes here; we don't use it.
+
   // LEAP (OR CONNECT) ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
   double t = 0;
@@ -1007,7 +1013,7 @@ bool isValidStateActionPair(const State& s_in, const Action& a,
     // Compute state to check
     State s_next = applyStance(s, a, t, phase, planner_config);
 
-    if (!isValidState(s_next, planner_config, phase)) {
+    if (!isValidState(s_next, planner_config, phase, max_z_unused, t_abs(t))) {
       result.t_new = (1.0 - planner_config.backup_ratio) * t;
       result.s_new = applyStance(s, a, result.t_new, phase, planner_config);
       result.a_new.t_s_leap = result.t_new;
@@ -1027,7 +1033,8 @@ bool isValidStateActionPair(const State& s_in, const Action& a,
 
   State s_takeoff = applyStance(s, a, phase, planner_config);
 
-  if (!isValidState(s_takeoff, planner_config, phase)) {
+  if (!isValidState(s_takeoff, planner_config, phase, max_z_unused,
+                    t_abs(t_s))) {
     result.t_new = (1.0 - planner_config.backup_ratio) * t_s;
     result.s_new = applyStance(s, a, result.t_new, planner_config);
     result.a_new.t_f = std::min(0.001, result.a_new.t_f);
@@ -1048,8 +1055,9 @@ bool isValidStateActionPair(const State& s_in, const Action& a,
   while (t < t_f) {
     State s_next = applyFlight(s_takeoff, t, planner_config);
 
-    // Check collision in flight
-    if (!isValidState(s_next, planner_config, FLIGHT)) {
+    // Flight collision check; abs time = t_action_start + t_s + t.
+    if (!isValidState(s_next, planner_config, FLIGHT, max_z_unused,
+                      t_abs(t_s + t))) {
 #ifdef DEBUG_INVALID_STATE
       printf("Flight collision, exiting\n");
       printState(s_next);
@@ -1072,11 +1080,12 @@ bool isValidStateActionPair(const State& s_in, const Action& a,
 
     t = 0;
     while (t < t_s_land) {
-      // Compute state to check
+      // Compute state to check; absolute time = t_action_start + t_s + t_f + t.
       State s_next =
           applyStance(s_land, result.a_new, t, LAND_STANCE, planner_config);
 
-      if (!isValidState(s_next, planner_config, LAND_STANCE)) {
+      if (!isValidState(s_next, planner_config, LAND_STANCE, max_z_unused,
+                        t_abs(t_s + t_f + t))) {
 #ifdef DEBUG_INVALID_STATE
         printf("Invalid landing stance config\n");
 #endif
@@ -1092,7 +1101,8 @@ bool isValidStateActionPair(const State& s_in, const Action& a,
     State s_final =
         applyStance(s_land, result.a_new, LAND_STANCE, planner_config);
 
-    if (!isValidState(s_final, planner_config, LAND_STANCE)) {
+    if (!isValidState(s_final, planner_config, LAND_STANCE, max_z_unused,
+                      t_abs(t_s + t_f + t_s_land))) {
 #ifdef DEBUG_INVALID_STATE
       printf("Invalid s_final config");
 #endif
@@ -1245,10 +1255,10 @@ bool obbIntersect(const Eigen::Vector3d& pos_a, double yaw_a,
   const double sin_b = std::sin(yaw_b);
 
   const Eigen::Vector2d axes[4] = {
-      Eigen::Vector2d(cos_a, sin_a),    // A's length axis
-      Eigen::Vector2d(-sin_a, cos_a),   // A's width axis
-      Eigen::Vector2d(cos_b, sin_b),    // B's length axis
-      Eigen::Vector2d(-sin_b, cos_b),   // B's width axis
+      Eigen::Vector2d(cos_a, sin_a),   // A's length axis
+      Eigen::Vector2d(-sin_a, cos_a),  // A's width axis
+      Eigen::Vector2d(cos_b, sin_b),   // B's length axis
+      Eigen::Vector2d(-sin_b, cos_b),  // B's width axis
   };
 
   // Precompute the corners of each box in world coordinates.
@@ -1260,8 +1270,8 @@ bool obbIntersect(const Eigen::Vector3d& pos_a, double yaw_a,
     for (int i = 0; i < 4; ++i) {
       const double lx = signs[i][0] * he.x();
       const double wy = signs[i][1] * he.y();
-      out[i] = Eigen::Vector2d(pos.x() + c * lx - s * wy,
-                               pos.y() + s * lx + c * wy);
+      out[i] =
+          Eigen::Vector2d(pos.x() + c * lx - s * wy, pos.y() + s * lx + c * wy);
     }
     return out;
   };
@@ -1293,7 +1303,8 @@ bool obbIntersect(const Eigen::Vector3d& pos_a, double yaw_a,
   return true;
 }
 
-bool failsRobotConstraint(const State& s, const PlannerConfig& planner_config) {
+bool failsRobotConstraint(const State& s, double t,
+                          const PlannerConfig& planner_config) {
   if (planner_config.dynamic_constraints.empty()) {
     return false;
   }
@@ -1313,7 +1324,16 @@ bool failsRobotConstraint(const State& s, const PlannerConfig& planner_config) {
   const Eigen::Vector3d half_extents_self =
       planner_config.dynamic_constraints.front().half_extents;
 
+  // When t is NaN ("no time available, treat constraints as static") the
+  // window check below is skipped and every constraint is evaluated. When
+  // t is a real value, only constraints whose [t_start, t_end] window
+  // brackets t are evaluated — fixing the "every constraint behaves like
+  // a permanent obstacle" overconstraint bug that produced looping /
+  // off-to-corner plans in the multi-robot demo. Window-skip is also a
+  // performance win: most constraints short-circuit before the OBB math.
+  const bool time_aware = !std::isnan(t);
   for (const auto& c : planner_config.dynamic_constraints) {
+    if (time_aware && (t < c.t_start || t > c.t_end)) continue;
     if (obbIntersect(s.pos, yaw, half_extents_self, c.pos, c.yaw,
                      c.half_extents)) {
       return true;
