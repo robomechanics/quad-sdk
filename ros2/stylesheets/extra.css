@@ -274,25 +274,40 @@
 
 /* ---------- Version selector (mike) ---------- */
 
-/* Dial down the visual weight — smaller, dimmer, no chrome */
+/* Shrink the dropdown so the version label sits subtle against the title. */
+.md-header .md-version,
 .md-version {
-  font-size: 0.62rem;
-  opacity: 0.65;
+  font-size: 0.6rem !important;
+  opacity: 0.7;
   transition: opacity 0.15s ease;
+  margin-left: 0.4rem;
 }
 
+.md-header .md-version:hover,
 .md-version:hover {
   opacity: 1;
 }
 
 .md-version__current {
+  font-size: 0.6rem !important;
   font-weight: 400;
-  letter-spacing: 0.01em;
+  padding: 0.1rem 0.45rem;
+  letter-spacing: 0.04em;
+  line-height: 1.4;
+  text-transform: uppercase;
 }
 
-/* Caret a touch tighter */
+/* Apply the same uppercase + tighter look to entries inside the dropdown */
+.md-version__list .md-version__item {
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  font-size: 0.62rem;
+}
+
+/* Slightly smaller caret */
 .md-version__current::after {
   margin-left: 0.25em;
+  transform: scale(0.8);
 }
 
 /* ---------- Search ---------- */
