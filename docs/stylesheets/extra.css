@@ -272,6 +272,29 @@
   background-color: var(--md-primary-fg-color);
 }
 
+/* ---------- Version selector (mike) ---------- */
+
+/* Dial down the visual weight — smaller, dimmer, no chrome */
+.md-version {
+  font-size: 0.62rem;
+  opacity: 0.65;
+  transition: opacity 0.15s ease;
+}
+
+.md-version:hover {
+  opacity: 1;
+}
+
+.md-version__current {
+  font-weight: 400;
+  letter-spacing: 0.01em;
+}
+
+/* Caret a touch tighter */
+.md-version__current::after {
+  margin-left: 0.25em;
+}
+
 /* ---------- Search ---------- */
 
 .md-search__input {
