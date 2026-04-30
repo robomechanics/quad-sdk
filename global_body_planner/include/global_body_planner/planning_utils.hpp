@@ -10,6 +10,7 @@
 #include <visualization_msgs/msg/marker_array.hpp>
 
 #include <algorithm>
+#include <array>
 #include <chrono>
 #include <eigen3/Eigen/Eigen>
 #include <grid_map_core/grid_map_core.hpp>
@@ -29,6 +30,25 @@
 // #define DEBUG_SOLVE_RESULT
 
 namespace planning_utils {
+
+/**
+ * @brief A pose-based collision constraint imposed on the planner by another
+ * robot's plan. The planner must keep the robot's oriented bounding box
+ * disjoint from the constraint's oriented bounding box.
+ *
+ * The time window is expressed in plan-relative seconds (0 = start of the
+ * plan being computed). Implementations that do not yet propagate per-state
+ * time may treat the constraint as static (always-active); the field is
+ * provided so callers can populate it.
+ */
+struct TimedPoseConstraint {
+  Eigen::Vector3d pos;  //!< World-frame position of constrained body, m
+  double yaw;           //!< Body yaw of constrained body, rad
+  double t_start;       //!< Window start (plan-relative, s)
+  double t_end;         //!< Window end (plan-relative, s)
+  Eigen::Vector3d
+      half_extents;  //!< Body half-extents (length/2, width/2, height/2), m
+};
 
 /**
  * @brief Planner Configuration
@@ -85,6 +105,11 @@ struct PlannerConfig {
                                  // frame
   Eigen::Matrix<double, 3, num_collision_points>
       collision_points_body;  // Positions of collision points in the bodyframe
+
+  // Runtime-supplied collision constraints from other robots' plans. Cleared
+  // and rewritten on each conflict-based search service call. Treated as
+  // empty for normal single-robot planning.
+  std::vector<TimedPoseConstraint> dynamic_constraints;
 
   /**
    * Load the vector of reachability test points and collision test
@@ -811,10 +836,16 @@ bool isValidState(const State& s, const PlannerConfig& planner_config,
  * @param[in] planner_config Configuration parameters
  * @param[in] phase The phase the State is under
  * @param[in] max_height Maximum height
+ * @param[in] t Absolute time at which state s is reached, used for time-
+ *   windowed dynamic-constraint checks. NaN (default) means "treat
+ *   constraints as static" — equivalent to the pre-CBS behaviour.
+ *   Callers that want time-awareness but don't care about max_height
+ *   should pass a local dummy double for max_height.
  * @return Whether the State is valid or not
  */
 bool isValidState(const State& s, const PlannerConfig& planner_config,
-                  int phase, double& max_height);
+                  int phase, double& max_height,
+                  double t = std::numeric_limits<double>::quiet_NaN());
 
 // Trajectory validity checking
 /**
@@ -823,11 +854,83 @@ bool isValidState(const State& s, const PlannerConfig& planner_config,
  * @param[in] a The Action to be checked
  * @param[in] result The StateActionResult of the trajeccotry
  * @param[in] planner_config Configuration parameters
+ * @param[in] t_action_start Absolute time at the BEGINNING of the action.
+ *   Per-stage isValidState calls are made at t_action_start + (offset
+ *   within the action), giving every candidate state along the trajectory
+ *   its true absolute time for time-windowed dynamic-constraint checks.
+ *   NaN (default) means "treat constraints as static."
  * @return Whether the StateActionPair is valid or not
  */
-bool isValidStateActionPair(const State& s, const Action& a,
-                            StateActionResult& result,
-                            const PlannerConfig& planner_config);
+bool isValidStateActionPair(
+    const State& s, const Action& a, StateActionResult& result,
+    const PlannerConfig& planner_config,
+    double t_action_start = std::numeric_limits<double>::quiet_NaN());
+
+/**
+ * @brief Test whether two oriented bounding boxes (yaw-aligned, planar)
+ * intersect using the separating axis theorem.
+ *
+ * Both OBBs are assumed to share an upright Z axis; height overlap is checked
+ * separately as a fast 1D interval test before the planar SAT.
+ *
+ * @param[in] pos_a Center position of OBB A
+ * @param[in] yaw_a Yaw of OBB A (rad)
+ * @param[in] half_extents_a Half-extents of A (length/2, width/2, height/2)
+ * @param[in] pos_b Center position of OBB B
+ * @param[in] yaw_b Yaw of OBB B
+ * @param[in] half_extents_b Half-extents of B
+ * @return True if the OBBs overlap.
+ */
+bool obbIntersect(const Eigen::Vector3d& pos_a, double yaw_a,
+                  const Eigen::Vector3d& half_extents_a,
+                  const Eigen::Vector3d& pos_b, double yaw_b,
+                  const Eigen::Vector3d& half_extents_b);
+
+/**
+ * @brief Check whether a candidate state's body OBB intersects any of the
+ * dynamic constraints attached to the planner config.
+ *
+ * Yaw of the candidate state is approximated from its planar velocity
+ * direction (matching the planner's existing convention). This replaces the
+ * legacy point-distance check used in the ROS1 implementation.
+ *
+ * @param[in] s State to test
+ * @param[in] planner_config Configuration parameters (provides body extents and
+ * constraints)
+ * @return True if the state violates at least one dynamic constraint.
+ */
+bool failsRobotConstraint(const State& s, double t,
+                          const PlannerConfig& planner_config);
+
+/**
+ * @brief Sum of all phase durations (leap stance + flight + land stance) of a
+ * single Action. Used by the planner to compute time-at-vertex from the
+ * cumulative durations along a path.
+ */
+inline double actionDuration(const Action& a) {
+  return a.t_s_leap + a.t_f + a.t_s_land;
+}
+
+/**
+ * @brief Per-solve diagnostic counters used to audit how aggressively the
+ * dynamic constraints are pruning the planner's state space. Designed to be
+ * reset by the planner / service callback before a solve and read after.
+ *
+ * Constraint rejections are counted at the OBB-constraint site only; other
+ * failure modes (out-of-map, traversability, h_max, ...) all fall under the
+ * un-instrumented remainder of total. A high constraint-reject ratio means
+ * CBS is over-restricting the planner.
+ *
+ * Implementation uses thread-local storage so multiple GBP nodes in the same
+ * process (if that ever happens) don't trample each other.
+ */
+struct ValidityStats {
+  int total = 0;               //!< total isValidState() calls
+  int constraint_rejects = 0;  //!< failed because of dynamic_constraints
+};
+
+void resetValidityStats();
+ValidityStats getValidityStats();
 
 // Define visualization functions
 /**

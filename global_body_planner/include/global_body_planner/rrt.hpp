@@ -41,9 +41,11 @@ class RRT {
    * @return Int describing the result of the attempt (TRAPPED, ADVANCED, or
    * REACHED)
    */
-  int attemptConnect(const State& s_existing, const State& s, double t_s,
-                     StateActionResult& result,
-                     const PlannerConfig& planner_config, int direction);
+  int attemptConnect(
+      const State& s_existing, const State& s, double t_s,
+      StateActionResult& result, const PlannerConfig& planner_config,
+      int direction,
+      double t_action_start = std::numeric_limits<double>::quiet_NaN());
 
   /** Attempt to connect two states, and return a new state if the full
    * connection is not possible. Internally computes stance time
@@ -51,12 +53,15 @@ class RRT {
    * @param[out] result Result of the newConfig operation
    * @param[in] terrain Height map of the terrain
    * @param[in] direction Direction of the dynamics (either FORWARD or REVERSE)
+   * @param[in] t_action_start Absolute time at s_existing (NaN = unknown,
+   *   constraints treated as static)
    * @return Int describing the result of the attempt (TRAPPED, ADVANCED, or
    * REACHED)
    */
-  int attemptConnect(const State& s_existing, const State& s,
-                     StateActionResult& result,
-                     const PlannerConfig& planner_config, int direction);
+  int attemptConnect(
+      const State& s_existing, const State& s, StateActionResult& result,
+      const PlannerConfig& planner_config, int direction,
+      double t_action_start = std::numeric_limits<double>::quiet_NaN());
 
   /** Extend the tree towards the desired state
    * @param[in] T The PlannerClass instance containing the tree
@@ -115,7 +120,8 @@ class RRT {
       State s, State s_near, StateActionResult& result,
       const PlannerConfig& planner_config, int direction,
       rclcpp::Publisher<visualization_msgs::msg::MarkerArray>::SharedPtr&
-          tree_pub);
+          tree_pub,
+      double t_near = std::numeric_limits<double>::quiet_NaN());
 
   /**
    * @brief Get the states along the specified path of vertex indices

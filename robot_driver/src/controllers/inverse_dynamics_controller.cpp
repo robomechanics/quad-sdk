@@ -54,8 +54,17 @@ bool InverseDynamicsController::computeLegCommandArray(
          (rclcpp::Time(last_local_plan_msg_->states.back().header.stamp) -
           t_first_state)
              .seconds())) {
-      RCLCPP_ERROR(node_->get_logger(),
-                   "ID node couldn't find the correct ref state!");
+      // Bail without writing leg commands. Falling through into the
+      // interpolation loop is unsafe: the loop's gating condition can
+      // never be true when t_now is out of [front, back], so it exits
+      // without populating ref_state_msg_, and downstream reads
+      // (ref_state_msg_.feet.feet[i]) dereference an empty vector and
+      // segfault. Throttled to 1 Hz so a stale plan doesn't flood the
+      // console at the controller tick rate.
+      RCLCPP_ERROR_THROTTLE(
+          node_->get_logger(), *node_->get_clock(), 1000,
+          "ID node couldn't find the correct ref state!");
+      return false;
     }
 
     // Interpolate the local plan to get the reference state and ff GRF

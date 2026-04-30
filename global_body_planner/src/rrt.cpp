@@ -12,13 +12,15 @@ bool RRT::newConfig(
     State s, State s_near, StateActionResult& result,
     const PlannerConfig& planner_config, int direction,
     rclcpp::Publisher<visualization_msgs::msg::MarkerArray>::SharedPtr&
-        tree_pub) {
+        tree_pub,
+    double t_near) {
   double best_so_far = stateDistance(s_near, s);
 
   // Try connecting directly
   StateActionResult current_result;
   int connect_result =
-      attemptConnect(s_near, s, current_result, planner_config, direction);
+      attemptConnect(s_near, s, current_result, planner_config, direction,
+                     t_near);
   if (connect_result != TRAPPED) {
     double current_dist = stateDistance(current_result.s_new, s);
 
@@ -51,7 +53,7 @@ bool RRT::newConfig(
     num_total_actions++;
     for (int j = 0; j < planner_config.num_leap_samples; ++j) {
       bool is_valid = isValidStateActionPair(s_near, a_test, current_result,
-                                             planner_config);
+                                             planner_config, t_near);
 
 #ifdef VISUALIZE_ALL_CANDIDATE_ACTIONS
       publishStateActionPair(s_near, a_test, s, planner_config, tree_viz_msg_,
@@ -94,7 +96,8 @@ bool RRT::newConfig(
 
 int RRT::attemptConnect(const State& s_existing, const State& s, double t_s,
                         StateActionResult& result,
-                        const PlannerConfig& planner_config, int direction) {
+                        const PlannerConfig& planner_config, int direction,
+                        double t_action_start) {
   // Enforce stance time greater than the kinematic check resolution to ensure
   // that the action is useful
   if (t_s <= planner_config.trapped_buffer_factor * planner_config.dt)
@@ -139,11 +142,12 @@ int RRT::attemptConnect(const State& s_existing, const State& s, double t_s,
   if (isValidAction(result.a_new, planner_config)) {
     // If valid, great, return REACHED, otherwise try again to the valid state
     // returned by isValidStateActionPair
-    if (isValidStateActionPair(s_start, result.a_new, result, planner_config)) {
+    if (isValidStateActionPair(s_start, result.a_new, result, planner_config,
+                               t_action_start)) {
       return REACHED;
     } else {
       if (attemptConnect(s_existing, result.s_new, result.t_new, result,
-                         planner_config, direction) == TRAPPED)
+                         planner_config, direction, t_action_start) == TRAPPED)
         return TRAPPED;
       else
         return ADVANCED;
@@ -155,12 +159,14 @@ int RRT::attemptConnect(const State& s_existing, const State& s, double t_s,
 
 int RRT::attemptConnect(const State& s_existing, const State& s,
                         StateActionResult& result,
-                        const PlannerConfig& planner_config, int direction) {
+                        const PlannerConfig& planner_config, int direction,
+                        double t_action_start) {
   // select desired stance time to enforce a nominal stance velocity
   double t_s = 6.0 * poseDistance(s, s_existing) /
                ((s_existing.vel + s.vel).norm() + 4.0 * planner_config.v_nom);
 
-  return attemptConnect(s_existing, s, t_s, result, planner_config, direction);
+  return attemptConnect(s_existing, s, t_s, result, planner_config, direction,
+                        t_action_start);
 }
 
 int RRT::extend(
@@ -170,13 +176,19 @@ int RRT::extend(
         tree_pub) {
   int s_near_index = T.getNearestNeighbor(s);
   State s_near = T.getVertex(s_near_index);
+  const double t_near = T.getTime(s_near_index);
   StateActionResult result;
 
-  if (newConfig(s, s_near, result, planner_config, direction, tree_pub)) {
+  if (newConfig(s, s_near, result, planner_config, direction, tree_pub,
+                t_near)) {
     int s_new_index = T.getNumVertices();
     T.addVertex(s_new_index, result.s_new);
     T.addEdge(s_near_index, s_new_index, result.length);
     T.addAction(s_new_index, result.a_new);
+    // Use result.a_new (post-clipping) so the recorded time matches the
+    // actual edge that ended up in the tree.
+    T.setTime(s_new_index,
+              T.getTime(s_near_index) + actionDuration(result.a_new));
 
     return ADVANCED;
   } else {

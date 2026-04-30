@@ -15,8 +15,10 @@ The simulation side of Quad-SDK targets **Gazebo Harmonic** (via `ros_gz_bridge`
 The source code is released under a [MIT License](../LICENSE). The Spirit40 model was originally created by Ghost Robotics. The Gazebo bring-up structure is based on [kodlab_gazebo](https://github.com/KodlabPenn/kodlab_gazebo).
 
 **Original `kodlab_gazebo` author:** Vasileios Vasilopoulos
-**Maintainer:** Justin Yim (jkyim@andrew.cmu.edu)
+
 **Affiliation:** [Robomechanics Lab](https://www.cmu.edu/me/robomechanicslab/), Carnegie Mellon University
+
+**Maintainer:** Justin Yim (jkyim@andrew.cmu.edu)
 
 Tested under [ROS2] Jazzy on Ubuntu 24.04 with Gazebo Harmonic.
 

@@ -9,7 +9,9 @@ This package implements global planning algorithms for agile quadrupedal navigat
 The source code is released under a [MIT License](../LICENSE).
 
 **Author:** Joe Norby
+
 **Affiliation:** [Robomechanics Lab](https://www.cmu.edu/me/robomechanicslab/), Carnegie Mellon University
+
 **Maintainers:** Jiming Ren (jimingre@andrew.cmu.edu), Joe Norby (jnorby@andrew.cmu.edu)
 
 Tested under [ROS2] Jazzy on Ubuntu 24.04. This is research code; expect frequent changes and no fitness for any particular purpose.

@@ -70,8 +70,9 @@
           <velocity>30.100000000000001</velocity>
         </limit>
         <dynamics>
+          <damping>0.5</damping>
           <spring_reference>0</spring_reference>
-          <spring_stiffness>0</spring_stiffness>
+          <spring_stiffness>3</spring_stiffness>
         </dynamics>
       </axis>
     </joint>
@@ -125,8 +126,9 @@
           <velocity>30.100000000000001</velocity>
         </limit>
         <dynamics>
-          <spring_reference>0</spring_reference>
-          <spring_stiffness>0</spring_stiffness>
+          <damping>0.5</damping>
+          <spring_reference>1.36</spring_reference>
+          <spring_stiffness>3</spring_stiffness>
         </dynamics>
       </axis>
     </joint>
@@ -179,8 +181,9 @@
           <velocity>15.699999999999999</velocity>
         </limit>
         <dynamics>
-          <spring_reference>0</spring_reference>
-          <spring_stiffness>0</spring_stiffness>
+          <damping>0.5</damping>
+          <spring_reference>-2.65</spring_reference>
+          <spring_stiffness>3</spring_stiffness>
         </dynamics>
       </axis>
     </joint>
@@ -358,8 +361,9 @@
           <velocity>30.100000000000001</velocity>
         </limit>
         <dynamics>
+          <damping>0.5</damping>
           <spring_reference>0</spring_reference>
-          <spring_stiffness>0</spring_stiffness>
+          <spring_stiffness>3</spring_stiffness>
         </dynamics>
       </axis>
     </joint>
@@ -413,8 +417,9 @@
           <velocity>30.100000000000001</velocity>
         </limit>
         <dynamics>
-          <spring_reference>0</spring_reference>
-          <spring_stiffness>0</spring_stiffness>
+          <damping>0.5</damping>
+          <spring_reference>1.36</spring_reference>
+          <spring_stiffness>3</spring_stiffness>
         </dynamics>
       </axis>
     </joint>
@@ -467,8 +472,9 @@
           <velocity>15.699999999999999</velocity>
         </limit>
         <dynamics>
-          <spring_reference>0</spring_reference>
-          <spring_stiffness>0</spring_stiffness>
+          <damping>0.5</damping>
+          <spring_reference>-2.65</spring_reference>
+          <spring_stiffness>3</spring_stiffness>
         </dynamics>
       </axis>
     </joint>
@@ -647,8 +653,9 @@
           <velocity>30.100000000000001</velocity>
         </limit>
         <dynamics>
+          <damping>0.5</damping>
           <spring_reference>0</spring_reference>
-          <spring_stiffness>0</spring_stiffness>
+          <spring_stiffness>3</spring_stiffness>
         </dynamics>
       </axis>
     </joint>
@@ -702,8 +709,9 @@
           <velocity>30.100000000000001</velocity>
         </limit>
         <dynamics>
-          <spring_reference>0</spring_reference>
-          <spring_stiffness>0</spring_stiffness>
+          <damping>0.5</damping>
+          <spring_reference>1.36</spring_reference>
+          <spring_stiffness>3</spring_stiffness>
         </dynamics>
       </axis>
     </joint>
@@ -756,8 +764,9 @@
           <velocity>15.699999999999999</velocity>
         </limit>
         <dynamics>
-          <spring_reference>0</spring_reference>
-          <spring_stiffness>0</spring_stiffness>
+          <damping>0.5</damping>
+          <spring_reference>-2.65</spring_reference>
+          <spring_stiffness>3</spring_stiffness>
         </dynamics>
       </axis>
     </joint>
@@ -935,8 +944,9 @@
           <velocity>30.100000000000001</velocity>
         </limit>
         <dynamics>
+          <damping>0.5</damping>
           <spring_reference>0</spring_reference>
-          <spring_stiffness>0</spring_stiffness>
+          <spring_stiffness>3</spring_stiffness>
         </dynamics>
       </axis>
     </joint>
@@ -990,8 +1000,9 @@
           <velocity>30.100000000000001</velocity>
         </limit>
         <dynamics>
-          <spring_reference>0</spring_reference>
-          <spring_stiffness>0</spring_stiffness>
+          <damping>0.5</damping>
+          <spring_reference>1.36</spring_reference>
+          <spring_stiffness>3</spring_stiffness>
         </dynamics>
       </axis>
     </joint>
@@ -1044,8 +1055,9 @@
           <velocity>15.699999999999999</velocity>
         </limit>
         <dynamics>
-          <spring_reference>0</spring_reference>
-          <spring_stiffness>0</spring_stiffness>
+          <damping>0.5</damping>
+          <spring_reference>-2.65</spring_reference>
+          <spring_stiffness>3</spring_stiffness>
         </dynamics>
       </axis>
     </joint>
@@ -1408,7 +1420,7 @@
     </joint>
 
     <!-- Setup ros control -->
-    <plugin 
+    <plugin
         filename="libgz_ros2_control-system.so"
         name="gz_ros2_control::GazeboSimROS2ControlPlugin">
         <controlPeriod>0.001</controlPeriod>
@@ -1416,6 +1428,19 @@
             <ros>
               <namespace>$(arg namespace)</namespace>
           </ros>
+    </plugin>
+
+    <!-- Pin the body at its spawn pose for hold_duration seconds so that
+         controllers can come up and fold the legs into sit pose without
+         the body tipping. Joints articulate freely the whole time. The
+         plugin tracks both sim-time and wall-clock elapsed since first
+         PreUpdate; whichever crosses hold_duration first triggers the
+         release. The wall-clock fallback exists because — under load —
+         gz-sim's sim-time can stall on individual plugin instances and
+         the sim-time-only check would freeze the body indefinitely. -->
+    <plugin filename="libspawn_lock.so" name="spawn_lock">
+        <body_link>body</body_link>
+        <hold_duration>8.0</hold_duration>
     </plugin>
 
     <!-- Publish ground truth state data -->

@@ -91,18 +91,16 @@ void BodyForceEstimator::update() {
       (t_now > (rclcpp::Time(last_local_plan_msg_->states.back().header.stamp) -
                 t_first_state)
                    .seconds())) {
-    RCLCPP_ERROR(node_->get_logger(),
-                 "ID node couldn't find the correct ref state!");
-    std::cout
-        << "t_now " << t_now << ", plan front "
-        << (rclcpp::Time(last_local_plan_msg_->states.front().header.stamp) -
-            t_first_state)
-               .seconds()
-        << ", plan back "
-        << (rclcpp::Time(last_local_plan_msg_->states.back().header.stamp) -
-            t_first_state)
-               .seconds()
-        << std::endl;
+    // Plan timestamps don't bracket the current time (commonly: the
+    // local_planner has not published a fresh LocalPlan recently). The
+    // interpolation loop below will leave ref_state_msg default-
+    // constructed, and the per-foot loop further down indexes
+    // ref_state_msg.feet.feet[i] — which crashes with SIGSEGV when the
+    // vector is empty. Bail out instead and wait for the next callback
+    // to bring a usable plan.
+    RCLCPP_ERROR_THROTTLE(node_->get_logger(), *node_->get_clock(), 1000,
+                          "ID node couldn't find the correct ref state!");
+    return;
   }
   for (size_t i = 0; i < last_local_plan_msg_->states.size() - 1; i++) {
     if ((t_now >= (rclcpp::Time(last_local_plan_msg_->states[i].header.stamp) -
@@ -127,6 +125,17 @@ void BodyForceEstimator::update() {
                                    t_interp, ref_state_msg);
       continue;
     }
+  }
+
+  // Defense in depth: even with the early-return above, refuse to deref a
+  // ref_state_msg whose feet vector wasn't populated (eg. an upstream that
+  // publishes a malformed RobotState).
+  if (ref_state_msg.feet.feet.size() < 4) {
+    RCLCPP_WARN_THROTTLE(
+        node_->get_logger(), *node_->get_clock(), 1000,
+        "ref_state_msg.feet.feet has %zu entries, expected 4; skipping update",
+        ref_state_msg.feet.feet.size());
+    return;
   }
 
   if (past_feet_state_.feet.empty()) {

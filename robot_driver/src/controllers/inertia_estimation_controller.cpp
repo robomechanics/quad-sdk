@@ -55,8 +55,14 @@ bool InertiaEstimationController::computeLegCommandArray(
          (rclcpp::Time(last_local_plan_msg_->states.back().header.stamp) -
           t_first_state)
              .seconds())) {
-      RCLCPP_ERROR(node_->get_logger(),
-                   "ID node couldn't find the correct ref state!");
+      // See inverse_dynamics_controller.cpp for context: must bail
+      // here, otherwise the interpolation loop falls through with
+      // unpopulated ref_state_msg_ and downstream feet[i] reads
+      // segfault.
+      RCLCPP_ERROR_THROTTLE(
+          node_->get_logger(), *node_->get_clock(), 1000,
+          "ID node couldn't find the correct ref state!");
+      return false;
     }
 
     // Interpolate the local plan to get the reference state and ff GRF

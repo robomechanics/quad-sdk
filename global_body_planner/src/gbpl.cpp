@@ -13,16 +13,19 @@ int GBPL::connect(
   flipDirection(s);
   int s_near_index = T.getNearestNeighbor(s);
   State s_near = T.getVertex(s_near_index);
+  const double t_near = T.getTime(s_near_index);
   StateActionResult result;
 
   // Try to connect to nearest neighbor, add to graph if REACHED or ADVANCED
-  int connect_result =
-      attemptConnect(s_near, s, result, planner_config, direction);
+  int connect_result = attemptConnect(s_near, s, result, planner_config,
+                                      direction, t_near);
   if (connect_result != TRAPPED) {
     int s_new_index = T.getNumVertices();
     T.addVertex(s_new_index, result.s_new);
     T.addEdge(s_near_index, s_new_index, result.length);
     T.addAction(s_new_index, result.a_new);
+    T.setTime(s_new_index,
+              T.getTime(s_near_index) + actionDuration(result.a_new));
 
 #ifdef VISUALIZE_TREE
     publishStateActionPair(s_near, result.a_new, s, planner_config,
@@ -164,14 +167,19 @@ int GBPL::findPlan(
     std::vector<State>& state_sequence, std::vector<Action>& action_sequence,
     rclcpp::Publisher<visualization_msgs::msg::MarkerArray>::SharedPtr&
         tree_pub) {
-  // Perform validity checking on start and goal states
-  if (!isValidState(s_start, planner_config, LEAP_STANCE)) {
+  // Perform validity checking on start and goal states. Constraints are
+  // intentionally skipped here so that even if a body is currently inside
+  // another robot's plan envelope we still attempt to plan around it (the
+  // RRT itself will avoid it via the modified isValidState).
+  PlannerConfig pc_no_constraints = planner_config;
+  pc_no_constraints.dynamic_constraints.clear();
+  if (!isValidState(s_start, pc_no_constraints, LEAP_STANCE)) {
     return INVALID_START_STATE;
   }
   // Set goal height to nominal distance above terrain
   s_goal.pos[2] =
       getTerrainZFromState(s_goal, planner_config) + planner_config.h_nom;
-  if (!isValidState(s_goal, planner_config, LEAP_STANCE)) {
+  if (!isValidState(s_goal, pc_no_constraints, LEAP_STANCE)) {
     return INVALID_GOAL_STATE;
   }
   if (poseDistance(s_start, s_goal) <= 1e-1) {
@@ -183,11 +191,32 @@ int GBPL::findPlan(
   auto t_start_current_solve = std::chrono::steady_clock::now();
   int result;
 
-  PlannerClass Ta(FORWARD, planner_config);
-  PlannerClass Tb(REVERSE, planner_config);
-  Ta.init(s_start);
-  flipDirection(s_goal);
-  Tb.init(s_goal);
+  // Set up trees: either reuse the warm-start cache (and lazy-prune vertices
+  // that violate the freshly-supplied constraints) or build them fresh.
+  const bool can_warm_start = warm_start_ && has_cache_ &&
+                              Ta_cache_ != nullptr && Tb_cache_ != nullptr;
+  if (!can_warm_start) {
+    Ta_cache_ = std::make_unique<PlannerClass>(FORWARD, planner_config);
+    Tb_cache_ = std::make_unique<PlannerClass>(REVERSE, planner_config);
+    Ta_cache_->init(s_start);
+    flipDirection(s_goal);
+    Tb_cache_->init(s_goal);
+    has_cache_ = true;
+  } else {
+    // Trees retain whatever invalidations they already had; reset and re-run
+    // pruning so each call sees a clean view of the current constraint set.
+    Ta_cache_->resetInvalidVertices();
+    Tb_cache_->resetInvalidVertices();
+    Ta_cache_->pruneByConstraints(planner_config);
+    Tb_cache_->pruneByConstraints(planner_config);
+    flipDirection(s_goal);  // match the cached Tb root
+  }
+  PlannerClass& Ta = *Ta_cache_;
+  PlannerClass& Tb = *Tb_cache_;
+
+  // goal_found is a member from RRT; reset it for this call regardless of
+  // whether the cached trees previously connected.
+  goal_found = false;
 
 #ifdef VISUALIZE_TREE
   tree_viz_msg_.markers.clear();
@@ -214,13 +243,18 @@ int GBPL::findPlan(
     }
 
     if (current_elapsed.count() >= anytime_horizon) {
-      auto t_start_current_solve = std::chrono::steady_clock::now();
+      t_start_current_solve = std::chrono::steady_clock::now();
       anytime_horizon = anytime_horizon * horizon_expansion_factor;
-      Ta = PlannerClass(FORWARD, planner_config);
-      Tb = PlannerClass(REVERSE, planner_config);
-      tree_viz_msg_.markers.clear();
-      Ta.init(s_start);
-      Tb.init(s_goal);
+      // Keep the cached trees alive when warm-starting: the whole point of
+      // this mode is to reuse the work that has already been done. In cold
+      // starts we still allow the original anytime restart behaviour.
+      if (!warm_start_) {
+        *Ta_cache_ = PlannerClass(FORWARD, planner_config);
+        *Tb_cache_ = PlannerClass(REVERSE, planner_config);
+        tree_viz_msg_.markers.clear();
+        Ta_cache_->init(s_start);
+        Tb_cache_->init(s_goal);
+      }
       continue;
     }
 #endif

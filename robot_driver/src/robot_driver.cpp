@@ -866,11 +866,11 @@ void RobotDriver::spin() {
     double dt_publish = (node_->now() - t4).seconds();
 
     double dt_total = (node_->now() - t0).seconds();
-    RCLCPP_INFO_THROTTLE(node_->get_logger(), *node_->get_clock(), 2000,
-                         "Loop: total=%.4f spin=%.4f state=%.4f dyn=%.4f "
-                         "ctrl=%.4f pub=%.4f (%.1f Hz)",
-                         dt_total, dt_spin, dt_state, dt_dynamics, dt_control,
-                         dt_publish, 1.0 / dt_total);
+    // RCLCPP_INFO_THROTTLE(node_->get_logger(), *node_->get_clock(), 2000,
+    //                      "Loop: total=%.4f spin=%.4f state=%.4f dyn=%.4f "
+    //                      "ctrl=%.4f pub=%.4f (%.1f Hz)",
+    //                      dt_total, dt_spin, dt_state, dt_dynamics,
+    //                      dt_control, dt_publish, 1.0 / dt_total);
     r.sleep();
   }
 

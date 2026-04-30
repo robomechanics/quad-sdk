@@ -115,6 +115,26 @@ class GraphClass {
   double getGValue(int idx);
 
   /**
+   * @brief Set the cumulative absolute time (sim seconds from t=0 at the
+   * tree root) at which the given vertex is reached. Populated by the
+   * RRT extend step from the parent vertex's time plus the duration of
+   * the edge action; consumed by failsRobotConstraint and
+   * pruneByConstraints to evaluate dynamic constraints in their
+   * [t_start, t_end] windows.
+   * @param[in] idx Vertex index
+   * @param[in] t   Absolute time at this vertex
+   */
+  void setTime(int idx, double t);
+
+  /**
+   * @brief Get the cumulative absolute time at the given vertex. Returns
+   * 0 for vertices that have not had a time set (e.g. the root after
+   * init()), so callers comparing against constraint windows still get
+   * meaningful results. The root is initialised to t=0 in init().
+   */
+  double getTime(int idx);
+
+  /**
    * @brief Compute the cost of an edge between two vertices
    * @param[in] idx1 Index of vertex 1
    * @param[in] idx2 Index of vertex 2
@@ -166,6 +186,9 @@ class GraphClass {
 
   /// Map from vertex indices to their costs (g-values)
   std::unordered_map<int, double> g_values;
+
+  /// Cumulative time from root, populated by RRT extend.
+  std::unordered_map<int, double> times_;
 };
 
 #endif

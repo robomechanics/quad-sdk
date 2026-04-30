@@ -58,11 +58,48 @@ class PlannerClass : public GraphClass {
    */
   int getNearestNeighbor(State q) const;
 
+  /**
+   * @brief Mark a vertex (and implicitly the actions/edges that emanate from
+   * it) as invalid for the purpose of warm-started replans. Invalid vertices
+   * are skipped during nearest-neighbor lookups so they cannot be used as
+   * extension origins or appear in returned paths, but they remain in the
+   * graph so their valid descendants are not lost.
+   * @param[in] idx Vertex index to mark invalid.
+   */
+  void markVertexInvalid(int idx);
+
+  /**
+   * @brief Test whether a vertex was previously marked invalid.
+   */
+  bool isVertexInvalid(int idx) const;
+
+  /**
+   * @brief Re-enable every vertex (called when starting a fresh plan).
+   */
+  void resetInvalidVertices();
+
+  /**
+   * @brief Walk every vertex currently in the tree and mark any that violate
+   * the dynamic constraints stored on the supplied planner config. Used to
+   * warm-start a replan after CBS has added new constraints — vertices that
+   * would now sit inside another robot's body are pruned from neighbor
+   * queries before RRT-Connect resumes.
+   * @param[in] planner_config Configuration carrying dynamic_constraints.
+   * @return Number of vertices that were newly marked invalid.
+   */
+  int pruneByConstraints(const PlannerConfig& planner_config);
+
   /// Direction
   int direction_ = FORWARD;
 
   /// Lognormal distribution for velocity sampling
   std::shared_ptr<std::lognormal_distribution<double>> vel_distribution_;
+
+ protected:
+  /// Indices of vertices that are not currently usable as extension origins
+  /// or path waypoints, kept separate from the tree so warm-starts retain
+  /// the valid portion of the graph.
+  std::unordered_set<int> invalid_vertices_;
 };
 
 #endif

@@ -33,6 +33,8 @@ rosidl_generate_interfaces(${PROJECT_NAME}
   "msg/LegCommand.msg"
   "msg/LegCommandArray.msg"
   "msg/BodyForceEstimate.msg"
+  "msg/RobotPlanConstraints.msg"
+  "srv/PlanWithConstraints.srv"
   DEPENDENCIES
     std_msgs
     sensor_msgs

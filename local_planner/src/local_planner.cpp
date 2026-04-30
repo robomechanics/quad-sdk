@@ -72,8 +72,8 @@ LocalPlanner::LocalPlanner(rclcpp::Node::SharedPtr node)
   quad_utils::loadROSParam(node_, "local_planner.stand_pos_error_threshold",
                            stand_pos_error_threshold_);
   double robot_mass;
-  quad_utils::loadROSParamDefault(node_, "global_body_planner.mass",
-                                  robot_mass, 13.3);
+  quad_utils::loadROSParamDefault(node_, "global_body_planner.mass", robot_mass,
+                                  13.3);
 
   // Load system parameters from launch file (not in config file)
   // nh.param<bool>("local_planner/use_twist_input", use_twist_input_, false);
@@ -256,8 +256,6 @@ void LocalPlanner::getReference() {
     if (use_twist_input_) {
       initial_timestamp_ = node_->now() - rclcpp::Duration::from_seconds(1e-6);
     }
-    RCLCPP_INFO(node_->get_logger(), "Initial Timestamp =  %f",
-                initial_timestamp_.seconds());
   }
   // Make sure we use the most recent global plan timestamp for reference
   if (!use_twist_input_) {

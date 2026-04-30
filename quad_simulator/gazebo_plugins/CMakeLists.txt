@@ -36,7 +36,11 @@ add_library(ground_truth_estimator SHARED
 )
 
 add_library(quad_controller SHARED
- src/controller_plugin.cpp 
+ src/controller_plugin.cpp
+)
+
+add_library(spawn_lock SHARED
+  src/spawn_lock_plugin.cpp
 )
 
 
@@ -50,11 +54,21 @@ target_include_directories(quad_controller PUBLIC
   $<INSTALL_INTERFACE:include>
 )
 
+target_include_directories(spawn_lock PUBLIC
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+  $<INSTALL_INTERFACE:include>
+)
+
 ament_target_dependencies(ground_truth_estimator
   rclcpp
   std_msgs
   quad_utils
   quad_msgs
+  gz-sim8
+  gz-plugin2
+)
+
+ament_target_dependencies(spawn_lock
   gz-sim8
   gz-plugin2
 )
@@ -74,9 +88,10 @@ ament_target_dependencies(quad_controller
 
 pluginlib_export_plugin_description_file(controller_interface controller_plugin.xml)
 
-install(TARGETS 
+install(TARGETS
   ground_truth_estimator
   quad_controller
+  spawn_lock
   DESTINATION lib
 )
 

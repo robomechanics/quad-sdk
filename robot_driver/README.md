@@ -8,8 +8,10 @@ This package is the hardware abstraction and low-level control layer of Quad-SDK
 
 The source code is released under a [MIT License](../LICENSE).
 
-**Author:** Joe Norby and Ardalan Tajbakhsh
+**Authors:** Joe Norby and Ardalan Tajbakhsh
+
 **Affiliation:** [Robomechanics Lab](https://www.cmu.edu/me/robomechanicslab/), Carnegie Mellon University
+
 **Maintainer:** David Ologan (dologan@andrew.cmu.edu)
 
 Tested under [ROS2] Jazzy on Ubuntu 24.04. This is research code; expect frequent changes and no fitness for any particular purpose.

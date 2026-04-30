@@ -1,5 +1,7 @@
 #include "global_body_planner/global_body_planner.hpp"
 
+#include <chrono>
+
 using namespace planning_utils;
 
 GlobalBodyPlanner::GlobalBodyPlanner(rclcpp::Node::SharedPtr node)
@@ -56,6 +58,12 @@ GlobalBodyPlanner::GlobalBodyPlanner(rclcpp::Node::SharedPtr node)
   goal_reached_pub_ =
       node_->create_publisher<std_msgs::msg::Bool>("goal_reached", 10);
 
+  // Note: the plan_with_constraints service is intentionally NOT advertised
+  // here. waitForData() inside spin() calls rclcpp::spin_some() repeatedly
+  // while it waits for the first terrain map and state messages, and that
+  // spin would dispatch any incoming service requests against
+  // uninitialized robot_state_. See spin() for the deferred advertisement.
+
   // Load planner config
   bool enable_leaping;
   planner_config_.loadParamsFromServer(node_);
@@ -67,6 +75,18 @@ GlobalBodyPlanner::GlobalBodyPlanner(rclcpp::Node::SharedPtr node)
     planner_config_.h_min = 0;
     planner_config_.h_max = 0.5;
   }
+
+  // Suppress the spin-loop solo planner from boot when this GBP is being
+  // driven by conflict_based_search. multi_robot.py sets this true on
+  // every per-robot GBP it spawns. Default false preserves the existing
+  // single-robot behavior. See the cbs_mode_ comment in the header for
+  // why this matters: without it, whichever robot's waitForData()
+  // completes first publishes a solo (no-constraint) plan in the gap
+  // before CBS finishes its search, the local_planner subscribes to
+  // it, and the eventual transition to the CBS plan corrupts internal
+  // indexing state.
+  cbs_mode_ = node_->declare_parameter<bool>(
+      "global_body_planner.cbs_mode", false);
 
   // Fill in the goal state information
   goal_state_vec.resize(12, 0);
@@ -103,6 +123,10 @@ void GlobalBodyPlanner::triggerReset() {
   planner_status_ = RESET;
   current_plan_.clear();
   reset_time_ = node_->now();
+  // The cached RRT trees are tied to a specific start/goal pair; any reset
+  // invalidates that assumption, so drop them.
+  gbpl_.invalidateCache();
+  gbpl_.setWarmStart(false);
 }
 
 void GlobalBodyPlanner::goalStateCallback(
@@ -217,8 +241,8 @@ bool GlobalBodyPlanner::callPlanner() {
       dist_to_goal;
   int vertices_generated;
 
-  // Construct RRT object
-  GBPL gbpl;
+  // RRT-Connect planner kept as a class member so that warm-started CBS
+  // service calls reuse the trees from the previous solve.
 
   // Loop through num_calls_ planner calls
   for (int i = 0; i < num_calls_; ++i) {
@@ -232,8 +256,9 @@ bool GlobalBodyPlanner::callPlanner() {
     std::vector<Action> action_sequence;
 
     // Call the planner method
-    int plan_status = gbpl.findPlan(planner_config_, start_state, goal_state,
-                                    state_sequence, action_sequence, tree_pub_);
+    int plan_status = gbpl_.findPlan(planner_config_, start_state, goal_state,
+                                     state_sequence, action_sequence,
+                                     tree_pub_);
     newest_plan_.setComputedTimestamp(node_->now());
 
     if (plan_status != VALID && plan_status != VALID_PARTIAL) {
@@ -256,7 +281,7 @@ bool GlobalBodyPlanner::callPlanner() {
       }
       return false;
     }
-    gbpl.getStatistics(plan_time, vertices_generated, path_length,
+    gbpl_.getStatistics(plan_time, vertices_generated, path_length,
                        path_duration, dist_to_goal);
 
     // Add the existing path length to the new
@@ -420,10 +445,34 @@ void GlobalBodyPlanner::spin() {
   // Wait until we get map and state data
   waitForData();
 
+  // Now that map and state are available, advertise the service that the
+  // conflict_based_search node calls. Advertising in the constructor
+  // would race with waitForData() above — its rclcpp::spin_some() drains
+  // pending callbacks, including service callbacks, against an
+  // uninitialized robot_state_, causing the first request to come back as
+  // INVALID_START_STATE.
+  plan_with_constraints_srv_ =
+      node_->create_service<quad_msgs::srv::PlanWithConstraints>(
+          "plan_with_constraints",
+          std::bind(&GlobalBodyPlanner::planWithConstraintsCallback, this,
+                    std::placeholders::_1, std::placeholders::_2));
+
   // Enter main spin
   while (rclcpp::ok()) {
     // Process callbacks
     rclcpp::spin_some(node_);
+
+    // While CBS is in command of this robot's plans, the spin-loop
+    // planner stays out of the way — otherwise its constraint-free solo
+    // replans would publish over the top of the coordinated plan that
+    // CBS just produced (the local planner subscribes once, last-write-
+    // wins). The service callback handles planning + publishing in this
+    // mode.
+    if (cbs_mode_) {
+      r.sleep();
+      continue;
+    }
+
     // Set the start and goal states
     setStartState();
     setGoalState();
@@ -436,4 +485,103 @@ void GlobalBodyPlanner::spin() {
 
     r.sleep();
   }
+}
+
+void GlobalBodyPlanner::planWithConstraintsCallback(
+    const std::shared_ptr<quad_msgs::srv::PlanWithConstraints::Request> request,
+    std::shared_ptr<quad_msgs::srv::PlanWithConstraints::Response> response) {
+  // The first request hands ownership of plan publication over to CBS —
+  // see the cbs_mode_ comment in the header. All subsequent spin-loop
+  // ticks become no-ops; planning happens only inside this callback.
+  cbs_mode_ = true;
+
+  // Translate the message-level constraint vector into the planner's
+  // internal TimedPoseConstraint form, using the constrained robot's
+  // body extents. The constraints are kept attached to the planner config
+  // for the duration of this call only.
+  const auto& c = request->constraints;
+  planner_config_.dynamic_constraints.clear();
+  const size_t n = std::min({c.pos_x.size(), c.pos_y.size(), c.pos_z.size(),
+                             c.yaw.size(), c.t_start.size(), c.t_end.size()});
+  planner_config_.dynamic_constraints.reserve(n);
+  // If the message did not specify body extents, fall back to this robot's
+  // own body size — better than zeros, which would silently disable the
+  // OBB check.
+  const double l = (c.length > 0.0) ? c.length : planner_config_.robot_l;
+  const double w = (c.width > 0.0) ? c.width : planner_config_.robot_w;
+  const double h = (c.height > 0.0) ? c.height : planner_config_.robot_h;
+  for (size_t i = 0; i < n; ++i) {
+    planning_utils::TimedPoseConstraint constraint;
+    constraint.pos = Eigen::Vector3d(c.pos_x[i], c.pos_y[i], c.pos_z[i]);
+    constraint.yaw = c.yaw[i];
+    constraint.t_start = c.t_start[i];
+    constraint.t_end = c.t_end[i];
+    constraint.half_extents = Eigen::Vector3d(0.5 * l, 0.5 * w, 0.5 * h);
+    planner_config_.dynamic_constraints.push_back(constraint);
+  }
+
+  // Configure warm-start. The first call (or any call after triggerReset())
+  // will have an empty cache and silently fall back to a cold start.
+  gbpl_.setWarmStart(request->warm_start);
+
+  // Force a fresh planner pass so the call returns the just-computed plan
+  // rather than whatever happened to be in current_plan_.
+  triggerReset();
+  // triggerReset clears the cache; reapply the warm-start request after it
+  // (the very first request will still be cold).
+  gbpl_.setWarmStart(request->warm_start);
+  setStartState();
+  setGoalState();
+  // Reset diagnostic counters so the per-solve totals reflect only this
+  // call. Reading them after callPlanner() lets us see how aggressively
+  // the supplied constraint set was pruning the planner's state space —
+  // high constraint_rejects / total ratios mean CBS is over-restricting
+  // and the planner is wasting samples to find any feasible region.
+  planning_utils::resetValidityStats();
+  const auto t_solve_start = std::chrono::steady_clock::now();
+  bool success = callPlanner();
+  const auto t_solve_end = std::chrono::steady_clock::now();
+  const auto solve_ms =
+      std::chrono::duration_cast<std::chrono::milliseconds>(
+          t_solve_end - t_solve_start)
+          .count();
+  const auto stats = planning_utils::getValidityStats();
+  const double reject_pct =
+      stats.total > 0
+          ? 100.0 * stats.constraint_rejects / stats.total
+          : 0.0;
+  RCLCPP_INFO(
+      node_->get_logger(),
+      "plan_with_constraints: constraints=%zu | validity=%d | "
+      "constraint_rejects=%d (%.1f%%) | solve=%lldms | success=%d | "
+      "plan_states=%d",
+      planner_config_.dynamic_constraints.size(), stats.total,
+      stats.constraint_rejects, reject_pct, static_cast<long long>(solve_ms),
+      success, current_plan_.getSize());
+  // Intentionally NOT calling publishCurrentPlan() here. CBS calls this
+  // service multiple times during its search (one per expansion) and
+  // only the *final* conflict-free plan should reach the local planner.
+  // Publishing every intermediate solve would have the local planner
+  // chase candidates that may be discarded by the next CBS expansion.
+  // CBS publishes the winning set itself once it converges.
+
+  // Build the response from current_plan_ (which callPlanner has just
+  // populated).
+  quad_msgs::msg::RobotPlan robot_plan_msg;
+  quad_msgs::msg::RobotPlan discrete_plan_msg;
+  robot_plan_msg.header.frame_id = map_frame_;
+  robot_plan_msg.header.stamp = node_->now();
+  discrete_plan_msg.header = robot_plan_msg.header;
+  robot_plan_msg.global_plan_timestamp = current_plan_.getPublishedTimestamp();
+  discrete_plan_msg.global_plan_timestamp =
+      current_plan_.getPublishedTimestamp();
+  current_plan_.convertToMsg(robot_plan_msg, discrete_plan_msg);
+
+  response->plan = robot_plan_msg;
+  response->path_length = current_plan_.getLength();
+  response->success = success;
+
+  // Drop the constraints again so subsequent regular planning calls (the
+  // ones running on the spin timer) see a clean config.
+  planner_config_.dynamic_constraints.clear();
 }

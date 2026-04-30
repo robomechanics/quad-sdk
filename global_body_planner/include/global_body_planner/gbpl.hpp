@@ -1,6 +1,8 @@
 #ifndef GBPL_H
 #define GBPL_H
 
+#include <memory>
+
 #include "global_body_planner/rrt.hpp"
 
 #define TRAPPED 0
@@ -102,6 +104,21 @@ class GBPL : public RRT {
       rclcpp::Publisher<visualization_msgs::msg::MarkerArray>::SharedPtr&
           tree_pub);
 
+  /**
+   * @brief Enable or disable warm-starting. When enabled, findPlan() will
+   * reuse the RRT-Connect trees built on the previous call (lazy-pruning
+   * vertices that fail any new constraints) instead of starting fresh. The
+   * caller is responsible for ensuring start/goal states are unchanged.
+   */
+  void setWarmStart(bool enable) { warm_start_ = enable; }
+
+  /// Forget any cached trees — next findPlan() call will start cold.
+  void invalidateCache() {
+    Ta_cache_.reset();
+    Tb_cache_.reset();
+    has_cache_ = false;
+  }
+
  protected:
   /// Time horizon (in seconds) the planner is allowed to search until restarted
   double anytime_horizon;
@@ -115,6 +132,17 @@ class GBPL : public RRT {
 
   /// Factor by which horizon is increased if replanning is required
   const double horizon_expansion_factor = 1.2;
+
+  /// Whether the next findPlan() call should reuse the cached trees.
+  bool warm_start_ = false;
+
+  /// True iff Ta_cache_/Tb_cache_ contain trees from a previous solve.
+  bool has_cache_ = false;
+
+  /// Cached forward / reverse RRT trees retained across solves to support
+  /// warm-started replanning under conflict-based search.
+  std::unique_ptr<PlannerClass> Ta_cache_;
+  std::unique_ptr<PlannerClass> Tb_cache_;
 };
 
 #endif  // GBPL_H
