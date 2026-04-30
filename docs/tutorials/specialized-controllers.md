@@ -37,6 +37,16 @@ ros2 launch quad_utils quad_plan.py \
   robot_configs:='[{"name":"robot_1","type":"go2","controller_mode":"learned","reference":"twist","twist_input":"keyboard"}]'
 ```
 
+### Observation inputs
+
+The `LearnedPolicy` base class exposes everything most policies need:
+
+- `RobotState` (body pose + joint state) on every tick
+- `cmd_vel` (commanded body twist)
+- **IMU acceleration** — the latest `sensor_msgs/Imu` is cached on the controller via `updateImuMsg()` and is available alongside the body pose. This lets policies trained with raw accel features run without a separate subscription.
+
+If your policy was trained against IsaacLab's accel observation, this is what you read at inference time.
+
 ### Tips
 
 !!! tip "Match the training observation order"

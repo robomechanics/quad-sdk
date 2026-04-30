@@ -7,7 +7,7 @@ tags:
 
 # Hardware Bringup
 
-This page covers the **common path** to bring up Quad-SDK on a real quadruped. Per-platform notes (Spirit, Go1, Go2, B2, Spot, Vision60, Underbrush) are linked at the bottom.
+This page covers the **common path** to bring up Quad-SDK on a real quadruped. Per-platform notes (Spirit, Go1, Go2, A1, B2, Spot, Vision60) are linked at the bottom.
 
 !!! danger "Safety first"
     Real hardware is unforgiving. **Always use a safety harness or hoist for first-time bringup.** Validate every step in simulation with the same robot config before running on metal. Keep an e-stop within arm's reach.
@@ -103,10 +103,10 @@ The platforms listed below have known-good configs and per-robot quirks:
 - Spirit
 - Unitree Go1
 - Unitree Go2 / Go2-W
+- Unitree A1
 - Unitree B2
 - Boston Dynamics Spot (joint API)
 - Ghost Robotics Vision60
-- Underbrush research platform
 
 Per-robot pages will be expanded as the platform list matures — check each platform's `quad_utils/config/<robot>.yaml` for the canonical reference.
 

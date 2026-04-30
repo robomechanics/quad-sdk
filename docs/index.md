@@ -30,7 +30,7 @@ Vertically integrated planning, control, estimation, communication, and developm
 
     ---
 
-    Long-horizon RRT-Connect global planner with mixed motion primitives, NMPC local body planner, and a Raibert-style footstep planner.
+    Long-horizon RRT-Connect global planner with mixed motion primitives, NMPC local body planner, Raibert-style footstep planner, and CBS-based multi-robot coordination.
 
     [:octicons-arrow-right-24: Global Body Planner](packages/global_body_planner.md)
 
@@ -38,7 +38,7 @@ Vertically integrated planning, control, estimation, communication, and developm
 
     ---
 
-    Real-time control loop, EKF state estimation, and a momentum-based external wrench observer. Hardware abstraction supports Spirit, Go1, Go2, B2, Spot, Vision60, and Underbrush.
+    Real-time control loop, EKF state estimation, and a momentum-based external wrench observer. Hardware abstraction supports Spirit, Go1, Go2, A1, B2, Spot, and Vision60.
 
     [:octicons-arrow-right-24: Robot Driver](packages/robot_driver.md)
 

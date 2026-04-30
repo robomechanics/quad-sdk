@@ -65,6 +65,22 @@ ssh unitree@192.168.8.18   # Theodore (.18 / .19 / .20 = Theodore / Alvin / Simo
 
 Steps 1, 3, 4, 5 run on the **remote laptop**. Step 2 runs **on the robot via SSH**.
 
+!!! danger "Check launch flags before deploying on hardware"
+    Default flags target simulation. Before running on a real robot, **explicitly verify** the following on the relevant launches (`robot_driver.py`, `quad_plan.py`, `remote_driver.py`):
+
+    | Flag | Sim default | Hardware value |
+    |---|---|---|
+    | `use_sim_time` | `true` | **`false`** — robot uses wall clock, not Gazebo's `/clock` |
+    | `is_hardware` | `false` | **`true`** — switches the driver to the manufacturer SDK instead of Gazebo bridge |
+    | `mocap` | `false` | **`true`** — turns on the OptiTrack/NatNet pose feed for the EKF |
+
+    Forgetting any of these is the most common cause of "the robot stands but doesn't track" symptoms. Pass them explicitly on the command line, e.g.:
+
+    ```bash
+    ros2 launch quad_utils robot_driver.py \
+        use_sim_time:=false is_hardware:=true mocap:=true
+    ```
+
 !!! tip "Adjust per setup"
     `robot_driver.py` and `quad_plan.py` accept args that depend on which robot is running and which controller (learned vs MPC) you want. Default args target Go2 with inverse-dynamics control.
 

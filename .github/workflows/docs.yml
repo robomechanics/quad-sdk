@@ -4,7 +4,7 @@ on:
   push:
     branches:
       - main
-      - feature/wiki-upgrade
+      - devel_ros2
     paths:
       - 'docs/**'
       - 'mkdocs.yml'
@@ -68,7 +68,7 @@ jobs:
         run: mkdocs build
 
       - name: Deploy with mike
-        if: github.ref == 'refs/heads/main' || github.event_name == 'workflow_dispatch'
+        if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/devel_ros2' || github.event_name == 'workflow_dispatch'
         run: |
           git fetch origin gh-pages --depth=1 || true
           mike deploy --push --update-aliases \

@@ -181,15 +181,15 @@
 
 .md-typeset pre > code,
 .md-typeset code {
-  font-size: 0.70rem;
+  font-size: 0.66rem;
   border-radius: 8px;
 }
 
 /* BibTeX / citation blocks — long lines, give them tighter line-height too */
 .md-typeset .language-bibtex,
 .md-typeset code.language-bibtex {
-  font-size: 0.66rem;
-  line-height: 1.5;
+  font-size: 0.60rem;
+  line-height: 1.45;
 }
 
 /* Inline code — sit slightly inset from body text */

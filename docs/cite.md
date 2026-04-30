@@ -45,6 +45,23 @@ Cite this if you use the [Global Body Planner](packages/global_body_planner.md):
 
 [:material-file-pdf-box: Open the paper](https://www.andrew.cmu.edu/user/amj1/papers/IROS2020_Fast_Global_Motion_Planning.pdf){ .md-button }
 
+## Conflict Based Search (multi-robot)
+
+Cite this if you use the [Conflict Based Search](packages/conflict_based_search.md) package for multi-robot coordination:
+
+```bibtex
+@article{Sharon2015,
+  title     = {Conflict-based search for optimal multi-agent pathfinding},
+  author    = {Sharon, Guni and Stern, Roni and Felner, Ariel and
+               Sturtevant, Nathan R},
+  journal   = {Artificial Intelligence},
+  volume    = {219},
+  pages     = {40--66},
+  year      = {2015},
+  publisher = {Elsevier}
+}
+```
+
 ## The Leg Disentanglement Controller
 
 Cite this if you use the [Leg Disentanglement Controller](tutorials/specialized-controllers.md#leg-disentanglement-underbrush) (Underbrush):

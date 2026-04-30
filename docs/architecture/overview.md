@@ -57,6 +57,7 @@ flowchart TB
 
 | Layer | Frequency | What it produces | Where it lives |
 |---|---|---|---|
+| **Multi-robot coordination** *(optional)* | per goal change | Conflict-free per-robot global plans | [`conflict_based_search`](../packages/conflict_based_search.md) |
 | **Global plan** | 5–20 Hz | Path of body states + GRFs to a goal | [`global_body_planner`](../packages/global_body_planner.md) |
 | **Local plan** | 333 Hz | 26-step NMPC body plan + footstep schedule | [`local_planner`](../packages/local_planner.md) |
 | **NMPC** | called per local-plan tick | OCP solution (states, GRFs) | [`nmpc_controller`](../packages/nmpc_controller.md) |
@@ -64,6 +65,8 @@ flowchart TB
 | **Estimation** | 1 kHz | Body state + foot contacts | [`robot_driver`](../packages/robot_driver.md) |
 | **External wrench** | 100 Hz | Disturbance estimate | [`body_force_estimator`](../packages/body_force_estimator.md) |
 | **Simulation** | 1–2 kHz | Joint states, IMU, contacts | [`quad_simulator`](../packages/quad_simulator.md) |
+
+For multi-robot scenarios, the [`conflict_based_search`](../packages/conflict_based_search.md) node sits *above* the per-robot global planners and coordinates them via the `plan_with_constraints` service. See the [Multi-Robot tutorial](../tutorials/multi-robot.md).
 
 ## Topic conventions
 
@@ -86,6 +89,7 @@ Full message definitions: [`quad_msgs`](../packages/quad_msgs.md).
 The runtime is composed by launch files under `quad_utils/launch/` rather than monolithic config:
 
 ```
+# Single-robot
 quad_gazebo.py ─┐
                 ├── robot_bringup.py ── robot_driver.py
 quad_mujoco.py ─┘                       (per-robot)
@@ -94,9 +98,21 @@ quad_plan.py ──── planning.py ──── global_body_planner_node
                                 ├── local_planner_node
                                 ├── body_force_estimator (optional)
                                 └── logging (optional)
+
+# Multi-robot
+quad_multi_gazebo.py ── robot_bringup.py × N      (one per robot)
+
+multi_robot.py  ──── planning.py × N              (per-robot stacks)
+                ├── conflict_based_search_node    (central coordinator)
+                └── logging_cbs.py × N            (optional, --logging_cbs:=true)
 ```
 
-Multi-robot scenarios pass a `robot_configs` JSON list as a launch argument; `robot_bringup.py` iterates and stamps namespaces. See `quad_utils/launch/robot_bringup.py`.
+Single-robot scenarios pass a `robot_configs` JSON list with one entry; multi-robot scenarios pass an N-robot list with each robot's `goal_state` field set. `robot_bringup.py` iterates and stamps namespaces. The CBS coordinator only runs in the multi-robot path. See:
+
+- `quad_utils/launch/quad_gazebo.py` (single)
+- `quad_utils/launch/quad_multi_gazebo.py` (multi)
+- `quad_utils/launch/multi_robot.py` (per-robot planning + CBS)
+- `quad_utils/launch/logging_cbs.py` (per-robot CBS-debug bagging)
 
 ## Module deep-dives
 

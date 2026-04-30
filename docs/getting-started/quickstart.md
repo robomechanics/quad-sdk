@@ -19,11 +19,19 @@ Get a robot standing and walking in simulation in under five minutes.
 
 ## 1. Launch the simulator
 
-=== "Gazebo Harmonic"
+=== "Gazebo Harmonic — single robot"
 
     ```bash
     ros2 launch quad_utils quad_gazebo.py
     ```
+
+=== "Gazebo Harmonic — multi-robot"
+
+    ```bash
+    ros2 launch quad_utils quad_multi_gazebo.py
+    ```
+
+    Defaults to an octagon-swap demo with 8 Go2s on `big_flat.sdf`. See the [Multi-Robot tutorial](../tutorials/multi-robot.md) for the full CBS workflow.
 
 === "MuJoCo"
 

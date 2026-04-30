@@ -159,6 +159,7 @@ nav:
           - Global Body Planner: packages/global_body_planner.md
           - Local Planner: packages/local_planner.md
           - NMPC Controller: packages/nmpc_controller.md
+          - Conflict Based Search: packages/conflict_based_search.md
       - Control & Estimation:
           - Robot Driver: packages/robot_driver.md
           - Body Force Estimator: packages/body_force_estimator.md
@@ -174,6 +175,7 @@ nav:
           - Scripts: packages/scripts.md
   - Tutorials:
       - First Simulation Run: tutorials/first-run.md
+      - Multi-Robot with CBS: tutorials/multi-robot.md
       - Logging & Playback: tutorials/logging.md
       - Training Data Collection: tutorials/training.md
       - Adding a New Robot: tutorials/adding-a-robot.md
