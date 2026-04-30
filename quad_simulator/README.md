@@ -44,9 +44,10 @@ Each description package ships URDF/Xacro files and collision/visual meshes. Fri
 C++ Gazebo plugins:
 
 * **`controller_plugin`** — bridges between the Quad-SDK control stack and Gazebo's actuator interface, applying joint torques computed by `robot_driver`.
-* **`estimator_plugin`** — publishes ground-truth state from the simulator for use as `state/ground_truth` or as a reference for EKF evaluation.
+* **`estimator_plugin`** — publishes ground-truth state from the simulator for use as `state/ground_truth` or as a reference for EKF evaluation. Sets `use_sim_time=true` via `parameter_overrides` at Node construction (so `node_->now()` returns sim time from the first call) and skips publishing while the rclcpp clock still reports wall-clock time.
+* **`spawn_lock_plugin`** — pins the body link at its spawn pose for `<hold_duration>` seconds (default 8 s) while gz_ros2_control loads its joint controllers, then releases. Joints articulate freely throughout, so per-robot controllers can fold the legs into their commanded sit pose without the body tipping. Releases on whichever clock crosses `hold_duration` first (sim or wall) for resilience against per-instance sim-time stalls.
 
-Plugins are registered via `controller_plugin.xml` and loaded into each simulated model by the URDF.
+Plugins are registered via `controller_plugin.xml` and loaded into each simulated model by the URDF/SDF.
 
 ### `gazebo_scripts`
 

@@ -4,6 +4,8 @@
 
 This package implements global planning algorithms for agile quadrupedal navigation. It produces point-to-point plans that guide the robot from its current state to a goal given a 2.5D terrain map. The primary algorithm is the Global Body Planner for Legged Robots (GBP-L) — an RRT-Connect-based planner that uses mixed motion primitives (including flight phases) to produce long-horizon plans. See the [paper] for algorithmic details.
 
+The planner also exposes a `plan_with_constraints` service used by the [`conflict_based_search`](../conflict_based_search) package for multi-robot replanning. Each request supplies a list of time-windowed pose constraints (forbidden body OBBs during specific intervals) and a `warm_start` flag — when warm-started, the cached RRT-Connect trees from the previous solve are lazy-pruned of vertices that violate the new constraints and the search resumes instead of rebuilding from scratch. Time-windowed constraints are gated by per-vertex absolute time, so a constraint active only during `[t_start, t_end]` doesn't behave as a permanent obstacle.
+
 ### License
 
 The source code is released under a [MIT License](../LICENSE).
@@ -83,6 +85,10 @@ A new plan is accepted if it (a) reaches the goal and is shorter than the previo
 * **`global_plan`** ([quad_msgs/RobotPlan]) — interpolated global plan from current state to goal.
 * **`global_plan_discrete`** ([quad_msgs/RobotPlan]) — discrete states from the underlying planning tree.
 
+#### Services
+
+* **`plan_with_constraints`** ([quad_msgs/PlanWithConstraints]) — replan under a CBS-supplied set of time-windowed pose constraints. Honours a `warm_start` flag that requests reuse of the cached RRT-Connect trees (lazy-pruned of vertices that fail the new constraints) instead of rebuilding from scratch. Suppresses the spin-loop solo publish while `global_body_planner.cbs_mode` is `true` so CBS plans aren't overwritten.
+
 #### Parameters
 
 * **`global_body_planner.update_rate`** (double, default: `20.0`) — planner loop rate in Hz.
@@ -101,6 +107,7 @@ A new plan is accepted if it (a) reaches the goal and is shorter than the previo
 * **`global_body_planner.g`** (double, default: `9.81`) — gravity in m/s².
 * **`global_body_planner.t_s_{min,max}`** (double, default: `0.12` / `0.25`) — leaping stance time bounds in s.
 * **`global_body_planner.dz0_{min,max}`** (double, default: `1.0` / `2.0`) — vertical velocity impulse bounds at leap onset in m/s.
+* **`global_body_planner.cbs_mode`** (bool, default: `false`) — when `true`, the spin-loop suppresses solo `global_plan` publishes so the `conflict_based_search` node owns the publish stream. Set automatically by `multi_robot.py`.
 
 ## Bugs & Feature Requests
 
@@ -110,5 +117,6 @@ Please report bugs and request features using the [Issue Tracker](https://github
 [ROS2]: https://docs.ros.org/en/jazzy/
 [quad_msgs/RobotState]: ../quad_msgs/msg/RobotState.msg
 [quad_msgs/RobotPlan]: ../quad_msgs/msg/RobotPlan.msg
+[quad_msgs/PlanWithConstraints]: ../quad_msgs/srv/PlanWithConstraints.srv
 [geometry_msgs/PointStamped]: https://docs.ros.org/en/jazzy/p/geometry_msgs/
 [grid_map_msgs/GridMap]: https://github.com/ANYbotics/grid_map
