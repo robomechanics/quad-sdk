@@ -100,6 +100,11 @@ void GroundTruthEstimator::Configure(
   rclcpp::NodeOptions options;
   options.automatically_declare_parameters_from_overrides(true);
   options.allow_undeclared_parameters(true);
+  // Force use_sim_time=true via parameter_overrides BEFORE the Node is
+  // constructed.
+  options.parameter_overrides({
+      rclcpp::Parameter("use_sim_time", true),
+  });
 
   if (!params_file.empty()) {
     options.arguments({"--ros-args", "--params-file", params_file});
@@ -108,11 +113,6 @@ void GroundTruthEstimator::Configure(
 
   this->node_ = std::make_shared<rclcpp::Node>("gz_ground_truth_estimator",
                                                robot_ns, options);
-  if (!this->node_->has_parameter("use_sim_time")) {
-    this->node_->declare_parameter<bool>("use_sim_time", true);
-  } else {
-    this->node_->set_parameter(rclcpp::Parameter("use_sim_time", true));
-  }
 
   // Load update rate from SDF
   if (sdf->HasElement("updateRateHZ")) {
@@ -245,6 +245,16 @@ void GroundTruthEstimator::PostUpdate(
 
   if (!urdf_received_) return;
 
+  const double now_s = this->node_->now().seconds();
+  if (now_s > 1e8) {
+    RCLCPP_WARN_THROTTLE(
+        this->node_->get_logger(), *this->node_->get_clock(), 1000,
+        "node_->now() returned %.3f s (looks like wall clock, not sim "
+        "time). Skipping ground_truth publish until /clock arrives.",
+        now_s);
+    return;
+  }
+
   if (!this->time_initialized_) {
     this->last_time_ = info.simTime;
     this->time_initialized_ = true;
@@ -318,12 +328,6 @@ void GroundTruthEstimator::PostUpdate(
   state.body.twist.angular.x = w_b.X();
   state.body.twist.angular.y = w_b.Y();
   state.body.twist.angular.z = w_b.Z();
-
-  // Sanity Check Robot Spawn Pose
-  // RCLCPP_INFO(this->node_->get_logger(),
-  //             "Body Position: x=%.3f, y=%.3f, z=%.3f",
-  //             state.body.pose.position.x, state.body.pose.position.y,
-  //             state.body.pose.position.z);
 
   // Update the Joints
   int num_joints = 12;

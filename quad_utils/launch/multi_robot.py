@@ -1,13 +1,5 @@
 """Launch a multi-robot Quad-SDK scenario with conflict-based search.
 
-This is the ROS2 port of multi-robot.launch from the ROS1 devel_cbs branch.
-
-Implementation: this launch is a thin wrapper around
-`quad_utils/launch/quad_plan.py`. quad_plan owns the canonical "spawn N
-robots' planning stacks" logic; multi_robot.py adds the central
-`conflict_based_search` node on top, plus a small amount of CBS-specific
-JSON validation/munging.
-
 Differences vs. quad_plan.py:
 
   * Each robot's per-robot config requires a `goal_state` field
@@ -21,10 +13,18 @@ Differences vs. quad_plan.py:
     robots have no global planner and therefore cannot participate.
 
 Expected end-to-end workflow:
-    1. ros2 launch quad_utils quad_gazebo.py robot_configs:='[...]'
+    1. ros2 launch quad_utils quad_multi.py robot_configs:='[...]'
+       (or quad_gazebo.py for the single-agent case)
     2. ros2 topic pub --once /<ns>/control/mode std_msgs/UInt8 "data: 1"
        (once per robot, to stand it)
-    3. ros2 launch conflict_based_search multi_robot.py robot_configs:='[...]'
+    3. ros2 launch quad_utils multi_robot.py robot_configs:='[...]'
+
+Optional CBS-debug bagging:
+    Append `logging_cbs:=true` to step 3 to record a focused per-robot
+    bag (logging_cbs.py) under ${QUAD_LOGGER_SRC}/bags/cbs/. Off by
+    default because subscribers + serialisation cost a few % CPU per
+    robot, which on the saturated 8-robot demo can bias the failure
+    pattern. Use only for diagnosis runs.
 """
 
 import json
@@ -32,7 +32,7 @@ import json
 from launch import LaunchDescription
 from launch.actions import DeclareLaunchArgument, IncludeLaunchDescription, OpaqueFunction, SetLaunchConfiguration
 from launch.launch_description_sources import PythonLaunchDescriptionSource
-from launch.substitutions import LaunchConfiguration, PathJoinSubstitution
+from launch.substitutions import LaunchConfiguration, PathJoinSubstitution, TextSubstitution
 from launch_ros.actions import Node
 from launch_ros.substitutions import FindPackageShare
 
@@ -93,6 +93,35 @@ def launch_quad_plan(context, *args, **kwargs):
     ]
 
 
+def launch_cbs_logging(context, *args, **kwargs):
+    """Per-robot CBS-debugging bag recorder. Off by default — turning
+    this on costs a few % CPU per robot (subscribers + serialisation),
+    which on the already-CPU-bound 8-robot demo can shift the failure
+    pattern. Use it for diagnosis runs, not steady-state operation."""
+    if LaunchConfiguration('logging_cbs').perform(context).lower() != 'true':
+        return []
+
+    raw = LaunchConfiguration('robot_configs').perform(context)
+    configs = json.loads(raw)
+
+    logging_cbs_launch = PathJoinSubstitution([
+        FindPackageShare('quad_utils'), 'launch', 'logging_cbs.py'
+    ])
+    bag_name = LaunchConfiguration('logging_cbs_name').perform(context)
+
+    return [
+        IncludeLaunchDescription(
+            PythonLaunchDescriptionSource(logging_cbs_launch),
+            launch_arguments={
+                'namespace': TextSubstitution(text=cfg['name']),
+                'robot_type': TextSubstitution(text=cfg['type']),
+                'bag_name': TextSubstitution(text=bag_name),
+            }.items(),
+        )
+        for cfg in configs
+    ]
+
+
 def launch_cbs(context, *args, **kwargs):
     cbs_pkg = FindPackageShare('conflict_based_search')
     cbs_param_file = PathJoinSubstitution([cbs_pkg, 'config', 'conflict_based_search.yaml'])
@@ -124,11 +153,13 @@ def generate_launch_description():
     # each robot's config entry.
     return LaunchDescription([
         DeclareLaunchArgument('logging', default_value='false', description='Rosbag Trial Run'),
-        # Default leaping off for CBS: the global GBP leap envelope
-        # (t_s_min/max, dz0_min/max in global_body_planner.yaml) is tuned
-        # for Spirit, so on go2/a1/spot the leap primitive is dynamically
-        # awkward. Override with leaping:=true on the command line if you
-        # are running a Spirit-only scenario.
+        DeclareLaunchArgument(
+            'logging_cbs', default_value='false',
+            description=(
+                'Enable per-robot CBS-debugging bag recording')),
+        DeclareLaunchArgument(
+            'logging_cbs_name', default_value='cbs_diag',
+            description='Suffix label for the CBS-debug bag directories.'),
         DeclareLaunchArgument('leaping', default_value='true', description='Enable Leaping in the Global Planner (off by default for CBS — leap dynamics are Spirit-tuned)'),
         DeclareLaunchArgument('ac', default_value='false', description='Enable Adaptive Complexity Planner (Spirit ONLY)'),
         DeclareLaunchArgument('use_sim_time', default_value='true', description='Use Simulation Clock or Computer Clock'),
@@ -141,15 +172,6 @@ def generate_launch_description():
             # every robot's straight-line path crosses every other
             # robot's near the origin. Twenty-eight pairwise OBB
             # conflicts to resolve.
-            #
-            #   robot_1: ( 8.00,  0.00) -> (-8.00,  0.00)
-            #   robot_2: ( 5.66,  5.66) -> (-5.66, -5.66)
-            #   robot_3: ( 0.00,  8.00) -> ( 0.00, -8.00)
-            #   robot_4: (-5.66,  5.66) -> ( 5.66, -5.66)
-            #   robot_5: (-8.00,  0.00) -> ( 8.00,  0.00)
-            #   robot_6: (-5.66, -5.66) -> ( 5.66,  5.66)
-            #   robot_7: ( 0.00, -8.00) -> ( 0.00,  8.00)
-            #   robot_8: ( 5.66, -5.66) -> (-5.66,  5.66)
             default_value=(
                 '[{"name": "robot_1", "type": "go2", "controller_mode": "inverse_dynamics",'
                 ' "twist_input": "none", "goal_state": [-8.00,  0.00]},'
@@ -175,9 +197,8 @@ def generate_launch_description():
                 'to "gbpl" since CBS requires the global body planner). The '
                 'default is an eight-robot octagon-swap scenario on big_flat.'),
         ),
-        # Validation + munging runs first so launch_quad_plan and launch_cbs
-        # see the canonical robot_configs string.
         OpaqueFunction(function=_validate_and_munge),
         OpaqueFunction(function=launch_quad_plan),
         OpaqueFunction(function=launch_cbs),
+        OpaqueFunction(function=launch_cbs_logging),
     ])

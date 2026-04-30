@@ -70,10 +70,10 @@ install(
   DESTINATION share/${PROJECT_NAME}/config
 )
 
-install(
-  DIRECTORY launch/
-  DESTINATION share/${PROJECT_NAME}/launch
-)
+# Launch files for the CBS pipeline live alongside the rest of the
+# repo's launch files in quad_utils/launch (use
+# `ros2 launch quad_utils multi_robot.py`). No launch/ directory is
+# installed from this package.
 
 install(
   DIRECTORY include/

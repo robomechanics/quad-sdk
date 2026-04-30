@@ -97,6 +97,13 @@ void GraphClass::printEdges() {
 
 double GraphClass::getGValue(int idx) { return g_values[idx]; }
 
+void GraphClass::setTime(int idx, double t) { times_[idx] = t; }
+
+double GraphClass::getTime(int idx) {
+  auto it = times_.find(idx);
+  return it == times_.end() ? 0.0 : it->second;
+}
+
 double GraphClass::computeEdgeCost(int idx1, int idx2) {
   return poseDistance(getVertex(idx1), getVertex(idx2));
 }
@@ -112,5 +119,6 @@ void GraphClass::init(State q) {
   int q_init = 0;
   addVertex(q_init, q);
   g_values[q_init] = 0;
+  times_[q_init] = 0;
   return;
 }

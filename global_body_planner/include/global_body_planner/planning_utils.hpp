@@ -42,11 +42,12 @@ namespace planning_utils {
  * provided so callers can populate it.
  */
 struct TimedPoseConstraint {
-  Eigen::Vector3d pos;           //!< World-frame position of constrained body, m
-  double yaw;                    //!< Body yaw of constrained body, rad
-  double t_start;                //!< Window start (plan-relative, s)
-  double t_end;                  //!< Window end (plan-relative, s)
-  Eigen::Vector3d half_extents;  //!< Body half-extents (length/2, width/2, height/2), m
+  Eigen::Vector3d pos;  //!< World-frame position of constrained body, m
+  double yaw;           //!< Body yaw of constrained body, rad
+  double t_start;       //!< Window start (plan-relative, s)
+  double t_end;         //!< Window end (plan-relative, s)
+  Eigen::Vector3d
+      half_extents;  //!< Body half-extents (length/2, width/2, height/2), m
 };
 
 /**
@@ -835,10 +836,16 @@ bool isValidState(const State& s, const PlannerConfig& planner_config,
  * @param[in] planner_config Configuration parameters
  * @param[in] phase The phase the State is under
  * @param[in] max_height Maximum height
+ * @param[in] t Absolute time at which state s is reached, used for time-
+ *   windowed dynamic-constraint checks. NaN (default) means "treat
+ *   constraints as static" — equivalent to the pre-CBS behaviour.
+ *   Callers that want time-awareness but don't care about max_height
+ *   should pass a local dummy double for max_height.
  * @return Whether the State is valid or not
  */
 bool isValidState(const State& s, const PlannerConfig& planner_config,
-                  int phase, double& max_height);
+                  int phase, double& max_height,
+                  double t = std::numeric_limits<double>::quiet_NaN());
 
 // Trajectory validity checking
 /**
@@ -847,11 +854,17 @@ bool isValidState(const State& s, const PlannerConfig& planner_config,
  * @param[in] a The Action to be checked
  * @param[in] result The StateActionResult of the trajeccotry
  * @param[in] planner_config Configuration parameters
+ * @param[in] t_action_start Absolute time at the BEGINNING of the action.
+ *   Per-stage isValidState calls are made at t_action_start + (offset
+ *   within the action), giving every candidate state along the trajectory
+ *   its true absolute time for time-windowed dynamic-constraint checks.
+ *   NaN (default) means "treat constraints as static."
  * @return Whether the StateActionPair is valid or not
  */
-bool isValidStateActionPair(const State& s, const Action& a,
-                            StateActionResult& result,
-                            const PlannerConfig& planner_config);
+bool isValidStateActionPair(
+    const State& s, const Action& a, StateActionResult& result,
+    const PlannerConfig& planner_config,
+    double t_action_start = std::numeric_limits<double>::quiet_NaN());
 
 /**
  * @brief Test whether two oriented bounding boxes (yaw-aligned, planar)
@@ -882,10 +895,21 @@ bool obbIntersect(const Eigen::Vector3d& pos_a, double yaw_a,
  * legacy point-distance check used in the ROS1 implementation.
  *
  * @param[in] s State to test
- * @param[in] planner_config Configuration parameters (provides body extents and constraints)
+ * @param[in] planner_config Configuration parameters (provides body extents and
+ * constraints)
  * @return True if the state violates at least one dynamic constraint.
  */
-bool failsRobotConstraint(const State& s, const PlannerConfig& planner_config);
+bool failsRobotConstraint(const State& s, double t,
+                          const PlannerConfig& planner_config);
+
+/**
+ * @brief Sum of all phase durations (leap stance + flight + land stance) of a
+ * single Action. Used by the planner to compute time-at-vertex from the
+ * cumulative durations along a path.
+ */
+inline double actionDuration(const Action& a) {
+  return a.t_s_leap + a.t_f + a.t_s_land;
+}
 
 /**
  * @brief Per-solve diagnostic counters used to audit how aggressively the
@@ -901,8 +925,8 @@ bool failsRobotConstraint(const State& s, const PlannerConfig& planner_config);
  * process (if that ever happens) don't trample each other.
  */
 struct ValidityStats {
-  int total = 0;                 //!< total isValidState() calls
-  int constraint_rejects = 0;    //!< failed because of dynamic_constraints
+  int total = 0;               //!< total isValidState() calls
+  int constraint_rejects = 0;  //!< failed because of dynamic_constraints
 };
 
 void resetValidityStats();

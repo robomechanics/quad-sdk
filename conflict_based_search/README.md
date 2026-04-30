@@ -69,7 +69,7 @@ existing single-robot pipeline is unchanged when no constraints are supplied.
 | `conflict_based_search/conflict_based_search.h/.cpp`    | `include/conflict_based_search/conflict_based_search.hpp` + `src/conflict_based_search.cpp` |
 | `conflict_based_search/conflict_based_search_node.cpp`  | `src/conflict_based_search_node.cpp`                         |
 | `conflict_based_search/conflict_based_search.yaml`      | `config/conflict_based_search.yaml` (ROS 2 param schema)     |
-| `quad_utils/launch/multi_robot.launch`                  | `conflict_based_search/launch/multi_robot.py` (Python launch)|
+| `quad_utils/launch/multi_robot.launch`                  | `quad_utils/launch/multi_robot.py` (Python launch)           |
 | `quad_msgs/msg/RobotPlanConflicts.msg` (flat float[])   | `quad_msgs/msg/RobotPlanConstraints.msg` (typed parallel arrays) |
 | `global_body_planner/srv/ExampleService.srv`            | `quad_msgs/srv/PlanWithConstraints.srv` (with `warm_start`)  |
 | `addServiceCallback(global_body_planner::ExampleService)` (advertised as `/<robot>/add_two_ints`) | `GlobalBodyPlanner::planWithConstraintsCallback` (advertised as `/<robot>/plan_with_constraints`) |
@@ -251,7 +251,7 @@ hexagon-swap goals, so no override is needed:
 
 ```bash
 # Terminal 3 — per-robot global/local planner + central CBS.
-ros2 launch conflict_based_search multi_robot.py
+ros2 launch quad_utils multi_robot.py
 ```
 
 The default robot/goal pairing is:
