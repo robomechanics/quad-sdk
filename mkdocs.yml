@@ -26,8 +26,8 @@ theme:
     edit: material/pencil
     view: material/eye
   palette:
-    # CMU Carnegie Red (#C41230) is a custom hex; we set primary/accent to
-    # `custom` and define the actual values via CSS vars in extra.css.
+    # Follow the OS prefers-color-scheme for the default; users can flip
+    # mode via the toggle.
     - media: "(prefers-color-scheme: light)"
       scheme: default
       primary: custom
