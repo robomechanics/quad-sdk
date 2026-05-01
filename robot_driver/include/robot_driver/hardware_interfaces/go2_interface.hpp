@@ -1,5 +1,5 @@
-#ifndef UNITREE_INTERFACE_H
-#define UNITREE_INTERFACE_H
+#ifndef GO2_INTERFACE_H
+#define GO2_INTERFACE_H
 
 #include <robot_driver/hardware_interfaces/hardware_interface.hpp>
 
@@ -11,15 +11,18 @@
 
 #include <mutex>
 
-//! Hardware interface for Unitree Go2 quadruped.
+//! Hardware interface for the Unitree Go2 quadruped.
 /*!
-   UnitreeInterface converts quad-sdk LegCommandArray messages to
+   Go2Interface converts quad-sdk LegCommandArray messages to
    Unitree SDK2 LowCmd messages and publishes them over DDS.
    It subscribes to LowState for joint state and IMU feedback.
+
+   This class also serves as the base for Go2WInterface, which adds
+   wheel motors at LowCmd indices 12-15 for the Go2-W variant.
 */
-class UnitreeInterface : public HardwareInterface {
+class Go2Interface : public HardwareInterface {
  public:
-  UnitreeInterface();
+  Go2Interface();
 
   void loadInterface(int argc, char** argv) override;
   void unloadInterface() override;
@@ -32,7 +35,7 @@ class UnitreeInterface : public HardwareInterface {
             sensor_msgs::msg::Imu& imu_msg,
             Eigen::VectorXd& user_rx_data) override;
 
- private:
+ protected:
   void initLowCmd();
   void lowStateHandler(const void* message);
 
@@ -73,4 +76,4 @@ class UnitreeInterface : public HardwareInterface {
   bool state_received_ = false;
 };
 
-#endif  // UNITREE_INTERFACE_H
+#endif  // GO2_INTERFACE_H

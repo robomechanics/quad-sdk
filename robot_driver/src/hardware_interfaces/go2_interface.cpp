@@ -1,10 +1,10 @@
-#include "robot_driver/hardware_interfaces/unitree_interface.hpp"
+#include "robot_driver/hardware_interfaces/go2_interface.hpp"
 
-constexpr int UnitreeInterface::kLegMap[kNumLegs][kJointsPerLeg];
+constexpr int Go2Interface::kLegMap[kNumLegs][kJointsPerLeg];
 
-UnitreeInterface::UnitreeInterface() : HardwareInterface() {}
+Go2Interface::Go2Interface() : HardwareInterface() {}
 
-void UnitreeInterface::loadInterface(int /*argc*/, char** /*argv*/) {
+void Go2Interface::loadInterface(int /*argc*/, char** /*argv*/) {
   std::string net_iface = "enP8p1s0";
 
   unitree::robot::ChannelFactory::Instance()->Init(0, net_iface);
@@ -51,14 +51,14 @@ void UnitreeInterface::loadInterface(int /*argc*/, char** /*argv*/) {
   state_sub_.reset(
       new unitree::robot::ChannelSubscriber<unitree_go::msg::dds_::LowState_>(
           "rt/lowstate"));
-  state_sub_->InitChannel(std::bind(&UnitreeInterface::lowStateHandler, this,
+  state_sub_->InitChannel(std::bind(&Go2Interface::lowStateHandler, this,
                                     std::placeholders::_1),
                           1);
 
   initLowCmd();
 }
 
-void UnitreeInterface::unloadInterface() {
+void Go2Interface::unloadInterface() {
   // Zero out commands before shutting down
   initLowCmd();
   low_cmd_.crc() = crc32Core(reinterpret_cast<uint32_t*>(&low_cmd_),
@@ -66,7 +66,7 @@ void UnitreeInterface::unloadInterface() {
   cmd_pub_->Write(low_cmd_);
 }
 
-void UnitreeInterface::initLowCmd() {
+void Go2Interface::initLowCmd() {
   low_cmd_.head()[0] = 0xFE;
   low_cmd_.head()[1] = 0xEF;
   low_cmd_.level_flag() = 0xFF;
@@ -82,13 +82,13 @@ void UnitreeInterface::initLowCmd() {
   }
 }
 
-void UnitreeInterface::lowStateHandler(const void* message) {
+void Go2Interface::lowStateHandler(const void* message) {
   std::lock_guard<std::mutex> lock(state_mutex_);
   low_state_ = *(const unitree_go::msg::dds_::LowState_*)message;
   state_received_ = true;
 }
 
-uint32_t UnitreeInterface::crc32Core(uint32_t* ptr, uint32_t len) {
+uint32_t Go2Interface::crc32Core(uint32_t* ptr, uint32_t len) {
   uint32_t xbit = 0;
   uint32_t data = 0;
   uint32_t CRC32 = 0xFFFFFFFF;
@@ -113,7 +113,7 @@ uint32_t UnitreeInterface::crc32Core(uint32_t* ptr, uint32_t len) {
   return CRC32;
 }
 
-bool UnitreeInterface::send(
+bool Go2Interface::send(
     const quad_msgs::msg::LegCommandArray& leg_command_array_msg,
     const Eigen::VectorXd& /*user_tx_data*/) {
   for (int leg = 0; leg < kNumLegs; ++leg) {
@@ -141,13 +141,13 @@ bool UnitreeInterface::send(
   return true;
 }
 
-bool UnitreeInterface::recv(sensor_msgs::msg::JointState& joint_state_msg,
-                            sensor_msgs::msg::Imu& imu_msg,
-                            Eigen::VectorXd& /*user_rx_data*/) {
+bool Go2Interface::recv(sensor_msgs::msg::JointState& joint_state_msg,
+                        sensor_msgs::msg::Imu& imu_msg,
+                        Eigen::VectorXd& /*user_rx_data*/) {
   std::lock_guard<std::mutex> lock(state_mutex_);
 
   if (!state_received_) {
-    std::cout << "Not recieving state information from Unitree Interface"
+    std::cout << "Not receiving state information from Go2 Interface"
               << std::endl;
     return false;
   }

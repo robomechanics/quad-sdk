@@ -169,7 +169,9 @@ RobotDriver::RobotDriver(std::shared_ptr<rclcpp::Node> node, int argc,
     if (robot_name == "spirit" || robot_name == "spirit_rotors") {
       hardware_interface_ = std::make_shared<SpiritInterface>();
     } else if (robot_name == "go2") {
-      hardware_interface_ = std::make_shared<UnitreeInterface>();
+      hardware_interface_ = std::make_shared<Go2Interface>();
+    } else if (robot_name == "go2w") {
+      hardware_interface_ = std::make_shared<Go2WInterface>();
     } else {
       RCLCPP_ERROR_STREAM(node_->get_logger(), "Invalid robot name "
                                                    << robot_name
@@ -287,15 +289,26 @@ void RobotDriver::initStateControlStructs() {
   vel_estimate_.setZero();
   mocap_vel_estimate_.setZero();
   imu_vel_estimate_.setZero();
-  last_joint_state_msg_.name.resize(12);
-  last_joint_state_msg_.position.resize(12);
-  last_joint_state_msg_.velocity.resize(12);
-  last_joint_state_msg_.effort.resize(12);
+
+  // Joint state size: 12 leg motors, plus 4 wheel motors for go2w.
+  const bool has_wheels = (robot_name == "go2w");
+  const int num_joints = has_wheels ? 16 : 12;
+  last_joint_state_msg_.name.resize(num_joints);
+  last_joint_state_msg_.position.resize(num_joints);
+  last_joint_state_msg_.velocity.resize(num_joints);
+  last_joint_state_msg_.effort.resize(num_joints);
+
   grf_array_msg_.vectors.resize(4);
   grf_array_msg_.points.resize(4);
   grf_array_msg_.contact_states.resize(4);
   grf_array_msg_.header.frame_id = "map";
-  user_tx_data_.resize(1);
+
+  // user_tx_data layout:
+  //   [0]   control_restart_flag (used by SpiritInterface; ignored by Go2)
+  //   [1..] wheel commands for Go2-W: per leg (vel, kd, tau_ff)
+  user_tx_data_.resize(has_wheels ? 13 : 1);
+  user_tx_data_.setZero();
+
   cmd_vel_.setZero(6);
 }
 

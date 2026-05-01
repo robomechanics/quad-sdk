@@ -46,7 +46,8 @@ The driver is a single node (`robot_driver_node`) composed of three pluggable ab
 
 1. **`HardwareInterface`** — talks to the physical motors. Implementations:
    - `spirit_interface` — Ghost Robotics Spirit via `mblink`.
-   - `unitree_interface` — Unitree Go1/Go2/B2 via `unitree_sdk2`.
+   - `go2_interface` — Unitree Go2 via `unitree_sdk2`.
+   - `go2w_interface` — Unitree Go2-W (wheeled) via `unitree_sdk2`; extends `go2_interface` with wheel-motor commands at LowCmd indices 12-15.
 2. **`StateEstimator`** — fuses IMU, joint encoders, and optional mocap. Implementations:
    - `comp_filter_estimator` — complementary filter fusing IMU with mocap (or simulator pose).
    - `ekf_estimator` — contact-aided extended Kalman filter; calls `quad_utils::QuadKD2` (Pinocchio) for forward kinematics and Jacobians.
