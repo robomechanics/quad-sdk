@@ -35,8 +35,16 @@ add_library(ground_truth_estimator SHARED
   src/estimator_plugin.cpp
 )
 
+add_library(quad_wheel_ground_truth_estimator SHARED
+  src/quad_wheel_estimator_plugin.cpp
+)
+
 add_library(quad_controller SHARED
  src/controller_plugin.cpp
+)
+
+add_library(quad_wheel_controller SHARED
+  src/quad_wheel_controller_plugin.cpp
 )
 
 add_library(spawn_lock SHARED
@@ -49,7 +57,17 @@ target_include_directories(ground_truth_estimator PUBLIC
   $<INSTALL_INTERFACE:include>
 )
 
+target_include_directories(quad_wheel_ground_truth_estimator PUBLIC
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+  $<INSTALL_INTERFACE:include>
+)
+
 target_include_directories(quad_controller PUBLIC
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+  $<INSTALL_INTERFACE:include>
+)
+
+target_include_directories(quad_wheel_controller PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
   $<INSTALL_INTERFACE:include>
 )
@@ -60,6 +78,15 @@ target_include_directories(spawn_lock PUBLIC
 )
 
 ament_target_dependencies(ground_truth_estimator
+  rclcpp
+  std_msgs
+  quad_utils
+  quad_msgs
+  gz-sim8
+  gz-plugin2
+)
+
+ament_target_dependencies(quad_wheel_ground_truth_estimator
   rclcpp
   std_msgs
   quad_utils
@@ -85,12 +112,26 @@ ament_target_dependencies(quad_controller
   quad_utils
 )
 
+ament_target_dependencies(quad_wheel_controller
+  rclcpp
+  controller_interface
+  hardware_interface
+  pluginlib
+  angles
+  realtime_tools
+  urdf
+  quad_msgs
+  quad_utils
+)
+
 
 pluginlib_export_plugin_description_file(controller_interface controller_plugin.xml)
 
 install(TARGETS
   ground_truth_estimator
+  quad_wheel_ground_truth_estimator
   quad_controller
+  quad_wheel_controller
   spawn_lock
   DESTINATION lib
 )

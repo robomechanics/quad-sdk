@@ -1453,6 +1453,29 @@ Stephen Brawner (brawner@gmail.com)
       <state_interface name="velocity" />
       <state_interface name="position" />
     </joint>
+    <!-- Wheel joints (continuous, axis y). Driven in velocity mode by
+         the QuadWheelController via the same effort command interface
+         used for the leg motors. -->
+    <joint name="jtoe0">
+      <command_interface name="effort" />
+      <state_interface name="velocity" />
+      <state_interface name="position" />
+    </joint>
+    <joint name="jtoe1">
+      <command_interface name="effort" />
+      <state_interface name="velocity" />
+      <state_interface name="position" />
+    </joint>
+    <joint name="jtoe2">
+      <command_interface name="effort" />
+      <state_interface name="velocity" />
+      <state_interface name="position" />
+    </joint>
+    <joint name="jtoe3">
+      <command_interface name="effort" />
+      <state_interface name="velocity" />
+      <state_interface name="position" />
+    </joint>
   </ros2_control>
 
   <link name="cmu_text">

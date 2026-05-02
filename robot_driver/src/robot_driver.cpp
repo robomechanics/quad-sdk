@@ -495,11 +495,17 @@ bool RobotDriver::updateState() {
       // Angular velocity from IMU gyroscope
       last_robot_state_msg_.body.twist.angular = last_imu_msg_.angular_velocity;
 
-      // Pass IMU to learned policy for acceleration access
+      // Pass IMU to learned policy for acceleration access. Guarded
+      // because LearnedPolicy is only declared when the workspace was
+      // built with ONNX Runtime; without it, controller_id_ == "learned"
+      // would have been rejected earlier in initLegController() so this
+      // path is unreachable anyway.
+#ifdef HAS_ONNXRUNTIME
       if (auto c = std::dynamic_pointer_cast<LearnedPolicy>(
               leg_controller_)) {
         c->updateImuMsg(last_imu_msg_);
       }
+#endif
 
       // Update headers
       last_robot_state_msg_.header.stamp = state_timestamp;
