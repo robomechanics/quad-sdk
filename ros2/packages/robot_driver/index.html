@@ -2294,7 +2294,8 @@
 <ol>
 <li><strong><code>HardwareInterface</code></strong> — talks to the physical motors. Implementations:</li>
 <li><code>spirit_interface</code> — Ghost Robotics Spirit via <code>mblink</code>.</li>
-<li><code>unitree_interface</code> — Unitree Go1/Go2/B2 via <code>unitree_sdk2</code>.</li>
+<li><code>go2_interface</code> — Unitree Go2 via <code>unitree_sdk2</code>.</li>
+<li><code>go2w_interface</code> — Unitree Go2-W (wheeled) via <code>unitree_sdk2</code>; extends <code>go2_interface</code> with wheel-motor commands at LowCmd indices 12-15.</li>
 <li><strong><code>StateEstimator</code></strong> — fuses IMU, joint encoders, and optional mocap. Implementations:</li>
 <li><code>comp_filter_estimator</code> — complementary filter fusing IMU with mocap (or simulator pose).</li>
 <li><code>ekf_estimator</code> — contact-aided extended Kalman filter; calls <code>quad_utils::QuadKD2</code> (Pinocchio) for forward kinematics and Jacobians.</li>
