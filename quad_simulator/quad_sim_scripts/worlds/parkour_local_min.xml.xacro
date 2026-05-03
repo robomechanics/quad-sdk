@@ -1,13 +1,19 @@
-<mujoco model="parkour_local_min">
+<?xml version="1.0" encoding="utf-8"?>
+<mujoco model="parkour_local_min" xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+  <xacro:arg name="meshdir" default=""/>
+  <xacro:arg name="mjcf_path" default=""/>
+  <xacro:arg name="terrain_mesh" default=""/>
+
   <compiler
     angle="radian"
-    meshdir="/home/rml/ros2_ws/install/go2_description/share/go2_description/models/go2/go2_mjc/assets"
+    meshdir="$(arg meshdir)"
     autolimits="true"/>
 
-  <include file="/home/rml/ros2_ws/install/go2_description/share/go2_description/models/go2/go2_mjc/go2.xml"/>
+  <include file="$(arg mjcf_path)"/>
 
   <asset>
-    <mesh name="terrain" file="/home/rml/ros2_ws/install/quad_sim_scripts/share/quad_sim_scripts/models/parkour_local_min/meshes/parkour_local_min.stl"/>
+    <mesh name="terrain" file="$(arg terrain_mesh)"/>
   </asset>
 
   <worldbody>
