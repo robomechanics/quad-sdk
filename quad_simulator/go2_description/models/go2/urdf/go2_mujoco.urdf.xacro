@@ -1403,7 +1403,7 @@ Stephen Brawner (brawner@gmail.com)
 
     <hardware>
       <plugin>mujoco_ros2_control/MujocoSystemInterface</plugin>
-      <param name="mujoco_model">$(find quad_sim_scripts)/worlds/$(arg world)</param>
+      <param name="mujoco_model">$(arg world)</param>
       <param name="odom_free_joint_name">floating_base</param>
       <param name="odom_topic">/robot_1/odom</param>
     </hardware>

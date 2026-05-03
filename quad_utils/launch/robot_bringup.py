@@ -54,6 +54,10 @@ def load_robot_params(context, *args, **kwargs):
     elif robot_type == 'b2':
         desc_pkg = 'b2_description'
         urdf_file = 'b2.urdf.xacro'
+
+        mjcf_file = 'b2.xml'
+        mjcf_urdf_file = 'b2_mujoco.urdf.xacro'
+
         sdf_file = 'b2.sdf.xacro'
         config_file = 'b2.yaml'
     elif robot_type == 'spot':
@@ -76,8 +80,14 @@ def load_robot_params(context, *args, **kwargs):
     if simulator == 'mujoco':
         urdf_path = os.path.join(desc_path, 'models', robot_type, 'urdf', mjcf_urdf_file)
         mjcf_path = os.path.join(desc_path, 'models', robot_type, f'{robot_type}mjc', mjcf_file)
-        world = LaunchConfiguration('world').perform(context)
-        urdf = xacro.process_file(urdf_path, mappings={'world': world}).toxml()
+        # `world_path` is a full MJCF path (xacro-processed in quad_mujoco.py).
+        # Falls back to constructing from `world` if launched without that prep step.
+        world_path = LaunchConfiguration('world_path').perform(context)
+        if not world_path:
+            world = LaunchConfiguration('world').perform(context)
+            world_path = os.path.join(
+                FindPackageShare('quad_sim_scripts').perform(context), 'worlds', world)
+        urdf = xacro.process_file(urdf_path, mappings={'world': world_path}).toxml()
         return [
             SetLaunchConfiguration('robot_urdf', urdf),
             SetLaunchConfiguration('robot_urdf_path', urdf_path),
@@ -487,6 +497,7 @@ def launch_mujoco_ground_truth(context, *args, **kwargs):
 def generate_launch_description():
     return LaunchDescription([
         DeclareLaunchArgument('world', default_value = 'flat.sdf', description = 'Loaded World SDF File'),
+        DeclareLaunchArgument('world_path', default_value = '', description = 'Full MJCF path (set by quad_mujoco.py prepare_world; empty for non-mujoco)'),
         DeclareLaunchArgument('robot_type', default_value = 'spirit', description='Robot type'),
         DeclareLaunchArgument('namespace', default_value = 'robot_1', description='Robot namespace'),
         DeclareLaunchArgument('controller', default_value = 'inverse_kinematics', description='Controller type'),

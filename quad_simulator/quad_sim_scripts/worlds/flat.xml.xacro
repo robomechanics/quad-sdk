@@ -1,10 +1,15 @@
-<mujoco model="flat_go2w">
+<?xml version="1.0" encoding="utf-8"?>
+<mujoco model="flat" xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+  <xacro:arg name="meshdir" default=""/>
+  <xacro:arg name="mjcf_path" default=""/>
+
   <compiler
     angle="radian"
-    meshdir="/home/rml/ros2_ws/install/go2w_description/share/go2w_description/models/go2w/go2w_mjc/assets"
+    meshdir="$(arg meshdir)"
     autolimits="true"/>
 
-  <include file="/home/rml/ros2_ws/install/go2w_description/share/go2w_description/models/go2w/go2w_mjc/go2w.xml"/>
+  <include file="$(arg mjcf_path)"/>
 
   <worldbody>
     <light directional="true" diffuse=".8 .8 .8" specular=".2 .2 .2" pos="0 0 5" dir="0 0 -1"/>

@@ -1,5 +1,5 @@
 from launch import LaunchDescription
-from launch.actions import DeclareLaunchArgument, OpaqueFunction, GroupAction, IncludeLaunchDescription, ExecuteProcess
+from launch.actions import DeclareLaunchArgument, OpaqueFunction, GroupAction, IncludeLaunchDescription, ExecuteProcess, SetLaunchConfiguration
 from launch.substitutions import LaunchConfiguration, TextSubstitution, EnvironmentVariable
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch_ros.actions import PushRosNamespace, Node
@@ -8,6 +8,49 @@ from launch.substitutions import PathJoinSubstitution
 
 import os
 import json
+import xacro
+
+
+def prepare_world(context, *args, **kwargs):
+    """Resolve the `world` arg into a full MJCF path, xacro-processing if needed.
+
+    If `<world>.xacro` exists alongside the world file, process it with
+    robot-specific paths derived from the first robot in `robot_configs`,
+    write to /tmp, and store the resulting absolute path in `world_path`.
+    Otherwise, set `world_path` to the static install path."""
+    world = LaunchConfiguration('world').perform(context)
+    worlds_dir = os.path.join(
+        FindPackageShare('quad_sim_scripts').perform(context), 'worlds'
+    )
+    static_path = os.path.join(worlds_dir, world)
+    xacro_path = static_path + '.xacro'
+
+    if not os.path.isfile(xacro_path):
+        return [SetLaunchConfiguration('world_path', static_path)]
+
+    robot_configs = json.loads(LaunchConfiguration('robot_configs').perform(context))
+    if not robot_configs:
+        raise RuntimeError("'robot_configs' must contain at least one robot")
+    robot_type = robot_configs[0]['type']
+
+    desc_share = FindPackageShare(f'{robot_type}_description').perform(context)
+    mjcf_dir = os.path.join(desc_share, 'models', robot_type, f'{robot_type}_mjc')
+
+    world_name = world.rsplit('.xml', 1)[0]
+    sim_share = FindPackageShare('quad_sim_scripts').perform(context)
+    terrain_mesh = os.path.join(sim_share, 'models', world_name, 'meshes', f'{world_name}.stl')
+
+    processed = xacro.process_file(xacro_path, mappings={
+        'meshdir': os.path.join(mjcf_dir, 'assets'),
+        'mjcf_path': os.path.join(mjcf_dir, f'{robot_type}.xml'),
+        'terrain_mesh': terrain_mesh,
+    }).toxml()
+
+    out_path = os.path.join('/tmp', f'_quad_world_{robot_type}_{world}')
+    with open(out_path, 'w') as f:
+        f.write(processed)
+
+    return [SetLaunchConfiguration('world_path', out_path)]
 
 def launch_robot_mapping(context, *args, **kwargs):
     mapping_launch_path = PathJoinSubstitution([
@@ -60,6 +103,7 @@ def launch_robot_group(context, *args, **kwargs):
                     'controller': TextSubstitution(text=controller),
                     'init_pose' : TextSubstitution(text=init_pose),
                     'world': LaunchConfiguration('world'),
+                    'world_path': LaunchConfiguration('world_path'),
                     'use_sim_time': LaunchConfiguration('use_sim_time'),
                     'simulator': TextSubstitution(text='mujoco')  # NEW: Specify simulator type
                 }.items()
@@ -186,6 +230,7 @@ def generate_launch_description():
     ]
 
     return LaunchDescription(declared_args + [
+        OpaqueFunction(function=prepare_world),
         OpaqueFunction(function=launch_mujoco_world),
         # OpaqueFunction(function=launch_obstacles),
         # OpaqueFunction(function=bridge_mujoco_clock),
