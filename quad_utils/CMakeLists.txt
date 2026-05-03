@@ -63,6 +63,10 @@ add_executable(mesh_to_grid_map_node
   src/mesh_to_grid_map_node.cpp
   src/mesh_to_grid_map_converter.cpp)
 
+add_executable(mjcf_to_grid_map_node
+  src/mjcf_to_grid_map_node.cpp
+  src/mjcf_to_grid_map_converter.cpp)
+
 add_executable(rviz_interface_node
   src/rviz_interface_node.cpp
   src/rviz_interface.cpp)
@@ -91,6 +95,13 @@ target_include_directories(rviz_interface_node PUBLIC
   $<INSTALL_INTERFACE:include>
 )
 
+target_include_directories(mjcf_to_grid_map_node PUBLIC
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+  $<INSTALL_INTERFACE:include>
+  ${PCL_INCLUDE_DIRS}
+  ${EIGEN3_INCLUDE_DIRS}
+)
+
 # target_include_directories(trajectory_publisher_node PUBLIC
 #   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
 #   $<INSTALL_INTERFACE:include>
@@ -102,6 +113,15 @@ target_include_directories(grid_map_filters_demo PUBLIC
 )
   
 target_link_libraries(mesh_to_grid_map_node
+  quad_utils
+  ${PCL_LIBRARIES}
+  Eigen3::Eigen
+  ${PYTHON_LIBRARIES}
+  ${tf2_LIBRARIES}
+  ${tf2_geometry_msgs_LIBRARIES}
+)
+
+target_link_libraries(mjcf_to_grid_map_node
   quad_utils
   ${PCL_LIBRARIES}
   Eigen3::Eigen
@@ -147,6 +167,25 @@ ament_target_dependencies(quad_utils
 )
 
 ament_target_dependencies(mesh_to_grid_map_node rclcpp)
+
+ament_target_dependencies(mjcf_to_grid_map_node
+  rclcpp
+  std_msgs
+  sensor_msgs
+  geometry_msgs
+  visualization_msgs
+  grid_map_core
+  grid_map_ros
+  grid_map_pcl
+  grid_map_msgs
+  quad_msgs
+  pcl_msgs
+  pcl_conversions
+  Eigen3
+  tf2
+  tf2_geometry_msgs
+  cv_bridge
+)
 
 ament_target_dependencies(rviz_interface_node
   rclcpp
@@ -206,6 +245,13 @@ install(TARGETS quad_utils
   RUNTIME DESTINATION bin
 )
 
+install(TARGETS
+  mesh_to_grid_map_node
+  mjcf_to_grid_map_node
+  rviz_interface_node
+  # trajectory_publisher_node
+  DESTINATION lib/${PROJECT_NAME}
+)
 
 install(TARGETS
   mesh_to_grid_map_node

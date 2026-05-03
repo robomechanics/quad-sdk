@@ -57,4 +57,6 @@ sudo apt install -y \
     ros-jazzy-imu-tools \
     ros-jazzy-ros-gz \
     ros-jazzy-ros-gz-sim \
-    ros-jazzy-gz-ros2-control
+    ros-jazzy-gz-ros2-control \
+    ros-jazzy-mujoco-vendor \
+    ros-jazzy-mujoco-ros2-control 

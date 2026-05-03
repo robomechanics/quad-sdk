@@ -1,0 +1,17 @@
+<mujoco model="gap_20cm">
+  <compiler
+    angle="radian"
+    meshdir="/home/rml/ros2_ws/install/go2_description/share/go2_description/models/go2/go2_mjc/assets"
+    autolimits="true"/>
+
+  <include file="/home/rml/ros2_ws/install/go2_description/share/go2_description/models/go2/go2_mjc/go2.xml"/>
+
+  <asset>
+    <mesh name="terrain" file="/home/rml/ros2_ws/install/quad_sim_scripts/share/quad_sim_scripts/models/gap_20cm/meshes/gap_20cm.stl"/>
+  </asset>
+
+  <worldbody>
+    <light directional="true" diffuse=".8 .8 .8" specular=".2 .2 .2" pos="0 0 5" dir="0 0 -1"/>
+    <geom name="floor" type="mesh" mesh="terrain" pos="-2 -2 -0.1" rgba="0.8 0.9 0.8 1"/>
+  </worldbody>
+</mujoco>

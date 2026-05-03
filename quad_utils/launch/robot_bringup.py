@@ -16,6 +16,7 @@ def load_robot_params(context, *args, **kwargs):
     # Load Robot URDF and Robot Centric Parameters
     robot_type = LaunchConfiguration('robot_type').perform(context)
     namespace = LaunchConfiguration('namespace').perform(context)
+    simulator = LaunchConfiguration('simulator').perform(context)
     # Find URDF, SDF, and YAML file for the Corresponding Robot
     if robot_type == 'spirit' or robot_type == 'spirit_rotors':
         desc_pkg = 'spirit_description'
@@ -35,11 +36,19 @@ def load_robot_params(context, *args, **kwargs):
     elif robot_type == 'go2':
         desc_pkg = 'go2_description'
         urdf_file = 'go2.urdf.xacro'
+
+        mjcf_file = 'go2.xml'
+        mjcf_urdf_file = 'go2_mujoco.urdf.xacro'
+
         sdf_file = 'go2.sdf.xacro'
         config_file = 'go2.yaml'
     elif robot_type == 'go2w':
         desc_pkg = 'go2w_description'
         urdf_file = 'go2w.urdf.xacro'
+
+        mjcf_file = 'go2w.xml'
+        mjcf_urdf_file = 'go2w_mujoco.urdf.xacro'
+
         sdf_file = 'go2w.sdf.xacro'
         config_file = 'go2w.yaml'
     elif robot_type == 'b2':
@@ -62,24 +71,38 @@ def load_robot_params(context, *args, **kwargs):
 
     # Merge the Paths
     desc_path = FindPackageShare(desc_pkg).perform(context)
-    urdf_path = os.path.join(desc_path, 'models', robot_type, 'urdf', urdf_file)
-    sdf_path = os.path.join(desc_path, 'models', robot_type, sdf_file)
 
-    controller_config_path = os.path.join(FindPackageShare('quad_utils').perform(context), 'config', config_file)
 
-    # Load URDF and SDF from disk
-    urdf = xacro.process_file(urdf_path).toxml()
-    sdf = xacro.process_file(
-        sdf_path,
-        mappings={"namespace": namespace, "controller_config_path": controller_config_path},
-    ).toxml()
+    if simulator == 'mujoco':
+        urdf_path = os.path.join(desc_path, 'models', robot_type, 'urdf', mjcf_urdf_file)
+        mjcf_path = os.path.join(desc_path, 'models', robot_type, f'{robot_type}mjc', mjcf_file)
+        world = LaunchConfiguration('world').perform(context)
+        urdf = xacro.process_file(urdf_path, mappings={'world': world}).toxml()
+        return [
+            SetLaunchConfiguration('robot_urdf', urdf),
+            SetLaunchConfiguration('robot_urdf_path', urdf_path),
+            SetLaunchConfiguration('robot_mjcf_path', mjcf_path),
+        ]
 
-    return [
-        SetLaunchConfiguration('robot_urdf', urdf),
-        SetLaunchConfiguration('robot_sdf', sdf),
-        SetLaunchConfiguration('robot_urdf_path', urdf_path),
-        SetLaunchConfiguration('robot_sdf_path', sdf_path)
-    ]
+    else:
+        urdf_path = os.path.join(desc_path, 'models', robot_type, 'urdf', urdf_file)
+        sdf_path = os.path.join(desc_path, 'models', robot_type, sdf_file)
+    
+        controller_config_path = os.path.join(FindPackageShare('quad_utils').perform(context), 'config', config_file)
+
+        # Load URDF and SDF from disk
+        urdf = xacro.process_file(urdf_path).toxml()
+        sdf = xacro.process_file(
+            sdf_path,
+            mappings={"namespace": namespace, "controller_config_path": controller_config_path},
+        ).toxml()
+
+        return [
+            SetLaunchConfiguration('robot_urdf', urdf),
+            SetLaunchConfiguration('robot_sdf', sdf),
+            SetLaunchConfiguration('robot_urdf_path', urdf_path),
+            SetLaunchConfiguration('robot_sdf_path', sdf_path)
+        ]
 
 
 def launch_robot_urdf_node(context, *args, **kwargs):
@@ -120,6 +143,11 @@ def _parse_init_pose(init_pose):
 
 
 def spawn_sdf_model(context, *args, **kwargs):
+
+    simulator = LaunchConfiguration('simulator').perform(context)
+    if simulator == 'mujoco':
+        return []
+
     namespace = LaunchConfiguration('namespace').perform(context)
     init_pose = LaunchConfiguration('init_pose').perform(context)
     sdf = LaunchConfiguration('robot_sdf').perform(context)
@@ -225,7 +253,31 @@ def spawn_controller_broadcasters(context, *args, **kwargs):
         )
     ]
 
+def launch_ros2_control(context, *args, **kwargs):
+    # Gazebo spawns its own control node via SDF plugin
+    simulator = LaunchConfiguration('simulator').perform(context)
+    if simulator != 'mujoco':
+        return []
 
+    mjcf_path = LaunchConfiguration('mjcf_path').perform(context)
+    namespace = LaunchConfiguration('namespace').perform(context)
+    controller_config = os.path.join(
+        FindPackageShare('quad_sim_scripts').perform(context), 'config', 'quad_control.yaml'
+    )
+    return [
+        Node(
+            package='controller_manager',
+            executable='ros2_control_node',
+            parameters=[
+                controller_config,
+                {'use_sim_time': True},
+                {'mujoco_model_path': mjcf_path},
+            ],
+            remappings=[
+                ('robot_description', f'/{namespace}/robot_description')
+            ]
+        )
+    ]
 
 def launch_robot_driver(context, *args, **kwargs):
     namespace = LaunchConfiguration('namespace').perform(context)
@@ -233,7 +285,7 @@ def launch_robot_driver(context, *args, **kwargs):
     controller = LaunchConfiguration('controller').perform(context)
     estimator = LaunchConfiguration('estimator').perform(context)
     urdf = LaunchConfiguration('robot_urdf').perform(context)
-    sdf = LaunchConfiguration('robot_sdf').perform(context)
+    # sdf = LaunchConfiguration('robot_sdf').perform(context)
     quad_utils_path = FindPackageShare('quad_utils').perform(context)
 
     robot_driver_node = IncludeLaunchDescription(
@@ -267,6 +319,12 @@ def access_terrain_map(context, *args, **kwargs):
     ]
 
 def spawn_sdf_model_with_driver(context, *arg, **kwargs):
+    # MuJoCo loads the robot from teh MJCF world file directly
+    simulator = LaunchConfiguration('simulator').perform(context)
+    if simulator == 'mujoco':
+        return []
+
+
     [spawn_node] = spawn_sdf_model(context)
     namespace = LaunchConfiguration('namespace').perform(context)
     robot_type = LaunchConfiguration('robot_type').perform(context)
@@ -289,6 +347,11 @@ def spawn_sdf_model_with_driver(context, *arg, **kwargs):
     ]
 
 def harmonic_ros_bridge(context, *args, **kwargs):
+    # MuJoCo bridges are handled in quad_mujoco.py
+    simulator = LaunchConfiguration('simulator').perform(context)
+    if simulator == 'mujoco':
+        return []
+
     namespace = LaunchConfiguration('namespace').perform(context)
     quad_utils_path = FindPackageShare('quad_utils').perform(context)
     robot_type = LaunchConfiguration('robot_type').perform(context)
@@ -404,6 +467,23 @@ def launch_pinocchio_test_node(context, *args, **kwargs):
     )
     return [quad_pinocchio_node]
 
+def launch_mujoco_ground_truth(context, *args, **kwargs):
+    simulator = LaunchConfiguration('simulator').perform(context)
+    if simulator != 'mujoco':
+        return []
+
+    robot_type = LaunchConfiguration('robot_type').perform(context)
+    quad_utils_path = FindPackageShare('quad_utils').perform(context)
+    config_file = os.path.join(quad_utils_path, 'config', f'{robot_type}.yaml')
+
+    ground_truth_node = Node(
+        package='mujoco_plugins',
+        executable='mujoco_estimator',
+        name='mujoco_estimator',
+        parameters=[config_file, {'use_sim_time': True}]
+    )
+    return [ground_truth_node]
+
 def generate_launch_description():
     return LaunchDescription([
         DeclareLaunchArgument('world', default_value = 'flat.sdf', description = 'Loaded World SDF File'),
@@ -415,6 +495,7 @@ def generate_launch_description():
         DeclareLaunchArgument('is_hardware', default_value = 'false', description="Simulation or Hardware"),
         DeclareLaunchArgument('mocap', default_value = 'false', description='Launch the Motion Capture Node'),
         DeclareLaunchArgument('use_sim_time', default_value = 'true', description='Use Simulation Clock or Computer Clock'),
+        DeclareLaunchArgument('simulator', default_value = 'gazebo', description='Simulator type: (gazebo or mujoco)'),
         OpaqueFunction(function=load_robot_params),
         OpaqueFunction(function=launch_robot_urdf_node),
         OpaqueFunction(function=spawn_sdf_model),
@@ -423,7 +504,8 @@ def generate_launch_description():
         OpaqueFunction(function=spawn_controller_broadcasters),
         OpaqueFunction(function=launch_robot_driver),
         OpaqueFunction(function=launch_contact_state_publisher),
-        OpaqueFunction(function= launch_visualization_plugins)
+        OpaqueFunction(function= launch_visualization_plugins),
+        OpaqueFunction(function=launch_mujoco_ground_truth),
     ])
 
 
@@ -436,3 +518,5 @@ def generate_launch_description():
     #                os.path.join(quad_utils_path, 'config, topics_global.yaml'),
     #                os.path.join(quad_utils_path, 'config', config_file),
     #                os.path.join(quad_utils_path), 'config', config_file]
+
+
