@@ -77,8 +77,7 @@ set(ROBOT_DRIVER_SOURCES
   src/estimators/ekf_estimator.cpp
   src/hardware_interfaces/hardware_interface.cpp
   src/hardware_interfaces/spirit_interface.cpp
-  src/hardware_interfaces/go2_interface.cpp
-  src/hardware_interfaces/go2w_interface.cpp
+  src/hardware_interfaces/unitree_interface.cpp
 )
 
 if(ONNXRUNTIME_LIB)

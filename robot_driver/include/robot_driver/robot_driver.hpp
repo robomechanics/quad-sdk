@@ -38,8 +38,7 @@
 #include "robot_driver/estimators/state_estimator.hpp"
 #include "robot_driver/hardware_interfaces/hardware_interface.hpp"
 #include "robot_driver/hardware_interfaces/spirit_interface.hpp"
-#include "robot_driver/hardware_interfaces/go2_interface.hpp"
-#include "robot_driver/hardware_interfaces/go2w_interface.hpp"
+#include "robot_driver/hardware_interfaces/unitree_interface.hpp"
 #include "robot_driver/robot_driver_utils.hpp"
 
 #define MATH_PI 3.141592

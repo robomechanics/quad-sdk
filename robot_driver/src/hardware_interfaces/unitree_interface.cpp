@@ -1,16 +1,34 @@
-#include "robot_driver/hardware_interfaces/go2_interface.hpp"
+#include "robot_driver/hardware_interfaces/unitree_interface.hpp"
 
-constexpr int Go2Interface::kLegMap[kNumLegs][kJointsPerLeg];
+#include <iostream>
+#include <unistd.h>
 
-Go2Interface::Go2Interface() : HardwareInterface() {}
+constexpr int UnitreeInterface::kLegMap[UnitreeInterface::kNumLegs]
+                                       [UnitreeInterface::kJointsPerLeg];
+constexpr int UnitreeInterface::kWheelMap[UnitreeInterface::kNumWheels];
 
-void Go2Interface::loadInterface(int /*argc*/, char** /*argv*/) {
+UnitreeInterface::UnitreeInterface(const std::string& robot_name)
+    : HardwareInterface(),
+      robot_name_(robot_name),
+      num_motors_(kNumJoints),
+      has_wheels_(false) {
+  if (robot_name_ == "go2w") {
+    num_motors_ = kNumJoints + kNumWheels;
+    has_wheels_ = true;
+  } else if (robot_name_ != "go2") {
+    std::cerr << "UnitreeInterface: unknown robot_name='" << robot_name_
+              << "', falling back to Go2." << std::endl;
+    robot_name_ = "go2";
+  }
+}
+
+void UnitreeInterface::loadInterface(int /*argc*/, char** /*argv*/) {
   std::string net_iface = "enP8p1s0";
 
   unitree::robot::ChannelFactory::Instance()->Init(0, net_iface);
 
   // Disable sport mode so low-level commands are not overridden.
-  // Uses MotionSwitcherClient with retry loop per Unitree's go2_stand_example.
+  // Mirrors the retry loop in Unitree's go2_stand_example.
   unitree::robot::b2::MotionSwitcherClient msc;
   msc.SetTimeout(10.0f);
   msc.Init();
@@ -41,32 +59,27 @@ void Go2Interface::loadInterface(int /*argc*/, char** /*argv*/) {
     sleep(5);
   }
 
-  // Create publisher on rt/lowcmd
-  cmd_pub_.reset(
-      new unitree::robot::ChannelPublisher<unitree_go::msg::dds_::LowCmd_>(
-          "rt/lowcmd"));
+  cmd_pub_.reset(new unitree::robot::ChannelPublisher<
+                 unitree_go::msg::dds_::LowCmd_>("rt/lowcmd"));
   cmd_pub_->InitChannel();
 
-  // Create subscriber on rt/lowstate
-  state_sub_.reset(
-      new unitree::robot::ChannelSubscriber<unitree_go::msg::dds_::LowState_>(
-          "rt/lowstate"));
-  state_sub_->InitChannel(std::bind(&Go2Interface::lowStateHandler, this,
+  state_sub_.reset(new unitree::robot::ChannelSubscriber<
+                   unitree_go::msg::dds_::LowState_>("rt/lowstate"));
+  state_sub_->InitChannel(std::bind(&UnitreeInterface::lowStateHandler, this,
                                     std::placeholders::_1),
                           1);
 
   initLowCmd();
 }
 
-void Go2Interface::unloadInterface() {
-  // Zero out commands before shutting down
+void UnitreeInterface::unloadInterface() {
   initLowCmd();
   low_cmd_.crc() = crc32Core(reinterpret_cast<uint32_t*>(&low_cmd_),
                              (sizeof(unitree_go::msg::dds_::LowCmd_) >> 2) - 1);
   cmd_pub_->Write(low_cmd_);
 }
 
-void Go2Interface::initLowCmd() {
+void UnitreeInterface::initLowCmd() {
   low_cmd_.head()[0] = 0xFE;
   low_cmd_.head()[1] = 0xEF;
   low_cmd_.level_flag() = 0xFF;
@@ -82,13 +95,13 @@ void Go2Interface::initLowCmd() {
   }
 }
 
-void Go2Interface::lowStateHandler(const void* message) {
+void UnitreeInterface::lowStateHandler(const void* message) {
   std::lock_guard<std::mutex> lock(state_mutex_);
   low_state_ = *(const unitree_go::msg::dds_::LowState_*)message;
   state_received_ = true;
 }
 
-uint32_t Go2Interface::crc32Core(uint32_t* ptr, uint32_t len) {
+uint32_t UnitreeInterface::crc32Core(uint32_t* ptr, uint32_t len) {
   uint32_t xbit = 0;
   uint32_t data = 0;
   uint32_t CRC32 = 0xFFFFFFFF;
@@ -113,12 +126,13 @@ uint32_t Go2Interface::crc32Core(uint32_t* ptr, uint32_t len) {
   return CRC32;
 }
 
-bool Go2Interface::send(
+bool UnitreeInterface::send(
     const quad_msgs::msg::LegCommandArray& leg_command_array_msg,
-    const Eigen::VectorXd& /*user_tx_data*/) {
+    const Eigen::VectorXd& user_tx_data) {
   for (int leg = 0; leg < kNumLegs; ++leg) {
     const auto& leg_cmd = leg_command_array_msg.leg_commands.at(leg);
 
+    // 12 leg motors.
     for (int j = 0; j < kJointsPerLeg; ++j) {
       int motor_idx = kLegMap[leg][j];
       const auto& mc = leg_cmd.motor_commands.at(j);
@@ -131,28 +145,63 @@ bool Go2Interface::send(
       low_cmd_.motor_cmd()[motor_idx].kp() = static_cast<float>(mc.kp);
       low_cmd_.motor_cmd()[motor_idx].kd() = static_cast<float>(mc.kd);
     }
+
+    // 4 wheel motors (Go2-W only).
+    if (has_wheels_) {
+      int wheel_idx = kWheelMap[leg];
+
+      const bool have_per_leg_wheel_cmd =
+          (static_cast<int>(leg_cmd.motor_commands.size()) > kJointsPerLeg);
+      const bool have_legacy_tx =
+          (user_tx_data.size() == kWheelTxSize);
+
+      float q = 0.0f;
+      float vel = 0.0f;
+      float kp = 0.0f;
+      float kd = kDefaultWheelKd;
+      float tau_ff = 0.0f;
+
+      if (have_per_leg_wheel_cmd) {
+        const auto& mc = leg_cmd.motor_commands.at(kJointsPerLeg);
+        q = static_cast<float>(mc.pos_setpoint);
+        vel = static_cast<float>(mc.vel_setpoint);
+        kp = static_cast<float>(mc.kp);
+        kd = static_cast<float>(mc.kd);
+        tau_ff = static_cast<float>(mc.torque_ff);
+      } else if (have_legacy_tx) {
+        const int base = kTxRestartFlagOffset + leg * kWheelCmdFields;
+        vel = static_cast<float>(user_tx_data[base + 0]);
+        kd = static_cast<float>(user_tx_data[base + 1]);
+        tau_ff = static_cast<float>(user_tx_data[base + 2]);
+      }
+
+      low_cmd_.motor_cmd()[wheel_idx].mode() = 0x01;
+      low_cmd_.motor_cmd()[wheel_idx].q() = q;
+      low_cmd_.motor_cmd()[wheel_idx].dq() = vel;
+      low_cmd_.motor_cmd()[wheel_idx].kp() = kp;
+      low_cmd_.motor_cmd()[wheel_idx].kd() = kd;
+      low_cmd_.motor_cmd()[wheel_idx].tau() = tau_ff;
+    }
   }
 
-  // CRC must be computed before every publish
+  // CRC must be computed before every publish.
   low_cmd_.crc() = crc32Core(reinterpret_cast<uint32_t*>(&low_cmd_),
                              (sizeof(unitree_go::msg::dds_::LowCmd_) >> 2) - 1);
-
   cmd_pub_->Write(low_cmd_);
   return true;
 }
 
-bool Go2Interface::recv(sensor_msgs::msg::JointState& joint_state_msg,
-                        sensor_msgs::msg::Imu& imu_msg,
-                        Eigen::VectorXd& /*user_rx_data*/) {
+bool UnitreeInterface::recv(sensor_msgs::msg::JointState& joint_state_msg,
+                            sensor_msgs::msg::Imu& imu_msg,
+                            Eigen::VectorXd& user_rx_data) {
   std::lock_guard<std::mutex> lock(state_mutex_);
 
   if (!state_received_) {
-    std::cout << "Not receiving state information from Go2 Interface"
-              << std::endl;
+    std::cout << "Not receiving state from UnitreeInterface" << std::endl;
     return false;
   }
 
-  // Fill joint state: iterate legs in quad-sdk order
+  // 12 leg joints, in quad-sdk leg-then-joint order.
   int idx = 0;
   for (int leg = 0; leg < kNumLegs; ++leg) {
     for (int j = 0; j < kJointsPerLeg; ++j) {
@@ -166,7 +215,38 @@ bool Go2Interface::recv(sensor_msgs::msg::JointState& joint_state_msg,
     }
   }
 
-  // IMU — Unitree provides quaternion directly
+  // 4 wheel joints, but only if caller has sized JointState for it.
+  if (has_wheels_ &&
+      static_cast<int>(joint_state_msg.name.size()) >=
+          kNumJoints + kNumWheels) {
+    for (int leg = 0; leg < kNumWheels; ++leg) {
+      int motor_idx = kWheelMap[leg];
+      joint_state_msg.name[idx] = wheel_joint_names_[leg];
+      joint_state_msg.position[idx] = low_state_.motor_state()[motor_idx].q();
+      joint_state_msg.velocity[idx] = low_state_.motor_state()[motor_idx].dq();
+      joint_state_msg.effort[idx] =
+          low_state_.motor_state()[motor_idx].tau_est();
+      idx++;
+    }
+  }
+
+  // Mirror wheel state into user_rx_data for downstream consumers that
+  // bypass JointState (preserves Go2WInterface behavior).
+  if (has_wheels_) {
+    if (user_rx_data.size() != kWheelRxSize) {
+      user_rx_data.resize(kWheelRxSize);
+    }
+    for (int leg = 0; leg < kNumWheels; ++leg) {
+      int motor_idx = kWheelMap[leg];
+      user_rx_data[leg * kWheelStateFields + 0] =
+          low_state_.motor_state()[motor_idx].q();
+      user_rx_data[leg * kWheelStateFields + 1] =
+          low_state_.motor_state()[motor_idx].dq();
+      user_rx_data[leg * kWheelStateFields + 2] =
+          low_state_.motor_state()[motor_idx].tau_est();
+    }
+  }
+
   imu_msg.orientation.x = low_state_.imu_state().quaternion()[0];
   imu_msg.orientation.y = low_state_.imu_state().quaternion()[1];
   imu_msg.orientation.z = low_state_.imu_state().quaternion()[2];
