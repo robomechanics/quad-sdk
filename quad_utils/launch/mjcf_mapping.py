@@ -16,7 +16,7 @@ def generate_launch_description():
         DeclareLaunchArgument('latch_grid_map_pub', default_value='true'),
         DeclareLaunchArgument('verbose', default_value='true'),
         DeclareLaunchArgument('world', default_value='step_20cm.sdf'),
-        DeclareLaunchArgument('use_sim_time', default_value='true')
+        DeclareLaunchArgument('use_sim_time', default_value='true'),
     ]
 
     mjcf_to_grid_group = GroupAction(
@@ -33,7 +33,7 @@ def generate_launch_description():
                     'latch_grid_map_pub': LaunchConfiguration('latch_grid_map_pub'),
                     'verbose': LaunchConfiguration('verbose'),
                     'world': LaunchConfiguration('world'),
-                    'use_sim_time': LaunchConfiguration('use_sim_time')
+                    'use_sim_time': LaunchConfiguration('use_sim_time'),
                 }]
             )
         ],

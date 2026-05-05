@@ -18,6 +18,7 @@
 
 #include <pcl/io/vtk_lib_io.h>
 #include <pcl_conversions/pcl_conversions.h>
+
 #include <ament_index_cpp/get_package_share_directory.hpp>
 
 #include "quad_utils/mjcf_to_grid_map_converter.hpp"
@@ -121,6 +122,8 @@ void MjcfToGridMapConverter::getParametersFromRos() {  // UPDATED
 
   node_->declare_parameter("world", world_name_);
   node_->get_parameter("world", world_name_);
+
+
 
   // nh_private_.param("grid_map_resolution", grid_map_resolution_,
   //                   grid_map_resolution_);
@@ -301,6 +304,7 @@ bool MjcfToGridMapConverter::loadMeshFromFile(
     RCLCPP_ERROR(node_->get_logger(), "Mesh read from file is empty!");
     return false;
   }
+
 
   bool mesh_converted = meshToGridMap(mesh_from_file, frame_id_mesh_loaded_,
                                       node_->now().nanoseconds());
