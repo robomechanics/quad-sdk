@@ -179,7 +179,7 @@ def generate_launch_description():
         DeclareLaunchArgument('rviz', default_value='true', description='Launch RViz'),
         DeclareLaunchArgument('use_sim_time', default_value='true', description='Whether to use Computer Clock or Sim Clock'),
         DeclareLaunchArgument(
-            'robot_configs', default_value=('[{"name": "robot_1", "type": "go2w", "controller": "learned", "init_pose": "-x 0.0 -y 0.0 -z 3.0"}]'),
+            'robot_configs', default_value=('[{"name": "robot_1", "type": "go2", "controller": "inverse_dynamics", "init_pose": "-x 0.0 -y 0.0 -z 3.0"}]'),
             description='A JSON List of robot configurations: MUST specify name, type, controller, and spawn pose. init_pose accepts -x/-y/-z and optionally -R/-P/-Y for orientation.'
         ),
         DeclareLaunchArgument('scenario', default_value="None", description='Custom Obstacle Scenario to Spawn e.g. Underbrush, Procedural Underbrush)'),

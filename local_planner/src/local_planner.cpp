@@ -73,8 +73,8 @@ LocalPlanner::LocalPlanner(rclcpp::Node::SharedPtr node)
                            stand_pos_error_threshold_);
   double robot_mass;
   quad_utils::loadROSParamDefault(node_, "global_body_planner.mass", robot_mass,
-                                  13.3);
-
+                                  16.3);
+  std::cout << "Robot Mass: " << robot_mass << std::endl;
   // Load system parameters from launch file (not in config file)
   // nh.param<bool>("local_planner/use_twist_input", use_twist_input_, false);
   quad_utils::loadROSParamDefault(node_, "local_planner.use_twist_input",

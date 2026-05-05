@@ -23,7 +23,7 @@ UnitreeInterface::UnitreeInterface(const std::string& robot_name)
 }
 
 void UnitreeInterface::loadInterface(int /*argc*/, char** /*argv*/) {
-  std::string net_iface = "enP8p1s0";
+  std::string net_iface = "eth0";
 
   unitree::robot::ChannelFactory::Instance()->Init(0, net_iface);
 

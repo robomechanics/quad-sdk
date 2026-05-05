@@ -38,10 +38,15 @@ quadNLP::quadNLP(SystemID default_system, int N, double dt, double mu,
   foot_pos_world_ = Eigen::MatrixXd(N_, 12);
   foot_vel_world_ = Eigen::MatrixXd(N_, 12).setZero();
   for (int i = 0; i < N_; ++i) {
-    foot_pos_body_.row(i) << -0.2263, -0.098, -0.3, -0.2263, 0.098, -0.3,
-        0.2263, -0.098, -0.3, 0.2263, 0.098, -0.3;
-    foot_pos_world_.row(i) << 0.2263, 0.098, 0, -0.2263, 0.098, 0, 0.2263,
-        -0.098, 0, -0.2263, -0.098, 0;
+    // foot_pos_body_.row(i) << -0.2263, -0.098, -0.3, -0.2263, 0.098, -0.3,
+    //     0.2263, -0.098, -0.3, 0.2263, 0.098, -0.3;
+    // foot_pos_world_.row(i) << 0.2263, 0.098, 0, -0.2263, 0.098, 0, 0.2263,
+    //     -0.098, 0, -0.2263, -0.098, 0;
+    foot_pos_body_.row(i) << -0.1934, -0.142, -0.22, -0.1934, 0.142, -0.22,
+        0.1934, -0.142, -0.22, 0.1934, 0.142, -0.22;
+    foot_pos_world_.row(i) << 0.1934, 0.142, 0, -0.1934, 0.142, 0, 0.1934,
+        -0.142, 0, -0.1934, -0.142, 0;
+
   }
 
   // Compute initial kinematics information

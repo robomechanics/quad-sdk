@@ -5,6 +5,6 @@
         remote: heartbeat/remote
         robot: heartbeat/robot
     remote_heartbeat:
-      update_rate: 500
-      robot_latency_threshold_warn: 0.02    # s
+      update_rate: 500.0
+      robot_latency_threshold_warn: 0.10    # s
       robot_latency_threshold_error: 0.10   # s
