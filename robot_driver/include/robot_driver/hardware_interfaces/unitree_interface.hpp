@@ -37,6 +37,11 @@
 */
 class UnitreeInterface : public HardwareInterface {
  public:
+  static constexpr int kNumLegs = 4;
+  static constexpr int kJointsPerLeg = 3;
+  static constexpr int kNumJoints = kNumLegs * kJointsPerLeg;
+  static constexpr int kNumWheels = 4;
+
   //! Construct from a quad-sdk robot_name string.
   //! Recognized values: "go2" (12 motors), "go2w" (16 motors).
   //! Anything else falls back to "go2".
@@ -75,11 +80,6 @@ class UnitreeInterface : public HardwareInterface {
       unitree_go::msg::dds_::LowCmd_> cmd_pub_;
   unitree::robot::ChannelSubscriberPtr<
       unitree_go::msg::dds_::LowState_> state_sub_;
-
-  static constexpr int kNumLegs = 4;
-  static constexpr int kJointsPerLeg = 3;
-  static constexpr int kNumJoints = kNumLegs * kJointsPerLeg;
-  static constexpr int kNumWheels = 4;
 
   // Legacy user_tx_data layout for the wheel-command fallback.
   static constexpr int kWheelCmdFields = 3;       // (vel, kd, tau_ff)
