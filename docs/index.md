@@ -79,9 +79,8 @@ ros2 launch quad_utils quad_gazebo.py
 # In a second terminal — stand the robot
 ros2 topic pub /robot_1/control/mode std_msgs/UInt8 "data: 1" --once
 
-# In a third terminal — plan and walk
+# In a third terminal — start the planning stack
 ros2 launch quad_utils quad_plan.py
-ros2 topic pub /robot_1/control/mode std_msgs/UInt8 "data: 2" --once
 ```
 
 [Full installation guide :octicons-arrow-right-24:](getting-started/installation.md)

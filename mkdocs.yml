@@ -97,7 +97,7 @@ plugins:
   # front-matter. The RML lab section uses this; everything else is unaffected.
   # NOTE: no `global_password` — that would encrypt everything.
   - encryptcontent:
-      title_prefix: '🔒 '
+      title_prefix: ''
       summary: 'Robomechanics Lab — internal'
       placeholder: 'Lab password'
       decryption_failure_message: 'That password did not unlock this page.'
