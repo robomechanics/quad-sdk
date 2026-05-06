@@ -2,174 +2,174 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
          <loc>https://robomechanics.github.io/quad-sdk/ros2/</loc>
-         <lastmod>2026-05-02</lastmod>
+         <lastmod>2026-05-06</lastmod>
     </url>
     <url>
          <loc>https://robomechanics.github.io/quad-sdk/ros2/404/</loc>
-         <lastmod>2026-05-02</lastmod>
+         <lastmod>2026-05-06</lastmod>
     </url>
     <url>
          <loc>https://robomechanics.github.io/quad-sdk/ros2/CONTRIBUTING-DOCS/</loc>
-         <lastmod>2026-05-02</lastmod>
+         <lastmod>2026-05-06</lastmod>
     </url>
     <url>
          <loc>https://robomechanics.github.io/quad-sdk/ros2/cite/</loc>
-         <lastmod>2026-05-02</lastmod>
+         <lastmod>2026-05-06</lastmod>
     </url>
     <url>
          <loc>https://robomechanics.github.io/quad-sdk/ros2/contributing/</loc>
-         <lastmod>2026-05-02</lastmod>
+         <lastmod>2026-05-06</lastmod>
     </url>
     <url>
          <loc>https://robomechanics.github.io/quad-sdk/ros2/faq/</loc>
-         <lastmod>2026-05-02</lastmod>
+         <lastmod>2026-05-06</lastmod>
     </url>
     <url>
          <loc>https://robomechanics.github.io/quad-sdk/ros2/platforms/</loc>
-         <lastmod>2026-05-02</lastmod>
+         <lastmod>2026-05-06</lastmod>
     </url>
     <url>
          <loc>https://robomechanics.github.io/quad-sdk/ros2/roadmap/</loc>
-         <lastmod>2026-05-02</lastmod>
+         <lastmod>2026-05-06</lastmod>
     </url>
     <url>
          <loc>https://robomechanics.github.io/quad-sdk/ros2/architecture/overview/</loc>
-         <lastmod>2026-05-02</lastmod>
+         <lastmod>2026-05-06</lastmod>
     </url>
     <url>
          <loc>https://robomechanics.github.io/quad-sdk/ros2/architecture/pinocchio-integration/</loc>
-         <lastmod>2026-05-02</lastmod>
+         <lastmod>2026-05-06</lastmod>
     </url>
     <url>
          <loc>https://robomechanics.github.io/quad-sdk/ros2/architecture/ros2-migration/</loc>
-         <lastmod>2026-05-02</lastmod>
+         <lastmod>2026-05-06</lastmod>
     </url>
     <url>
          <loc>https://robomechanics.github.io/quad-sdk/ros2/getting-started/hardware-bringup/</loc>
-         <lastmod>2026-05-02</lastmod>
+         <lastmod>2026-05-06</lastmod>
     </url>
     <url>
          <loc>https://robomechanics.github.io/quad-sdk/ros2/getting-started/installation/</loc>
-         <lastmod>2026-05-02</lastmod>
+         <lastmod>2026-05-06</lastmod>
     </url>
     <url>
          <loc>https://robomechanics.github.io/quad-sdk/ros2/getting-started/quickstart/</loc>
-         <lastmod>2026-05-02</lastmod>
+         <lastmod>2026-05-06</lastmod>
     </url>
     <url>
          <loc>https://robomechanics.github.io/quad-sdk/ros2/packages/</loc>
-         <lastmod>2026-05-02</lastmod>
+         <lastmod>2026-05-06</lastmod>
     </url>
     <url>
          <loc>https://robomechanics.github.io/quad-sdk/ros2/packages/body_force_estimator/</loc>
-         <lastmod>2026-05-02</lastmod>
+         <lastmod>2026-05-06</lastmod>
     </url>
     <url>
          <loc>https://robomechanics.github.io/quad-sdk/ros2/packages/conflict_based_search/</loc>
-         <lastmod>2026-05-02</lastmod>
+         <lastmod>2026-05-06</lastmod>
     </url>
     <url>
          <loc>https://robomechanics.github.io/quad-sdk/ros2/packages/force_applicator/</loc>
-         <lastmod>2026-05-02</lastmod>
+         <lastmod>2026-05-06</lastmod>
     </url>
     <url>
          <loc>https://robomechanics.github.io/quad-sdk/ros2/packages/global_body_planner/</loc>
-         <lastmod>2026-05-02</lastmod>
+         <lastmod>2026-05-06</lastmod>
     </url>
     <url>
          <loc>https://robomechanics.github.io/quad-sdk/ros2/packages/local_planner/</loc>
-         <lastmod>2026-05-02</lastmod>
+         <lastmod>2026-05-06</lastmod>
     </url>
     <url>
          <loc>https://robomechanics.github.io/quad-sdk/ros2/packages/nmpc_controller/</loc>
-         <lastmod>2026-05-02</lastmod>
+         <lastmod>2026-05-06</lastmod>
     </url>
     <url>
          <loc>https://robomechanics.github.io/quad-sdk/ros2/packages/quad_logger/</loc>
-         <lastmod>2026-05-02</lastmod>
+         <lastmod>2026-05-06</lastmod>
     </url>
     <url>
          <loc>https://robomechanics.github.io/quad-sdk/ros2/packages/quad_msgs/</loc>
-         <lastmod>2026-05-02</lastmod>
+         <lastmod>2026-05-06</lastmod>
     </url>
     <url>
          <loc>https://robomechanics.github.io/quad-sdk/ros2/packages/quad_perf_tests/</loc>
-         <lastmod>2026-05-02</lastmod>
+         <lastmod>2026-05-06</lastmod>
     </url>
     <url>
          <loc>https://robomechanics.github.io/quad-sdk/ros2/packages/quad_simulator/</loc>
-         <lastmod>2026-05-02</lastmod>
+         <lastmod>2026-05-06</lastmod>
     </url>
     <url>
          <loc>https://robomechanics.github.io/quad-sdk/ros2/packages/quad_training/</loc>
-         <lastmod>2026-05-02</lastmod>
+         <lastmod>2026-05-06</lastmod>
     </url>
     <url>
          <loc>https://robomechanics.github.io/quad-sdk/ros2/packages/quad_utils/</loc>
-         <lastmod>2026-05-02</lastmod>
+         <lastmod>2026-05-06</lastmod>
     </url>
     <url>
          <loc>https://robomechanics.github.io/quad-sdk/ros2/packages/robot_driver/</loc>
-         <lastmod>2026-05-02</lastmod>
+         <lastmod>2026-05-06</lastmod>
     </url>
     <url>
          <loc>https://robomechanics.github.io/quad-sdk/ros2/packages/scripts/</loc>
-         <lastmod>2026-05-02</lastmod>
+         <lastmod>2026-05-06</lastmod>
     </url>
     <url>
          <loc>https://robomechanics.github.io/quad-sdk/ros2/rml/</loc>
-         <lastmod>2026-05-02</lastmod>
+         <lastmod>2026-05-06</lastmod>
     </url>
     <url>
          <loc>https://robomechanics.github.io/quad-sdk/ros2/rml/hardware-design/</loc>
-         <lastmod>2026-05-02</lastmod>
+         <lastmod>2026-05-06</lastmod>
     </url>
     <url>
          <loc>https://robomechanics.github.io/quad-sdk/ros2/rml/mocap/</loc>
-         <lastmod>2026-05-02</lastmod>
+         <lastmod>2026-05-06</lastmod>
     </url>
     <url>
          <loc>https://robomechanics.github.io/quad-sdk/ros2/rml/networking/</loc>
-         <lastmod>2026-05-02</lastmod>
+         <lastmod>2026-05-06</lastmod>
     </url>
     <url>
          <loc>https://robomechanics.github.io/quad-sdk/ros2/rml/robot-bringup/</loc>
-         <lastmod>2026-05-02</lastmod>
+         <lastmod>2026-05-06</lastmod>
     </url>
     <url>
          <loc>https://robomechanics.github.io/quad-sdk/ros2/rml/time-sync/</loc>
-         <lastmod>2026-05-02</lastmod>
+         <lastmod>2026-05-06</lastmod>
     </url>
     <url>
          <loc>https://robomechanics.github.io/quad-sdk/ros2/tutorials/adding-a-robot/</loc>
-         <lastmod>2026-05-02</lastmod>
+         <lastmod>2026-05-06</lastmod>
     </url>
     <url>
          <loc>https://robomechanics.github.io/quad-sdk/ros2/tutorials/custom-terrain/</loc>
-         <lastmod>2026-05-02</lastmod>
+         <lastmod>2026-05-06</lastmod>
     </url>
     <url>
          <loc>https://robomechanics.github.io/quad-sdk/ros2/tutorials/first-run/</loc>
-         <lastmod>2026-05-02</lastmod>
+         <lastmod>2026-05-06</lastmod>
     </url>
     <url>
          <loc>https://robomechanics.github.io/quad-sdk/ros2/tutorials/logging/</loc>
-         <lastmod>2026-05-02</lastmod>
+         <lastmod>2026-05-06</lastmod>
     </url>
     <url>
          <loc>https://robomechanics.github.io/quad-sdk/ros2/tutorials/multi-robot/</loc>
-         <lastmod>2026-05-02</lastmod>
+         <lastmod>2026-05-06</lastmod>
     </url>
     <url>
          <loc>https://robomechanics.github.io/quad-sdk/ros2/tutorials/specialized-controllers/</loc>
-         <lastmod>2026-05-02</lastmod>
+         <lastmod>2026-05-06</lastmod>
     </url>
     <url>
          <loc>https://robomechanics.github.io/quad-sdk/ros2/tutorials/training/</loc>
-         <lastmod>2026-05-02</lastmod>
+         <lastmod>2026-05-06</lastmod>
     </url>
     <url>
          <loc>https://robomechanics.github.io/quad-sdk/ros2/tutorials/writing-controller/</loc>
-         <lastmod>2026-05-02</lastmod>
+         <lastmod>2026-05-06</lastmod>
     </url>
 </urlset>

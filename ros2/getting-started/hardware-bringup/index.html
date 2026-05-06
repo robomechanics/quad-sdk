@@ -1834,7 +1834,7 @@
         
   
   <span class="md-ellipsis">
-    Network & IPs
+    🔒 Network & IPs
   </span>
   
 
@@ -1855,7 +1855,7 @@
         
   
   <span class="md-ellipsis">
-    Time Sync
+    🔒 Time Sync
   </span>
   
 
@@ -1876,7 +1876,7 @@
         
   
   <span class="md-ellipsis">
-    Motion Capture
+    🔒 Motion Capture
   </span>
   
 
@@ -1897,7 +1897,7 @@
         
   
   <span class="md-ellipsis">
-    Robot Bringup
+    🔒 Robot Bringup
   </span>
   
 
@@ -1918,7 +1918,7 @@
         
   
   <span class="md-ellipsis">
-    Hardware Design
+    🔒 Hardware Design
   </span>
   
 
@@ -2108,7 +2108,7 @@
 
 
 <h1 id="hardware-bringup">Hardware Bringup<a class="headerlink" href="#hardware-bringup" title="Permanent link">&para;</a></h1>
-<p>This page covers the <strong>common path</strong> to bring up Quad-SDK on a real quadruped. Per-platform notes (Spirit, Go1, Go2, A1, B2, Spot, Vision60) are linked at the bottom.</p>
+<p>This page covers the <strong>common path</strong> to bring up Quad-SDK on a real quadruped. Per-platform notes (Ghost Robotics Spirit 40, Go1, Go2, A1, B2, Spot, Vision60) are linked at the bottom.</p>
 <div class="admonition danger">
 <p class="admonition-title">Safety first</p>
 <p>Real hardware is unforgiving. <strong>Always use a safety harness or hoist for first-time bringup.</strong> Validate every step in simulation with the same robot config before running on metal. Keep an e-stop within arm's reach.</p>
@@ -2152,7 +2152,7 @@
 <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="c1"># Go2 hardware bringup</span>
 <a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>ros2<span class="w"> </span>launch<span class="w"> </span>quad_utils<span class="w"> </span>robot_driver.py<span class="w"> </span>robot_type:<span class="o">=</span>go2<span class="w"> </span>hardware:<span class="o">=</span><span class="nb">true</span>
 <a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>
-<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="c1"># Spirit hardware bringup</span>
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="c1"># Ghost Robotics Spirit 40 hardware bringup</span>
 <a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>ros2<span class="w"> </span>launch<span class="w"> </span>quad_utils<span class="w"> </span>robot_driver.py<span class="w"> </span>robot_type:<span class="o">=</span>spirit<span class="w"> </span>hardware:<span class="o">=</span><span class="nb">true</span>
 </code></pre></div>
 <p>The YAML files set: gait, control gains, kinematic limits, IMU bias, contact thresholds, NMPC weights, and motor mapping. <strong>Always start from the upstream config and only override what's required for your unit.</strong></p>
@@ -2202,7 +2202,7 @@
 <h2 id="per-platform-notes">Per-platform notes<a class="headerlink" href="#per-platform-notes" title="Permanent link">&para;</a></h2>
 <p>The platforms listed below have known-good configs and per-robot quirks:</p>
 <ul>
-<li>Spirit</li>
+<li>Ghost Robotics Spirit 40</li>
 <li>Unitree Go1</li>
 <li>Unitree Go2 / Go2-W</li>
 <li>Unitree A1</li>
@@ -2232,7 +2232,7 @@
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-timeago"><span class="timeago" datetime="2026-04-30T03:22:23+00:00" locale="en"></span></span><span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-iso_date">2026-04-30</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-timeago"><span class="timeago" datetime="2026-05-06T16:45:31+00:00" locale="en"></span></span><span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-iso_date">2026-05-06</span>
   </span>
 
     
