@@ -9,7 +9,7 @@ hide:
 
 # Quad-SDK
 
-**Open-source, ROS 2 full-stack framework for agile quadrupedal locomotion.**
+**Open-source, ROS-based full-stack framework for agile quadrupedal locomotion.**
 
 Vertically integrated planning, control, estimation, communication, and development tools — from simulation to hardware deployment, with minimal user changes across multiple platforms.
 
@@ -67,12 +67,21 @@ Vertically integrated planning, control, estimation, communication, and developm
 ```bash
 cd ~/ros2_ws/src
 git clone --recurse-submodules https://github.com/robomechanics/quad-sdk.git
-cd quad-sdk && ./setup.sh
-cd ~/ros2_ws && colcon build && source install/setup.bash
+cd quad-sdk
+chmod +x setup.sh && ./setup.sh
+cd ~/ros2_ws
+colcon build --cmake-args -DCMAKE_BUILD_TYPE=Release
+source install/setup.bash
 
-# Launch and walk
+# Launch
 ros2 launch quad_utils quad_gazebo.py
+
+# In a second terminal — stand the robot
+ros2 topic pub /robot_1/control/mode std_msgs/UInt8 "data: 1" --once
+
+# In a third terminal — plan and walk
 ros2 launch quad_utils quad_plan.py
+ros2 topic pub /robot_1/control/mode std_msgs/UInt8 "data: 2" --once
 ```
 
 [Full installation guide :octicons-arrow-right-24:](getting-started/installation.md)

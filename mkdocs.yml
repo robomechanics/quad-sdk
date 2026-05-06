@@ -185,12 +185,12 @@ nav:
   - Platforms: platforms.md
   - FAQ: faq.md
   - 🔒 RML:
-      - Lab Hub: rml/index.md
-      - Network & IPs: rml/networking.md
-      - Time Sync: rml/time-sync.md
-      - Motion Capture: rml/mocap.md
-      - Robot Bringup: rml/robot-bringup.md
-      - Hardware Design: rml/hardware-design.md
+      - 🔒 Lab Hub: rml/index.md
+      - 🔒 Network & IPs: rml/networking.md
+      - 🔒 Time Sync: rml/time-sync.md
+      - 🔒 Motion Capture: rml/mocap.md
+      - 🔒 Robot Bringup: rml/robot-bringup.md
+      - 🔒 Hardware Design: rml/hardware-design.md
   - Cite: cite.md
   - Roadmap: roadmap.md
   - Contributing: contributing.md
