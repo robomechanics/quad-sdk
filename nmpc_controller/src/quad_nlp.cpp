@@ -42,8 +42,10 @@ quadNLP::quadNLP(SystemID default_system, int N, double dt, double mu,
     //     0.2263, -0.098, -0.3, 0.2263, 0.098, -0.3;
     // foot_pos_world_.row(i) << 0.2263, 0.098, 0, -0.2263, 0.098, 0, 0.2263,
     //     -0.098, 0, -0.2263, -0.098, 0;
-    foot_pos_body_.row(i) << -0.1934, -0.142, -0.22, -0.1934, 0.142, -0.22,
-        0.1934, -0.142, -0.22, 0.1934, 0.142, -0.22;
+    // z=-0.30 to match local_planner.desired_height=0.30. Was -0.22, which
+    // baked an inconsistent body-height assumption into NMPC's foot reference.
+    foot_pos_body_.row(i) << -0.1934, -0.142, -0.30, -0.1934, 0.142, -0.30,
+        0.1934, -0.142, -0.30, 0.1934, 0.142, -0.30;
     foot_pos_world_.row(i) << 0.1934, 0.142, 0, -0.1934, 0.142, 0, 0.1934,
         -0.142, 0, -0.1934, -0.142, 0;
 

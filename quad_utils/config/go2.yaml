@@ -3,25 +3,25 @@
     global_body_planner:
       h_max: 0.375                            # Maximum height of leg base, m
       h_min: 0.075                            # Minimum ground clearance of body corners, m
-      h_nom: 0.26                             # Nominal ground clearance of body, m
+      h_nom: 0.3                             # Nominal ground clearance of body, m
       v_max: 2.0                              # Maximum robot velocity, m/s
-      v_nom: 0.75                             # Nominal velocity, m/s (used during connect function)
+      v_nom: 0.2                             # Nominal velocity, m/s (used during connect function)
       robot_l: 0.3                            # Length of robot body, m
       robot_w: 0.3                            # Width of robot body, m
       robot_h: 0.05                           # Vertical distance between leg base and bottom of robot, m
-      mass: 16.3                             # Robot mass, kg
+      mass: 16.1                             # Robot mass, kg
       grf_min: 4.0                            # Minimum GRF in units of body weight (only used for sampling)
       grf_max: 5.0                            # Maximum GRF in units of body weight
 
 /**/local_planner:
   ros__parameters:
     local_planner:
-        desired_height: 0.24 # m
+        desired_height: 0.3 # m
         toe_radius: 0.022 # m
     local_footstep_planner:
         hip_clearance: 0.1
         foothold_search_radius: 0.25
-        period: 0.36 # s
+        period: 0.45 # s
         ground_clearance: 0.07 # tune
         duty_cycles: [0.5, 0.5, 0.5, 0.5]
         phase_offsets: [0.0, 0.5, 0.5, 0.0] 
@@ -44,11 +44,7 @@
         x_lb_soft: [!!float -2e19, !!float -2e19, 0.0, -3.14159, -3.14159, -10.0, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19]
         x_ub_soft: [!!float 2e19, !!float 2e19, !!float 2e19, 3.14159, 3.14159, 10.0, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19]
         u_lb: [!!float -2e19, !!float -2e19, 10.0, !!float -2e19, !!float -2e19, 10.0, !!float -2e19, !!float -2e19, 10.0, !!float -2e19, !!float -2e19, 10.0]
-        # GRF z-cap reduced 150 -> 100 N per leg. Hardware hip motor (23.7 Nm
-        # continuous) saturated at 150 N because J^T*F at extended leg pose
-        # mapped peak GRF to ~30 Nm at the hip. 100 N (~2.7x bodyweight per
-        # leg) keeps induced hip torque within continuous limit.
-        u_ub: [!!float 2e19, !!float 2e19, 100.0, !!float 2e19, !!float 2e19, 100.0, !!float 2e19, !!float 2e19, 100.0, !!float 2e19, !!float 2e19, 100.0]
+        u_ub: [!!float 2e19, !!float 2e19, 150.0, !!float 2e19, !!float 2e19, 150.0, !!float 2e19, !!float 2e19, 150.0, !!float 2e19, !!float 2e19, 150.0]
         g_lb: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19]
         g_ub: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
       feet:
@@ -88,14 +84,14 @@
         u_ub: [0.0]
         g_lb: [!!float -2e19, !!float -2e19,  !!float -2e19,  !!float -2e19, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, !!float -2e19, !!float -2e19,  !!float -2e19,  !!float -2e19, !!float -2e19, !!float -2e19,  !!float -2e19,  !!float -2e19,  !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19]
         g_ub: [!!float 2e19, !!float 2e19,  !!float 2e19,  !!float 2e19, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, !!float 2e19, !!float 2e19,  !!float 2e19,  !!float 2e19, !!float 2e19, !!float 2e19,  !!float 2e19,  !!float 2e19,  !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19]
-      friction_coefficient: 0.6
+      friction_coefficient: 0.3
        
 /**/robot_driver:
   ros__parameters:    
     robot_driver:
       sit_kp: [10.0, 10.0, 10.0]
       sit_kd: [1.0, 1.0, 1.0]
-      stand_kp: [35.0, 35.0, 35.0]
+      stand_kp: [60.0, 60.0, 60.0]
       stand_kd: [2.0, 2.0, 2.0]
       stance_kp: [30.0, 30.0, 30.0] # 40 Learned, 30 MPC
       stance_kd: [1.0, 1.0, 1.0]
@@ -127,8 +123,8 @@
     body:
       frame: "body"
     motor_limits:
-      torque: [23.7, 23.7, 45.0]
-      speed: [30.0, 30.0, 15.7]
+      torque: [33.5, 33.5, 50.0]
+      speed: [30.0, 30.0, 20.06]
     leg_0: 
       joints:
         abad:

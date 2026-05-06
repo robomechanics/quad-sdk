@@ -9,6 +9,7 @@
 #include <unitree/idl/go2/LowCmd_.hpp>
 #include <unitree/idl/go2/LowState_.hpp>
 
+#include <array>
 #include <mutex>
 #include <string>
 #include <vector>
@@ -51,6 +52,11 @@ class UnitreeInterface : public HardwareInterface {
             sensor_msgs::msg::Imu& imu_msg,
             Eigen::VectorXd& user_rx_data) override;
 
+  //! Latest raw foot-force readings from rt/lowstate.
+  //! Returned in quad-sdk leg order (FL, RL, FR, RR), int16 units.
+  //! Used by robot_driver to publish a custom FootContact message.
+  std::array<int16_t, kNumLegs> getFootForcesRaw() const;
+
  protected:
   void initLowCmd();
   void lowStateHandler(const void* message);
@@ -62,7 +68,8 @@ class UnitreeInterface : public HardwareInterface {
 
   unitree_go::msg::dds_::LowCmd_ low_cmd_{};
   unitree_go::msg::dds_::LowState_ low_state_{};
-  std::mutex state_mutex_;
+  std::array<int16_t, kNumLegs> foot_force_quad_order_{};  // FL, RL, FR, RR
+  mutable std::mutex state_mutex_;
 
   unitree::robot::ChannelPublisherPtr<
       unitree_go::msg::dds_::LowCmd_> cmd_pub_;
@@ -97,6 +104,11 @@ class UnitreeInterface : public HardwareInterface {
       {6, 7, 8}     // RR
   };
   static constexpr int kWheelMap[kNumWheels] = {13, 15, 12, 14};
+
+  // quad-sdk leg index -> Unitree foot_force array index.
+  // Unitree foot_force order: [FR=0, FL=1, RR=2, RL=3].
+  // quad-sdk leg order:       [FL=0, RL=1, FR=2, RR=3].
+  static constexpr int kFootForceMap[kNumLegs] = {1, 3, 0, 2};
 
   // URDF joint names (numeric, matching go2.urdf.xacro / go2w.urdf.xacro).
   std::vector<std::string> joint_names_ = {

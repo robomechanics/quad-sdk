@@ -98,7 +98,19 @@ void UnitreeInterface::initLowCmd() {
 void UnitreeInterface::lowStateHandler(const void* message) {
   std::lock_guard<std::mutex> lock(state_mutex_);
   low_state_ = *(const unitree_go::msg::dds_::LowState_*)message;
+  // Reorder Unitree's foot_force [FR, FL, RR, RL] into quad-sdk leg order
+  // [FL, RL, FR, RR] so downstream code uses a single convention.
+  const auto& ff = low_state_.foot_force();
+  for (int leg = 0; leg < kNumLegs; ++leg) {
+    foot_force_quad_order_[leg] = ff[kFootForceMap[leg]];
+  }
   state_received_ = true;
+}
+
+std::array<int16_t, UnitreeInterface::kNumLegs>
+UnitreeInterface::getFootForcesRaw() const {
+  std::lock_guard<std::mutex> lock(state_mutex_);
+  return foot_force_quad_order_;
 }
 
 uint32_t UnitreeInterface::crc32Core(uint32_t* ptr, uint32_t len) {

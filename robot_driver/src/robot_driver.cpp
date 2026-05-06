@@ -142,6 +142,17 @@ RobotDriver::RobotDriver(std::shared_ptr<rclcpp::Node> node, int argc,
   state_estimate_pub_ = node_->create_publisher<quad_msgs::msg::RobotState>(
       state_estimate_topic, 1);
 
+  // Foot-contact publisher (raw + thresholded foot-force from Unitree).
+  // Topic name kept simple; logger and any subscriber pick it up by name.
+  std::string foot_contact_topic = "state/foot_contact";
+  quad_utils::loadROSParamDefault(node_, "topics.state.foot_contact",
+                                  foot_contact_topic,
+                                  std::string("state/foot_contact"));
+  foot_contact_pub_ = node_->create_publisher<quad_msgs::msg::FootContact>(
+      foot_contact_topic, 10);
+  quad_utils::loadROSParamDefault(node_, "robot_driver.foot_contact_threshold",
+                                  foot_contact_threshold_, 30);
+
   // Set up pubs and subs dependent on robot layer
   if (is_hardware_) {
     RCLCPP_INFO(node_->get_logger(), "Loading Hardware Robot Driver");
@@ -474,6 +485,24 @@ bool RobotDriver::updateState() {
           node_->get_logger(), *node_->get_clock(), 500,
           "updateState returning false: recv() not fully populated");
       return false;
+    }
+
+    // Publish raw + thresholded foot contact (Unitree foot force sensor).
+    // Only Unitree hardware exposes this; dynamic_cast is the cleanest way
+    // to avoid leaking it into the abstract HardwareInterface API.
+    if (auto* unitree =
+            dynamic_cast<UnitreeInterface*>(hardware_interface_.get())) {
+      quad_msgs::msg::FootContact fc_msg;
+      fc_msg.header.stamp = node_->now();
+      fc_msg.header.frame_id = "map";
+      const auto raw = unitree->getFootForcesRaw();
+      fc_msg.foot_force_raw.resize(num_feet_);
+      fc_msg.contact_states.resize(num_feet_);
+      for (int i = 0; i < num_feet_; ++i) {
+        fc_msg.foot_force_raw[i] = raw[i];
+        fc_msg.contact_states[i] = (raw[i] > foot_contact_threshold_);
+      }
+      foot_contact_pub_->publish(fc_msg);
     }
 
     // For learned controllers on hardware, populate state directly from
@@ -833,11 +862,13 @@ void RobotDriver::publishHeartbeat() {
 }
 
 void RobotDriver::testDynamics() {
-  if (!is_hardware_) {
-    if (rclcpp::Time(last_robot_state_msg_.header.stamp).seconds() != 0) {
-      quad_utils::updateDynamics(*quadKD2_, last_robot_state_msg_);
-      // RCLCPP_INFO(node_->get_logger(), "Completed Dynamics State Update");
-    }
+  // Pinocchio dynamics update (M, N, J) for inverse_dynamics_controller.
+  // Was gated by !is_hardware_ which silently zeroed tau_ff on real hardware
+  // because computeInverseDynamics asserts updated_=true and runs against
+  // stale data otherwise — the SVD on a singular blk_mat returns NaN, which
+  // the safety check in quad_kd2.cpp:881 zeros out. Must run on hardware too.
+  if (rclcpp::Time(last_robot_state_msg_.header.stamp).seconds() != 0) {
+    quad_utils::updateDynamics(*quadKD2_, last_robot_state_msg_);
   }
 }
 

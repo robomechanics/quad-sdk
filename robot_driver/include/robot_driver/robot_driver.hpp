@@ -10,6 +10,7 @@
 #include <quad_msgs/msg/robot_plan.hpp>
 #include <quad_msgs/msg/robot_state.hpp>
 #include <quad_msgs/msg/body_force_estimate.hpp>
+#include <quad_msgs/msg/foot_contact.hpp>
 #include <quad_utils/function_timer.hpp>
 #include <quad_utils/math_utils.hpp>
 #include <quad_utils/quad_kd2.hpp>
@@ -230,6 +231,12 @@ class RobotDriver {
 
   /// ROS publisher for joint data
   rclcpp::Publisher<sensor_msgs::msg::JointState>::SharedPtr joint_state_pub_;
+
+  /// ROS publisher for measured foot contact (Unitree foot-force sensor)
+  rclcpp::Publisher<quad_msgs::msg::FootContact>::SharedPtr foot_contact_pub_;
+
+  /// Threshold (raw int16 units) above which foot is considered in contact.
+  int foot_contact_threshold_;
 
   /// ROS Wrapper Node
   std::shared_ptr<rclcpp::Node> node_;
