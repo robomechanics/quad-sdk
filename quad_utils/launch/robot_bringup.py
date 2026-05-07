@@ -9,45 +9,56 @@ from launch_ros.substitutions import FindPackageShare
 from launch.event_handlers import OnProcessStart, OnProcessExit
 from functools import partial
 import os
+import sys
 import xacro
 import yaml
+
+# Launch files are loaded by ros2 launch via importlib spec, so this
+# directory isn't on sys.path by default. Make sibling helper modules
+# (e.g. mujoco_urdf_utils) importable.
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import mujoco_urdf_utils
 
 def load_robot_params(context, *args, **kwargs):
     # Load Robot URDF and Robot Centric Parameters
     robot_type = LaunchConfiguration('robot_type').perform(context)
     namespace = LaunchConfiguration('namespace').perform(context)
     simulator = LaunchConfiguration('simulator').perform(context)
+    # MuJoCo-only file names; per-robot branches override when needed.
+    # Leaving `mjcf_urdf_file` as None routes the mujoco path through
+    # mujoco_urdf_utils.build_mujoco_urdf (synthesis from urdf_file).
+    mjcf_file = None
+    mjcf_urdf_file = None
     # Find URDF, SDF, and YAML file for the Corresponding Robot
     if robot_type == 'spirit' or robot_type == 'spirit_rotors':
         desc_pkg = 'spirit_description'
         urdf_file = 'spirit.urdf.xacro'
+        mjcf_file = 'spirit.xml'    
         sdf_file = 'spirit_rotors.sdf.xacro' if robot_type == 'spirit_rotors' else 'spirit.sdf.xacro'
         config_file = 'spirit.yaml'
+
     elif robot_type == 'a1':
         desc_pkg = 'a1_description'
         urdf_file = 'a1.urdf.xacro'
         sdf_file = 'a1.sdf.xacro'
         config_file = 'a1.yaml'
+
     elif robot_type == 'go1':
         desc_pkg = 'go1_description'
         urdf_file = 'go1.urdf.xacro'
         sdf_file = 'go1.sdf.xacro'
         config_file = 'go1.yaml'
+
     elif robot_type == 'go2':
         desc_pkg = 'go2_description'
         urdf_file = 'go2.urdf.xacro'
-
         mjcf_file = 'go2.xml'
-        mjcf_urdf_file = 'go2_mujoco.urdf.xacro'
-
         sdf_file = 'go2.sdf.xacro'
         config_file = 'go2.yaml'
     elif robot_type == 'go2w':
         desc_pkg = 'go2w_description'
         urdf_file = 'go2w.urdf.xacro'
-
         mjcf_file = 'go2w.xml'
-        mjcf_urdf_file = 'go2w_mujoco.urdf.xacro'
 
         sdf_file = 'go2w.sdf.xacro'
         config_file = 'go2w.yaml'
@@ -63,6 +74,7 @@ def load_robot_params(context, *args, **kwargs):
     elif robot_type == 'spot':
         desc_pkg = 'spot_description'
         urdf_file = 'spot.urdf.xacro'
+        mjcf_file = 'spot.xml'
         sdf_file = 'spot.sdf.xacro'
         config_file = 'spot.yaml'
     elif robot_type == 'vision60':
@@ -78,7 +90,6 @@ def load_robot_params(context, *args, **kwargs):
 
 
     if simulator == 'mujoco':
-        urdf_path = os.path.join(desc_path, 'models', robot_type, 'urdf', mjcf_urdf_file)
         mjcf_path = os.path.join(desc_path, 'models', robot_type, f'{robot_type}mjc', mjcf_file)
         # `world_path` is a full MJCF path (xacro-processed in quad_mujoco.py).
         # Falls back to constructing from `world` if launched without that prep step.
@@ -87,7 +98,25 @@ def load_robot_params(context, *args, **kwargs):
             world = LaunchConfiguration('world').perform(context)
             world_path = os.path.join(
                 FindPackageShare('quad_sim_scripts').perform(context), 'worlds', world)
-        urdf = xacro.process_file(urdf_path, mappings={'world': world_path}).toxml()
+            
+        if mjcf_urdf_file is None:
+            urdf_path = os.path.join(desc_path, 'models', robot_type, 'urdf', urdf_file)
+            plugin_params_path = os.path.join(
+                FindPackageShare('quad_sim_scripts').perform(context),
+                'config', 'quad_control.yaml')
+            urdf = mujoco_urdf_utils.build_mujoco_urdf(
+                robot_type=robot_type,
+                urdf_path=urdf_path,
+                desc_path=desc_path,
+                world_path=world_path,
+                namespace=namespace,
+                plugin_params_path=plugin_params_path,
+            )
+
+        else:
+            urdf_path = os.path.join(desc_path, 'models', robot_type, 'urdf', mjcf_urdf_file)
+            urdf = xacro.process_file(urdf_path, mappings={'world': world_path}).toxml()
+
         return [
             SetLaunchConfiguration('robot_urdf', urdf),
             SetLaunchConfiguration('robot_urdf_path', urdf_path),

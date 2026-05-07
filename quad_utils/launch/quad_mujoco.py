@@ -1,3 +1,4 @@
+from ament_index_python import get_package_share_directory
 from launch import LaunchDescription
 from launch.actions import DeclareLaunchArgument, OpaqueFunction, GroupAction, IncludeLaunchDescription, ExecuteProcess, SetLaunchConfiguration
 from launch.substitutions import LaunchConfiguration, TextSubstitution, EnvironmentVariable
@@ -8,7 +9,9 @@ from launch.substitutions import PathJoinSubstitution
 
 import os
 import json
+import shutil
 import xacro
+from datetime import datetime
 
 
 def prepare_world(context, *args, **kwargs):
@@ -209,6 +212,177 @@ def launch_mujoco_world(context, *args, **kwargs):
 #         )
 #     ]
 
+
+# def launch_recording(context, *args, **kwargs):
+#     recording = LaunchConfiguration('recording').perform(context).lower() == 'true'
+#     if not recording:
+#         return []
+
+#     if shutil.which('ffmpeg') is None:
+#         raise RuntimeError(
+#             "recording=true but `ffmpeg` is not installed. "
+#             "Install it with `sudo apt install ffmpeg` (and optionally "
+#             "`xdotool` to crop the capture to the MuJoCo window)."
+#         )
+
+#     quad_logger_src = os.environ.get('QUAD_LOGGER_SRC')
+#     if quad_logger_src is None:
+#         raise RuntimeError(
+#             "recording=true but QUAD_LOGGER_SRC env variable is not set. "
+#             "Point it at the quad_logger source dir, e.g. "
+#             "`export QUAD_LOGGER_SRC=$HOME/ros2_ws/src/quad-sdk/quad_logger`."
+#         )
+
+#     logs_dir = os.path.join(quad_logger_src, 'logs')
+#     os.makedirs(logs_dir, exist_ok=True)
+
+#     robot_configs = json.loads(LaunchConfiguration('robot_configs').perform(context))
+#     robot_type = robot_configs[0]['type'] if robot_configs else 'mujoco'
+#     timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+#     output_path = os.path.join(logs_dir, f'mujoco_{robot_type}_{timestamp}.mp4')
+
+#     display = os.environ.get('DISPLAY', ':0')
+
+#     # Capture via x11grab. The MuJoCo viewer takes a moment to come up, so we
+#     # poll for its window with xdotool and then grab that window's region —
+#     # this avoids recording the desktop while the viewer is still loading and
+#     # crops out everything but MuJoCo. If xdotool isn't available or the
+#     # window isn't found within the retry budget, fall back to full-screen
+#     # capture so the user still gets a recording.
+#     #
+#     # `exec` replaces bash with ffmpeg so SIGTERM from launch reaches ffmpeg
+#     # directly; ffmpeg writes the mp4 trailer on signal so the file is
+#     # playable. sigterm_timeout gives it room to finalize before SIGKILL.
+#     record_script = f'''
+# set -e
+# out={output_path!r}
+# disp={display!r}
+# geom=""
+# if command -v xdotool >/dev/null 2>&1; then
+#     for _ in $(seq 1 20); do
+#         wid=$(xdotool search --name "MuJoCo" 2>/dev/null | head -n1 || true)
+#         if [ -n "$wid" ]; then
+#             eval "$(xdotool getwindowgeometry --shell "$wid")"
+#             geom="-video_size ${{WIDTH}}x${{HEIGHT}} -i ${{disp}}+${{X}},${{Y}}"
+#             break
+#         fi
+#         sleep 0.5
+#     done
+# fi
+# if [ -z "$geom" ]; then
+#     echo "[launch_recording] capturing full display ${{disp}} (xdotool/MuJoCo window unavailable)" >&2
+#     geom="-i ${{disp}}"
+# fi
+# exec ffmpeg -hide_banner -loglevel warning -y \\
+#     -f x11grab -framerate 30 $geom \\
+#     -c:v libx264 -preset ultrafast -pix_fmt yuv420p "$out"
+# '''
+
+#     return [
+#         ExecuteProcess(
+#             cmd=['bash', '-lc', record_script],
+#             output='screen',
+#             shell=False,
+#             sigterm_timeout='10',
+#         )
+#     ]
+
+
+
+def _resolve_quad_logger_src(context):
+    """Return the quad_logger SOURCE dir (not install/share).
+
+    Recordings live in `<src>/quad_logger/logs/` so they survive
+    `colcon build` (which wipes install/). Prefer the QUAD_LOGGER_SRC env
+    var (same convention as logging.py / logging_cbs.py); fall back to
+    walking up from the install share to find `<ws>/src/.../quad_logger`.
+    """
+    quad_logger_src = os.environ.get('QUAD_LOGGER_SRC')
+    if quad_logger_src and os.path.isdir(quad_logger_src):
+        return quad_logger_src
+
+    share = FindPackageShare('quad_logger').perform(context)
+    # share = <ws>/install/quad_logger/share/quad_logger
+    ws_root = os.path.normpath(os.path.join(share, '..', '..', '..', '..'))
+    for root, dirs, _ in os.walk(os.path.join(ws_root, 'src')):
+        if os.path.basename(root) == 'quad_logger' and 'package.xml' in os.listdir(root):
+            return root
+        # Don't descend into build artefacts / vendored deps.
+        dirs[:] = [d for d in dirs if d not in ('build', 'install', 'log', '.git')]
+    raise RuntimeError(
+        "Could not locate quad_logger source dir. Set QUAD_LOGGER_SRC, "
+        "e.g. `export QUAD_LOGGER_SRC=$HOME/ros2_ws/src/quad-sdk/quad_logger`."
+    )
+
+
+def launch_recording(context, *args, **kwargs):
+    recording = LaunchConfiguration('recording').perform(context).lower() == 'true'
+    if not recording:
+        return []
+
+    if shutil.which('ffmpeg') is None:
+        raise RuntimeError(
+            "recording=true but `ffmpeg` is not installed. "
+            "Install it with `sudo apt install ffmpeg`."
+        )
+
+    log_dir = os.path.join(_resolve_quad_logger_src(context), 'logs')
+    os.makedirs(log_dir, exist_ok=True)
+
+    robot_configs = json.loads(LaunchConfiguration('robot_configs').perform(context))
+    if not robot_configs:
+        raise RuntimeError("'robot_configs' must contain at least one robot")
+    first = robot_configs[0]
+    robot_type = first['type']
+    robot_ns = first['name']
+
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    out_file = os.path.join(log_dir, f"mujoco_{robot_type}_{timestamp}.mp4")
+
+    world_path = LaunchConfiguration('world_path').perform(context)
+
+    # Pull the per-robot joint map out of mujoco_profiles.py and pass it
+    # to the C++ recorder as two parallel string arrays (the C++ node
+    # doesn't import the Python profile). Same source of truth as the
+    # rest of the MuJoCo URDF injection in mujoco_urdf_utils.py.
+    import sys as _sys
+    _sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+    from mujoco_profiles import get_profile  # noqa: E402
+    profile = get_profile(robot_type)
+    joint_map_ros = [ros for ros, _ in profile['joint_map']]
+    joint_map_mjc = [mjc for _, mjc in profile['joint_map']]
+
+    # Offscreen recorder: shadow-loads the same MJCF, mirrors live state
+    # from /<ns>/odom and /<ns>/joint_states into its own mjData, and
+    # encodes frames straight to mp4 via libmujoco (mujoco_vendor) +
+    # GLFW. No screen capture, no display window, no race with the
+    # viewer. The node closes its ffmpeg pipe in its destructor so
+    # Ctrl+C produces a finalized mp4.
+    return [
+        Node(
+            package='quad_utils',
+            executable='mujoco_recorder',
+            name='mujoco_recorder',
+            output='screen',
+            parameters=[{
+                'mjcf_path': world_path,
+                'namespace': robot_ns,
+                'output_path': out_file,
+                'width': 1280,
+                'height': 720,
+                'fps': 30,
+                'camera_track_robot': True,
+                'odom_free_joint_name': profile['odom_free_joint_name'],
+                'joint_map_ros': joint_map_ros,
+                'joint_map_mjc': joint_map_mjc,
+                'use_sim_time': True,
+            }],
+        )
+    ]
+
+
+
+
 def generate_launch_description():
     declared_args = [
         DeclareLaunchArgument('world', default_value='flat.xml', description='MJCF world file name to load into simulation'),
@@ -226,7 +400,8 @@ def generate_launch_description():
         ),
         DeclareLaunchArgument('scenario', default_value="None", description='Custom Obstacle Scenario to Spawn e.g. Underbrush, Procedural Underbrush)'),
         DeclareLaunchArgument('obstacles', default_value='[]',
-            description= 'A JSON List of obstacles to spawn (e.g {"name": "box", "init_pose" : "-x 3.0 -y 0.0 -z 2"})')
+            description= 'A JSON List of obstacles to spawn (e.g {"name": "box", "init_pose" : "-x 3.0 -y 0.0 -z 2"})'),
+        DeclareLaunchArgument('recording', default_value='false', description='Whether to log a video of the mujoco scene'),
     ]
 
     return LaunchDescription(declared_args + [
@@ -237,7 +412,8 @@ def generate_launch_description():
         OpaqueFunction(function=launch_robot_mapping),
         OpaqueFunction(function=launch_robot_group),
         OpaqueFunction(function=launch_visualization),
-        OpaqueFunction(function=launch_plot_juggler)
+        OpaqueFunction(function=launch_plot_juggler),
+        OpaqueFunction(function=launch_recording),
     ])
 
 

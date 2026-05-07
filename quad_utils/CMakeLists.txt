@@ -33,6 +33,12 @@ find_package(pluginlib REQUIRED)
 find_package(filters REQUIRED)
 find_package(tf2_ros REQUIRED)
 
+# Optional: only build mujoco_recorder_node when the vendor + glfw are
+# present, so the package still builds on machines that don't have the
+# MuJoCo stack (e.g. hardware deployments).
+find_package(mujoco_vendor QUIET)
+find_package(glfw3 QUIET)
+
 add_library(quad_utils
   src/rviz_interface.cpp
   src/fast_terrain_map.cpp
@@ -232,6 +238,29 @@ install(TARGETS
   grid_map_filters_demo
   DESTINATION lib/${PROJECT_NAME}
 )
+
+# Offscreen MuJoCo recorder. Linked against the vendored libmujoco
+# (no Python mujoco package needed) plus GLFW for the GL context.
+# Output renamed to `mujoco_recorder` so `ros2 run quad_utils mujoco_recorder`
+# matches the launch file.
+if(mujoco_vendor_FOUND AND glfw3_FOUND)
+  add_executable(mujoco_recorder_node src/mujoco_recorder_node.cpp)
+  set_target_properties(mujoco_recorder_node PROPERTIES OUTPUT_NAME mujoco_recorder)
+  target_link_libraries(mujoco_recorder_node
+    mujoco::mujoco
+    glfw
+  )
+  ament_target_dependencies(mujoco_recorder_node
+    rclcpp
+    sensor_msgs
+    nav_msgs
+  )
+  install(TARGETS mujoco_recorder_node
+    DESTINATION lib/${PROJECT_NAME}
+  )
+else()
+  message(STATUS "mujoco_recorder_node: skipping (mujoco_vendor or glfw3 not found)")
+endif()
 
 # install(TARGETS
 #   trajectory_publisher_node

@@ -31,6 +31,13 @@
   <depend>python_cmake_module</depend>
   <depend>rviz2</depend>
 
+  <depend>mujoco_vendor</depend>
+  <depend>libglfw3-dev</depend>
+
+  <exec_depend>ffmpeg</exec_depend>
+  <exec_depend>xdotool</exec_depend>
+
+
   <exec_depend>ros2launch</exec_depend>
   <exec_depend>launch</exec_depend>
   <exec_depend>launch_ros</exec_depend>
