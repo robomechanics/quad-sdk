@@ -1,5 +1,5 @@
 <mujoco model="spot">
-  <compiler angle="radian" meshdir="assets"/>
+  <!-- <compiler angle="radian" meshdir="assets"/> -->
 
   <option integrator="implicitfast" cone="elliptic" impratio="100"/>
 
@@ -40,7 +40,7 @@
     <default class="spot">
       <geom solref="0.004 1"/>
       <joint actuatorfrcrange="-1000 1000"/>
-      <position kp="500" kv="40" inheritrange="1"/>
+      <motor/>
       <default class="visual">
         <geom group="2" type="mesh" contype="0" conaffinity="0"/>
       </default>
@@ -58,7 +58,7 @@
     <light name="spotlight" mode="targetbodycom" target="body" pos="3 0 4" cutoff="30"/>
     <body name="body" childclass="spot" pos="0 0 .75">
       <light name="tracking" mode="trackcom" pos="0 0 2"/>
-      <freejoint name="freejoint"/>
+      <freejoint name="floating_base"/>
       <inertial pos="0.0063944 -9.81216e-05 0.000911379" mass="32.86" diaginertia="0.13144 0.13144 0.13144"/>
       <geom mesh="body_0" material="BlackAbs" class="visual"/>
       <geom mesh="body_1" material="wrap" class="visual"/>

@@ -40,12 +40,14 @@ def load_robot_params(context, *args, **kwargs):
     elif robot_type == 'a1':
         desc_pkg = 'a1_description'
         urdf_file = 'a1.urdf.xacro'
+        mjcf_file = 'a1.xml'   
         sdf_file = 'a1.sdf.xacro'
         config_file = 'a1.yaml'
 
     elif robot_type == 'go1':
         desc_pkg = 'go1_description'
         urdf_file = 'go1.urdf.xacro'
+        mjcf_file = 'go1.xml'
         sdf_file = 'go1.sdf.xacro'
         config_file = 'go1.yaml'
 
@@ -59,16 +61,12 @@ def load_robot_params(context, *args, **kwargs):
         desc_pkg = 'go2w_description'
         urdf_file = 'go2w.urdf.xacro'
         mjcf_file = 'go2w.xml'
-
         sdf_file = 'go2w.sdf.xacro'
         config_file = 'go2w.yaml'
     elif robot_type == 'b2':
         desc_pkg = 'b2_description'
         urdf_file = 'b2.urdf.xacro'
-
         mjcf_file = 'b2.xml'
-        mjcf_urdf_file = 'b2_mujoco.urdf.xacro'
-
         sdf_file = 'b2.sdf.xacro'
         config_file = 'b2.yaml'
     elif robot_type == 'spot':

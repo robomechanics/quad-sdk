@@ -70,6 +70,12 @@ def _inject_mujoco_elements(urdf_xml, profile, world_path, namespace,
     ET.SubElement(hardware, 'param', {'name': 'mujoco_model'}).text = world_path
     ET.SubElement(hardware, 'param', {'name': 'odom_free_joint_name'}).text = profile['odom_free_joint_name']
     ET.SubElement(hardware, 'param', {'name': 'odom_topic'}).text = f'/{namespace}/odom'
+    # initial_keyframe is read by mujoco_system_interface to call apply_keyframe()
+    # at hardware setup, so qpos starts in a folded sit pose instead of straight
+    # legs — keeps the robot upright in the window before joint_controller is
+    # active.
+    if profile.get('initial_keyframe'):
+        ET.SubElement(hardware, 'param', {'name': 'initial_keyframe'}).text = profile['initial_keyframe']
 
     for idx, mjc_joint_name in profile['joint_map']:
         j = ET.SubElement(rc, 'joint', {'name': idx})

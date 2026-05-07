@@ -8,6 +8,7 @@
   <compiler
     angle="radian"
     meshdir="$(arg meshdir)"
+    texturedir="$(arg meshdir)"
     autolimits="true"/>
 
   <include file="$(arg mjcf_path)"/>

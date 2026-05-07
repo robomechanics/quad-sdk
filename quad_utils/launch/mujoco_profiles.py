@@ -1,67 +1,158 @@
-"""Per-robot MuJoCo data not derivable from the standard YAML config.
+"""Per-robot MuJoCo injection profiles.
 
-The YAML files in `quad_utils/config/<robot>.yaml` are the single source of
-truth for the leg/joint topology: each `leg_X.joints.{abad,hip,knee}.name`
-gives the ros2_control joint name (matching the URDF). What lives here is
-only the MuJoCo-specific delta:
+Each profile captures the robot-specific bits that the Gazebo URDF doesn't
+carry: the floating-base joint name MuJoCo uses for odometry, and the
+mapping from ros2_control joint names to MuJoCo actuator/joint names. These
+mirror the rows that lived in the (now retired) `<robot>_mujoco.urdf.xacro`
+files as `<xacro:mujoco_joint>` entries.
 
-  * `odom_free_joint_name` — the floating-base freejoint name in the MJCF
-    that mujoco_ros2_control reads odometry from.
-  * `mjc_joint_names` — for robots whose MJCF asset uses different joint
-    names than the URDF/YAML side, the per-leg/per-role MJCF name. When
-    this is omitted, we use an identity map (MJC name == YAML name), which
-    is the case for spirit and go1.
 
-To support a new robot:
-
-  1. Add a YAML config in `quad_utils/config/<robot>.yaml` with the leg
-     topology (this is required for the rest of the SDK anyway).
-  2. Add an entry to `PROFILES` below — `mjc_joint_names` only when the
-     MJCF asset uses different names than the URDF.
+To support a new robot, add an entry to `PROFILES` keyed by `robot_type`.
+The generic injection logic in `mujoco_urdf_utils.py` consumes these
+profiles unchanged.
 """
 
-import os
 
-import yaml
-
-
-LEGS = ('leg_0', 'leg_1', 'leg_2', 'leg_3')
-JOINT_ROLES = ('abad', 'hip', 'knee')
-
-
-# go2 / a1: URDF uses numeric joint names ("0"..."11"); MJCF uses the
-# Unitree convention `<FL|FR|RL|RR>_<hip|thigh|calf>_joint`.
-_UNITREE_NUMERIC_TO_MJC = {
-    'leg_0': {'abad': 'FL_hip_joint', 'hip': 'FL_thigh_joint', 'knee': 'FL_calf_joint'},
-    'leg_1': {'abad': 'RL_hip_joint', 'hip': 'RL_thigh_joint', 'knee': 'RL_calf_joint'},
-    'leg_2': {'abad': 'FR_hip_joint', 'hip': 'FR_thigh_joint', 'knee': 'FR_calf_joint'},
-    'leg_3': {'abad': 'RR_hip_joint', 'hip': 'RR_thigh_joint', 'knee': 'RR_calf_joint'},
+_GO2_PROFILE = {
+    'odom_free_joint_name': 'floating_base',
+    'initial_keyframe': 'home',
+    'joint_map': [
+        ('0',  'FL_thigh_joint'),
+        ('1',  'FL_calf_joint'),
+        ('2',  'RL_thigh_joint'),
+        ('3',  'RL_calf_joint'),
+        ('4',  'FR_thigh_joint'),
+        ('5',  'FR_calf_joint'),
+        ('6',  'RR_thigh_joint'),
+        ('7',  'RR_calf_joint'),
+        ('8',  'FL_hip_joint'),
+        ('9',  'RL_hip_joint'),
+        ('10', 'FR_hip_joint'),
+        ('11', 'RR_hip_joint'),
+    ],
 }
 
-# Spot: MJCF uses Boston Dynamics' compact naming. `h*` is the rear (hind)
-# pair; `_hx` is hip-x (abduction), `_hy` is hip-y (front/back hip), `_kn`
-# is knee.
-_SPOT_MJC_JOINT_NAMES = {
-    'leg_0': {'abad': 'fl_hx', 'hip': 'fl_hy', 'knee': 'fl_kn'},
-    'leg_1': {'abad': 'hl_hx', 'hip': 'hl_hy', 'knee': 'hl_kn'},
-    'leg_2': {'abad': 'fr_hx', 'hip': 'fr_hy', 'knee': 'fr_kn'},
-    'leg_3': {'abad': 'hr_hx', 'hip': 'hr_hy', 'knee': 'hr_kn'},
+
+# a1's URDF (and ros2_control block) uses the same numeric joint names as go2,
+# and its mjcf uses the same FL_/FR_/RL_/RR_ actuator names — so the mapping
+# is identical to go2.
+_A1_PROFILE = {
+    'odom_free_joint_name': 'floating_base',
+    'initial_keyframe': 'home',
+    'joint_map': [
+        ('0',  'FL_thigh_joint'),
+        ('1',  'FL_calf_joint'),
+        ('2',  'RL_thigh_joint'),
+        ('3',  'RL_calf_joint'),
+        ('4',  'FR_thigh_joint'),
+        ('5',  'FR_calf_joint'),
+        ('6',  'RR_thigh_joint'),
+        ('7',  'RR_calf_joint'),
+        ('8',  'FL_hip_joint'),
+        ('9',  'RL_hip_joint'),
+        ('10', 'FR_hip_joint'),
+        ('11', 'RR_hip_joint'),
+    ],
+}
+
+
+# go1's URDF and mjcf both use the same FL_/FR_/RL_/RR_ joint names, so the
+# ros2_control -> MuJoCo map is identity.
+_GO1_PROFILE = {
+    'odom_free_joint_name': 'floating_base',
+    'initial_keyframe': 'home',
+    'joint_map': [
+        ('FL_hip_joint',   'FL_hip_joint'),
+        ('FL_thigh_joint', 'FL_thigh_joint'),
+        ('FL_calf_joint',  'FL_calf_joint'),
+        ('RL_hip_joint',   'RL_hip_joint'),
+        ('RL_thigh_joint', 'RL_thigh_joint'),
+        ('RL_calf_joint',  'RL_calf_joint'),
+        ('FR_hip_joint',   'FR_hip_joint'),
+        ('FR_thigh_joint', 'FR_thigh_joint'),
+        ('FR_calf_joint',  'FR_calf_joint'),
+        ('RR_hip_joint',   'RR_hip_joint'),
+        ('RR_thigh_joint', 'RR_thigh_joint'),
+        ('RR_calf_joint',  'RR_calf_joint'),
+    ],
+}
+
+
+# spot.xml uses Boston-Dynamics' short actuator names: f/h = front/hind,
+# l/r = left/right; hx = hip abduction, hy = hip flexion (thigh),
+# kn = knee (calf). The ros2_control side uses the numeric scheme shared
+# with go2/a1 (8/0/1 = FL hip/thigh/calf, 9/2/3 = RL, 10/4/5 = FR,
+# 11/6/7 = RR).
+_SPOT_PROFILE = {
+    'odom_free_joint_name': 'floating_base',
+    'initial_keyframe': 'home',
+    'joint_map': [
+        ('0',  'fl_hy'),
+        ('1',  'fl_kn'),
+        ('2',  'hl_hy'),
+        ('3',  'hl_kn'),
+        ('4',  'fr_hy'),
+        ('5',  'fr_kn'),
+        ('6',  'hr_hy'),
+        ('7',  'hr_kn'),
+        ('8',  'fl_hx'),
+        ('9',  'hl_hx'),
+        ('10', 'fr_hx'),
+        ('11', 'hr_hx'),
+    ],
+}
+
+
+# b2's mjcf uses short FL_/FR_/RL_/RR_ actuator names (no `_joint` suffix)
+# and a `floating_base_joint` freejoint (not `floating_base`). Numeric
+# ros2_control scheme matches go2/a1/spot.
+_B2_PROFILE = {
+    'odom_free_joint_name': 'floating_base_joint',
+    'initial_keyframe': 'home',
+    'joint_map': [
+        ('0',  'FL_thigh'),
+        ('1',  'FL_calf'),
+        ('2',  'RL_thigh'),
+        ('3',  'RL_calf'),
+        ('4',  'FR_thigh'),
+        ('5',  'FR_calf'),
+        ('6',  'RR_thigh'),
+        ('7',  'RR_calf'),
+        ('8',  'FL_hip'),
+        ('9',  'RL_hip'),
+        ('10', 'FR_hip'),
+        ('11', 'RR_hip'),
+    ],
+}
+
+
+_SPIRIT_PROFILE = {
+    'odom_free_joint_name': 'floating_base',
+    'initial_keyframe': 'home',
+    'joint_map': [
+        ('0',  '0'),
+        ('1',  '1'),
+        ('2',  '2'),
+        ('3',  '3'),
+        ('4',  '4'),
+        ('5',  '5'),
+        ('6',  '6'),
+        ('7',  '7'),
+        ('8',  '8'),
+        ('9',  '9'),
+        ('10', '10'),
+        ('11', '11'),
+    ],
 }
 
 
 PROFILES = {
-    # YAML joint names == MJCF joint names → no `mjc_joint_names` override.
-    'spirit': {'odom_free_joint_name': 'floating_base'},
-    'go1':    {'odom_free_joint_name': 'floating_base'},
-
-    # YAML uses "0".."11" but MJCF uses Unitree FR/FL/RR/RL_*_joint names.
-    'go2': {'odom_free_joint_name': 'floating_base',
-            'mjc_joint_names': _UNITREE_NUMERIC_TO_MJC},
-    'a1':  {'odom_free_joint_name': 'floating_base',
-            'mjc_joint_names': _UNITREE_NUMERIC_TO_MJC},
-
-    'spot': {'odom_free_joint_name': 'freejoint',
-             'mjc_joint_names': _SPOT_MJC_JOINT_NAMES},
+    'go2': _GO2_PROFILE,
+    'go1': _GO1_PROFILE,
+    'a1':  _A1_PROFILE,
+    'b2':  _B2_PROFILE,
+    'spot': _SPOT_PROFILE,
+    'spirit': _SPIRIT_PROFILE,
 }
 
 
@@ -79,44 +170,3 @@ def get_profile(robot_type):
             f"No MuJoCo injection profile for robot_type {robot_type!r}; "
             "add one to PROFILES in mujoco_profiles.py."
         )
-
-
-def _load_robot_yaml(robot_yaml_path):
-    if not os.path.isfile(robot_yaml_path):
-        raise RuntimeError(
-            f"Robot YAML not found: {robot_yaml_path}. "
-            "Each robot needs a config in quad_utils/config/<robot>.yaml."
-        )
-    with open(robot_yaml_path) as f:
-        cfg = yaml.safe_load(f)
-    return cfg.get('/**', {}).get('ros__parameters', {})
-
-
-def build_joint_map(robot_type, robot_yaml_path):
-    """Return [(ros2_control_name, mjc_joint_name), ...] for `robot_type`.
-
-    `robot_yaml_path` is the path to the per-robot YAML (the same file that
-    feeds ros2_control / robot_driver). The ros2_control names come from
-    `leg_X.joints.{abad,hip,knee}.name`; the MJC names come from the
-    per-robot profile (or default to the ros2_control name when the
-    profile omits `mjc_joint_names`).
-    """
-    profile = get_profile(robot_type)
-    overrides = profile.get('mjc_joint_names', {})
-    root = _load_robot_yaml(robot_yaml_path)
-
-    joint_map = []
-    for leg in LEGS:
-        leg_cfg = root.get(leg, {}).get('joints', {})
-        leg_overrides = overrides.get(leg, {})
-        for role in JOINT_ROLES:
-            joint = leg_cfg.get(role)
-            if not joint or 'name' not in joint:
-                raise RuntimeError(
-                    f"{robot_yaml_path} is missing {leg}.joints.{role}.name "
-                    f"(needed to build the MuJoCo joint map for {robot_type!r})."
-                )
-            ros_name = joint['name']
-            mjc_name = leg_overrides.get(role, ros_name)
-            joint_map.append((ros_name, mjc_name))
-    return joint_map
