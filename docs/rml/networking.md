@@ -43,14 +43,12 @@ In short:
 - The machine running the remote driver — whether tethered via Ethernet through the TP-Link or joined over Wi-Fi — must hold an address in `192.168.8.X`. If the laptop falls back to a CMU-DHCP address (`172.26.x.x`), it cannot reach the robot.
 
 !!! tip "Verify before launching"
-    `launch_robot_env.sh` prints the addresses it sees on both interfaces and flags whether they match the expected subnets. **Run it before `ros2 launch quad_utils robot_driver.py`** — a mis-assigned NIC is the most common cause of driver startup failures.
+    `launch_robot_env.sh` prints the addresses it sees on both interfaces and flags whether they match the expected subnets. **Source it before `ros2 launch quad_utils robot_driver.py`** — a mis-assigned NIC is the most common cause of driver startup failures. If the script reports an interface on the wrong subnet, fix the network config first (netplan on the robot, TP-Link DHCP page for the laptop) and re-source it.
 
-    ```bash
-    cd /root/ros2_ws/src/quad-sdk/quad_utils/scripts
-    source launch_robot_env.sh
-    ```
-
-    If the script reports an interface on the wrong subnet, fix the network config first (see [netplan template](#connecting-the-internet-directly-to-the-robot) for the robot or the TP-Link DHCP page for the laptop) and re-source it.
+```bash
+cd /root/ros2_ws/src/quad-sdk/quad_utils/scripts
+source launch_robot_env.sh
+```
 
 ## Connecting the internet directly to the robot
 
