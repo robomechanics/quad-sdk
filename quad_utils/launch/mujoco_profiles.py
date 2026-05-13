@@ -103,25 +103,27 @@ _SPOT_PROFILE = {
 }
 
 
-# b2's mjcf uses short FL_/FR_/RL_/RR_ actuator names (no `_joint` suffix)
-# and a `floating_base_joint` freejoint (not `floating_base`). Numeric
-# ros2_control scheme matches go2/a1/spot.
+# b2's mjcf has `<motor name="FL_thigh" joint="FL_thigh_joint"/>` etc, and a
+# `floating_base_joint` freejoint (not `floating_base`). The transmission
+# matcher in mujoco_ros2_control compares against the actuator's *joint*
+# name, so we map to the `_joint`-suffixed names. Numeric ros2_control
+# scheme matches go2/a1/spot.
 _B2_PROFILE = {
     'odom_free_joint_name': 'floating_base_joint',
     'initial_keyframe': 'home',
     'joint_map': [
-        ('0',  'FL_thigh'),
-        ('1',  'FL_calf'),
-        ('2',  'RL_thigh'),
-        ('3',  'RL_calf'),
-        ('4',  'FR_thigh'),
-        ('5',  'FR_calf'),
-        ('6',  'RR_thigh'),
-        ('7',  'RR_calf'),
-        ('8',  'FL_hip'),
-        ('9',  'RL_hip'),
-        ('10', 'FR_hip'),
-        ('11', 'RR_hip'),
+        ('0',  'FL_thigh_joint'),
+        ('1',  'FL_calf_joint'),
+        ('2',  'RL_thigh_joint'),
+        ('3',  'RL_calf_joint'),
+        ('4',  'FR_thigh_joint'),
+        ('5',  'FR_calf_joint'),
+        ('6',  'RR_thigh_joint'),
+        ('7',  'RR_calf_joint'),
+        ('8',  'FL_hip_joint'),
+        ('9',  'RL_hip_joint'),
+        ('10', 'FR_hip_joint'),
+        ('11', 'RR_hip_joint'),
     ],
 }
 
