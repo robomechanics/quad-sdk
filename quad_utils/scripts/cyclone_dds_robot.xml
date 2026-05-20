@@ -7,7 +7,18 @@
             <Interfaces>
                 <NetworkInterface address="${ROBOT_ROS_IP}"/>
             </Interfaces>
+            <AllowMulticast>false</AllowMulticast>
+            <DontRoute>true</DontRoute>
+            <MaxMessageSize>65500B</MaxMessageSize>
         </General>
+        <Internal>
+            <SocketReceiveBufferSize min="128MB"/>
+            <SocketSendBufferSize min="128MB"/>
+            <Watermarks>
+                <WhcHigh>500kB</WhcHigh>
+            </Watermarks>
+            <FragmentSize>1452B</FragmentSize>
+        </Internal>
         <Discovery>
             <Peers>
                 <Peer address="192.168.8.103"/>
