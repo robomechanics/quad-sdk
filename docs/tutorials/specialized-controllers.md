@@ -65,21 +65,20 @@ In benchmark trials reported in the publication, the controller succeeded in 14 
 
 ### Status
 
-- **Available on**: ROS 1 (`devel` branch only)
-- **Not yet ported** to ROS 2
+- **Available on**: ROS 1 (`devel` branch) and ROS 2 (`devel_ros2`)
+- **Hardware support**: ROS 2 build currently only runs on the **Ghost Robotics Spirit 40** — porting to other platforms is open work
 
 ### Citation
 
 > Yim, J. K., Ren, J., Ologan, D., Gonzalez, S. G., & Johnson, A. M. *Proprioception and reaction for walking among entanglements*. IEEE/RSJ IROS, 2023.
 
-### Usage (ROS 1)
+### Usage (ROS 2, Spirit 40)
 
 ```bash
-git checkout devel
-roslaunch quad_utils underbrush_gazebo.launch
-rostopic pub /robot_1/control/mode std_msgs/UInt8 "data:1"
-roslaunch quad_utils quad_plan.launch reference:=twist logging:=true
-rosrun body_force_estimator path_following.py
+ros2 launch quad_utils underbrush_gazebo.py
+ros2 topic pub /robot_1/control/mode std_msgs/UInt8 "data: 1" --once
+ros2 launch quad_utils quad_plan.py reference:=twist logging:=true
+ros2 run body_force_estimator path_following
 ```
 
-For a ROS 2 port, the swing-phase reactive logic in `body_force_estimator/src/path_following.py` is the most useful starting point.
+The swing-phase reactive logic lives in `body_force_estimator/src/path_following.py`. To port to other platforms, adapt the per-leg kinematic limits and contact thresholds in that file plus the matching `quad_utils/config/<robot>.yaml`.

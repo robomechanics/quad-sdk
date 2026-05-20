@@ -127,6 +127,7 @@ rehash toolboxcache; clear
 - ROS 1 launch XML files
 - RBDL build path (the source files remain in-tree but are not linked)
 - Gazebo Classic worlds (replaced with Gazebo Harmonic SDF + MuJoCo MJCF)
-- The legacy `underbrush` controller (ROS 1 only — see [Specialized Controllers](../tutorials/specialized-controllers.md))
+
+The legacy `underbrush` controller is still available in the ROS 2 build, but it currently only runs on the **Ghost Robotics Spirit 40** — see [Specialized Controllers](../tutorials/specialized-controllers.md) for usage and porting notes.
 
 [:octicons-arrow-right-24: Pinocchio integration](pinocchio-integration.md)
