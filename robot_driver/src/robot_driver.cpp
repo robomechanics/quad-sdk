@@ -48,6 +48,8 @@ RobotDriver::RobotDriver(std::shared_ptr<rclcpp::Node> node, int argc,
                                   std::string("inverse_dynamics"));
   quad_utils::loadROSParamDefault(node_, "estimator_id", estimator_id_,
                                   std::string("comp_filter"));
+  quad_utils::loadROSParamDefault(node_, "debug_estimator_id",
+                                  debug_estimator_id_, std::string("none"));
   quad_utils::loadROSParam(node_, "robot_driver.update_rate", update_rate_);
   quad_utils::loadROSParam(node_, "robot_driver.publish_rate", publish_rate_);
   quad_utils::loadROSParam(node_, "robot_driver.mocap_rate", mocap_rate_);
@@ -234,6 +236,36 @@ void RobotDriver::initStateEstimator() {
   if (state_estimator_ != nullptr) {
     state_estimator_->init();
   }
+
+  // Optional parallel "ride-along" estimator. Runs on the same sensor inputs
+  // and publishes to topics.state.estimate for comparison, but its output
+  // never feeds the controller.
+  if (debug_estimator_id_ == "none" || debug_estimator_id_.empty()) {
+    debug_state_estimator_ = nullptr;
+  } else if (debug_estimator_id_ == estimator_id_) {
+    RCLCPP_WARN(node_->get_logger(),
+                "debug_estimator_id ('%s') matches active estimator_id; "
+                "skipping ride-along.",
+                debug_estimator_id_.c_str());
+    debug_state_estimator_ = nullptr;
+  } else if (debug_estimator_id_ == "comp_filter") {
+    RCLCPP_INFO(node_->get_logger(), "Ride-along estimator: comp_filter");
+    debug_state_estimator_ =
+        std::make_shared<CompFilterEstimator>(node_, robot_ns, quadKD2_);
+  } else if (debug_estimator_id_ == "ekf_filter") {
+    RCLCPP_INFO(node_->get_logger(), "Ride-along estimator: ekf_filter");
+    debug_state_estimator_ =
+        std::make_shared<EKFEstimator>(node_, robot_ns, quadKD2_);
+  } else {
+    RCLCPP_ERROR(node_->get_logger(),
+                 "Invalid debug_estimator_id '%s', skipping ride-along",
+                 debug_estimator_id_.c_str());
+    debug_state_estimator_ = nullptr;
+  }
+
+  if (debug_state_estimator_ != nullptr) {
+    debug_state_estimator_->init();
+  }
 }
 
 void RobotDriver::initLegController() {
@@ -383,6 +415,10 @@ void RobotDriver::mocapCallback(
       if (CompFilterEstimator* c =
               dynamic_cast<CompFilterEstimator*>(state_estimator_.get())) {
         c->mocapCallBackHelper(msg, pos);
+      }
+      if (CompFilterEstimator* dc = dynamic_cast<CompFilterEstimator*>(
+              debug_state_estimator_.get())) {
+        dc->mocapCallBackHelper(msg, pos);
       }
     } else {
       RCLCPP_WARN_THROTTLE(node_->get_logger(), *node_->get_clock(), 500,
@@ -558,6 +594,25 @@ bool RobotDriver::updateState() {
             node_->get_logger(), *node_->get_clock(), 500,
             "updateState returning false: estimator updateOnce failed");
       }
+
+      // Run the ride-along estimator on the same sensor inputs. Its output
+      // goes to debug_estimate_msg_ and is published on topics.state.estimate
+      // for comparison; it never reaches the controller.
+      if (debug_state_estimator_ != nullptr && result) {
+        if (!debug_estimator_seeded_) {
+          // Seed from the primary's first valid output so both filters
+          // initialize from the same pose (EKF reads X0 from this msg).
+          debug_estimate_msg_ = last_robot_state_msg_;
+          debug_estimator_seeded_ = true;
+        }
+        debug_state_estimator_->loadSensorMsg(last_imu_msg_,
+                                              last_joint_state_msg_);
+        if (last_mocap_msg_ != nullptr) {
+          debug_state_estimator_->loadMocapMsg(last_mocap_msg_);
+        }
+        debug_state_estimator_->updateOnce(debug_estimate_msg_);
+      }
+
       return result;
     } else {
       RCLCPP_WARN_THROTTLE(
@@ -632,6 +687,13 @@ void RobotDriver::publishState() {
     imu_pub_->publish(last_imu_msg_);
     joint_state_pub_->publish(last_joint_state_msg_);
     robot_state_pub_->publish(last_robot_state_msg_);
+
+    // Publish ride-along estimator output on topics.state.estimate for
+    // side-by-side comparison with the active estimator (drives no control).
+    if (debug_state_estimator_ != nullptr && debug_estimator_seeded_) {
+      debug_estimate_msg_.header.stamp = node_->now();
+      state_estimate_pub_->publish(debug_estimate_msg_);
+    }
   }
 }
 

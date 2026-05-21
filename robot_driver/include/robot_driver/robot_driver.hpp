@@ -482,6 +482,21 @@ class RobotDriver {
 
   /// Previous ground truth velocity for finite-difference accel computation
   Eigen::Vector3d ekf_last_vel_ = Eigen::Vector3d::Zero();
+
+  /// ID of the ride-along estimator that runs in parallel for comparison
+  /// (e.g. "ekf_filter" while comp_filter drives control). "none" disables.
+  std::string debug_estimator_id_;
+
+  /// Parallel estimator running alongside state_estimator_ for logging only.
+  /// Its output never reaches the controller.
+  std::shared_ptr<StateEstimator> debug_state_estimator_;
+
+  /// Output buffer for the parallel estimator
+  quad_msgs::msg::RobotState debug_estimate_msg_;
+
+  /// First-call flag: seed debug_estimate_msg_ from the active estimator
+  /// so the ride-along EKF initializes at the same pose as comp_filter.
+  bool debug_estimator_seeded_ = false;
 };
 
 #endif  // ROBOT_DRIVER_H
