@@ -16,10 +16,10 @@ def load_robot_params(context, *args, **kwargs):
     robot_type = LaunchConfiguration('robot_type').perform(context)
     namespace = LaunchConfiguration('namespace').perform(context)
     # Find URDF, SDF, and YAML file for the Corresponding Robot
-    if robot_type == 'spirit' or robot_type == 'spirit_rotors':
+    if robot_type == 'spirit':
         desc_pkg = 'spirit_description'
         urdf_file = 'spirit.urdf.xacro'
-        sdf_file = 'spirit_rotors.sdf.xacro' if robot_type == 'spirit_rotors' else 'spirit.sdf.xacro'
+        sdf_file = 'spirit.sdf.xacro'
         config_file = 'spirit.yaml'
     elif robot_type == 'a1':
         desc_pkg = 'a1_description'
@@ -93,7 +93,8 @@ def launch_global_planner(context, *args, **kwargs):
     local_planner_param_file = PathJoinSubstitution([local_planner_pkg, 'config', 'local_planner.yaml'])
     global_planner_param_file = PathJoinSubstitution([global_planner_pkg, 'config', 'global_body_planner.yaml'])
     global_planner_topics_file = PathJoinSubstitution([global_planner_pkg, 'config', 'global_body_planner_topics.yaml'])
-    robot_specific_param_file = os.path.join(quad_utils_pkg.perform(context), 'config', LaunchConfiguration('robot_type').perform(context) + '.yaml')
+    config_robot_type = LaunchConfiguration('robot_type').perform(context)
+    robot_specific_param_file = os.path.join(quad_utils_pkg.perform(context), 'config', config_robot_type + '.yaml')
 
     # Allow callers (e.g. multi_robot.py for the conflict_based_search case)
     # to override the planner's goal_state per launch invocation. Empty
@@ -180,7 +181,8 @@ def launch_local_planner(context, *args, **kwargs):
     nmpc_controller_param_file = PathJoinSubstitution([nmpc_controller_pkg, 'config', 'nmpc_controller.yaml'])
     local_planner_param_file = PathJoinSubstitution([local_planner_pkg, 'config', 'local_planner.yaml'])
     local_planner_topics_file = PathJoinSubstitution([local_planner_pkg, 'config', 'local_planner_topics.yaml'])
-    robot_specific_param_file = os.path.join(quad_utils_pkg.perform(context), 'config', LaunchConfiguration('robot_type').perform(context) + '.yaml')
+    config_robot_type = LaunchConfiguration('robot_type').perform(context)
+    robot_specific_param_file = os.path.join(quad_utils_pkg.perform(context), 'config', config_robot_type + '.yaml')
 
     if LaunchConfiguration('controller_mode').perform(context) == 'learned':
         return []

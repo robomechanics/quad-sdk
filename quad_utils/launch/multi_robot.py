@@ -152,7 +152,7 @@ def generate_launch_description():
     # for the other by changing only the filename + adding goal_state to
     # each robot's config entry.
     return LaunchDescription([
-        DeclareLaunchArgument('logging', default_value='false', description='Rosbag Trial Run'),
+        DeclareLaunchArgument('logging', default_value='true', description='Rosbag Trial Run'),
         DeclareLaunchArgument(
             'logging_cbs', default_value='false',
             description=(

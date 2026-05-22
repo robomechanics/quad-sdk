@@ -1,0 +1,1511 @@
+r"""Isaac Sim ↔ ROS2 bridge for quad-sdk.
+
+Replaces the Gazebo simulation in the quad-sdk pipeline. This process:
+
+  - Launches Isaac Sim (5.1) with the selected robot's pre-prepped URDF.
+  - Steps physics at 500 Hz to match the controller's update rate.
+  - Publishes /clock so use_sim_time=true clients track sim time.
+  - Publishes <ns>/state/ground_truth as quad_msgs/RobotState
+    (body pose+twist, joint pos/vel/effort, foot poses, contact flags).
+  - Subscribes <ns>/control/joint_command (quad_msgs/LegCommandArray)
+    and applies tau = kp*(pos_set - q) + kd*(vel_set - q_dot) + tau_ff
+    to the articulation each step.
+
+Joint ordering: every supported robot's URDF is pre-renamed so the 12
+revolute joints are 'j_{abad,hip,knee}_{0..3}' (see
+isaac_plugins/scripts/rename_joints.py). Isaac alphabetises these
+per-joint-then-leg ([abad_0..3, hip_0..3, knee_0..3]), but
+quad_msgs/LegCommandArray indexes leg-then-joint
+([abad_0,hip_0,knee_0, abad_1,hip_1,knee_1, ...]). The CTRL_TO_ISAAC
+permutation translates between the two.
+
+Foot ordering: leg index 0=FL, 1=BL, 2=FR, 3=BR (per
+quad_msgs/MultiFootState.msg).
+
+Robot/scene selection: see ROBOT_REGISTRY at the top of this file for
+which quadrupeds are wired up (spirit, go2 at time of writing). Extend
+it to add another robot whose URDF has already been put through the
+rename_joints / strip_gazebo_tags pipeline. Scene types are 'flat'
+(default) and 'underbrush' (spawns vines via spawn_vines.py).
+
+Usage:
+    conda activate isaaclab
+    bash isaac_plugins/scripts/run_isaac_bridge.sh \\
+        --robot spirit --scene flat
+
+Optional flags:
+    --headless          Run without the GUI.
+    --namespace=robot_1 Robot ROS namespace (default robot_1).
+    --robot=spirit|go2  Robot to load (default spirit).
+    --scene=flat|underbrush  Scene type (default flat).
+    --urdf=PATH         Override the registry's URDF for the selected robot.
+"""
+
+from __future__ import annotations
+
+import argparse
+import pathlib
+import sys
+from pathlib import Path
+
+
+def _promote_bundled_rclpy() -> None:
+    """Promote Isaac Sim's bundled rclpy ahead of /opt/ros/jazzy on sys.path.
+
+    Also prepend Isaac's bundled ROS2 lib directory to LD_LIBRARY_PATH so
+    transitive shared-library deps (libament_index_cpp.so, librcl_action.so,
+    etc.) resolve to the bundle instead of the system installation.
+
+    Must run BEFORE AppLauncher is invoked. Without this, the Python 3.12
+    rclpy from /opt/ros/jazzy resolves first and import fails with the
+    wrong-ABI C extension error; the ros2 bridge extension then enters a
+    degraded state with 'Could not import rclpy' or 'Could not load the
+    dynamic library ... librmw_implementation.so'.
+    """
+    try:
+        import isaacsim
+        import os
+    except ImportError:
+        return
+    bundle_root = pathlib.Path(isaacsim.__file__).parent / (
+        'exts/isaacsim.ros2.bridge/jazzy'
+    )
+    if not bundle_root.exists():
+        return
+
+    bundled_rclpy = bundle_root / 'rclpy'
+    if bundled_rclpy.exists():
+        s = str(bundled_rclpy)
+        if s in sys.path:
+            sys.path.remove(s)
+        sys.path.insert(0, s)
+
+    bundled_lib = bundle_root / 'lib'
+    if bundled_lib.exists():
+        existing = os.environ.get('LD_LIBRARY_PATH', '')
+        # Drop any prior occurrence so we land at the front exactly once.
+        parts = [p for p in existing.split(':') if p and p != str(bundled_lib)]
+        os.environ['LD_LIBRARY_PATH'] = ':'.join([str(bundled_lib)] + parts)
+
+
+_promote_bundled_rclpy()
+
+import numpy as np  # noqa: E402
+from isaaclab.app import AppLauncher  # noqa: E402
+
+# Workspace install root. Paths in ROBOT_REGISTRY are resolved against
+# this; both spirit_description and go2_description must have been built
+# (colcon) and present here. We can't use ament_index_python at bridge
+# time because run_isaac_bridge.sh unsets AMENT_PREFIX_PATH before
+# launching Isaac (the bundled DDS pulls in mismatched system libs
+# otherwise). Override per-robot by passing --urdf.
+WORKSPACE_INSTALL = Path('/home/rml/ros2_ws/install')
+
+# Per-robot constants. Add an entry to extend the bridge to a new
+# quadruped. The Isaac-side joint ordering, DOF count, and foot count
+# are assumed to match the existing quad-sdk message contract (12 joints
+# named j_{abad,hip,knee}_{0..3}; 4 toes); robots with a different
+# kinematic layout need more invasive changes than just a registry row.
+ROBOT_REGISTRY: dict[str, dict] = {
+    'spirit': {
+        'urdf': (
+            WORKSPACE_INSTALL
+            / 'spirit_description/share/spirit_description'
+            / 'models/spirit/urdf/spirit_isaac_clean.urdf'
+        ),
+        'toe_links': ['toe0', 'toe1', 'toe2', 'toe3'],
+        # Per-leg SIT pose (abad, hip, knee) in URDF joint frame --
+        # the nominal rest pose the robot spawns in. Sourced from
+        # quad_utils/config/spirit.yaml `sit_joint_angles`. Robot boots
+        # here and the controller drives it to stand on command. For
+        # spirit the sit pose is the URDF zero pose.
+        'sit_q_per_leg': (0.0, 0.0, 0.0),
+        # Spawn pose of the floating base (meters, world frame).
+        # spawn_z must clear the URDF-zero-pose leg geometry -- if
+        # PhysX clamps the knee to its lower limit before the bridge's
+        # PD-hold converges to sit, the legs are nearly straight and
+        # the body needs height to avoid penetrating the ground.
+        'spawn_y': 0.25,
+        'spawn_z': 0.3,
+    },
+    'go2': {
+        'urdf': (
+            WORKSPACE_INSTALL
+            / 'go2_description/share/go2_description'
+            / 'models/go2/urdf/go2_isaac_clean.urdf'
+        ),
+        'toe_links': ['toe0', 'toe1', 'toe2', 'toe3'],
+        # quad_utils/config/go2.yaml `sit_joint_angles` -- hip tucked,
+        # knee folded fully (knee sign is negative on go2's URDF).
+        'sit_q_per_leg': (0.0, 1.36, -2.65),
+        'spawn_y': 0.25,
+        'spawn_z': 0.3,
+    },
+}
+
+PHYSICS_HZ = 1000.0
+PHYSICS_DT = 1.0 / PHYSICS_HZ
+RENDER_DT = 1.0 / 60.0
+# PhysX articulation solver iteration counts. Raised from PhysX
+# defaults (16 pos / 4 vel) to give more contact-resolution headroom
+# on rough terrain. Gazebo's ODE world runs 300 iters which isn't
+# 1:1 comparable to PhysX TGS, but bumping these to 64/16 closes the
+# gap noticeably without dramatic perf cost on a single-robot scene.
+PHYSX_POSITION_ITERS = 64
+PHYSX_VELOCITY_ITERS = 16
+
+# Isaac DOF order (alphabetical):
+# [j_abad_0..3, j_hip_0..3, j_knee_0..3]  -> indices 0..11
+# Controller order (3*leg + joint_off, joint_off in {abad=0, hip=1, knee=2}):
+# [abad_0,hip_0,knee_0, abad_1,..., abad_3,hip_3,knee_3]  -> indices 0..11
+# Mapping: ctrl index c -> isaac index (c // 3) + 4*(c % 3)
+CTRL_TO_ISAAC = np.array(
+    [(c // 3) + 4 * (c % 3) for c in range(12)], dtype=np.int64
+)
+ISAAC_TO_CTRL = np.argsort(CTRL_TO_ISAAC)
+
+
+def parse_args() -> argparse.Namespace:
+    """Parse CLI args; AppLauncher consumes its own subset before us."""
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--namespace', default='robot_1')
+    parser.add_argument(
+        '--robot', choices=sorted(ROBOT_REGISTRY), default='spirit',
+        help=(
+            'Robot to load. Selects the URDF and per-robot constants '
+            'from ROBOT_REGISTRY. Add new robots by extending the '
+            'registry at the top of this file.'
+        ),
+    )
+    parser.add_argument(
+        '--urdf', default=None,
+        help=(
+            'Override the URDF path for the selected --robot. If unset, '
+            'resolves from ROBOT_REGISTRY[args.robot]["urdf"].'
+        ),
+    )
+    parser.add_argument(
+        '--scene', choices=('flat', 'underbrush'), default='flat',
+        help=(
+            'Scene type. flat=ground plane only; underbrush=ground plane '
+            'plus the four-cord vine scenario.'
+        ),
+    )
+    parser.add_argument(
+        '--terrain', default=None,
+        help=(
+            'Load a terrain STL as the ground. Accepts either a short '
+            'name resolved against the gazebo_scripts package (e.g. '
+            'step_20cm, gap_40cm, slope_20 -- any subdir of '
+            'gazebo_scripts/models/<name>/meshes/<name>.stl), OR an '
+            'absolute path to any .stl file. When set, the --ground '
+            'plane is suppressed -- the STL is the ground. Pose comes '
+            'from the matching world .sdf <include><pose>.'
+        ),
+    )
+    parser.add_argument(
+        '--spawn-z', type=float, default=None,
+        help=(
+            'Override the floating-base spawn height (m). Defaults to '
+            'the per-robot value in ROBOT_REGISTRY (0.3 m for both '
+            'spirit and go2, calibrated for a flat z=0 surface). For '
+            'rough terrains with bumps that reach high z values, the '
+            'default may spawn leg geometry below the bump surface; '
+            'PhysX then resolves the penetration with a huge impulse '
+            'and the robot launches up. Bump --spawn-z above the '
+            'expected max terrain height + ~0.4 m of leg drop to '
+            'avoid this (rough_25cm peaks at z=0.25, so --spawn-z 0.7 '
+            'is safe).'
+        ),
+    )
+    parser.add_argument(
+        '--terrain-collider',
+        choices=('none', 'convexHull', 'convexDecomposition', 'boundingCube',
+                 'boundingSphere'),
+        default='none',
+        help=(
+            'PhysX approximation for the terrain mesh collider. '
+            '"none" (default) = exact triangle soup (every triangle of '
+            'the STL is a collision face -- faithful, matches the '
+            'visual). "convexHull" = single convex hull (bad for rough '
+            'terrains: hull spans baseplate-to-peak as a raised '
+            'platform, robot bounces on the tent). '
+            '"convexDecomposition" = many convex pieces (closer to the '
+            'actual surface, smoother than triangle soup). Try this '
+            'for rough terrains if "none" trips on every triangle and '
+            'the controller saturates. boundingCube / boundingSphere '
+            'are extreme approximations.'
+        ),
+    )
+    parser.add_argument(
+        '--cinematic', action='store_true', default=False,
+        help='Enable follow camera + better lighting for video capture.'
+    )
+    parser.add_argument(
+        '--camera-preset',
+        choices=('chase', 'hero', 'side', 'behind', 'bird', 'wide'),
+        default='chase',
+        help=(
+            'Follow-camera preset (--cinematic only). '
+            'chase=high 3/4, hero=ahead+low, side=tracking shot, '
+            'behind=tight, bird=top-down, wide=dramatic 3/4.'
+        ),
+    )
+    parser.add_argument(
+        '--camera-offset', nargs=3, type=float, metavar=('BACK', 'RIGHT', 'UP'),
+        default=None,
+        help=(
+            'Override --camera-preset with literal world-frame offset '
+            '(meters): negative BACK is behind robot.'
+        ),
+    )
+    parser.add_argument(
+        '--camera-focal', type=float, default=35.0,
+        help='Camera focal length (mm). Lower=wider FOV. Default 35.',
+    )
+    parser.add_argument(
+        '--ground',
+        choices=('isaaclab', 'default', 'custom', 'layered'),
+        default='isaaclab',
+        help=(
+            'Ground plane style. '
+            'isaaclab=TerrainImporterCfg (matches IsaacLab training; '
+            'reliable physics, plain plane). '
+            'default=Isaac built-in (checkered grid, friction unreliable). '
+            'custom=our dark concrete plane (recolorable). '
+            'layered=both stacked.'
+        ),
+    )
+    parser.add_argument(
+        '--physx-gpu', action='store_true', default=False,
+        help=(
+            'Enable PhysX GPU dynamics on the PhysicsScene. Defaults off '
+            'because the per-step host<->device copy overhead dominates a '
+            'single-robot ~50-DOF workload (CPU PhysX is lower latency '
+            'for our 500 Hz loop). Worth turning on if you scale to many '
+            'parallel articulations.'
+        ),
+    )
+    parser.add_argument(
+        '--tau-scale', type=float, default=1.0,
+        help=(
+            'Scale factor applied to commanded joint torques before they '
+            'reach PhysX. The quad-sdk inverse_dynamics controller is '
+            'gain-tuned for Gazebo/ODE and over-drives in PhysX, causing '
+            'high ground reaction forces and false BFE triggers. Try '
+            '0.4-0.6 to compensate.'
+        ),
+    )
+    parser.add_argument(
+        '--record', metavar='PATH', nargs='?', default=None, const='__AUTO__',
+        help=(
+            'Auto-record viewport to MP4. With no PATH, writes to '
+            '~/Videos/spirit_underbrush_<timestamp>.mp4. Uses Isaac Sim '
+            'Movie Capture; if API is unavailable in this version, prints '
+            'a warning and you can fall back to Window > Capture.'
+        ),
+    )
+    parser.add_argument(
+        '--record-delay', type=float, default=5.0,
+        help='Seconds to wait after main loop start before recording.',
+    )
+    parser.add_argument(
+        '--record-duration', type=float, default=30.0,
+        help='Recording duration in seconds.',
+    )
+    parser.add_argument(
+        '--record-fps', type=int, default=60,
+        help='Recording framerate.',
+    )
+    AppLauncher.add_app_launcher_args(parser)
+    args = parser.parse_args()
+
+    # Resolve URDF + per-robot constants from the registry. --urdf wins
+    # if set explicitly; otherwise pick up the registry default.
+    robot_cfg = ROBOT_REGISTRY[args.robot]
+    args.urdf = args.urdf or str(robot_cfg['urdf'])
+    args.toe_links = list(robot_cfg['toe_links'])
+    args.sit_q_per_leg = tuple(robot_cfg['sit_q_per_leg'])
+    args.spawn_x = float(robot_cfg.get('spawn_x', 0.0))
+    args.spawn_y = float(robot_cfg.get('spawn_y', 0.0))
+    # CLI --spawn-z (argparse) overrides the per-robot registry value.
+    # Note: argparse converts --spawn-z to args.spawn_z, which we'd then
+    # overwrite. Read the parsed value before re-assigning.
+    _cli_spawn_z = getattr(args, 'spawn_z', None)
+    args.spawn_z = (
+        float(_cli_spawn_z)
+        if _cli_spawn_z is not None
+        else float(robot_cfg['spawn_z'])
+    )
+
+    # Resolve --terrain to an STL path. Accepts:
+    #   short name (no '/' and no '.stl') -> resolve against the
+    #     gazebo_scripts install share dir:
+    #       install/gazebo_scripts/share/gazebo_scripts/models/<name>/
+    #         meshes/<name>.stl
+    #   absolute / relative path -> use as-is
+    if args.terrain:
+        candidate = Path(args.terrain)
+        if not (candidate.is_absolute() or candidate.suffix == '.stl'):
+            candidate = (
+                WORKSPACE_INSTALL
+                / 'gazebo_scripts/share/gazebo_scripts/models'
+                / args.terrain / 'meshes' / f'{args.terrain}.stl'
+            )
+        if not candidate.is_file():
+            raise SystemExit(
+                f'--terrain: STL not found at {candidate}. '
+                f'For short names, ensure gazebo_scripts is built '
+                f'(colcon build --packages-select gazebo_scripts).'
+            )
+        args.terrain_stl = candidate
+    else:
+        args.terrain_stl = None
+
+    if args.record == '__AUTO__':
+        from datetime import datetime
+        videos_dir = Path.home() / 'Videos'
+        stamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+        args.record = str(
+            videos_dir / f'{args.robot}_{args.scene}_{stamp}.mp4'
+        )
+    return args
+
+
+def _step(msg: str) -> None:
+    """Log a progress marker to stderr (line-buffered, survives pipes)."""
+    print(f'[bridge] {msg}', file=sys.stderr, flush=True)
+
+
+def main() -> None:
+    """Launch Isaac, wire up ROS2, run the bridge loop."""
+    args = parse_args()
+
+    if not Path(args.urdf).exists():
+        raise SystemExit(
+            f'URDF not found at {args.urdf}; run the prep pipeline '
+            '(xacro -> resolve_package_urls -> rename_joints -> '
+            'strip_gazebo_tags) first'
+        )
+
+    _step('starting AppLauncher')
+    app_launcher = AppLauncher(args)
+    sim_app = app_launcher.app
+    _step('AppLauncher up')
+
+    # Imports below this line require the Kit app to be running.
+    import isaacsim.core.utils.stage as stage_utils
+    from isaacsim.core.api import World
+    from isaacsim.core.prims import SingleArticulation, SingleRigidPrim
+    from pxr import UsdPhysics
+    _step('Isaac imports done')
+
+    # The bundled-rclpy promotion already ran before AppLauncher; just
+    # enable the bridge extension here so rclpy is fully wired up.
+    from isaacsim.core.utils.extensions import enable_extension
+    enable_extension('isaacsim.ros2.bridge')
+    _step('ros2 bridge extension enabled; importing rclpy')
+
+    import rclpy
+    _step('rclpy imported')
+    from rclpy.node import Node
+    from rclpy.qos import QoSProfile, ReliabilityPolicy, HistoryPolicy
+    from rosgraph_msgs.msg import Clock
+    from quad_msgs.msg import (
+        RobotState, LegCommandArray, FootState
+    )
+
+    # ---- World first, then reference spirit USD into it ------------------
+    # We create World on a fresh stage rather than opening the spirit USD
+    # directly. Reasons:
+    #   - World wants to attach a physics scene at /World/physicsScene; if
+    #     the open stage has no /World prim it can deadlock during init.
+    #   - The saved spirit USD lacks a ground plane / dome light; a fresh
+    #     World gives us defaults for free.
+    _step('creating World on a fresh stage')
+    world = World(stage_units_in_meters=1.0,
+                  physics_dt=PHYSICS_DT,
+                  rendering_dt=RENDER_DT)
+    _step('World created')
+
+    # Flip PhysX to GPU dynamics if asked. World() created
+    # /World/physicsScene with CPU defaults; we toggle the PhysX schema
+    # attrs directly. Must happen after World init (the prim must
+    # exist) and before world.reset() (so PhysX picks the change up
+    # when it materializes the scene).
+    if args.physx_gpu:
+        from pxr import PhysxSchema as _PhysxSchema_gpu
+        gpu_stage = stage_utils.get_current_stage()
+        scene_prim = gpu_stage.GetPrimAtPath('/World/physicsScene')
+        if scene_prim and scene_prim.IsValid():
+            scene_api = _PhysxSchema_gpu.PhysxSceneAPI.Apply(scene_prim)
+            scene_api.CreateEnableGPUDynamicsAttr().Set(True)
+            scene_api.CreateBroadphaseTypeAttr().Set('GPU')
+            _step('PhysX GPU dynamics ENABLED on /World/physicsScene')
+        else:
+            print('[bridge] WARN: --physx-gpu set but /World/physicsScene '
+                  'not found at this point; staying on CPU')
+
+    # Ground plane — three styles, selected by --ground:
+    #   default : Isaac's built-in checkered-grid plane. Fixed color but
+    #             has visual interest from the grid texture.
+    #   custom  : Our own UsdGeom.Cube with a PreviewSurface material we
+    #             fully own — recolorable to anything (current dark
+    #             warm concrete). No grid pattern.
+    #   layered : default ON TOP, custom slightly below — grid shows,
+    #             our dark tone bleeds through where the grid is
+    #             transparent. Funky compositing, may not look great
+    #             without tuning.
+    from pxr import Sdf, UsdGeom, UsdShade, Gf
+    ground_stage = stage_utils.get_current_stage()
+
+    def _spawn_custom_ground(z_offset: float = 0.0) -> None:
+        """Spawn the recolorable dark-concrete custom plane."""
+        ground_path = '/World/ground'
+        GROUND_SIZE = 100.0
+        GROUND_THICKNESS = 0.1
+        GROUND_COLOR = Gf.Vec3f(0.09, 0.07, 0.06)
+
+        ground_xform = UsdGeom.Xform.Define(ground_stage, ground_path)
+        ground_xform.AddTranslateOp().Set(
+            Gf.Vec3d(0.0, 0.0, z_offset - GROUND_THICKNESS / 2.0)
+        )
+        cube = UsdGeom.Cube.Define(
+            ground_stage, f'{ground_path}/geometry'
+        )
+        cube.GetSizeAttr().Set(1.0)
+        UsdGeom.XformCommonAPI(cube).SetScale(
+            (GROUND_SIZE, GROUND_SIZE, GROUND_THICKNESS)
+        )
+        UsdPhysics.CollisionAPI.Apply(cube.GetPrim())
+        UsdPhysics.MeshCollisionAPI.Apply(cube.GetPrim())
+
+        pmat_path = f'{ground_path}/PhysicsMaterial'
+        pmat = UsdShade.Material.Define(ground_stage, pmat_path)
+        pmat_api = UsdPhysics.MaterialAPI.Apply(pmat.GetPrim())
+        # High friction to match Gazebo's mu=100 saturating-high
+        # contact. quad-sdk's controllers are gain-tuned for that
+        # near-no-slip behavior; PhysX with realistic mu (0.5-1.0) lets
+        # feet slip during stance and the inverse-dynamics controller
+        # over-drives ff efforts trying to compensate (Soft Knee Joint
+        # Limit triggers, NMPC fails). Keep this aligned with the
+        # terrain block below and IsaacLab TerrainImporterCfg.
+        pmat_api.CreateStaticFrictionAttr(100.0)
+        pmat_api.CreateDynamicFrictionAttr(100.0)
+        pmat_api.CreateRestitutionAttr(0.0)
+        UsdShade.MaterialBindingAPI(cube.GetPrim()).Bind(
+            pmat,
+            bindingStrength=UsdShade.Tokens.weakerThanDescendants,
+            materialPurpose='physics',
+        )
+
+        vmat_path = f'{ground_path}/VisualMaterial'
+        vmat = UsdShade.Material.Define(ground_stage, vmat_path)
+        shader = UsdShade.Shader.Define(
+            ground_stage, f'{vmat_path}/Shader'
+        )
+        shader.CreateIdAttr('UsdPreviewSurface')
+        shader.CreateInput(
+            'diffuseColor', Sdf.ValueTypeNames.Color3f
+        ).Set(GROUND_COLOR)
+        shader.CreateInput(
+            'roughness', Sdf.ValueTypeNames.Float
+        ).Set(0.9)
+        shader.CreateInput(
+            'metallic', Sdf.ValueTypeNames.Float
+        ).Set(0.0)
+        vmat.CreateSurfaceOutput().ConnectToSource(
+            shader.ConnectableAPI(), 'surface'
+        )
+        UsdShade.MaterialBindingAPI(cube.GetPrim()).Bind(
+            vmat,
+            bindingStrength=UsdShade.Tokens.weakerThanDescendants,
+        )
+
+    if args.terrain_stl is not None:
+        _step(f'terrain: loading STL {args.terrain_stl}')
+        # Static terrain from a Gazebo-style STL. We bypass the rest of
+        # SDF (gz plugins, ODE physics, lights, sensors) but DO read the
+        # <include><pose> from the matching world .sdf -- that's how
+        # gazebo recenters the terrain so the robot spawn isn't at the
+        # corner of the mesh. Single source of truth, no parallel yaml.
+        # Falls back to (0,0,0) if no matching .sdf is found.
+        import trimesh as _trimesh
+        import xml.etree.ElementTree as _ET
+        terrain_translate = (0.0, 0.0, 0.0)
+        terrain_rotate_rpy = (0.0, 0.0, 0.0)
+        # Locate the world .sdf. args.terrain_stl is at
+        # .../share/gazebo_scripts/models/<name>/meshes/<name>.stl;
+        # the matching world lives at .../share/gazebo_scripts/worlds/<name>.sdf
+        # (worlds/ is a SIBLING of models/, not a child). Climb four
+        # parents to reach share/gazebo_scripts/.
+        share_dir = args.terrain_stl.parent.parent.parent.parent
+        world_sdf = share_dir / 'worlds' / f'{args.terrain_stl.stem}.sdf'
+        if world_sdf.is_file():
+            try:
+                root = _ET.parse(str(world_sdf)).getroot()
+                model_name = args.terrain_stl.stem
+                for include in root.iter('include'):
+                    uri_el = include.find('uri')
+                    if uri_el is None:
+                        continue
+                    uri = (uri_el.text or '').strip()
+                    if uri.endswith(f'/{model_name}') or uri.endswith(
+                        f'://{model_name}'
+                    ):
+                        pose_el = include.find('pose')
+                        if pose_el is not None and pose_el.text:
+                            parts = pose_el.text.split()
+                            if len(parts) >= 6:
+                                terrain_translate = (
+                                    float(parts[0]),
+                                    float(parts[1]),
+                                    float(parts[2]),
+                                )
+                                terrain_rotate_rpy = (
+                                    float(parts[3]),
+                                    float(parts[4]),
+                                    float(parts[5]),
+                                )
+                            break
+                _step(
+                    f'terrain pose from {world_sdf.name}: '
+                    f'xyz={terrain_translate}, rpy={terrain_rotate_rpy}'
+                )
+            except _ET.ParseError as exc:
+                print(
+                    f'[bridge] WARN: failed to parse {world_sdf}: {exc}; '
+                    f'using (0,0,0)'
+                )
+        else:
+            _step(
+                f'no world sdf at {world_sdf}, terrain placed at origin'
+            )
+
+        mesh = _trimesh.load(str(args.terrain_stl), process=False)
+        if isinstance(mesh, _trimesh.Scene):
+            # Some STLs come back as a scene with one geometry; merge.
+            mesh = _trimesh.util.concatenate(
+                tuple(mesh.geometry.values())
+            )
+        points = mesh.vertices.astype('float32')
+        faces = mesh.faces.astype('int32')
+        terrain_stage = stage_utils.get_current_stage()
+        terrain_path = '/World/terrain'
+        terrain_xform = UsdGeom.Xform.Define(terrain_stage, terrain_path)
+        terrain_xform.AddTranslateOp().Set(Gf.Vec3d(*terrain_translate))
+        # Apply RPY rotation if the SDF specified one (most don't).
+        if any(abs(r) > 1e-9 for r in terrain_rotate_rpy):
+            terrain_xform.AddRotateXYZOp().Set(
+                Gf.Vec3f(
+                    np.degrees(terrain_rotate_rpy[0]),
+                    np.degrees(terrain_rotate_rpy[1]),
+                    np.degrees(terrain_rotate_rpy[2]),
+                )
+            )
+        terrain_mesh = UsdGeom.Mesh.Define(
+            terrain_stage, f'{terrain_path}/geometry'
+        )
+        terrain_mesh.CreatePointsAttr(points.tolist())
+        # USD wants per-face vertex counts (always 3 for triangles)
+        # + flat face-vertex-index list.
+        terrain_mesh.CreateFaceVertexCountsAttr(
+            [3] * faces.shape[0]
+        )
+        terrain_mesh.CreateFaceVertexIndicesAttr(faces.flatten().tolist())
+        # Static collider: no RigidBodyAPI on the prim means PhysX
+        # treats it as static world geometry.
+        UsdPhysics.CollisionAPI.Apply(terrain_mesh.GetPrim())
+        mesh_coll = UsdPhysics.MeshCollisionAPI.Apply(terrain_mesh.GetPrim())
+        # Approximation chosen by --terrain-collider. 'none' uses the raw
+        # triangle soup (faithful but bumpy under PhysX); 'convexHull'
+        # uses a single hull (matches the smoothed collider Gazebo/ODE
+        # typically falls back to on concave meshes). Visual mesh stays
+        # the raw triangles regardless.
+        mesh_coll.CreateApproximationAttr().Set(args.terrain_collider)
+        _step(f'terrain collider approximation: {args.terrain_collider}')
+        # Physics material: same friction as the default ground so the
+        # robot's contact model doesn't change between flat and terrain.
+        tpmat_path = f'{terrain_path}/PhysicsMaterial'
+        tpmat = UsdShade.Material.Define(terrain_stage, tpmat_path)
+        tpmat_api = UsdPhysics.MaterialAPI.Apply(tpmat.GetPrim())
+        # See _spawn_custom_ground for the rationale on the high mu;
+        # we want the terrain to match Gazebo's near-no-slip contact.
+        tpmat_api.CreateStaticFrictionAttr(100.0)
+        tpmat_api.CreateDynamicFrictionAttr(100.0)
+        tpmat_api.CreateRestitutionAttr(0.0)
+        UsdShade.MaterialBindingAPI(terrain_mesh.GetPrim()).Bind(
+            tpmat,
+            bindingStrength=UsdShade.Tokens.weakerThanDescendants,
+            materialPurpose='physics',
+        )
+        _step(
+            f'terrain: {len(points)} verts, {len(faces)} tris '
+            f'at {terrain_path} (collider applied)'
+        )
+    elif args.ground == 'isaaclab':
+        _step('ground: IsaacLab TerrainImporterCfg (matches training)')
+        # IsaacLab's terrain importer programmatically builds a plane
+        # with an explicitly-authored RigidBodyMaterialCfg. This is the
+        # same code path the underbrush training pipeline uses, so
+        # demo physics match training exactly.
+        from isaaclab.terrains import TerrainImporterCfg, TerrainImporter
+        from isaaclab.sim import RigidBodyMaterialCfg
+        # TerrainImporter wants to compute per-env origins on a grid;
+        # for our single-robot scene num_envs=1 + a small env_spacing
+        # short-circuits that.
+        terrain_cfg = TerrainImporterCfg(
+            prim_path='/World/ground',
+            terrain_type='plane',
+            collision_group=-1,
+            num_envs=1,
+            env_spacing=1.0,
+            physics_material=RigidBodyMaterialCfg(
+                friction_combine_mode='multiply',
+                restitution_combine_mode='multiply',
+                static_friction=100.0,
+                dynamic_friction=100.0,
+                restitution=0.0,
+            ),
+        )
+        TerrainImporter(terrain_cfg)
+    elif args.ground == 'default':
+        _step('ground: Isaac default plane (checkered grid)')
+        world.scene.add_default_ground_plane(
+            static_friction=100.0,
+            dynamic_friction=100.0,
+        )
+    elif args.ground == 'custom':
+        _step('ground: custom dark concrete plane')
+        _spawn_custom_ground()
+    elif args.ground == 'layered':
+        _step('ground: layered — default grid on top, custom dark below')
+        world.scene.add_default_ground_plane(
+            static_friction=100.0,
+            dynamic_friction=100.0,
+        )
+        # Drop the custom 2 cm below the default so they don't fight
+        # for collision space; visually only the top is visible but
+        # the dark tone tints any gap.
+        _spawn_custom_ground(z_offset=-0.02)
+
+    # Unconditional minimal dome light so the scene is visible without
+    # --cinematic. Isaac's default scene has dim/no ambient illumination,
+    # which makes the spirit/go2 URDFs (gray/silver materials) render as
+    # solid black. --cinematic later replaces this with a richer setup.
+    from pxr import UsdLux as _UsdLux  # noqa: E402
+    _baseline_stage = stage_utils.get_current_stage()
+    _baseline_dome = _UsdLux.DomeLight.Define(
+        _baseline_stage, '/World/baseline_dome'
+    )
+    _baseline_dome.CreateIntensityAttr(300.0)
+
+    if args.cinematic:
+        _step('cinematic: three-point lighting + render settings')
+        from pxr import UsdLux, UsdGeom, Gf
+        cinema_stage = stage_utils.get_current_stage()
+
+        # Wipe Isaac's defaults + our baseline dome so they don't fight
+        # the three-point + HDRI sky setup below.
+        for default_light in (
+            '/World/defaultDistantLight',
+            '/World/defaultDomeLight',
+            '/World/baseline_dome',
+        ):
+            if cinema_stage.GetPrimAtPath(default_light).IsValid():
+                cinema_stage.RemovePrim(default_light)
+
+        # === KEY (warm hard sun) ===
+        # Bright + warm so the black robot picks up specular gloss
+        # highlights on its top surfaces. Low angle → long shadows.
+        sun = UsdLux.DistantLight.Define(cinema_stage, '/World/key_sun')
+        sun.CreateIntensityAttr(4500.0)
+        sun.CreateAngleAttr(0.6)
+        sun.CreateColorAttr(Gf.Vec3f(1.0, 0.92, 0.78))
+        UsdGeom.Xformable(sun.GetPrim()).AddRotateXYZOp().Set(
+            Gf.Vec3f(-55.0, 0.0, 35.0)
+        )
+        UsdLux.ShadowAPI.Apply(sun.GetPrim()).CreateShadowEnableAttr().Set(True)
+
+        # === FILL — HDRI sky environment ===
+        # An HDRI texture on the dome gives realistic directional fill,
+        # subtle color variation across the sky, and (most importantly)
+        # real-environment reflections in any glossy surface — including
+        # the black robot. Single biggest "looks real" lever short of
+        # path tracing. Use sunflowers.hdr (outdoor) for the warm sky
+        # that complements the black/warm-ground palette.
+        sky = UsdLux.DomeLight.Define(cinema_stage, '/World/fill_sky')
+        HDRI_PATH = (
+            '/home/rml/anaconda3/envs/isaaclab/lib/python3.11/'
+            'site-packages/isaacsim/extscache/'
+            'omni.kit.window.usd_paths-1.0.8+69cbf6ad/data/sunflowers.hdr'
+        )
+        sky.CreateIntensityAttr(550.0)              # HDRIs are bright
+        sky.CreateTextureFileAttr().Set(HDRI_PATH)
+        sky.CreateTextureFormatAttr().Set('latlong')
+
+        # === RIM (cool, bright, opposite the key) ===
+        # This is what silhouettes a black subject against a dark bg.
+        # Cooler color than the key for warm/cool depth.
+        rim = UsdLux.DistantLight.Define(cinema_stage, '/World/rim')
+        rim.CreateIntensityAttr(3000.0)
+        rim.CreateAngleAttr(1.0)
+        rim.CreateColorAttr(Gf.Vec3f(0.60, 0.78, 1.05))
+        UsdGeom.Xformable(rim.GetPrim()).AddRotateXYZOp().Set(
+            Gf.Vec3f(-30.0, 0.0, -150.0)
+        )
+
+        # === BUMP RENDER QUALITY ===
+        try:
+            import carb
+            cs = carb.settings.get_settings()
+            cs.set('/rtx/post/aa/op', 3)
+            cs.set('/rtx/post/aa/enabled', True)
+            cs.set('/rtx/shadows/enabled', True)
+            cs.set('/rtx/shadows/sampleCount', 4)
+            cs.set('/rtx/indirectDiffuse/enabled', True)
+            cs.set('/rtx/ambientOcclusion/enabled', True)
+            cs.set('/rtx/reflections/enabled', True)
+            cs.set('/rtx/post/tonemap/op', 5)
+        except Exception as e:  # noqa: BLE001
+            _step(f'render-quality settings not all available: {e}')
+
+    # Import the URDF directly into the current stage (rather than
+    # loading a previously-saved USD as a reference). Reasons:
+    #   - The GUI-saved spirit.usd loads as an instanced reference; its
+    #     descendants are read-only proxies, blocking us from authoring
+    #     colliders or binding materials.
+    #   - The GUI import dropped all collision geometry. Re-running the
+    #     importer here lets us see/fix that without manual GUI steps.
+    _step(f'importing URDF directly: {args.urdf}')
+    import omni.kit.commands
+    from isaacsim.core.utils.extensions import (
+        enable_extension as _enable_ext,
+    )
+    _enable_ext('isaacsim.asset.importer.urdf')
+    from isaacsim.asset.importer.urdf import _urdf
+
+    cfg = _urdf.ImportConfig()
+    cfg.merge_fixed_joints = False
+    cfg.fix_base = False
+    cfg.import_inertia_tensor = True
+    cfg.distance_scale = 1.0
+    cfg.density = 0.0
+    cfg.default_drive_type = _urdf.UrdfJointTargetType.JOINT_DRIVE_NONE
+    cfg.default_drive_strength = 0.0
+    cfg.default_position_drive_damping = 0.0
+    cfg.convex_decomp = False
+    cfg.self_collision = False
+    cfg.create_physics_scene = False  # World already created one
+    cfg.make_default_prim = False
+    # The Isaac 5.1 URDFImportConfig has no flag to disable instancing —
+    # we dumped all 38 attributes and confirmed none control it. The
+    # importer auto-instances the four legs because they're structurally
+    # identical, leaving every per-leg prim as a read-only instance
+    # proxy. We work around this by relying on high ground friction
+    # (set on add_default_ground_plane above) instead of authoring a
+    # per-toe physics material.
+
+    parse_ok, robot_model = omni.kit.commands.execute(
+        'URDFParseFile',
+        urdf_path=str(args.urdf),
+        import_config=cfg,
+    )
+    if not parse_ok:
+        raise SystemExit('URDFParseFile returned False')
+
+    import_ok, prim_path = omni.kit.commands.execute(
+        'URDFImportRobot',
+        urdf_path=str(args.urdf),
+        urdf_robot=robot_model,
+        import_config=cfg,
+    )
+    if not import_ok:
+        raise SystemExit('URDFImportRobot returned False')
+    _step(f'URDF imported as prim {prim_path}')
+
+    if args.cinematic:
+        # Override the URDF importer's per-link materials so the whole
+        # robot reads as polished black. The importer creates OmniPBR
+        # (MDL) shaders by default, NOT UsdPreviewSurface, so the input
+        # parameter names are different:
+        #   UsdPreviewSurface → diffuseColor / metallic / roughness
+        #   OmniPBR (MDL)     → diffuse_color_constant /
+        #                       metallic_constant /
+        #                       reflection_roughness_constant
+        # Set both name sets but ONLY on inputs that already exist on
+        # the shader — creating new orphan inputs does nothing and was
+        # exactly the prior bug.
+        from pxr import UsdShade as _UsdShade, Gf as _Gf
+        robot_diffuse = _Gf.Vec3f(0.03, 0.03, 0.04)  # near-black, blue hint
+        robot_roughness = 0.35
+        robot_metallic = 0.20
+        bridge_stage = stage_utils.get_current_stage()
+        robot_root = bridge_stage.GetPrimAtPath(str(prim_path))
+        names_to_value = {
+            # UsdPreviewSurface
+            'diffuseColor': robot_diffuse,
+            'roughness': robot_roughness,
+            'metallic': robot_metallic,
+            # OmniPBR MDL
+            'diffuse_color_constant': robot_diffuse,
+            'reflection_roughness_constant': robot_roughness,
+            'metallic_constant': robot_metallic,
+            # Also kill any albedo/diffuse texture so the constant wins.
+            'diffuse_texture': '',
+            'albedo_add': 0.0,
+        }
+        # Preserve the scots-rose accent material (CMU text + any other
+        # decorative bits) by skipping any Shader whose ancestor path
+        # contains 'scots_rose'.
+        PRESERVE_TOKENS = ('scots_rose',)
+        shader_count = 0
+        modified_inputs = 0
+        skipped = 0
+        if robot_root and robot_root.IsValid():
+            stack = [robot_root]
+            while stack:
+                p = stack.pop()
+                if p.IsA(_UsdShade.Shader):
+                    path_str = str(p.GetPath())
+                    if any(tok in path_str for tok in PRESERVE_TOKENS):
+                        skipped += 1
+                    else:
+                        sh = _UsdShade.Shader(p)
+                        shader_count += 1
+                        for name, val in names_to_value.items():
+                            inp = sh.GetInput(name)
+                            if inp is not None and inp:
+                                try:
+                                    inp.Set(val)
+                                    modified_inputs += 1
+                                except Exception:  # noqa: BLE001
+                                    pass
+                stack.extend(p.GetAllChildren())
+        _step(
+            f'robot: {shader_count} shaders blacked, '
+            f'{modified_inputs} inputs set, {skipped} preserved'
+        )
+
+    # Locate the articulation root within the referenced USD. verify_usd
+    # showed /Root/spirit/body inside the file; once referenced into
+    # /World/spirit it appears as /World/spirit/spirit/body (the file's
+    # /Root prim becomes the reference root).
+    stage = stage_utils.get_current_stage()
+    art_path = next(
+        (str(p.GetPath()) for p in stage.Traverse()
+         if p.HasAPI(UsdPhysics.ArticulationRootAPI)),
+        None,
+    )
+    if art_path is None:
+        raise SystemExit('No ArticulationRootAPI prim found after reference')
+    _step(f'articulation found at {art_path}')
+
+    # Bump PhysX articulation solver iteration counts before
+    # world.reset(). PhysX defaults are ~16 position / 4 velocity per
+    # articulation; the controller is gain-tuned against Gazebo's
+    # ODE world running 300 iters, and rough terrain with rapid
+    # contact-mode transitions surfaces the gap as residual contact
+    # forces the controller reads as state noise. Raising to 64 / 16
+    # closes most of that gap with negligible perf cost for one robot.
+    from pxr import PhysxSchema as _PhysxSchema_iters
+    iters_prim = stage.GetPrimAtPath(art_path)
+    iters_api = _PhysxSchema_iters.PhysxArticulationAPI.Apply(iters_prim)
+    iters_api.CreateSolverPositionIterationCountAttr().Set(
+        int(PHYSX_POSITION_ITERS)
+    )
+    iters_api.CreateSolverVelocityIterationCountAttr().Set(
+        int(PHYSX_VELOCITY_ITERS)
+    )
+    _step(
+        f'articulation solver iters: '
+        f'pos={PHYSX_POSITION_ITERS}, vel={PHYSX_VELOCITY_ITERS}'
+    )
+
+    # Tighten contact offsets across every collision shape in the
+    # articulation. PhysX's default contactOffset is 0.02 m, which on
+    # robot foot/calf colliders is comparable to the colliders
+    # themselves -- on a bumpy mesh that means multiple triangles fall
+    # inside the contact "skin" at once with conflicting normals,
+    # exciting the trianglemesh edge-normal discontinuity that causes
+    # bouncing. Walking the whole robot (not just toe links) so that
+    # spirit's calf cylinder colliders are tightened too -- spirit
+    # has no collision shape on its `toe*` links (just <contact>
+    # friction-anchor metadata); the calf is what actually touches
+    # ground for that robot. Go2 has both calf and toe colliders;
+    # tightening all is fine.
+    from pxr import (  # noqa: E402
+        PhysxSchema as _PhysxSchema_co,
+        UsdPhysics as _UsdPhysics_co,
+    )
+    robot_root_prim = stage.GetPrimAtPath(prim_path)
+    co_count = 0
+    walk = [robot_root_prim]
+    while walk:
+        p = walk.pop()
+        if p.HasAPI(_UsdPhysics_co.CollisionAPI):
+            phys_co = _PhysxSchema_co.PhysxCollisionAPI.Apply(p)
+            phys_co.CreateContactOffsetAttr().Set(0.005)
+            phys_co.CreateRestOffsetAttr().Set(0.0005)
+            co_count += 1
+        walk.extend(p.GetAllChildren())
+    _step(
+        f'contact offsets tightened on {co_count} collision shapes '
+        f'(contactOffset=5mm, restOffset=0.5mm)'
+    )
+
+    # Set the articulation's INITIAL state in USD before
+    # world.scene.add + world.reset(). PhysX ingests the articulation
+    # state at reset time from the USD layer:
+    #   - Base pose: read from the articulation root prim's xformOps.
+    #   - Joint positions: read from PhysicsJointStateAPI:angular's
+    #     `state:angular:physics:position` attribute on each joint prim.
+    # Post-reset calls to set_world_pose / set_joint_positions on a
+    # free-floating, drive-less articulation are unreliable in 5.1
+    # because the PhysX state has already been initialized from USD
+    # and the legs immediately collapse under gravity before any
+    # subsequent write would have time to matter.
+    from pxr import (  # noqa: E402
+        UsdGeom as _UsdGeom_spawn,
+        Gf as _Gf_spawn,
+        UsdPhysics as _UsdPhysics_spawn,
+        PhysxSchema as _PhysxSchema_spawn,
+    )
+
+    # --- base pose: xformOp:translate on the articulation root prim ---
+    spawn_prim = stage.GetPrimAtPath(art_path)
+    spawn_xform = _UsdGeom_spawn.Xformable(spawn_prim)
+    translate_op = None
+    for op in spawn_xform.GetOrderedXformOps():
+        if op.GetOpType() == _UsdGeom_spawn.XformOp.TypeTranslate:
+            translate_op = op
+            break
+    if translate_op is None:
+        translate_op = spawn_xform.AddTranslateOp()
+    translate_op.Set(_Gf_spawn.Vec3d(
+        float(args.spawn_x), float(args.spawn_y), float(args.spawn_z)
+    ))
+    _step(
+        f'articulation root translated to '
+        f'(x={args.spawn_x}, y={args.spawn_y}, z={args.spawn_z})'
+    )
+
+    # --- joint initial positions: PhysicsJointStateAPI per joint ---
+    # Walk every revolute joint named j_{abad,hip,knee}_{0..3}, parse
+    # its leg/joint indices from the name, apply PhysicsJointStateAPI,
+    # and set the angular position attribute to the per-leg stance
+    # value. The URDF prep pipeline guarantees these joint names.
+    import re as _re_joint
+    _joint_re = _re_joint.compile(r'^j_(abad|hip|knee)_([0-3])$')
+    _joint_off_map = {'abad': 0, 'hip': 1, 'knee': 2}
+    joints_set = 0
+    joints_unmatched = []
+    for jp in stage.Traverse():
+        if not jp.IsA(_UsdPhysics_spawn.RevoluteJoint):
+            continue
+        m = _joint_re.match(jp.GetName())
+        if m is None:
+            joints_unmatched.append(jp.GetName())
+            continue
+        joint_off = _joint_off_map[m.group(1)]
+        sit_val = float(args.sit_q_per_leg[joint_off])
+        state_api = _PhysxSchema_spawn.JointStateAPI.Apply(jp, 'angular')
+        state_api.CreatePositionAttr().Set(sit_val)
+        state_api.CreateVelocityAttr().Set(0.0)
+        joints_set += 1
+    _step(
+        f'joint initial state set on {joints_set} revolute joints '
+        f'(unmatched: {joints_unmatched})'
+    )
+
+    articulation = SingleArticulation(prim_path=art_path, name=args.robot)
+    world.scene.add(articulation)
+
+    body_root = art_path.rsplit('/', 1)[0]
+    toe_prims = [
+        SingleRigidPrim(prim_path=f'{body_root}/{name}', name=name)
+        for name in args.toe_links
+    ]
+    for toe in toe_prims:
+        world.scene.add(toe)
+    _step('articulation + toes added to scene; resetting world')
+
+    if args.scene == 'underbrush':
+        _step('spawning underbrush vine scenario')
+        # spawn_vines is a sibling script; import lazily so the bridge
+        # can run without it on the path.
+        sys.path.insert(
+            0,
+            '/home/rml/ros2_ws/src/quad-sdk/quad_simulator/'
+            'isaac_plugins/scripts',
+        )
+        from spawn_vines import spawn_underbrush_scenario
+        vine_paths = spawn_underbrush_scenario(
+            stage_utils.get_current_stage()
+        )
+        _step(f'spawned {len(vine_paths)} vines')
+
+    world.reset()
+    _step('world.reset() done')
+
+    # Diagnostic: dump Isaac's actual DOF name list and verify
+    # CTRL_TO_ISAAC's permutation maps controller joints to the right
+    # physics DOFs. CTRL order is [abad_0, hip_0, knee_0, abad_1, ...,
+    # knee_3]; CTRL_TO_ISAAC[c] must point at the corresponding
+    # j_<name>_<leg> in Isaac's DOF list. If they disagree, the bridge
+    # is silently writing commands meant for one joint into another --
+    # symptoms include wrong feet swinging during gait, asymmetric ff
+    # torques across the body's symmetry plane.
+    try:
+        dof_names = list(articulation.dof_names)
+    except AttributeError:
+        dof_names = [
+            articulation.get_dof_index(n) for n in []  # fallback no-op
+        ]
+        dof_names = None
+    if dof_names is not None:
+        print('[bridge] Isaac DOF order:', dof_names)
+        expected_ctrl_order = [
+            'j_abad_0', 'j_hip_0', 'j_knee_0',
+            'j_abad_1', 'j_hip_1', 'j_knee_1',
+            'j_abad_2', 'j_hip_2', 'j_knee_2',
+            'j_abad_3', 'j_hip_3', 'j_knee_3',
+        ]
+        mismatches = []
+        for ctrl_idx, name in enumerate(expected_ctrl_order):
+            isaac_idx = int(CTRL_TO_ISAAC[ctrl_idx])
+            if isaac_idx >= len(dof_names) or dof_names[isaac_idx] != name:
+                mismatches.append(
+                    f'ctrl[{ctrl_idx}] {name} -> isaac[{isaac_idx}] '
+                    f'{dof_names[isaac_idx] if isaac_idx < len(dof_names) else "OOB"}'
+                )
+        if mismatches:
+            print('[bridge] WARN: CTRL_TO_ISAAC permutation mismatch:')
+            for m in mismatches:
+                print(f'    {m}')
+            print(
+                '[bridge] WARN: commands are going to the wrong joints. '
+                'Fix CTRL_TO_ISAAC or build it from dof_names at runtime.'
+            )
+        else:
+            _step('CTRL_TO_ISAAC permutation matches Isaac DOF order')
+
+    # Set the robot into its standing pose. The base z is already at
+    # spawn_z because we wrote the root xformOp before world.reset(); we
+    # just need to fold the legs into stance. For go2 specifically this
+    # also matters because the knee's URDF zero pose is outside its
+    # joint-limit range (PhysX would clamp to the limit and leave the
+    # legs straight).
+    stance_isaac = np.zeros(12, dtype=np.float32)
+    _sit_per_leg = np.asarray(args.sit_q_per_leg, dtype=np.float32)
+    for leg in range(4):
+        for joint_off in range(3):  # 0=abad, 1=hip, 2=knee
+            ctrl_idx = 3 * leg + joint_off
+            isaac_idx = CTRL_TO_ISAAC[ctrl_idx]
+            stance_isaac[isaac_idx] = _sit_per_leg[joint_off]
+    articulation.set_joint_positions(stance_isaac)
+    articulation.set_joint_velocities(np.zeros(12, dtype=np.float32))
+    _step(f'sit pose applied: q_per_leg={args.sit_q_per_leg}')
+
+    # Cinematic follow camera, set up after world.reset() so the prim is
+    # not blown away by the reset.
+    follow_camera = None
+    # Named presets — (back, right, up). Negative back = behind robot.
+    CAMERA_PRESETS = {
+        'chase':  (-5.0, 3.0, 1.4),
+        'hero':   (2.5, 0.0, 0.4),
+        'side':   (0.0, 4.0, 0.6),
+        'behind': (-1.5, 0.0, 0.6),
+        'bird':   (0.0, 0.0, 4.0),
+        'wide':   (-6.0, 4.0, 2.5),
+    }
+    if args.camera_offset is not None:
+        follow_offset = np.array(args.camera_offset, dtype=np.float64)
+    else:
+        follow_offset = np.array(CAMERA_PRESETS[args.camera_preset])
+    body_filtered = None
+    if args.cinematic:
+        from pxr import UsdGeom, Gf
+        cam_stage = stage_utils.get_current_stage()
+        follow_camera = UsdGeom.Camera.Define(cam_stage, '/World/follow_camera')
+        follow_camera.CreateFocalLengthAttr(args.camera_focal)
+        _step(
+            f'camera offset={follow_offset.tolist()} focal={args.camera_focal}'
+        )
+        follow_camera.CreateClippingRangeAttr(Gf.Vec2f(0.05, 200.0))
+        try:
+            from omni.kit.viewport.utility import get_active_viewport
+            vp = get_active_viewport()
+            if vp is not None:
+                vp.set_active_camera('/World/follow_camera')
+                _step('viewport switched to /World/follow_camera')
+        except Exception as e:  # noqa: BLE001
+            _step(f'could not set viewport camera: {e}')
+        _step('cinematic follow camera ready')
+
+    def _update_follow_camera() -> None:
+        nonlocal body_filtered
+        if follow_camera is None:
+            return
+        body_pos, _ = articulation.get_world_pose()
+        body_pos = np.asarray(body_pos, dtype=np.float64)
+        if body_filtered is None:
+            body_filtered = body_pos.copy()
+        else:
+            # Low-pass filter so high-frequency body chatter doesn't
+            # show up as camera shake.
+            body_filtered = 0.92 * body_filtered + 0.08 * body_pos
+        eye = body_filtered + follow_offset
+        target = body_filtered
+        view = Gf.Matrix4d()
+        view.SetLookAt(
+            Gf.Vec3d(*eye),
+            Gf.Vec3d(*target),
+            Gf.Vec3d(0.0, 0.0, 1.0),
+        )
+        cam_xform = UsdGeom.Xformable(follow_camera.GetPrim())
+        cam_xform.ClearXformOpOrder()
+        cam_xform.AddTransformOp().Set(view.GetInverse())
+
+    # Disable any importer-set drive stiffness/damping so our controller is
+    # the only thing applying torque. (This double-ensures the importer
+    # default we left in place doesn't interfere.)
+    n_dof = articulation.num_dof
+    articulation.get_articulation_controller().set_gains(
+        kps=np.zeros(n_dof), kds=np.zeros(n_dof)
+    )
+
+    # ---- ROS2 -------------------------------------------------------------
+    # If /opt/ros/jazzy is sourced its libs end up earlier on
+    # LD_LIBRARY_PATH than Isaac's bundled DDS, which can deadlock
+    # rmw_create_node. Force the RMW that matches Isaac's bundle.
+    import os
+    os.environ.setdefault('RMW_IMPLEMENTATION', 'rmw_fastrtps_cpp')
+    _step(f'RMW_IMPLEMENTATION={os.environ.get("RMW_IMPLEMENTATION")}')
+
+    _step('rclpy.init()')
+    rclpy.init()
+    _step(f'creating Node in namespace {args.namespace}')
+    try:
+        node = Node('isaac_bridge', namespace=args.namespace)
+    except Exception as e:
+        _step(f'Node() raised: {type(e).__name__}: {e}')
+        raise
+    _step('Node created')
+
+    # robot_driver / local_planner subscribe with RELIABLE (rclpy default).
+    # If the publisher offers BEST_EFFORT, DDS reports a QoS incompatibility
+    # ("RELIABILITY_QOS_POLICY") and silently drops all delivery, so the
+    # controller publishes empty LegCommandArray messages forever. Match
+    # the subscriber's reliability with RELIABLE here.
+    state_qos = QoSProfile(
+        reliability=ReliabilityPolicy.RELIABLE,
+        history=HistoryPolicy.KEEP_LAST,
+        depth=1,
+    )
+    cmd_qos = QoSProfile(
+        reliability=ReliabilityPolicy.RELIABLE,
+        history=HistoryPolicy.KEEP_LAST,
+        depth=1,
+    )
+    state_pub = node.create_publisher(RobotState, 'state/ground_truth',
+                                      state_qos)
+    clock_pub = node.create_publisher(Clock, '/clock', 10)
+
+    last_cmd = {'msg': None}
+
+    def cmd_cb(msg: LegCommandArray) -> None:
+        last_cmd['msg'] = msg
+
+    node.create_subscription(
+        LegCommandArray, 'control/joint_command', cmd_cb, cmd_qos
+    )
+
+    # ---- Per-step physics callback ---------------------------------------
+    sim_time = {'t': 0.0}
+
+    def physics_step(dt: float) -> None:
+        sim_time['t'] += dt
+        _update_follow_camera()
+
+        # --- 1. Read state -------------------------------------------------
+        q_iso = np.asarray(articulation.get_joint_positions())
+        qd_iso = np.asarray(articulation.get_joint_velocities())
+        eff_iso = np.asarray(
+            articulation.get_measured_joint_efforts()
+            if hasattr(articulation, 'get_measured_joint_efforts')
+            else articulation.get_applied_joint_efforts()
+        )
+
+        body_pos, body_quat_wxyz = articulation.get_world_pose()
+        body_lin, body_ang = articulation.get_linear_velocity(), \
+            articulation.get_angular_velocity()
+        body_pos = np.asarray(body_pos)
+        body_quat_wxyz = np.asarray(body_quat_wxyz)
+        body_lin = np.asarray(body_lin)
+        body_ang_world = np.asarray(body_ang)
+
+        # Rotate angular velocity into body frame. Gazebo's estimator
+        # plugin publishes body.twist.angular in body frame
+        # (estimator_plugin.cpp: w_b = q_bw * w_w). Isaac returns
+        # angular velocity in WORLD frame -- without this rotation, the
+        # robot_driver's inverse-dynamics Coriolis term gets the wrong
+        # frame and computes massively wrong feed-forward torques on
+        # uneven terrain (where roll/pitch are non-trivial). Body twist
+        # LINEAR stays in world frame (matches robot_driver.cpp:599
+        # "vel_world").
+        qw, qx, qy, qz = body_quat_wxyz
+        # R_bw rotates world -> body (transpose of body -> world).
+        R_bw = np.array([
+            [1 - 2 * (qy * qy + qz * qz),
+             2 * (qx * qy + qz * qw),
+             2 * (qx * qz - qy * qw)],
+            [2 * (qx * qy - qz * qw),
+             1 - 2 * (qx * qx + qz * qz),
+             2 * (qy * qz + qx * qw)],
+            [2 * (qx * qz + qy * qw),
+             2 * (qy * qz - qx * qw),
+             1 - 2 * (qx * qx + qy * qy)],
+        ], dtype=np.float64)
+        body_ang = R_bw @ body_ang_world
+
+        foot_world = []
+        foot_lin = []
+        for toe in toe_prims:
+            p, _ = toe.get_world_pose()
+            v_lin = toe.get_linear_velocity()
+            foot_world.append(np.asarray(p))
+            foot_lin.append(np.asarray(v_lin))
+
+        # --- 2. Publish /clock --------------------------------------------
+        clock_msg = Clock()
+        secs = int(sim_time['t'])
+        nsec = int((sim_time['t'] - secs) * 1e9)
+        clock_msg.clock.sec = secs
+        clock_msg.clock.nanosec = nsec
+        clock_pub.publish(clock_msg)
+
+        # --- 3. Pack and publish RobotState --------------------------------
+        msg = RobotState()
+        msg.header.stamp.sec = secs
+        msg.header.stamp.nanosec = nsec
+        msg.header.frame_id = 'map'
+
+        msg.body.pose.position.x = float(body_pos[0])
+        msg.body.pose.position.y = float(body_pos[1])
+        msg.body.pose.position.z = float(body_pos[2])
+        # Isaac returns quaternion as (w, x, y, z); ROS expects (x, y, z, w)
+        msg.body.pose.orientation.w = float(body_quat_wxyz[0])
+        msg.body.pose.orientation.x = float(body_quat_wxyz[1])
+        msg.body.pose.orientation.y = float(body_quat_wxyz[2])
+        msg.body.pose.orientation.z = float(body_quat_wxyz[3])
+        msg.body.twist.linear.x = float(body_lin[0])
+        msg.body.twist.linear.y = float(body_lin[1])
+        msg.body.twist.linear.z = float(body_lin[2])
+        msg.body.twist.angular.x = float(body_ang[0])
+        msg.body.twist.angular.y = float(body_ang[1])
+        msg.body.twist.angular.z = float(body_ang[2])
+
+        # Joints in controller order
+        q_ctrl = q_iso[CTRL_TO_ISAAC]
+        qd_ctrl = qd_iso[CTRL_TO_ISAAC]
+        eff_ctrl = eff_iso[CTRL_TO_ISAAC]
+        # Note: Gazebo's estimator_plugin.cpp negates hip effort on
+        # state report (case 1: -torque_msg.y()). Mirroring that flip
+        # here in isolation made ff efforts saturate worse, because
+        # Gazebo's pipeline also flips on the apply side and the
+        # controller is gain-tuned for the consistent flipped
+        # convention. Without flipping the apply side too, the report
+        # flip alone breaks the loop. Leaving raw URDF-axis effort
+        # here for now; if we later confirm both directions need
+        # flipping, do it as a matched pair.
+
+        msg.joints.header = msg.header
+        msg.joints.name = [
+            'j_abad_0', 'j_hip_0', 'j_knee_0',
+            'j_abad_1', 'j_hip_1', 'j_knee_1',
+            'j_abad_2', 'j_hip_2', 'j_knee_2',
+            'j_abad_3', 'j_hip_3', 'j_knee_3',
+        ]
+        msg.joints.position = q_ctrl.tolist()
+        msg.joints.velocity = qd_ctrl.tolist()
+        msg.joints.effort = eff_ctrl.tolist()
+
+        # Feet
+        msg.feet.header = msg.header
+        msg.feet.feet = []
+        for i in range(4):
+            fs = FootState()
+            fs.header = msg.header
+            fs.position.x = float(foot_world[i][0])
+            fs.position.y = float(foot_world[i][1])
+            fs.position.z = float(foot_world[i][2])
+            fs.velocity.x = float(foot_lin[i][0])
+            fs.velocity.y = float(foot_lin[i][1])
+            fs.velocity.z = float(foot_lin[i][2])
+            # Crude contact heuristic: foot near ground.
+            # Crude contact heuristic: foot near ground. Matches the
+            # original behavior; the planner doesn't actually consume
+            # this field for start-state validation (Gazebo's pipeline
+            # also publishes contact=false here and the planner accepts
+            # the state). Real contact reporting is downstream in the
+            # body_force_estimator / dedicated contact publisher.
+            fs.contact = bool(foot_world[i][2] < 0.04)
+            msg.feet.feet.append(fs)
+
+        state_pub.publish(msg)
+
+        # --- 4. Apply commands --------------------------------------------
+        # When the controller is online (cmd received), use its PD+ff
+        # per joint. When no command has arrived yet, apply zero torque
+        # and let the robot collapse onto its URDF joint limits, same
+        # as the Gazebo safe-mode behavior -- knees clamp into the
+        # [-2.72, -0.84] range and the robot settles passively at low
+        # body height. This is what the controller's stand-mode PD
+        # then lifts FROM when control_mode flips to 1.
+        cmd = last_cmd['msg']
+        tau_iso = np.zeros(n_dof, dtype=np.float32)
+        if cmd is not None and len(cmd.leg_commands) >= 4:
+            for c in range(12):
+                leg = c // 3
+                joint_off = c % 3
+                if joint_off >= len(cmd.leg_commands[leg].motor_commands):
+                    continue
+                mc = cmd.leg_commands[leg].motor_commands[joint_off]
+                iso_idx = CTRL_TO_ISAAC[c]
+                tau = (
+                    mc.kp * (mc.pos_setpoint - q_iso[iso_idx])
+                    + mc.kd * (mc.vel_setpoint - qd_iso[iso_idx])
+                    + mc.torque_ff
+                )
+                tau_iso[iso_idx] = tau
+        if args.tau_scale != 1.0:
+            tau_iso *= args.tau_scale
+        articulation.set_joint_efforts(tau_iso)
+
+    world.add_physics_callback('quad_bridge_step', physics_step)
+    _step('physics callback registered; entering main loop')
+
+    # ---- Recording helpers ----------------------------------------------
+    # The Movie Capture Python API has shifted across Isaac Sim versions
+    # so we attempt several flavors and stop on the first that doesn't
+    # raise. If none work, we log clearly and fall through; the user can
+    # use Window > Capture manually.
+    def _start_capture(output_path: str, fps: int) -> bool:
+        from pathlib import Path as _P
+        out = _P(output_path)
+        out.parent.mkdir(parents=True, exist_ok=True)
+        try:
+            from omni.kit.capture.viewport import (
+                CaptureExtension, CaptureOptions
+            )
+            opts = CaptureOptions()
+            # Optional attributes — names vary between versions; set
+            # whatever sticks and ignore the rest.
+            for name, val in (
+                ('file_name', out.stem),
+                ('output_folder', str(out.parent)),
+                ('file_type', '.mp4'),
+                ('movie_type', '.mp4'),
+                ('fps', fps),
+                ('movie_save_individual_frames', False),
+                ('hdr_output', False),
+                # Time-range capture; stop_capture below will end it.
+                ('range_type', 'time'),
+                ('range_min', 0.0),
+                ('range_max', 3600.0),
+            ):
+                try:
+                    setattr(opts, name, val)
+                except (AttributeError, TypeError):
+                    pass
+            ext = CaptureExtension.get_instance()
+            for method in ('start_capture', 'start'):
+                fn = getattr(ext, method, None)
+                if fn is None:
+                    continue
+                try:
+                    fn(opts)
+                except TypeError:
+                    fn()
+                return True
+        except Exception as e:  # noqa: BLE001
+            _step(f'CaptureExtension API failed: {type(e).__name__}: {e}')
+        return False
+
+    def _stop_capture() -> None:
+        try:
+            from omni.kit.capture.viewport import CaptureExtension
+            ext = CaptureExtension.get_instance()
+            for method in ('stop_capture', 'stop', 'cancel'):
+                fn = getattr(ext, method, None)
+                if fn is not None:
+                    fn()
+                    return
+        except Exception as e:  # noqa: BLE001
+            _step(f'stop_capture API failed: {e}')
+
+    record_state = {
+        'enabled': bool(args.record),
+        'started': False,
+        'stopped': False,
+        'wall_start': None,
+    }
+
+    # ---- Main loop --------------------------------------------------------
+    node.get_logger().info(
+        f'Isaac bridge ready. Articulation: {art_path}, namespace: '
+        f'{args.namespace}, physics: {PHYSICS_HZ:.0f} Hz'
+    )
+    if record_state['enabled']:
+        _step(
+            f'will start recording to {args.record} after '
+            f'{args.record_delay:.1f}s, run for '
+            f'{args.record_duration:.1f}s @ {args.record_fps} fps'
+        )
+    import time as _time
+    record_state['wall_start'] = _time.monotonic()
+    iter_count = 0
+    try:
+        while sim_app.is_running():
+            rclpy.spin_once(node, timeout_sec=0.0)
+            world.step(render=True)
+            iter_count += 1
+            if iter_count == 1 or iter_count % 500 == 0:
+                _step(f'main loop iter {iter_count}')
+
+            if record_state['enabled'] and not record_state['stopped']:
+                elapsed = _time.monotonic() - record_state['wall_start']
+                if (
+                    not record_state['started']
+                    and elapsed >= args.record_delay
+                ):
+                    ok = _start_capture(args.record, args.record_fps)
+                    if ok:
+                        _step(f'recording started: {args.record}')
+                        record_state['started'] = True
+                    else:
+                        _step(
+                            'auto-record unavailable in this Isaac Sim '
+                            'version; use Window > Capture manually'
+                        )
+                        record_state['stopped'] = True
+                elif (
+                    record_state['started']
+                    and elapsed
+                    >= args.record_delay + args.record_duration
+                ):
+                    _stop_capture()
+                    _step(f'recording stopped after {args.record_duration:.1f}s')
+                    record_state['stopped'] = True
+    finally:
+        if record_state['started'] and not record_state['stopped']:
+            _stop_capture()
+            _step('recording stopped (shutdown)')
+
+    rclpy.shutdown()
+    sim_app.close()
+
+
+if __name__ == '__main__':
+    main()

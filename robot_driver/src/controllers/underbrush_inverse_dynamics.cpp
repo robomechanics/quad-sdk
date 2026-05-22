@@ -83,9 +83,8 @@ bool UnderbrushInverseDynamicsController::computeLegCommandArray(
       // here, otherwise the interpolation loop falls through with
       // unpopulated ref_state_msg_ and downstream feet[i] reads
       // segfault.
-      RCLCPP_ERROR_THROTTLE(
-          node_->get_logger(), *node_->get_clock(), 1000,
-          "ID node couldn't find the correct ref state!");
+      RCLCPP_ERROR_THROTTLE(node_->get_logger(), *node_->get_clock(), 1000,
+                            "ID node couldn't find the correct ref state!");
       return false;
     }
 
@@ -177,7 +176,6 @@ bool UnderbrushInverseDynamicsController::computeLegCommandArray(
                 robot_state_msg.feet.feet.at(i).position.y;
             ref_underbrush_msg.feet.feet.at(i).position.z =
                 robot_state_msg.feet.feet.at(i).position.z;
-            RCLCPP_INFO(node_->get_logger(), "Commanded Underbrush Swing LEg");
 
             // foot cartesian distances from desired footfall
             foot_x_err =
@@ -362,7 +360,6 @@ bool UnderbrushInverseDynamicsController::computeLegCommandArray(
                             tau_contact_start_ &&
                         t_now2 - t_LO_.at(i) > t_up_)) {
           // leg is now obstructed: retract it over the obstruction
-          RCLCPP_INFO(node_->get_logger(), "Leg is Obstructed");
           force_mode_.at(i) = 1;
           t_switch_.at(i) = t_now2;
         }
@@ -373,14 +370,12 @@ bool UnderbrushInverseDynamicsController::computeLegCommandArray(
           force_mode_.at(i) = 0;
           t_switch_.at(i) = t_now2;
           last_mode_.at(i) = 1;
-          RCLCPP_INFO(node_->get_logger(), "Timing Issue");
         }
 
         if (t_now2 - t_LO_.at(i) < t_up_) {
           if (last_mode_.at(i)) {
             force_mode_.at(i) = 1;  // retain previous mode
             t_switch_.at(i) = t_LO_.at(i);
-            RCLCPP_INFO(node_->get_logger(), "Timing Issue2");
           }
         }
 
@@ -406,7 +401,6 @@ bool UnderbrushInverseDynamicsController::computeLegCommandArray(
           }
         } else {
           // Obstructed swing mode
-          RCLCPP_INFO(node_->get_logger(), "In Obstructed Swing Mode");
           for (int j = 0; j < 3; ++j) {
             leg_command_array_msg.leg_commands.at(i)
                 .motor_commands.at(j)

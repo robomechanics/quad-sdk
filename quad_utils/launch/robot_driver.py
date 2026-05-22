@@ -24,7 +24,6 @@ def load_robot_params(context, *args, **kwargs):
 
     desc_pkg_map = {
         'spirit': 'spirit_description',
-        'spirit_rotors': 'spirit_description',
         'a1': 'a1_description',
         'go1': 'go1_description',
         'go2': 'go2_description',

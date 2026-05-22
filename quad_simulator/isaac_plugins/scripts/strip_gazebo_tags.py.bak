@@ -1,0 +1,53 @@
+#!/usr/bin/env python3
+"""Strip Gazebo/Isaac-importer tags from a URDF before Isaac Sim import.
+
+Removes <gazebo>, <transmission>, <ros2_control> blocks (Isaac doesn't
+read them but the importer leaves orphan prims) and the
+joint dont_collapse="true" attribute (keeps toes as leaf rigid bodies
+so the bridge's SingleRigidPrim wrappers can read pose/velocity).
+
+Usage:
+    strip_gazebo_tags.py <input.urdf> <output.urdf>
+"""
+
+from __future__ import annotations
+
+import sys
+from pathlib import Path
+from xml.etree import ElementTree as ET
+
+
+def strip(input_path: Path, output_path: Path) -> None:
+    """Remove Gazebo-only blocks (and Isaac-importer hint attrs) from a URDF."""
+    tree = ET.parse(input_path)
+    root = tree.getroot()
+
+    targets = ('gazebo', 'transmission', 'ros2_control')
+    removed = {tag: 0 for tag in targets}
+
+    # ElementTree has no parent pointers; iterate parents explicitly.
+    for parent in root.iter():
+        for child in list(parent):
+            tag = child.tag.split('}')[-1]
+            if tag in targets:
+                parent.remove(child)
+                removed[tag] += 1
+
+    dont_collapse_stripped = 0
+    for joint in root.iter('joint'):
+        if 'dont_collapse' in joint.attrib:
+            del joint.attrib['dont_collapse']
+            dont_collapse_stripped += 1
+
+    tree.write(output_path, xml_declaration=True, encoding='utf-8')
+    for tag in targets:
+        print(f'Removed {removed[tag]} <{tag}> blocks')
+    print(f'Stripped dont_collapse attr from {dont_collapse_stripped} joint(s)')
+    print(f'Wrote {output_path}')
+
+
+if __name__ == "__main__":
+    if len(sys.argv) != 3:
+        print(__doc__, file=sys.stderr)
+        sys.exit(1)
+    strip(Path(sys.argv[1]), Path(sys.argv[2]))

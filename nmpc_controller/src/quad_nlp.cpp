@@ -15,8 +15,7 @@ quadNLP::quadNLP(SystemID default_system, int N, double dt, double mu,
                  double Q_temporal_factor, double R_temporal_factor,
                  const Eigen::VectorXi& fixed_complexity_schedule,
                  const NLPConfig& config, double mass,
-                 rclcpp::Node::SharedPtr node,
-                 std::string robot_ns) {
+                 rclcpp::Node::SharedPtr node, std::string robot_ns) {
   // Load constant parameters
   node_ = node;
   robot_ns_ = robot_ns;
@@ -48,7 +47,6 @@ quadNLP::quadNLP(SystemID default_system, int N, double dt, double mu,
         0.1934, -0.142, -0.30, 0.1934, 0.142, -0.30;
     foot_pos_world_.row(i) << 0.1934, 0.142, 0, -0.1934, 0.142, 0, 0.1934,
         -0.142, 0, -0.1934, -0.142, 0;
-
   }
 
   // Compute initial kinematics information

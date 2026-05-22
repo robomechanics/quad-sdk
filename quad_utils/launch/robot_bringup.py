@@ -17,10 +17,10 @@ def load_robot_params(context, *args, **kwargs):
     robot_type = LaunchConfiguration('robot_type').perform(context)
     namespace = LaunchConfiguration('namespace').perform(context)
     # Find URDF, SDF, and YAML file for the Corresponding Robot
-    if robot_type == 'spirit' or robot_type == 'spirit_rotors':
+    if robot_type == 'spirit':
         desc_pkg = 'spirit_description'
         urdf_file = 'spirit.urdf.xacro'
-        sdf_file = 'spirit_rotors.sdf.xacro' if robot_type == 'spirit_rotors' else 'spirit.sdf.xacro'
+        sdf_file = 'spirit.sdf.xacro'
         config_file = 'spirit.yaml'
     elif robot_type == 'a1':
         desc_pkg = 'a1_description'
@@ -157,21 +157,6 @@ def spawn_sdf_model(context, *args, **kwargs):
 def spawn_controller_broadcasters(context, *args, **kwargs):
     namespace = LaunchConfiguration('namespace').perform(context)
     gazebo_scripts_path = FindPackageShare('gazebo_scripts').perform(context)
-    # ros2_control's spawner uses a single PROCESS-WIDE lock to serialise
-    # controller load/activation calls. With N robots × 2 controllers, 2N
-    # spawners race for that lock — at six robots that's twelve
-    # contenders, and even with bumped per-attempt timeouts the loser
-    # of the race can hit its retry budget and silently exit, leaving
-    # the robot whose lock-attempt failed with a controller_manager
-    # but ZERO loaded controllers. Robot stands at spawn, NMPC ticks,
-    # leg commands fall on the floor.
-    #
-    # Fix: chain joint_controller's spawn behind joint_state_broadcaster
-    # via OnProcessExit so for each robot the second spawner only fires
-    # after the first one exits (success or failure). This cuts the
-    # worst-case lock contention from 2N to N, and combined with the
-    # bumped 120 s timeouts gives every robot's controllers a fair shot
-    # even at the six-robot hexagon-swap demo.
     spawn_joint_state_broadcaster = ExecuteProcess(
         cmd=[
             'ros2', 'run', 'controller_manager', 'spawner',
@@ -205,16 +190,6 @@ def spawn_controller_broadcasters(context, *args, **kwargs):
         )
     )
 
-    # Short 0.5 s delay before the first spawner. The spawners themselves
-    # carry --controller-manager-timeout 120, so they're happy to wait for
-    # controller_manager to come up — we don't need to pre-stall them. The
-    # important thing is to start them ASAP, because every wall-clock
-    # second between physics-start and joint_controller-active is a second
-    # the robot is balanced on extended legs with no active stabilisation
-    # and a CoM above its contact polygon: metastable, tips at any
-    # perturbation, ends up on its back with toes pinned. Closing this
-    # window is what keeps the robot upright long enough for SIT to fold
-    # the legs cleanly.
     return [
         TimerAction(
             period=0.5,
