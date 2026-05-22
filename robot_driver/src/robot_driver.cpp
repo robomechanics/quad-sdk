@@ -539,6 +539,17 @@ bool RobotDriver::updateState() {
         fc_msg.contact_states[i] = (raw[i] > foot_contact_threshold_);
       }
       foot_contact_pub_->publish(fc_msg);
+
+      // Push the measured foot contact into the estimator(s) so the EKF uses
+      // the real foot-force contact instead of the planner's expected GRFs.
+      // Pushed (not subscribed) since the data is already in-process and must
+      // stay aligned with this tick's IMU/joint sample.
+      if (state_estimator_ != nullptr) {
+        state_estimator_->loadFootContactMsg(fc_msg);
+      }
+      if (debug_state_estimator_ != nullptr) {
+        debug_state_estimator_->loadFootContactMsg(fc_msg);
+      }
     }
 
     // For learned controllers on hardware, populate state directly from
@@ -588,6 +599,24 @@ bool RobotDriver::updateState() {
 
     // update robot state using state estimator
     if (state_estimator_ != nullptr) {
+      // READY gate for an EKF primary: the contact-aided EKF only produces a
+      // valid horizontal estimate while standing (feet in contact), and
+      // initializing in the folded sit pose corrupts it. So defer its
+      // init/run until the robot first reaches READY (standing). Until then,
+      // passthrough raw sensor state (joints + IMU orientation) so the SIT
+      // controller still has joints + attitude to work with. Once started it
+      // keeps running. Non-EKF estimators (comp_filter) run every tick.
+      bool is_ekf_primary =
+          (dynamic_cast<EKFEstimator*>(state_estimator_.get()) != nullptr);
+      if (is_ekf_primary && !ekf_primary_started_ && control_mode_ != READY) {
+        last_robot_state_msg_.joints = last_joint_state_msg_;
+        last_robot_state_msg_.joints.header.stamp = node_->now();
+        last_robot_state_msg_.body.pose.orientation = last_imu_msg_.orientation;
+        last_robot_state_msg_.header.stamp = node_->now();
+        return true;
+      }
+      if (is_ekf_primary) ekf_primary_started_ = true;
+
       bool result = state_estimator_->updateOnce(last_robot_state_msg_);
       if (!result) {
         RCLCPP_WARN_THROTTLE(
@@ -598,7 +627,16 @@ bool RobotDriver::updateState() {
       // Run the ride-along estimator on the same sensor inputs. Its output
       // goes to debug_estimate_msg_ and is published on topics.state.estimate
       // for comparison; it never reaches the controller.
-      if (debug_state_estimator_ != nullptr && result) {
+      //
+      // Gate the first seed on READY (standing): if we initialize during sit
+      // or the sit->stand transient, the contact-aided EKF dead-reckons
+      // through legs extending / feet breaking contact and accumulates x/y
+      // drift before the robot is even walking. Waiting for a settled standing
+      // pose makes it start coincident with the mocap-fused comp filter.
+      // Once seeded it keeps running across all modes.
+      if (debug_state_estimator_ != nullptr && result &&
+          (debug_estimator_seeded_ || control_mode_ == READY)) {
+        bool first_seed = !debug_estimator_seeded_;
         if (!debug_estimator_seeded_) {
           // Seed from the primary's first valid output so both filters
           // initialize from the same pose (EKF reads X0 from this msg).
@@ -611,6 +649,22 @@ bool RobotDriver::updateState() {
           debug_state_estimator_->loadMocapMsg(last_mocap_msg_);
         }
         debug_state_estimator_->updateOnce(debug_estimate_msg_);
+
+        // One-time init diagnostic: shows the seed (mocap-fused comp filter
+        // pose) vs the ride-along's first published estimate, so we can see
+        // whether they start coincident.
+        if (first_seed) {
+          RCLCPP_INFO(
+              node_->get_logger(),
+              "EKF ride-along init: seed(comp/mocap)=(%.3f, %.3f, %.3f) "
+              "first_est=(%.3f, %.3f, %.3f)",
+              last_robot_state_msg_.body.pose.position.x,
+              last_robot_state_msg_.body.pose.position.y,
+              last_robot_state_msg_.body.pose.position.z,
+              debug_estimate_msg_.body.pose.position.x,
+              debug_estimate_msg_.body.pose.position.y,
+              debug_estimate_msg_.body.pose.position.z);
+        }
       }
 
       return result;

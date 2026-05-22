@@ -497,6 +497,11 @@ class RobotDriver {
   /// First-call flag: seed debug_estimate_msg_ from the active estimator
   /// so the ride-along EKF initializes at the same pose as comp_filter.
   bool debug_estimator_seeded_ = false;
+
+  /// Latch: set once the primary EKF first runs (at READY). Before this, an
+  /// EKF primary is held dormant (contact-aided filter is meaningless without
+  /// foot contact, and initializing in the folded sit pose corrupts it).
+  bool ekf_primary_started_ = false;
 };
 
 #endif  // ROBOT_DRIVER_H

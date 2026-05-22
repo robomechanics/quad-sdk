@@ -134,7 +134,6 @@ void EKFEstimator::setInitialState(
   Eigen::Vector3d fk = Eigen::Vector3d::Zero();
   Eigen::Vector3d wk = Eigen::Vector3d::Zero();
   Eigen::Quaterniond qk(1, 0, 0, 0);
-
   fk << last_imu_msg_.linear_acceleration.x,
       last_imu_msg_.linear_acceleration.y,
       last_imu_msg_.linear_acceleration.z;
@@ -147,15 +146,58 @@ void EKFEstimator::setInitialState(
   qk.z() = last_imu_msg_.orientation.z;
   qk.normalize();
 
-  // Set initial orientation to identity
-  last_robot_state_msg_.body.pose.orientation.w = 1.0;
-  last_robot_state_msg_.body.pose.orientation.x = 0.0;
-  last_robot_state_msg_.body.pose.orientation.y = 0.0;
-  last_robot_state_msg_.body.pose.orientation.z = 0.0;
+  if (debug_ && last_mocap_msg_) {
+    // SANITY-CHECK seed: initialize from the mocap (secondary) estimate.
+    // Position starts at the true mocap location, and the world-yaw datum is
+    // captured as (mocap_yaw - imu_yaw) and applied each step in StepOnce, so
+    // the EKF heading is pinned to the mocap world frame at t=0. Lets us check
+    // the heading against ground truth. Uses one mocap sample at init only.
+    last_robot_state_msg_.body.pose.position = last_mocap_msg_->pose.position;
+    last_robot_state_msg_.body.pose.orientation =
+        last_mocap_msg_->pose.orientation;
 
-  last_robot_state_msg_.body.pose.position.x = 0.0;
-  last_robot_state_msg_.body.pose.position.y = 0.0;
-  last_robot_state_msg_.body.pose.position.z = 0.267;
+    // setInitialState runs twice in updateOnce; capture the yaw offset once.
+    if (!init_yaw_offset_set_) {
+      tf2::Quaternion qm(last_mocap_msg_->pose.orientation.x,
+                         last_mocap_msg_->pose.orientation.y,
+                         last_mocap_msg_->pose.orientation.z,
+                         last_mocap_msg_->pose.orientation.w);
+      qm.normalize();
+      double mr, mp, my;
+      tf2::Matrix3x3(qm).getRPY(mr, mp, my);
+      double ir, ip, iy;
+      tf2::Matrix3x3(tf2::Quaternion(qk.x(), qk.y(), qk.z(), qk.w()))
+          .getRPY(ir, ip, iy);
+      init_yaw_offset_ = my - iy;
+      init_yaw_offset_set_ = true;
+      RCLCPP_INFO(node_->get_logger(),
+                  "Seeding EKF from mocap: pos=(%.3f, %.3f, %.3f), "
+                  "init_yaw_offset_ = %.2f deg",
+                  last_mocap_msg_->pose.position.x,
+                  last_mocap_msg_->pose.position.y,
+                  last_mocap_msg_->pose.position.z,
+                  init_yaw_offset_ * 180.0 / M_PI);
+    }
+  } else {
+    // Fixed, mocap-free initial state: 0.3 m standing height at the origin,
+    // identity orientation, zero velocity. Self-initializing, no mocap.
+    if (debug_) {
+      RCLCPP_WARN(node_->get_logger(),
+                  "debug_ set but no mocap yet; using fixed (0,0,0.3) seed");
+    } else {
+      RCLCPP_INFO(node_->get_logger(),
+                  "Seeding EKF initial state to fixed pose (0, 0, 0.3), "
+                  "identity orientation (mocap-free)");
+    }
+    last_robot_state_msg_.body.pose.position.x = 0.0;
+    last_robot_state_msg_.body.pose.position.y = 0.0;
+    last_robot_state_msg_.body.pose.position.z = 0.3;
+
+    last_robot_state_msg_.body.pose.orientation.w = 1.0;
+    last_robot_state_msg_.body.pose.orientation.x = 0.0;
+    last_robot_state_msg_.body.pose.orientation.y = 0.0;
+    last_robot_state_msg_.body.pose.orientation.z = 0.0;
+  }
 
   last_robot_state_msg_.body.twist.linear.x = 0;
   last_robot_state_msg_.body.twist.linear.y = 0;
@@ -246,61 +288,60 @@ quad_msgs::msg::RobotState EKFEstimator::StepOnce() {
   R_w_b = R_w_imu * R_imu_b;
 
   // Default: assume all feet in contact (safe for standing/walking)
-  foot_contact_states = Eigen::VectorXd::Ones(4);
-  if (last_grf_msg_) {
-    for (int i = 0; i < 4; i++) {
-      double grf_z = last_grf_msg_->vectors[i].z;
-      double grf_upper_bound = (1.0 / 4) * 9.81 * 7.8;
-      // Only mark as non-contact if GRF is significantly above zero
-      // (indicating commanded forces exist and this foot has low force)
-      double total_grf = 0.0;
-      for (int j = 0; j < 4; j++) {
-        total_grf += last_grf_msg_->vectors[j].z;
-      }
-      if (total_grf > 1.0) {
-        // Controller is actively commanding forces - use GRF ratio
-        foot_contact_states(i) = std::min(
-            std::max(grf_z / grf_upper_bound, 0.0), 1.0);
-      }
-      // Otherwise keep default of 1.0 (all contact)
+  foot_contact_states = Eigen::VectorXd::Ones(num_feet);
+  // Prefer the measured foot contact from the Unitree foot-force sensor
+  // (pushed in by robot_driver via loadFootContactMsg) over the planner's
+  // expected GRFs. contact_states is already thresholded against the tuned
+  // foot_contact_threshold in robot_driver.
+  if (foot_contact_received_ &&
+      static_cast<int>(last_foot_contact_msg_.contact_states.size()) >=
+          num_feet) {
+    for (int i = 0; i < num_feet; i++) {
+      foot_contact_states(i) =
+          last_foot_contact_msg_.contact_states[i] ? 1.0 : 0.0;
     }
   }
 
-  // Use mocap orientation if available, otherwise use IMU orientation
-  if (last_mocap_msg_) {
-    tf2::Quaternion qm(
-        last_mocap_msg_->pose.orientation.x,
-        last_mocap_msg_->pose.orientation.y,
-        last_mocap_msg_->pose.orientation.z,
-        last_mocap_msg_->pose.orientation.w);
-    qm.normalize();
-    tf2::Matrix3x3 m(qm);
-    Eigen::Vector3d rpym;
-    m.getRPY(rpym[0], rpym[1], rpym[2]);
-    quadKD_->getRotationMatrix(rpym, R_w_imu);
-
-    new_state_est.body.pose.orientation.w = qm.w();
-    new_state_est.body.pose.orientation.x = qm.x();
-    new_state_est.body.pose.orientation.y = qm.y();
-    new_state_est.body.pose.orientation.z = qm.z();
-  } else {
-    // Use IMU orientation
-    R_w_imu = qk.toRotationMatrix();
-
-    new_state_est.body.pose.orientation.w = qk.w();
-    new_state_est.body.pose.orientation.x = qk.x();
-    new_state_est.body.pose.orientation.y = qk.y();
-    new_state_est.body.pose.orientation.z = qk.z();
-  }
+  // Apply the constant world-yaw datum captured at init to the IMU
+  // orientation: roll/pitch stay IMU (gravity-true), heading is pinned to the
+  // world frame the position seed used. No live mocap dependence -- one yaw
+  // sample at init only. Use qkw everywhere: output, R_w_imu, predict, update.
+  tf2::Quaternion q_corr;
+  q_corr.setRPY(0.0, 0.0, init_yaw_offset_);
+  tf2::Quaternion q_w_tf =
+      q_corr * tf2::Quaternion(qk.x(), qk.y(), qk.z(), qk.w());
+  Eigen::Quaterniond qkw(q_w_tf.w(), q_w_tf.x(), q_w_tf.y(), q_w_tf.z());
+  qkw.normalize();
+  R_w_imu = qkw.toRotationMatrix();
+  new_state_est.body.pose.orientation.w = qkw.w();
+  new_state_est.body.pose.orientation.x = qkw.x();
+  new_state_est.body.pose.orientation.y = qkw.y();
+  new_state_est.body.pose.orientation.z = qkw.z();
 
   /// Prediction step
+  // RCLCPP_INFO(node_->get_logger(), "Running EKF prediction step");
+  Eigen::Vector3d u_dbg = R_w_imu * fk + Eigen::Vector3d(0, 0, -9.81);
+  RCLCPP_INFO_THROTTLE(
+      node_->get_logger(), *node_->get_clock(), 500,
+      "\n  fk(body) = [%+.4f %+.4f %+.4f]  |fk|=%.4f"
+      "\n  R_w_imu  = [%+.4f %+.4f %+.4f]"
+      "\n             [%+.4f %+.4f %+.4f]"
+      "\n             [%+.4f %+.4f %+.4f]"
+      "\n  u = R*fk+g = [%+.4f %+.4f %+.4f]   (should be ~0 at rest)",
+      fk(0), fk(1), fk(2), fk.norm(),
+      R_w_imu(0, 0), R_w_imu(0, 1), R_w_imu(0, 2),
+      R_w_imu(1, 0), R_w_imu(1, 1), R_w_imu(1, 2),
+      R_w_imu(2, 0), R_w_imu(2, 1), R_w_imu(2, 2),
+      u_dbg(0), u_dbg(1), u_dbg(2));
+
   this->predict(dt, fk, wk, R_w_imu);
   X = X_pre;
   P = P_pre;
-  last_X = X;
-  last_P = P;
+  // last_X = X;
+  // last_P = P;
+  // RCLCPP_INFO(node_->get_logger(), "Running EKF update step");
   /// Update step
-  this->update(jk, fk, vk, wk, qk, R_w_imu);
+  this->update(jk, fk, vk, wk, qkw, R_w_imu);
   last_X = X;
   last_P = P;
 
@@ -446,13 +487,17 @@ void EKFEstimator::update(const Eigen::VectorXd& jk, const Eigen::VectorXd& fk,
     toe_body_pos_body.setZero();
     quadKD_->bodyToFootFKBodyFrame(i, toe_body_pos_body);
 
-    toe_body_pos_body(2) -= foot_radius;
+    // toe_body_pos_body(2) -= foot_radius;
     // Rotate body-frame relative position into world frame to match C matrix
     y.segment(3 * i, 3) = R_w_imu * toe_body_pos_body;
+    y(3 * i + 2) -= foot_radius;
 
     // Solve for foot heights
+    // y(24 + i) =
+    //     (1.0 - foot_contact_states[i]) * (r_pre(2) + toe_body_pos_body(2)) +
+    //     foot_contact_states[i] * 0;
     y(24 + i) =
-        (1.0 - foot_contact_states[i]) * (r_pre(2) + toe_body_pos_body(2)) +
+        (1.0 - foot_contact_states[i]) * (r_pre(2) + y(3 * i + 2)) +
         foot_contact_states[i] * 0;
 
     // Velocity measurement (C matrix extracts v_body from state):

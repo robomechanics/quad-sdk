@@ -259,10 +259,10 @@ bool UnitreeInterface::recv(sensor_msgs::msg::JointState& joint_state_msg,
     }
   }
 
-  imu_msg.orientation.x = low_state_.imu_state().quaternion()[0];
-  imu_msg.orientation.y = low_state_.imu_state().quaternion()[1];
-  imu_msg.orientation.z = low_state_.imu_state().quaternion()[2];
-  imu_msg.orientation.w = low_state_.imu_state().quaternion()[3];
+  imu_msg.orientation.w = low_state_.imu_state().quaternion()[0];
+  imu_msg.orientation.x = low_state_.imu_state().quaternion()[1];
+  imu_msg.orientation.y = low_state_.imu_state().quaternion()[2];
+  imu_msg.orientation.z = low_state_.imu_state().quaternion()[3];
 
   imu_msg.angular_velocity.x = low_state_.imu_state().gyroscope()[0];
   imu_msg.angular_velocity.y = low_state_.imu_state().gyroscope()[1];

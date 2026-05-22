@@ -70,6 +70,42 @@ def load_bag(file_path):
     return gt_t, gt_pos, gt_vel, est_t, est_pos, est_vel
 
 
+def compute_errors(gt_t, gt_pos, gt_vel, est_t, est_pos, est_vel):
+    """Interpolate EKF onto comp-filter timestamps and report error metrics.
+
+    ground_truth = comp filter (active), estimate = EKF (ride-along). They
+    publish on independent timestamps, so we resample the EKF onto the comp
+    filter's time vector before differencing.
+    """
+    labels = ['X', 'Y', 'Z']
+
+    def interp_axes(src_t, src_data):
+        return np.column_stack(
+            [np.interp(gt_t, src_t, src_data[:, i]) for i in range(3)])
+
+    est_pos_i = interp_axes(est_t, est_pos)
+    est_vel_i = interp_axes(est_t, est_vel)
+
+    def report(name, gt, est, unit):
+        err = gt - est
+        rms = np.sqrt(np.mean(err ** 2, axis=0))
+        mae = np.mean(np.abs(err), axis=0)
+        mx = np.max(np.abs(err), axis=0)
+        print(f"\n{name} error (comp filter - EKF), {unit}:")
+        print(f"  {'axis':<6}{'RMS':>10}{'MAE':>10}{'max':>10}")
+        for i in range(3):
+            print(f"  {labels[i]:<6}{rms[i]:>10.4f}{mae[i]:>10.4f}{mx[i]:>10.4f}")
+        norm_rms = np.sqrt(np.mean(np.sum(err ** 2, axis=1)))
+        print(f"  {'|xyz|':<6}{norm_rms:>10.4f}  (3D RMS magnitude)")
+
+    print("\n" + "=" * 48)
+    print("NUMERIC COMPARISON  (comp filter vs EKF ride-along)")
+    print("=" * 48)
+    report("Position", gt_pos, est_pos_i, "m")
+    report("Velocity", gt_vel, est_vel_i, "m/s")
+    print("=" * 48)
+
+
 def plot_comparison(gt_t, gt_pos, gt_vel, est_t, est_pos, est_vel):
     labels = ['X', 'Y', 'Z']
 
@@ -119,4 +155,5 @@ if __name__ == "__main__":
 
     print(f"Loading {mcap_path}...")
     gt_t, gt_pos, gt_vel, est_t, est_pos, est_vel = load_bag(mcap_path)
+    compute_errors(gt_t, gt_pos, gt_vel, est_t, est_pos, est_vel)
     plot_comparison(gt_t, gt_pos, gt_vel, est_t, est_pos, est_vel)
