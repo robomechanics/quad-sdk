@@ -432,23 +432,6 @@
   
   
     <li class="md-tabs__item">
-      <a href="../roadmap/" class="md-tabs__link">
-        
-  
-    
-  
-  Roadmap
-
-      </a>
-    </li>
-  
-
-      
-        
-  
-  
-  
-    <li class="md-tabs__item">
       <a href="../contributing/" class="md-tabs__link">
         
   
@@ -1092,6 +1075,8 @@
       
         
       
+        
+      
     
     
       
@@ -1139,6 +1124,27 @@
   
   <span class="md-ellipsis">
     Quad Simulator
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../packages/isaac_plugins/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Isaac Plugins
   </span>
   
 
@@ -1399,6 +1405,8 @@
       
         
       
+        
+      
     
     
       
@@ -1446,6 +1454,27 @@
   
   <span class="md-ellipsis">
     First Simulation Run
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tutorials/isaac-sim/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Running in Isaac Sim
   </span>
   
 
@@ -1665,6 +1694,15 @@
   <a href="#at-a-glance" class="md-nav__link">
     <span class="md-ellipsis">
       At a glance
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#simulator-support" class="md-nav__link">
+    <span class="md-ellipsis">
+      Simulator support
     </span>
   </a>
   
@@ -1923,26 +1961,6 @@
   
   
     <li class="md-nav__item">
-      <a href="../roadmap/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    Roadmap
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-    
-      
-      
-  
-  
-  
-  
-    <li class="md-nav__item">
       <a href="../contributing/" class="md-nav__link">
         
   
@@ -1992,6 +2010,15 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#simulator-support" class="md-nav__link">
+    <span class="md-ellipsis">
+      Simulator support
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#adding-a-new-platform" class="md-nav__link">
     <span class="md-ellipsis">
       Adding a new platform
@@ -2033,77 +2060,135 @@
 
 
 <h1 id="supported-platforms">Supported platforms<a class="headerlink" href="#supported-platforms" title="Permanent link">&para;</a></h1>
-<p>Quad-SDK ships configs and hardware interfaces for the following quadrupeds. <strong>Tested</strong> means the lab has run the full planning + control stack on real hardware. <strong>Config-ready</strong> means simulation works and the config is in-tree but hardware has not been verified yet.</p>
+<p>Quad-SDK ships configs and hardware interfaces for the following quadrupeds. <strong>Hardware tested</strong> means the lab has run the full planning + control stack on the physical robot — currently the <strong>Ghost Robotics Spirit 40</strong> and the <strong>Unitree Go2</strong>. Every listed platform has an in-tree config and runs in simulation; see the <a href="#simulator-support">simulator support matrix</a> below for which backend covers which robot.</p>
 <h2 id="at-a-glance">At a glance<a class="headerlink" href="#at-a-glance" title="Permanent link">&para;</a></h2>
 <table>
 <thead>
 <tr>
 <th>Platform</th>
 <th>Manufacturer</th>
-<th>Status</th>
 <th>Mass</th>
-<th>Sim backend</th>
+<th>Hardware status</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td><strong>Spirit 40</strong></td>
 <td>Ghost Robotics</td>
-<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m9 20.42-6.21-6.21 2.83-2.83L9 14.77l9.88-9.89 2.83 2.83z"/></svg></span> Tested</td>
 <td>12 kg</td>
-<td>Gazebo + MuJoCo</td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m9 20.42-6.21-6.21 2.83-2.83L9 14.77l9.88-9.89 2.83 2.83z"/></svg></span> Tested on hardware</td>
 </tr>
 <tr>
 <td><strong>Go2</strong></td>
 <td>Unitree</td>
-<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m9 20.42-6.21-6.21 2.83-2.83L9 14.77l9.88-9.89 2.83 2.83z"/></svg></span> Tested</td>
 <td>15 kg</td>
-<td>Gazebo + MuJoCo</td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m9 20.42-6.21-6.21 2.83-2.83L9 14.77l9.88-9.89 2.83 2.83z"/></svg></span> Tested on hardware</td>
 </tr>
 <tr>
 <td><strong>Go1</strong></td>
 <td>Unitree</td>
-<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m9 20.42-6.21-6.21 2.83-2.83L9 14.77l9.88-9.89 2.83 2.83z"/></svg></span> Tested</td>
 <td>12 kg</td>
-<td>Gazebo + MuJoCo</td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 7 9 19l-5.5-5.5 1.41-1.41L9 16.17 19.59 5.59z"/></svg></span> Simulation / config-ready</td>
 </tr>
 <tr>
 <td><strong>A1</strong></td>
 <td>Unitree</td>
-<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m9 20.42-6.21-6.21 2.83-2.83L9 14.77l9.88-9.89 2.83 2.83z"/></svg></span> Tested</td>
 <td>12 kg</td>
-<td>Gazebo + MuJoCo</td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 7 9 19l-5.5-5.5 1.41-1.41L9 16.17 19.59 5.59z"/></svg></span> Simulation / config-ready</td>
 </tr>
 <tr>
 <td><strong>B2</strong></td>
 <td>Unitree</td>
-<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m9 20.42-6.21-6.21 2.83-2.83L9 14.77l9.88-9.89 2.83 2.83z"/></svg></span> Tested</td>
 <td>60 kg</td>
-<td>Gazebo</td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 7 9 19l-5.5-5.5 1.41-1.41L9 16.17 19.59 5.59z"/></svg></span> Simulation / config-ready</td>
 </tr>
 <tr>
 <td><strong>Spot</strong></td>
 <td>Boston Dynamics</td>
-<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m9 20.42-6.21-6.21 2.83-2.83L9 14.77l9.88-9.89 2.83 2.83z"/></svg></span> Tested</td>
 <td>32.5 kg</td>
-<td>Gazebo (joint API)</td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 7 9 19l-5.5-5.5 1.41-1.41L9 16.17 19.59 5.59z"/></svg></span> Simulation / config-ready</td>
 </tr>
 <tr>
 <td><strong>Vision60</strong></td>
 <td>Ghost Robotics</td>
-<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m9 20.42-6.21-6.21 2.83-2.83L9 14.77l9.88-9.89 2.83 2.83z"/></svg></span> Tested</td>
 <td>50 kg</td>
-<td>Gazebo</td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 7 9 19l-5.5-5.5 1.41-1.41L9 16.17 19.59 5.59z"/></svg></span> Simulation / config-ready</td>
 </tr>
 <tr>
 <td><strong>Go2-W</strong> (wheeled)</td>
 <td>Unitree</td>
-<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 7 9 19l-5.5-5.5 1.41-1.41L9 16.17 19.59 5.59z"/></svg></span> Config-ready</td>
 <td>18 kg</td>
-<td>Gazebo</td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 7 9 19l-5.5-5.5 1.41-1.41L9 16.17 19.59 5.59z"/></svg></span> Simulation / config-ready</td>
 </tr>
 </tbody>
 </table>
+<h2 id="simulator-support">Simulator support<a class="headerlink" href="#simulator-support" title="Permanent link">&para;</a></h2>
+<p>Quad-SDK runs in three simulators: <strong>Gazebo Harmonic</strong>, <strong>MuJoCo</strong>, and <strong>NVIDIA Isaac Sim 5.1</strong>. Each robot's verified coverage:</p>
+<table>
+<thead>
+<tr>
+<th>Robot</th>
+<th style="text-align: center;">Gazebo</th>
+<th style="text-align: center;">MuJoCo</th>
+<th style="text-align: center;">Isaac Sim</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Spirit 40</strong></td>
+<td style="text-align: center;"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 7 9 19l-5.5-5.5 1.41-1.41L9 16.17 19.59 5.59z"/></svg></span></td>
+<td style="text-align: center;"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 7 9 19l-5.5-5.5 1.41-1.41L9 16.17 19.59 5.59z"/></svg></span></td>
+<td style="text-align: center;"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 7 9 19l-5.5-5.5 1.41-1.41L9 16.17 19.59 5.59z"/></svg></span></td>
+</tr>
+<tr>
+<td><strong>Go2</strong></td>
+<td style="text-align: center;"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 7 9 19l-5.5-5.5 1.41-1.41L9 16.17 19.59 5.59z"/></svg></span></td>
+<td style="text-align: center;"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 7 9 19l-5.5-5.5 1.41-1.41L9 16.17 19.59 5.59z"/></svg></span></td>
+<td style="text-align: center;"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 7 9 19l-5.5-5.5 1.41-1.41L9 16.17 19.59 5.59z"/></svg></span></td>
+</tr>
+<tr>
+<td><strong>Go1</strong></td>
+<td style="text-align: center;"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 7 9 19l-5.5-5.5 1.41-1.41L9 16.17 19.59 5.59z"/></svg></span></td>
+<td style="text-align: center;"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 7 9 19l-5.5-5.5 1.41-1.41L9 16.17 19.59 5.59z"/></svg></span></td>
+<td style="text-align: center;"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg></span></td>
+</tr>
+<tr>
+<td><strong>A1</strong></td>
+<td style="text-align: center;"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 7 9 19l-5.5-5.5 1.41-1.41L9 16.17 19.59 5.59z"/></svg></span></td>
+<td style="text-align: center;"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg></span></td>
+<td style="text-align: center;"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg></span></td>
+</tr>
+<tr>
+<td><strong>B2</strong></td>
+<td style="text-align: center;"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 7 9 19l-5.5-5.5 1.41-1.41L9 16.17 19.59 5.59z"/></svg></span></td>
+<td style="text-align: center;"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 7 9 19l-5.5-5.5 1.41-1.41L9 16.17 19.59 5.59z"/></svg></span></td>
+<td style="text-align: center;"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg></span></td>
+</tr>
+<tr>
+<td><strong>Spot</strong></td>
+<td style="text-align: center;"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 7 9 19l-5.5-5.5 1.41-1.41L9 16.17 19.59 5.59z"/></svg></span></td>
+<td style="text-align: center;"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 7 9 19l-5.5-5.5 1.41-1.41L9 16.17 19.59 5.59z"/></svg></span></td>
+<td style="text-align: center;"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg></span></td>
+</tr>
+<tr>
+<td><strong>Vision60</strong></td>
+<td style="text-align: center;"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 7 9 19l-5.5-5.5 1.41-1.41L9 16.17 19.59 5.59z"/></svg></span></td>
+<td style="text-align: center;"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 7 9 19l-5.5-5.5 1.41-1.41L9 16.17 19.59 5.59z"/></svg></span></td>
+<td style="text-align: center;"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg></span></td>
+</tr>
+<tr>
+<td><strong>Go2-W</strong></td>
+<td style="text-align: center;"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 7 9 19l-5.5-5.5 1.41-1.41L9 16.17 19.59 5.59z"/></svg></span></td>
+<td style="text-align: center;"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 7 9 19l-5.5-5.5 1.41-1.41L9 16.17 19.59 5.59z"/></svg></span></td>
+<td style="text-align: center;"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg></span></td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li><strong>Gazebo Harmonic</strong> — every platform.</li>
+<li><strong>MuJoCo</strong> — every platform except the A1.</li>
+<li><strong>Isaac Sim 5.1</strong> <em>(beta)</em> — Spirit 40 and Go2 (the robots in the Isaac bridge <code>ROBOT_REGISTRY</code>). Requires a separate IsaacLab conda install (<a href="https://isaac-sim.github.io/IsaacLab/main/source/setup/installation/index.html">install guide</a>). See <a href="../tutorials/isaac-sim/">Running in Isaac Sim</a> for setup and run instructions.</li>
+</ul>
 <h2 id="adding-a-new-platform">Adding a new platform<a class="headerlink" href="#adding-a-new-platform" title="Permanent link">&para;</a></h2>
 <p>If your robot isn't listed, see <a href="../tutorials/adding-a-robot/">Adding a new robot</a> for the full step-by-step. We accept upstream contributions — file a PR with the description package and per-robot YAML.</p>
 <h2 id="performance-reference">Performance reference<a class="headerlink" href="#performance-reference" title="Permanent link">&para;</a></h2>
@@ -2163,7 +2248,7 @@
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-timeago"><span class="timeago" datetime="2026-04-29T23:15:14+00:00" locale="en"></span></span><span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-iso_date">2026-04-29</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-timeago"><span class="timeago" datetime="2026-05-23T00:38:20+00:00" locale="en"></span></span><span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-iso_date">2026-05-23</span>
   </span>
 
     
