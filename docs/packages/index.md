@@ -22,7 +22,8 @@ Quad-SDK is a workspace of focused ROS 2 packages. Each one builds in isolation 
 
 | Package | What it does |
 |---|---|
-| [`quad_simulator`](quad_simulator.md) | Gazebo Harmonic plugins, worlds, and robot descriptions |
+| [`quad_simulator`](quad_simulator.md) | Gazebo Harmonic + MuJoCo simulation — physics plugins, worlds, terrains, and robot descriptions |
+| [`isaac_plugins`](isaac_plugins.md) | **Beta** NVIDIA Isaac Sim 5.1 backend — Isaac-side bridge, URDF→USD prep pipeline, underbrush scenario (Spirit 40, Go2) |
 | [`force_applicator`](force_applicator.md) | Runtime disturbance injection for robustness testing |
 
 ## Utilities

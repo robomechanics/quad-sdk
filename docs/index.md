@@ -46,7 +46,7 @@ Vertically integrated planning, control, estimation, communication, and developm
 
     ---
 
-    First-class support for both **Gazebo Harmonic** and **MuJoCo**. Force-injection plugins, perception terrain stack, multi-robot scenarios.
+    First-class support for **Gazebo Harmonic** and **MuJoCo**, plus a beta **NVIDIA Isaac Sim** backend. Force-injection plugins, perception terrain stack, multi-robot scenarios.
 
     [:octicons-arrow-right-24: Quad Simulator](packages/quad_simulator.md)
 

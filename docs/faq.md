@@ -28,9 +28,9 @@ abad3, hip3, knee3,    # leg 3 — back  right
 
 So `state_msg.joints.positions[4]` is leg 1's hip position (back left).
 
-## Why both Gazebo and MuJoCo?
+## Why three simulators (Gazebo, MuJoCo, Isaac Sim)?
 
-Gazebo Harmonic gives us first-class sensor and contact plugins, mature tooling, and a worldfile/SDF ecosystem. MuJoCo is fast, deterministic, renders without a GPU, and is the better fit for headless training rigs. Both are supported and tested in CI.
+Gazebo Harmonic gives us first-class sensor and contact plugins, mature tooling, and a worldfile/SDF ecosystem, and it covers every supported platform. MuJoCo is fast, deterministic, renders without a GPU, and is the better fit for headless training rigs. NVIDIA Isaac Sim 5.1 (**beta**, separate [IsaacLab conda install](https://isaac-sim.github.io/IsaacLab/main/source/setup/installation/index.html)) adds high-fidelity, GPU-accelerated rendering for the Spirit 40 and Go2 — see [Running in Isaac Sim](tutorials/isaac-sim.md). The controller and planning stacks run unmodified across all three — see the [simulator support matrix](platforms.md#simulator-support).
 
 ## Why Pinocchio over RBDL?
 

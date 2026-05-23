@@ -1,6 +1,6 @@
 ---
 title: Time Sync (chrony)
-password: R0b0mech
+password: minions
 tags:
   - rml
   - networking

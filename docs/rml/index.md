@@ -1,6 +1,6 @@
 ---
 title: RML Lab Hub
-password: R0b0mech
+password: minions
 tags:
   - rml
   - internal

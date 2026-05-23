@@ -1,6 +1,6 @@
 ---
 title: Network & IP Map
-password: R0b0mech
+password: minions
 tags:
   - rml
   - networking

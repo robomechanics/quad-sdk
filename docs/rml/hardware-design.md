@@ -1,6 +1,6 @@
 ---
 title: Hardware Design
-password: R0b0mech
+password: minions
 tags:
   - rml
   - hardware

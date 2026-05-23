@@ -1,6 +1,6 @@
 ---
 title: Motion Capture Setup
-password: R0b0mech
+password: minions
 tags:
   - rml
   - mocap
@@ -15,7 +15,7 @@ The lab uses **Optitrack** cameras with **Motive** as the host software, streami
 
 In Motive → Settings → Streaming, configure NatNet exactly like this. Only the listed checkboxes should be on; ports must match downstream consumers.
 
-![Motive streaming page 1](../assets/rml/fig-03.png){ loading=lazy }
+![Motive streaming page 1](../assets/rml/mocapsettings.png){ loading=lazy }
 
 ![Motive streaming page 2](../assets/rml/fig-04.png){ loading=lazy }
 
@@ -23,7 +23,7 @@ In Motive → Settings → Streaming, configure NatNet exactly like this. Only t
 |---|---|
 | Enable | :material-check: |
 | Local Interface | `192.168.8.104` |
-| Transmission Type | **Multicast** (lab default) — switch to **Unicast** for fleet runs to avoid mocap PC saturation |
+| Transmission Type | **Unicast** — always; we never use multicast in this lab |
 | Rigid Bodies | :material-check: |
 | Cameras | :material-check: |
 | Skeleton Coordinates | Global |
@@ -39,8 +39,8 @@ In Motive → Settings → Streaming, configure NatNet exactly like this. Only t
 | **VRPN Enable** | :material-close: |
 | VRPN Broadcast Port | `3883` (kept for legacy) |
 
-!!! tip "Unicast vs. multicast"
-    Multicast is fine for a single robot. With multiple robots subscribing on the same network, Unicast scales better and avoids mocap-PC packet storms.
+!!! note "Always Unicast"
+    This lab uses **Unicast only** — never multicast, regardless of how many robots are running. Leave Transmission Type set to Unicast at all times; the Multicast Interface field below is unused in our setup.
 
 ## Defining a robot rigid body in Motive
 
@@ -51,13 +51,32 @@ In Motive → Settings → Streaming, configure NatNet exactly like this. Only t
 
 | Axis | Offset |
 |---|---|
-| X | **102.87 mm** |
-| Y | **40.56 mm** |
-| Z | **99.06 mm** |
+| X | **40 mm** |
+| Y | **-105 mm** |
+| Z | **100 mm** |
 
 The default Asset ID for Unitree robots in Motive is **5**.
 
 For room calibration steps, see the separate **RML Mocap Guide**.
+
+## Coordinate frames
+
+OptiTrack and Quad-SDK do **not** use the same axis convention, so the two frames have to be reconciled before mocap poses are usable by the stack.
+
+![Mocap room with OptiTrack world frame](../assets/rml/mocap-room-frames.jpg){ loading=lazy }
+
+The OptiTrack world frame is anchored at the ground-plane calibration square (the L-marker on the floor):
+
+| Axis | OptiTrack world | Quad-SDK |
+|---|---|---|
+| **X** | Right | **Forward** |
+| **Y** | Up | Up |
+| **Z** | Forward | Left |
+
+In other words OptiTrack is **Z-forward / Y-up / X-right**, while Quad-SDK expects **X-forward / Y-up**. The difference is a 90° rotation (yaw) about the shared up axis.
+
+!!! info "The driver handles the rotation for you"
+    You do **not** apply this rotation yourself. The `mocap4r2_optitrack_driver` external dependency rotates every published robot state from the OptiTrack convention into the Quad-SDK convention, so downstream nodes (EKF, planners, controller) already receive poses in **X-forward / Y-up**. Just make sure the rigid body is defined with the COM offset above and the world is calibrated against the floor L-square.
 
 ## Camera frame rate (eSync 2)
 
@@ -81,6 +100,9 @@ Per-camera settings should all be:
 - Mode: tracking (crosshair icon)
 - Exposure: `100 µs`
 - LED: on
+
+!!! warning "Throttled at 250 Hz? Drop the color-camera resolution"
+    If Motive still caps the frame rate at 250 Hz even with the eSync 2 set correctly, lower the **resolution of the color cameras** — Motive limits the *whole system's* frame rate to whatever the color cameras can sustain. This applies **even when the color cameras are disabled**, so reduce their resolution regardless.
 
 ## UDP buffer sizing on the laptop
 

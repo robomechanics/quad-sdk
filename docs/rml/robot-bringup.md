@@ -1,6 +1,6 @@
 ---
 title: Robot Bringup
-password: R0b0mech
+password: minions
 tags:
   - rml
   - hardware
@@ -89,9 +89,8 @@ Steps 1, 3, 4, 5 run on the **remote laptop**. Step 2 runs **on the robot via SS
     Only needed if mocap is in the loop:
 
     ```bash
-    cd /root/ros2_ws/src/quad-sdk/quad_utils/scripts
-    source launch_remote_env.sh
     cd ros2_ws
+    source src/quad_sdk/quad_utils/scripts/launch_remote_env.sh
     ros2 launch mocap4r2_optitrack_driver mocap.py
     ```
 
@@ -110,9 +109,8 @@ Steps 1, 3, 4, 5 run on the **remote laptop**. Step 2 runs **on the robot via SS
 === "3. RViz (remote)"
 
     ```bash
-    cd /root/ros2_ws/src/quad-sdk/quad_utils/scripts
-    source launch_remote_env.sh
     cd ros2_ws
+    source src/quad_sdk/quad_utils/scripts/launch_remote_env.sh
     ros2 launch quad_utils remote_driver.launch
     ```
 
@@ -121,14 +119,16 @@ Steps 1, 3, 4, 5 run on the **remote laptop**. Step 2 runs **on the robot via SS
     Once the driver is up and you see joint state coming back, ramp the robot to stand:
 
     ```bash
-    source launch_remote_env.sh
+    cd ros2_ws
+    source src/quad_sdk/quad_utils/scripts/launch_remote_env.sh
     ros2 topic pub /robot_1/control/mode std_msgs/UInt8 "data: 1"
     ```
 
 === "5. Plan / joystick (remote)"
 
     ```bash
-    source launch_remote_env.sh
+    cd ros2_ws
+    source src/quad_sdk/quad_utils/scripts/launch_remote_env.sh
     ros2 launch quad_utils quad_plan.py
     ```
 

@@ -7,20 +7,39 @@ tags:
 
 # Supported platforms
 
-Quad-SDK ships configs and hardware interfaces for the following quadrupeds. **Tested** means the lab has run the full planning + control stack on real hardware. **Config-ready** means simulation works and the config is in-tree but hardware has not been verified yet.
+Quad-SDK ships configs and hardware interfaces for the following quadrupeds. **Hardware tested** means the lab has run the full planning + control stack on the physical robot — currently the **Ghost Robotics Spirit 40** and the **Unitree Go2**. Every listed platform has an in-tree config and runs in simulation; see the [simulator support matrix](#simulator-support) below for which backend covers which robot.
 
 ## At a glance
 
-| Platform | Manufacturer | Status | Mass | Sim backend |
-|---|---|---|---|---|
-| **Spirit 40** | Ghost Robotics | :material-check-bold: Tested | 12 kg | Gazebo + MuJoCo |
-| **Go2** | Unitree | :material-check-bold: Tested | 15 kg | Gazebo + MuJoCo |
-| **Go1** | Unitree | :material-check-bold: Tested | 12 kg | Gazebo + MuJoCo |
-| **A1** | Unitree | :material-check-bold: Tested | 12 kg | Gazebo + MuJoCo |
-| **B2** | Unitree | :material-check-bold: Tested | 60 kg | Gazebo |
-| **Spot** | Boston Dynamics | :material-check-bold: Tested | 32.5 kg | Gazebo (joint API) |
-| **Vision60** | Ghost Robotics | :material-check-bold: Tested | 50 kg | Gazebo |
-| **Go2-W** (wheeled) | Unitree | :material-check: Config-ready | 18 kg | Gazebo |
+| Platform | Manufacturer | Mass | Hardware status |
+|---|---|---|---|
+| **Spirit 40** | Ghost Robotics | 12 kg | :material-check-bold: Tested on hardware |
+| **Go2** | Unitree | 15 kg | :material-check-bold: Tested on hardware |
+| **Go1** | Unitree | 12 kg | :material-check: Simulation / config-ready |
+| **A1** | Unitree | 12 kg | :material-check: Simulation / config-ready |
+| **B2** | Unitree | 60 kg | :material-check: Simulation / config-ready |
+| **Spot** | Boston Dynamics | 32.5 kg | :material-check: Simulation / config-ready |
+| **Vision60** | Ghost Robotics | 50 kg | :material-check: Simulation / config-ready |
+| **Go2-W** (wheeled) | Unitree | 18 kg | :material-check: Simulation / config-ready |
+
+## Simulator support
+
+Quad-SDK runs in three simulators: **Gazebo Harmonic**, **MuJoCo**, and **NVIDIA Isaac Sim 5.1**. Each robot's verified coverage:
+
+| Robot | Gazebo | MuJoCo | Isaac Sim |
+|---|:---:|:---:|:---:|
+| **Spirit 40** | :material-check: | :material-check: | :material-check: |
+| **Go2** | :material-check: | :material-check: | :material-check: |
+| **Go1** | :material-check: | :material-check: | :material-close: |
+| **A1** | :material-check: | :material-close: | :material-close: |
+| **B2** | :material-check: | :material-check: | :material-close: |
+| **Spot** | :material-check: | :material-check: | :material-close: |
+| **Vision60** | :material-check: | :material-check: | :material-close: |
+| **Go2-W** | :material-check: | :material-check: | :material-close: |
+
+- **Gazebo Harmonic** — every platform.
+- **MuJoCo** — every platform except the A1.
+- **Isaac Sim 5.1** *(beta)* — Spirit 40 and Go2 (the robots in the Isaac bridge `ROBOT_REGISTRY`). Requires a separate IsaacLab conda install ([install guide](https://isaac-sim.github.io/IsaacLab/main/source/setup/installation/index.html)). See [Running in Isaac Sim](tutorials/isaac-sim.md) for setup and run instructions.
 
 ## Adding a new platform
 

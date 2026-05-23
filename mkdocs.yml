@@ -10,6 +10,11 @@ copyright: Copyright &copy; Robomechanics Lab, Carnegie Mellon University
 # Per-package READMEs (included verbatim) link to source files outside docs/
 # (e.g. ../quad_msgs/msg/RobotState.msg) — these render fine on GitHub but
 # don't resolve as docs pages. Demote those to info so --strict still passes.
+# roadmap.md is kept in-tree but intentionally left out of the nav for now —
+# tell MkDocs not to warn about it.
+not_in_nav: |
+  roadmap.md
+
 validation:
   links:
     unrecognized_links: info
@@ -154,7 +159,7 @@ nav:
       - ROS2 Migration: architecture/ros2-migration.md
       - Pinocchio Integration: architecture/pinocchio-integration.md
   - Packages:
-      - Index: packages/index.md
+      - Overview: packages/index.md
       - Planning:
           - Global Body Planner: packages/global_body_planner.md
           - Local Planner: packages/local_planner.md
@@ -165,6 +170,7 @@ nav:
           - Body Force Estimator: packages/body_force_estimator.md
       - Simulation:
           - Quad Simulator: packages/quad_simulator.md
+          - Isaac Plugins: packages/isaac_plugins.md
           - Force Applicator: packages/force_applicator.md
       - Utilities:
           - Quad Utils: packages/quad_utils.md
@@ -175,6 +181,7 @@ nav:
           - Scripts: packages/scripts.md
   - Tutorials:
       - First Simulation Run: tutorials/first-run.md
+      - Running in Isaac Sim: tutorials/isaac-sim.md
       - Multi-Robot with CBS: tutorials/multi-robot.md
       - Logging & Playback: tutorials/logging.md
       - Training Data Collection: tutorials/training.md
@@ -192,7 +199,6 @@ nav:
       - 🔒 Robot Bringup: rml/robot-bringup.md
       - 🔒 Hardware Design: rml/hardware-design.md
   - Cite: cite.md
-  - Roadmap: roadmap.md
   - Contributing: contributing.md
 
 extra:
