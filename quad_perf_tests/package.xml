@@ -16,6 +16,15 @@
   <depend>geometry_msgs</depend>
   <depend>quad_utils</depend>
 
+  <!-- Python test-iteration tooling (formerly the quad_training package) -->
+  <exec_depend>rclpy</exec_depend>
+  <exec_depend>std_msgs</exec_depend>
+  <exec_depend>sensor_msgs</exec_depend>
+  <exec_depend>quad_msgs</exec_depend>
+  <exec_depend>message_filters</exec_depend>
+  <exec_depend>ros2bag</exec_depend>
+  <exec_depend>ros2launch</exec_depend>
+
   <export>
     <build_type>ament_cmake</build_type>
   </export>

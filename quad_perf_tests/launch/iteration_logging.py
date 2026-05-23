@@ -26,7 +26,7 @@ def launch_bag_recording(context, *args, **kwargs):
         f"{tp}/synced/state/estimate",
     ]
 
-    # Raw topics (full-rate, for reference / richer training data)
+    # Raw topics (full-rate, for reference / richer per-iteration logs)
     raw_topics = [
         f"{tp}/state/ground_truth",
         f"{tp}/state/estimate",
@@ -47,7 +47,7 @@ def launch_bag_recording(context, *args, **kwargs):
     ]
 
     return [
-        # Bag 1: synced topics only (clean training pairs)
+        # Bag 1: synced topics only (clean time-aligned bundles)
         ExecuteProcess(
             cmd=[
                 'ros2', 'bag', 'record',
@@ -71,12 +71,12 @@ def launch_bag_recording(context, *args, **kwargs):
 
 
 def generate_launch_description():
-    default_output = os.path.join(os.getcwd(), 'training_bags')
+    default_output = os.path.join(os.getcwd(), 'iteration_bags')
 
     return LaunchDescription([
         DeclareLaunchArgument('namespace', default_value='robot_1'),
         DeclareLaunchArgument('robot_type', default_value='go2'),
-        DeclareLaunchArgument('bag_name', default_value='training'),
+        DeclareLaunchArgument('bag_name', default_value='iteration'),
         DeclareLaunchArgument('output_dir', default_value=default_output,
                               description='Directory to store bag files'),
         OpaqueFunction(function=launch_bag_recording),

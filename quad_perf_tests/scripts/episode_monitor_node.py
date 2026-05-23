@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Episode monitor node for training data collection.
+Iteration monitor node for batch test iterations.
 
 Monitors three termination conditions:
   1. Goal reached    — global planner publishes on goal_reached topic

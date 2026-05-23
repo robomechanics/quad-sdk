@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Time-synchronized republisher for training data collection.
+Time-synchronized republisher for batch test iterations.
 
 Subscribes to key simulation topics running at different rates, aligns them
 using ApproximateTimeSynchronizer, and republishes the synchronized tuples

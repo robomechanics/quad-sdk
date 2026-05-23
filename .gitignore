@@ -5,6 +5,10 @@ site/
 .cache/
 encryptcontent.cache
 *.pyc
+__pycache__/
+.pytest_cache/
+# quad_perf_tests batch-iteration bag output
+iteration_bags/
 *.vscode
 **/build/
 *.vscode

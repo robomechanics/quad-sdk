@@ -33,6 +33,5 @@ Quad-SDK is a workspace of focused ROS 2 packages. Each one builds in isolation 
 | [`quad_utils`](quad_utils.md) | Kinematics/dynamics (Pinocchio), launch system, shared utilities |
 | [`quad_msgs`](quad_msgs.md) | Message definitions |
 | [`quad_logger`](quad_logger.md) | Bag recording + log post-processing (Python + MATLAB) |
-| [`quad_training`](quad_training.md) | Time-sync + episode management for RL/BC data collection |
-| [`quad_perf_tests`](quad_perf_tests.md) | Performance-testing utilities |
+| [`quad_perf_tests`](quad_perf_tests.md) | Performance/regression testing — `cmd_vel` publisher + headless batch iteration runner |
 | [`scripts`](scripts.md) | Blender visualization / rendering scripts |

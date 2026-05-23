@@ -7,7 +7,7 @@ Waits for the robot to be fully ready in simulation:
   4. Robot has landed (vertical velocity near zero)
 
 Only exits once ALL conditions hold for required_msgs consecutive
-messages. Used by data_collection.py to gate the stand command.
+messages. Used by run_iteration.py to gate the stand command.
 """
 
 import math

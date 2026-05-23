@@ -132,10 +132,10 @@ ros2 topic pub /robot_1/control/mode std_msgs/UInt8 "data: 2" --once  # walk
 
 ## Patterns to follow
 
-- **Don't allocate in the control loop.** `computeLegCommandArray` is called at 1 kHz on a real-time-ish thread. Allocate buffers in the constructor.
+- **Don't allocate in the control loop.** `computeLegCommandArray` is called at 500 Hz on a real-time-ish thread. Allocate buffers in the constructor.
 - **Trust `state.foot_in_contact`** — the contact estimator publishes per-leg booleans. Branch on these rather than reinventing contact detection.
 - **Use `QuadKD2`** for FK/IK. Don't roll your own — joint sign/offset is per-robot config.
-- **Log via `RCLCPP_DEBUG_THROTTLE`** when tuning. Plain `RCLCPP_INFO` at 1 kHz floods the console.
+- **Log via `RCLCPP_DEBUG_THROTTLE`** when tuning. Plain `RCLCPP_INFO` at 500 Hz floods the console.
 
 ## What about learned policies?
 

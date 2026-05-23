@@ -50,11 +50,11 @@ Vertically integrated planning, control, estimation, communication, and developm
 
     [:octicons-arrow-right-24: Quad Simulator](packages/quad_simulator.md)
 
--   :material-database-cog:{ .lg .middle } **Logging + training**
+-   :material-database-cog:{ .lg .middle } **Logging + testing**
 
     ---
 
-    Bag recording, MATLAB/Python post-processing, RL/BC episode management, and reproducible perf-test rigs.
+    Bag recording, MATLAB/Python post-processing, and reproducible headless batch-iteration + perf-test rigs.
 
     [:octicons-arrow-right-24: Quad Logger](packages/quad_logger.md)
 

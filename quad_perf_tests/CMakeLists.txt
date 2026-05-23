@@ -40,6 +40,20 @@ install(
   DESTINATION share/${PROJECT_NAME}/config
 )
 
+# Python test-iteration tooling (moved here from the former quad_training pkg).
+# Installed as executables so `ros2 run quad_perf_tests <node>` works.
+install(PROGRAMS scripts/time_sync_node.py
+  DESTINATION lib/${PROJECT_NAME} RENAME time_sync_node)
+install(PROGRAMS scripts/episode_monitor_node.py
+  DESTINATION lib/${PROJECT_NAME} RENAME episode_monitor_node)
+install(PROGRAMS scripts/wait_for_robot_node.py
+  DESTINATION lib/${PROJECT_NAME} RENAME wait_for_robot_node)
+install(PROGRAMS scripts/run_iterations.py
+  DESTINATION lib/${PROJECT_NAME} RENAME run_iterations)
+
+install(DIRECTORY launch
+  DESTINATION share/${PROJECT_NAME})
+
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)
   # the following line skips the linter which checks for copyrights

@@ -176,7 +176,6 @@ nav:
           - Quad Utils: packages/quad_utils.md
           - Quad Msgs: packages/quad_msgs.md
           - Quad Logger: packages/quad_logger.md
-          - Quad Training: packages/quad_training.md
           - Quad Perf Tests: packages/quad_perf_tests.md
           - Scripts: packages/scripts.md
   - Tutorials:
@@ -184,7 +183,7 @@ nav:
       - Running in Isaac Sim: tutorials/isaac-sim.md
       - Multi-Robot with CBS: tutorials/multi-robot.md
       - Logging & Playback: tutorials/logging.md
-      - Training Data Collection: tutorials/training.md
+      - Batch Iteration Testing: tutorials/iteration-testing.md
       - Adding a New Robot: tutorials/adding-a-robot.md
       - Custom Terrain Maps: tutorials/custom-terrain.md
       - Writing Your Own Controller: tutorials/writing-controller.md

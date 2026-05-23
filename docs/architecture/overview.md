@@ -61,8 +61,8 @@ flowchart TB
 | **Global plan** | 5–20 Hz | Path of body states + GRFs to a goal | [`global_body_planner`](../packages/global_body_planner.md) |
 | **Local plan** | 333 Hz | 26-step NMPC body plan + footstep schedule | [`local_planner`](../packages/local_planner.md) |
 | **NMPC** | called per local-plan tick | OCP solution (states, GRFs) | [`nmpc_controller`](../packages/nmpc_controller.md) |
-| **Control** | 1 kHz | Per-joint torque/PD commands | [`robot_driver`](../packages/robot_driver.md) |
-| **Estimation** | 1 kHz | Body state + foot contacts | [`robot_driver`](../packages/robot_driver.md) |
+| **Control** | 500 Hz | Per-joint torque/PD commands | [`robot_driver`](../packages/robot_driver.md) |
+| **Estimation** | 500 Hz | Body state + foot contacts | [`robot_driver`](../packages/robot_driver.md) |
 | **External wrench** | 100 Hz | Disturbance estimate | [`body_force_estimator`](../packages/body_force_estimator.md) |
 | **Simulation** | 1–2 kHz | Joint states, IMU, contacts | [`quad_simulator`](../packages/quad_simulator.md) |
 

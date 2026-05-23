@@ -44,15 +44,3 @@ Quad-SDK runs in three simulators: **Gazebo Harmonic**, **MuJoCo**, and **NVIDIA
 ## Adding a new platform
 
 If your robot isn't listed, see [Adding a new robot](tutorials/adding-a-robot.md) for the full step-by-step. We accept upstream contributions — file a PR with the description package and per-robot YAML.
-
-## Performance reference
-
-Approximate steady-state CPU on the planner stack with the default 1 kHz control loop and 333 Hz local planner:
-
-| Platform tier | Onboard CPU | NMPC step | Local planner | Notes |
-|---|---|---|---|---|
-| **Tier 1** (Go2, Spirit, Go1) | i7 / Ryzen 7 + 16 GB | ~2.8 ms | ~3.0 ms | Fits comfortably |
-| **Tier 2** (Jetson Orin) | 8-core Cortex-A78 | ~5.5 ms | ~6.0 ms | Tighten horizon for headroom |
-| **Tier 3** (Jetson Xavier NX) | 6-core Carmel | ~9 ms | ~10 ms | Drop horizon to 16, raise dt |
-
-These numbers are eyeballed from CI bench reports — the [perf-tests package](packages/quad_perf_tests.md) reproduces them.

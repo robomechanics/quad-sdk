@@ -96,8 +96,7 @@ See the [Wiki](https://github.com/robomechanics/quad-sdk/wiki) for alternate con
 | [`quad_logger`](quad_logger/README.md) | Bag recording and log post-processing (Python + MATLAB). |
 | [`body_force_estimator`](body_force_estimator/README.md) | Momentum-based external wrench observer. |
 | [`force_applicator`](force_applicator/README.md) | Runtime disturbance injection for robustness testing. |
-| [`quad_training`](quad_training/README.md) | Time-sync + episode management for RL/BC data collection. |
-| [`quad_perf_tests`](quad_perf_tests/README.md) | Performance-testing utilities (e.g. `cmd_vel` publisher). |
+| [`quad_perf_tests`](quad_perf_tests/README.md) | Performance/regression testing — `cmd_vel` publisher + batch iteration runner. |
 | [`scripts`](scripts/README.md) | Blender visualization / rendering scripts. |
 
 ## Recent Changes
@@ -106,7 +105,7 @@ See the [Wiki](https://github.com/robomechanics/quad-sdk/wiki) for alternate con
 - **Pinocchio replaces RBDL** for kinematics and dynamics (see `quad_utils::QuadKD2`). RBDL files are retained in-tree for reference but are not linked by the current build.
 - **Gazebo Harmonic** replaces Gazebo Classic; MuJoCo back-end added.
 - **Additional platforms:** Go1, Go2, Go2-W, B2, Spot, Vision60, and the Underbrush research platform.
-- **Training infrastructure** (`quad_training`) and **performance tests** (`quad_perf_tests`) have been added for reproducible data collection.
+- **Performance/regression testing** (`quad_perf_tests`) provides a `cmd_vel` publisher plus a headless batch iteration runner for reproducible automated runs. (The former `quad_training` package was folded in here and repurposed for iteration testing.)
 
 ## Bugs & Feature Requests
 

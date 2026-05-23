@@ -1,17 +1,19 @@
 """
-Headless data collection launch file.
+Headless test-iteration launch file.
 
-Orchestrates the full simulation pipeline without any GUI:
+Orchestrates one full simulation iteration without any GUI:
   1. Gazebo (headless) + robot spawn (sitting pose via SDF initial_position)
   2. Wait for robot to be upright with active controllers
   3. Stand command
   4. Planning stack (global planner, local planner / NMPC, body force estimator)
   5. Time synchronization node + bag recording
-  6. Episode monitor (auto-terminates on goal, planner failure, or collision)
+  6. Iteration monitor (auto-terminates on goal, planner failure, or collision)
+
+Designed to be driven repeatedly by run_iterations.py for batch testing.
 
 Usage:
-  ros2 launch quad_training data_collection.py
-  ros2 launch quad_training data_collection.py robot_type:=spirit world:=rough.sdf
+  ros2 launch quad_perf_tests run_iteration.py
+  ros2 launch quad_perf_tests run_iteration.py robot_type:=spirit world:=rough.sdf
 """
 
 from launch import LaunchDescription
@@ -31,7 +33,7 @@ import os
 
 
 def launch_setup(context, *args, **kwargs):
-    """Set up the full data collection pipeline with event-driven sequencing."""
+    """Set up the full test-iteration pipeline with event-driven sequencing."""
     robot_type = LaunchConfiguration('robot_type').perform(context)
     world = LaunchConfiguration('world').perform(context)
     plan_delay = float(LaunchConfiguration('plan_delay').perform(context))
@@ -73,7 +75,7 @@ def launch_setup(context, *args, **kwargs):
 
     # --- 2. Wait for robot to be upright with active controllers ------------------
     wait_for_robot = Node(
-        package='quad_training',
+        package='quad_perf_tests',
         executable='wait_for_robot_node',
         name='wait_for_robot',
         parameters=[{
@@ -118,7 +120,7 @@ def launch_setup(context, *args, **kwargs):
     )
 
     time_sync = Node(
-        package='quad_training',
+        package='quad_perf_tests',
         executable='time_sync_node',
         name='time_sync',
         parameters=[{
@@ -131,7 +133,7 @@ def launch_setup(context, *args, **kwargs):
 
     bag_recording = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(PathJoinSubstitution([
-            FindPackageShare('quad_training'), 'launch', 'training_logging.py',
+            FindPackageShare('quad_perf_tests'), 'launch', 'iteration_logging.py',
         ])),
         launch_arguments={
             'namespace': 'robot_1',
@@ -141,7 +143,7 @@ def launch_setup(context, *args, **kwargs):
     )
 
     episode_monitor = Node(
-        package='quad_training',
+        package='quad_perf_tests',
         executable='episode_monitor_node',
         name='episode_monitor',
         parameters=[{
@@ -178,7 +180,7 @@ def launch_setup(context, *args, **kwargs):
 
 
 def generate_launch_description():
-    default_output = os.path.join(os.getcwd(), 'training_bags')
+    default_output = os.path.join(os.getcwd(), 'iteration_bags')
 
     return LaunchDescription([
         DeclareLaunchArgument('robot_type', default_value='go2',

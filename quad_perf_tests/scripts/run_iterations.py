@@ -1,20 +1,21 @@
 #!/usr/bin/env python3
 """
-Multi-episode training data collection runner.
+Multi-iteration batch test runner.
 
-Launches the full headless simulation pipeline N times.  Each episode
-ends automatically when the robot reaches the goal (via the episode
-monitor node), or after a safety timeout.
+Launches the full headless simulation pipeline N times.  Each iteration
+ends automatically when the robot reaches the goal (via the iteration
+monitor node), or after a safety timeout.  Useful for regression and
+robustness testing across many randomized runs.
 
 Usage:
-  # 10 episodes, default robot
-  python3 run_collection.py --num_episodes 10
+  # 10 iterations, default robot
+  python3 run_iterations.py --num_episodes 10
 
-  # With a safety timeout of 5 minutes per episode
-  python3 run_collection.py --num_episodes 10 --timeout 300
+  # With a safety timeout of 5 minutes per iteration
+  python3 run_iterations.py --num_episodes 10 --timeout 300
 
   # Custom robot, world, and output
-  python3 run_collection.py --num_episodes 5 --robot_type spirit \
+  python3 run_iterations.py --num_episodes 5 --robot_type spirit \
       --world rough.sdf --output_dir /data/bags
 """
 
@@ -123,11 +124,11 @@ def cleanup_and_exit(signum=None, frame=None):
 
 
 def run_episode(label, total, args):
-    """Launch one data collection episode. Returns True on success."""
+    """Launch one test iteration. Returns True on success."""
     global _active_proc
 
     cmd = [
-        'ros2', 'launch', 'quad_training', 'data_collection.py',
+        'ros2', 'launch', 'quad_perf_tests', 'run_iteration.py',
         f'robot_type:={args.robot_type}',
         f'world:={args.world}',
         f'plan_delay:={args.plan_delay}',
@@ -190,9 +191,9 @@ def main():
     signal.signal(signal.SIGTERM, cleanup_and_exit)
 
     parser = argparse.ArgumentParser(
-        description='Run multiple training data collection episodes')
+        description='Run multiple headless test iterations')
     parser.add_argument('--num_episodes', type=int, required=True,
-                        help='Number of episodes to collect')
+                        help='Number of iterations to run')
     parser.add_argument('--timeout', type=float, default=300.0,
                         help='Max seconds per episode as safety net (default: 300)')
     parser.add_argument('--robot_type', default='go2',
@@ -201,8 +202,8 @@ def main():
                         help='Gazebo world file (default: flat.sdf)')
     parser.add_argument('--plan_delay', type=float, default=5.0,
                         help='Seconds after stand before planning (default: 5)')
-    parser.add_argument('--output_dir', default=os.path.join(os.getcwd(), 'training_bags'),
-                        help='Output directory for bags (default: ./training_bags)')
+    parser.add_argument('--output_dir', default=os.path.join(os.getcwd(), 'iteration_bags'),
+                        help='Output directory for bags (default: ./iteration_bags)')
     parser.add_argument('--max_retries', type=int, default=3,
                         help='Max retries per episode on failure (default: 3)')
     args = parser.parse_args()

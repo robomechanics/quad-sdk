@@ -173,4 +173,4 @@ Post-process with the [Quad Logger](../packages/quad_logger.md) tools (Python + 
 - :material-rocket: [First Simulation Run tutorial](../tutorials/first-run.md) — guided walkthrough with screenshots
 - :material-database: [Logging & Playback](../tutorials/logging.md)
 - :material-robot: [Hardware Bringup](hardware-bringup.md)
-- :material-school: [Training Data Collection](../tutorials/training.md)
+- :material-school: [Batch Iteration Testing](../tutorials/iteration-testing.md)
