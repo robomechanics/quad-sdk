@@ -10,13 +10,13 @@
       
       
       
-        <link rel="canonical" href="https://robomechanics.github.io/quad-sdk/ros2/packages/quad_training/">
+        <link rel="canonical" href="https://robomechanics.github.io/quad-sdk/ros2/tutorials/iteration-testing/">
       
       
-        <link rel="prev" href="../quad_logger/">
+        <link rel="prev" href="../logging/">
       
       
-        <link rel="next" href="../quad_perf_tests/">
+        <link rel="next" href="../adding-a-robot/">
       
       
       <link rel="icon" href="../../assets/quad_sdk_promo.png">
@@ -24,7 +24,7 @@
     
     
       
-        <title>Quad Training - Quad-SDK</title>
+        <title>Batch Iteration Testing - Quad-SDK</title>
       
     
     
@@ -63,11 +63,11 @@
       
         <meta  property="og:type"  content="website" >
       
-        <meta  property="og:title"  content="Quad Training - Quad-SDK" >
+        <meta  property="og:title"  content="Batch Iteration Testing - Quad-SDK" >
       
         <meta  property="og:description"  content="Open-source full-stack framework for agile quadrupedal locomotion" >
       
-        <meta  property="og:image"  content="https://robomechanics.github.io/quad-sdk/ros2/assets/images/social/packages/quad_training.png" >
+        <meta  property="og:image"  content="https://robomechanics.github.io/quad-sdk/ros2/assets/images/social/tutorials/iteration-testing.png" >
       
         <meta  property="og:image:type"  content="image/png" >
       
@@ -75,15 +75,15 @@
       
         <meta  property="og:image:height"  content="630" >
       
-        <meta  property="og:url"  content="https://robomechanics.github.io/quad-sdk/ros2/packages/quad_training/" >
+        <meta  property="og:url"  content="https://robomechanics.github.io/quad-sdk/ros2/tutorials/iteration-testing/" >
       
         <meta  name="twitter:card"  content="summary_large_image" >
       
-        <meta  name="twitter:title"  content="Quad Training - Quad-SDK" >
+        <meta  name="twitter:title"  content="Batch Iteration Testing - Quad-SDK" >
       
         <meta  name="twitter:description"  content="Open-source full-stack framework for agile quadrupedal locomotion" >
       
-        <meta  name="twitter:image"  content="https://robomechanics.github.io/quad-sdk/ros2/assets/images/social/packages/quad_training.png" >
+        <meta  name="twitter:image"  content="https://robomechanics.github.io/quad-sdk/ros2/assets/images/social/tutorials/iteration-testing.png" >
       
     
     
@@ -115,7 +115,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#quad-training" class="md-skip">
+        <a href="#batch-iteration-testing" class="md-skip">
           Skip to content
         </a>
       
@@ -154,7 +154,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Quad Training
+              Batch Iteration Testing
             
           </span>
         </div>
@@ -317,13 +317,11 @@
         
   
   
-    
-  
   
     
     
-      <li class="md-tabs__item md-tabs__item--active">
-        <a href="../" class="md-tabs__link">
+      <li class="md-tabs__item">
+        <a href="../../packages/" class="md-tabs__link">
           
   
     
@@ -339,11 +337,13 @@
         
   
   
+    
+  
   
     
     
-      <li class="md-tabs__item">
-        <a href="../../tutorials/first-run/" class="md-tabs__link">
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../first-run/" class="md-tabs__link">
           
   
     
@@ -758,8 +758,6 @@
       
   
   
-    
-  
   
   
     
@@ -780,24 +778,23 @@
     
     
       
-        
-        
-      
       
         
       
     
     
-    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" checked>
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4" >
         
           
           
           <div class="md-nav__link md-nav__container">
-            <a href="../" class="md-nav__link ">
+            <a href="../../packages/" class="md-nav__link ">
               
   
   <span class="md-ellipsis">
@@ -808,13 +805,13 @@
             </a>
             
               
-              <label class="md-nav__link " for="__nav_4" id="__nav_4_label" tabindex="">
+              <label class="md-nav__link " for="__nav_4" id="__nav_4_label" tabindex="0">
                 <span class="md-nav__icon md-icon"></span>
               </label>
             
           </div>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="true">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_4">
             <span class="md-nav__icon md-icon"></span>
             Packages
@@ -845,13 +842,10 @@
       
       
         
-          
-          
-        
       
     
     
-    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--nested">
       
         
         
@@ -860,7 +854,7 @@
         <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4_2" >
         
           
-          <label class="md-nav__link" for="__nav_4_2" id="__nav_4_2_label" tabindex="">
+          <label class="md-nav__link" for="__nav_4_2" id="__nav_4_2_label" tabindex="0">
             
   
   <span class="md-ellipsis">
@@ -885,7 +879,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../global_body_planner/" class="md-nav__link">
+      <a href="../../packages/global_body_planner/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -906,7 +900,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../local_planner/" class="md-nav__link">
+      <a href="../../packages/local_planner/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -927,7 +921,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../nmpc_controller/" class="md-nav__link">
+      <a href="../../packages/nmpc_controller/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -948,7 +942,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../conflict_based_search/" class="md-nav__link">
+      <a href="../../packages/conflict_based_search/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -988,13 +982,10 @@
       
       
         
-          
-          
-        
       
     
     
-    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--nested">
       
         
         
@@ -1003,7 +994,7 @@
         <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4_3" >
         
           
-          <label class="md-nav__link" for="__nav_4_3" id="__nav_4_3_label" tabindex="">
+          <label class="md-nav__link" for="__nav_4_3" id="__nav_4_3_label" tabindex="0">
             
   
   <span class="md-ellipsis">
@@ -1028,7 +1019,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../robot_driver/" class="md-nav__link">
+      <a href="../../packages/robot_driver/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1049,7 +1040,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../body_force_estimator/" class="md-nav__link">
+      <a href="../../packages/body_force_estimator/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1091,13 +1082,10 @@
       
       
         
-          
-          
-        
       
     
     
-    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--nested">
       
         
         
@@ -1106,7 +1094,7 @@
         <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4_4" >
         
           
-          <label class="md-nav__link" for="__nav_4_4" id="__nav_4_4_label" tabindex="">
+          <label class="md-nav__link" for="__nav_4_4" id="__nav_4_4_label" tabindex="0">
             
   
   <span class="md-ellipsis">
@@ -1131,7 +1119,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../quad_simulator/" class="md-nav__link">
+      <a href="../../packages/quad_simulator/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1152,7 +1140,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../isaac_plugins/" class="md-nav__link">
+      <a href="../../packages/isaac_plugins/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1173,7 +1161,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../force_applicator/" class="md-nav__link">
+      <a href="../../packages/force_applicator/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1199,10 +1187,8 @@
                 
   
   
-    
   
   
-  
     
     
       
@@ -1216,27 +1202,24 @@
       
         
       
+    
+    
+      
+      
         
       
     
     
+    <li class="md-nav__item md-nav__item--nested">
       
-      
+        
         
           
-          
         
-      
-    
-    
-    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
-      
-        
-        
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_5" checked>
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4_5" >
         
           
-          <label class="md-nav__link" for="__nav_4_5" id="__nav_4_5_label" tabindex="">
+          <label class="md-nav__link" for="__nav_4_5" id="__nav_4_5_label" tabindex="0">
             
   
   <span class="md-ellipsis">
@@ -1247,7 +1230,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_5_label" aria-expanded="true">
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_5_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_4_5">
             <span class="md-nav__icon md-icon"></span>
             Utilities
@@ -1261,7 +1244,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../quad_utils/" class="md-nav__link">
+      <a href="../../packages/quad_utils/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1282,7 +1265,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../quad_msgs/" class="md-nav__link">
+      <a href="../../packages/quad_msgs/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1303,7 +1286,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../quad_logger/" class="md-nav__link">
+      <a href="../../packages/quad_logger/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1321,173 +1304,10 @@
                 
   
   
-    
-  
-  
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          
-  
-  <span class="md-ellipsis">
-    Quad Training
-  </span>
-  
-
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
-        
-  
-  <span class="md-ellipsis">
-    Quad Training
-  </span>
-  
-
-      </a>
-      
-        
-
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#overview" class="md-nav__link">
-    <span class="md-ellipsis">
-      Overview
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Overview">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#license" class="md-nav__link">
-    <span class="md-ellipsis">
-      License
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#build" class="md-nav__link">
-    <span class="md-ellipsis">
-      Build
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#usage" class="md-nav__link">
-    <span class="md-ellipsis">
-      Usage
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#nodes" class="md-nav__link">
-    <span class="md-ellipsis">
-      Nodes
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Nodes">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#time_sync_node" class="md-nav__link">
-    <span class="md-ellipsis">
-      time_sync_node
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#episode_monitor_node" class="md-nav__link">
-    <span class="md-ellipsis">
-      episode_monitor_node
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#wait_for_robot_node" class="md-nav__link">
-    <span class="md-ellipsis">
-      wait_for_robot_node
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#launch-files" class="md-nav__link">
-    <span class="md-ellipsis">
-      Launch Files
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#bugs-feature-requests" class="md-nav__link">
-    <span class="md-ellipsis">
-      Bugs &amp; Feature Requests
-    </span>
-  </a>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
   
   
     <li class="md-nav__item">
-      <a href="../quad_perf_tests/" class="md-nav__link">
+      <a href="../../packages/quad_perf_tests/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1508,7 +1328,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../scripts/" class="md-nav__link">
+      <a href="../../packages/scripts/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1541,8 +1361,10 @@
       
   
   
+    
   
   
+  
     
     
       
@@ -1567,21 +1389,22 @@
     
     
       
+        
+        
+      
       
         
       
     
     
-    <li class="md-nav__item md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
       
         
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" checked>
         
           
-        
-        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5" >
-        
-          
-          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="">
             
   
   <span class="md-ellipsis">
@@ -1592,7 +1415,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="true">
           <label class="md-nav__title" for="__nav_5">
             <span class="md-nav__icon md-icon"></span>
             Tutorials
@@ -1606,7 +1429,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../tutorials/first-run/" class="md-nav__link">
+      <a href="../first-run/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1627,7 +1450,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../tutorials/isaac-sim/" class="md-nav__link">
+      <a href="../isaac-sim/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1648,7 +1471,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../tutorials/multi-robot/" class="md-nav__link">
+      <a href="../multi-robot/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1669,7 +1492,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../tutorials/logging/" class="md-nav__link">
+      <a href="../logging/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1687,18 +1510,103 @@
                 
   
   
+    
   
   
-    <li class="md-nav__item">
-      <a href="../../tutorials/training/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    Batch Iteration Testing
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         
   
   <span class="md-ellipsis">
-    Training Data Collection
+    Batch Iteration Testing
   </span>
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#what-one-iteration-does" class="md-nav__link">
+    <span class="md-ellipsis">
+      What one iteration does
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#running-many-iterations" class="md-nav__link">
+    <span class="md-ellipsis">
+      Running many iterations
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#what-gets-recorded" class="md-nav__link">
+    <span class="md-ellipsis">
+      What gets recorded
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#driving-with-the-cmd_vel-publisher" class="md-nav__link">
+    <span class="md-ellipsis">
+      Driving with the cmd_vel publisher
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#troubleshooting" class="md-nav__link">
+    <span class="md-ellipsis">
+      Troubleshooting
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -1711,7 +1619,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../tutorials/adding-a-robot/" class="md-nav__link">
+      <a href="../adding-a-robot/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1732,7 +1640,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../tutorials/custom-terrain/" class="md-nav__link">
+      <a href="../custom-terrain/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1753,7 +1661,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../tutorials/writing-controller/" class="md-nav__link">
+      <a href="../writing-controller/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1774,7 +1682,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../tutorials/specialized-controllers/" class="md-nav__link">
+      <a href="../specialized-controllers/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2082,102 +1990,45 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#overview" class="md-nav__link">
+  <a href="#what-one-iteration-does" class="md-nav__link">
     <span class="md-ellipsis">
-      Overview
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Overview">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#license" class="md-nav__link">
-    <span class="md-ellipsis">
-      License
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#build" class="md-nav__link">
-    <span class="md-ellipsis">
-      Build
+      What one iteration does
     </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#usage" class="md-nav__link">
+  <a href="#running-many-iterations" class="md-nav__link">
     <span class="md-ellipsis">
-      Usage
+      Running many iterations
     </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#nodes" class="md-nav__link">
+  <a href="#what-gets-recorded" class="md-nav__link">
     <span class="md-ellipsis">
-      Nodes
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Nodes">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#time_sync_node" class="md-nav__link">
-    <span class="md-ellipsis">
-      time_sync_node
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#episode_monitor_node" class="md-nav__link">
-    <span class="md-ellipsis">
-      episode_monitor_node
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#wait_for_robot_node" class="md-nav__link">
-    <span class="md-ellipsis">
-      wait_for_robot_node
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#launch-files" class="md-nav__link">
-    <span class="md-ellipsis">
-      Launch Files
+      What gets recorded
     </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#bugs-feature-requests" class="md-nav__link">
+  <a href="#driving-with-the-cmd_vel-publisher" class="md-nav__link">
     <span class="md-ellipsis">
-      Bugs &amp; Feature Requests
+      Driving with the cmd_vel publisher
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#troubleshooting" class="md-nav__link">
+    <span class="md-ellipsis">
+      Troubleshooting
     </span>
   </a>
   
@@ -2198,7 +2049,7 @@
                   
 
   
-    <a href="https://github.com/robomechanics/quad-sdk/edit/main/docs/packages/quad_training.md" title="Edit this page" class="md-content__button md-icon">
+    <a href="https://github.com/robomechanics/quad-sdk/edit/main/docs/tutorials/iteration-testing.md" title="Edit this page" class="md-content__button md-icon">
       
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20.71 7.04c.39-.39.39-1.04 0-1.41l-2.34-2.34c-.37-.39-1.02-.39-1.41 0l-1.84 1.83 3.75 3.75M3 17.25V21h3.75L17.81 9.93l-3.75-3.75z"/></svg>
     </a>
@@ -2206,63 +2057,137 @@
   
 
 
-<div class="admonition info">
-<p class="admonition-title">Source of truth</p>
-<p>This page mirrors <a href="https://github.com/robomechanics/quad-sdk/blob/main/quad_training/README.md"><code>quad_training/README.md</code></a>. Edit that file to update.</p>
+<h1 id="batch-iteration-testing">Batch Iteration Testing<a class="headerlink" href="#batch-iteration-testing" title="Permanent link">&para;</a></h1>
+<p><code>quad_perf_tests</code> ships a headless batch runner for executing the full sim → plan → control stack many times in a row — useful for regression and robustness testing across randomized runs. Each iteration brings everything up, drives the robot to a goal, records bags, tears the stack down, and the runner moves on to the next.</p>
+<div class="admonition note">
+<p class="admonition-title">Repurposed from quad_training</p>
+<p>This tooling was previously the standalone <code>quad_training</code> package. It now lives in <a href="../../packages/quad_perf_tests/"><code>quad_perf_tests</code></a> and is meant for <strong>iteration / regression testing</strong>, not for generating learned-policy training data.</p>
 </div>
-<h1 id="quad-training">Quad Training<a class="headerlink" href="#quad-training" title="Permanent link">&para;</a></h1>
-<h2 id="overview">Overview<a class="headerlink" href="#overview" title="Permanent link">&para;</a></h2>
-<p>This package provides the data-collection infrastructure for training learned policies on Quad-SDK. It handles time-synchronization of asynchronous simulation topics, episode lifecycle management, and a ready-gate that ensures the robot is fully initialized before data recording begins. Together these produce clean (state, action) rollouts suitable for offline RL, behavioral cloning, or dynamics model learning.</p>
-<h3 id="license">License<a class="headerlink" href="#license" title="Permanent link">&para;</a></h3>
-<p>The source code is released under a <a href="../../LICENSE">MIT License</a>.</p>
-<p><strong>Affiliation:</strong> <a href="https://www.cmu.edu/me/robomechanicslab/">Robomechanics Lab</a>, Carnegie Mellon University</p>
-<p>Tested under <a href="https://docs.ros.org/en/jazzy/">ROS2</a> Jazzy on Ubuntu 24.04.</p>
-<h2 id="build">Build<a class="headerlink" href="#build" title="Permanent link">&para;</a></h2>
-<p>This is an <code>ament_python</code> package.</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>colcon<span class="w"> </span>build<span class="w"> </span>--packages-select<span class="w"> </span>quad_training
-</code></pre></div>
-<h2 id="usage">Usage<a class="headerlink" href="#usage" title="Permanent link">&para;</a></h2>
-<p>End-to-end data collection loop (spawns robot, waits for ready, issues commands, records synced bag, exits on termination):</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>ros2<span class="w"> </span>launch<span class="w"> </span>quad_training<span class="w"> </span>data_collection.py
-</code></pre></div>
-<p>Lightweight variant that only launches the time-sync + bag recorder against an already-running stack:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>ros2<span class="w"> </span>launch<span class="w"> </span>quad_training<span class="w"> </span>training_logging.py
-</code></pre></div>
-<h2 id="nodes">Nodes<a class="headerlink" href="#nodes" title="Permanent link">&para;</a></h2>
-<h3 id="time_sync_node">time_sync_node<a class="headerlink" href="#time_sync_node" title="Permanent link">&para;</a></h3>
-<p>Subscribes to key simulation topics at their native rates and republishes aligned tuples on <code>/synced/&lt;topic&gt;</code> using <code>message_filters.ApproximateTimeSynchronizer</code>. The synchronized bundles are bagged as coherent (state, action) pairs for offline training.</p>
-<p>Synchronized topics:</p>
-<ul>
-<li><code>state/ground_truth</code> (<code>quad_msgs/RobotState</code>, ~500 Hz)</li>
-<li><code>control/joint_command</code> (<code>quad_msgs/LegCommandArray</code>, ~500 Hz)</li>
-<li><code>control/grfs</code> (<code>quad_msgs/GRFArray</code>, ~500 Hz)</li>
-<li><code>local_plan</code> (<code>quad_msgs/RobotPlan</code>, ~333 Hz)</li>
-<li><code>state/estimate</code> (<code>quad_msgs/RobotState</code>, ~500 Hz)</li>
-</ul>
-<p>Bundle rate is bounded by the slowest topic and the configured slop tolerance.</p>
-<h3 id="episode_monitor_node">episode_monitor_node<a class="headerlink" href="#episode_monitor_node" title="Permanent link">&para;</a></h3>
-<p>Watches for three termination conditions and cleanly exits the launch context when any fire:</p>
+<h2 id="what-one-iteration-does">What one iteration does<a class="headerlink" href="#what-one-iteration-does" title="Permanent link">&para;</a></h2>
+<p><code>launch/run_iteration.py</code> orchestrates a single headless run with event-driven sequencing:</p>
 <ol>
-<li><strong>Goal reached</strong> — boolean on <code>goal_reached</code>.</li>
-<li><strong>Planner failure</strong> — boolean on <code>planner_failed</code>.</li>
-<li><strong>Body collision</strong> — roll/pitch exceeds a configured threshold.</li>
+<li><strong>Gazebo (headless)</strong> + robot spawn in a sitting pose.</li>
+<li><strong><code>wait_for_robot_node</code></strong> blocks until the robot is up, controllers are active, and it has settled upright.</li>
+<li><strong>Stand</strong> command (<code>control/mode = 1</code>).</li>
+<li><strong>Planning stack</strong> (<code>quad_plan.py</code>: global planner, local planner / NMPC, body force estimator).</li>
+<li><strong><code>time_sync_node</code></strong> + <strong>bag recording</strong> (<code>iteration_logging.py</code>).</li>
+<li><strong><code>episode_monitor_node</code></strong> auto-terminates the run on goal reached, planner failure, or a body collision, then shuts the whole launch down cleanly.</li>
 </ol>
-<p>After a condition triggers, the node waits a brief settle period to flush the bag, then raises <code>SystemExit</code> so the parent <code>ros2 launch</code> shuts down the full stack.</p>
-<h3 id="wait_for_robot_node">wait_for_robot_node<a class="headerlink" href="#wait_for_robot_node" title="Permanent link">&para;</a></h3>
-<p>Blocks until the simulated robot is fully ready, so downstream data collection doesn't capture spawn-in artifacts. Exits only when <strong>all</strong> of the following hold for a configured consecutive-message count:</p>
-<ol>
-<li><code>state/ground_truth</code> is being published (Gazebo + driver up).</li>
-<li><code>state/joints</code> is being published (controllers activated).</li>
-<li>Robot is upright (roll/pitch within threshold).</li>
-<li>Robot has landed (vertical velocity near zero).</li>
-</ol>
-<h2 id="launch-files">Launch Files<a class="headerlink" href="#launch-files" title="Permanent link">&para;</a></h2>
+<p>Run a single iteration directly:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>ros2<span class="w"> </span>launch<span class="w"> </span>quad_perf_tests<span class="w"> </span>run_iteration.py
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>ros2<span class="w"> </span>launch<span class="w"> </span>quad_perf_tests<span class="w"> </span>run_iteration.py<span class="w"> </span>robot_type:<span class="o">=</span>spirit<span class="w"> </span>world:<span class="o">=</span>rough.sdf
+</code></pre></div>
+<table>
+<thead>
+<tr>
+<th>Arg</th>
+<th>Default</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>robot_type</code></td>
+<td><code>go2</code></td>
+<td>Robot config (<code>go2</code>, <code>spirit</code>, <code>a1</code>, …)</td>
+</tr>
+<tr>
+<td><code>world</code></td>
+<td><code>flat.sdf</code></td>
+<td>Gazebo world</td>
+</tr>
+<tr>
+<td><code>plan_delay</code></td>
+<td><code>5.0</code></td>
+<td>Seconds after stand before launching the planners</td>
+</tr>
+<tr>
+<td><code>output_dir</code></td>
+<td><code>./iteration_bags</code></td>
+<td>Where bags are written</td>
+</tr>
+</tbody>
+</table>
+<h2 id="running-many-iterations">Running many iterations<a class="headerlink" href="#running-many-iterations" title="Permanent link">&para;</a></h2>
+<p><code>scripts/run_iterations.py</code> drives <code>run_iteration.py</code> N times, fully isolating each run — it kills lingering processes and resets the ROS 2 daemon between iterations, and retries failed runs.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="c1"># 10 iterations of the default robot</span>
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>ros2<span class="w"> </span>run<span class="w"> </span>quad_perf_tests<span class="w"> </span>run_iterations<span class="w"> </span>--num_episodes<span class="w"> </span><span class="m">10</span>
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="c1"># Custom robot/world with a 5-minute per-iteration safety timeout</span>
+<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>ros2<span class="w"> </span>run<span class="w"> </span>quad_perf_tests<span class="w"> </span>run_iterations<span class="w"> </span>--num_episodes<span class="w"> </span><span class="m">5</span><span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a><span class="w">    </span>--robot_type<span class="w"> </span>spirit<span class="w"> </span>--world<span class="w"> </span>rough.sdf<span class="w"> </span>--timeout<span class="w"> </span><span class="m">300</span><span class="w"> </span>--output_dir<span class="w"> </span>/data/bags
+</code></pre></div>
+<table>
+<thead>
+<tr>
+<th>Flag</th>
+<th>Default</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>--num_episodes</code></td>
+<td><em>(required)</em></td>
+<td>Number of iterations to run</td>
+</tr>
+<tr>
+<td><code>--timeout</code></td>
+<td><code>300</code></td>
+<td>Per-iteration safety timeout (s)</td>
+</tr>
+<tr>
+<td><code>--robot_type</code></td>
+<td><code>go2</code></td>
+<td>Robot config</td>
+</tr>
+<tr>
+<td><code>--world</code></td>
+<td><code>flat.sdf</code></td>
+<td>Gazebo world</td>
+</tr>
+<tr>
+<td><code>--plan_delay</code></td>
+<td><code>5.0</code></td>
+<td>Seconds after stand before planning</td>
+</tr>
+<tr>
+<td><code>--output_dir</code></td>
+<td><code>./iteration_bags</code></td>
+<td>Bag output directory</td>
+</tr>
+<tr>
+<td><code>--max_retries</code></td>
+<td><code>3</code></td>
+<td>Retries per iteration before skipping</td>
+</tr>
+</tbody>
+</table>
+<h2 id="what-gets-recorded">What gets recorded<a class="headerlink" href="#what-gets-recorded" title="Permanent link">&para;</a></h2>
+<p>Each iteration produces two bags under <code>output_dir</code>:</p>
 <ul>
-<li><strong><code>launch/data_collection.py</code></strong> — full rollout: bring up sim, wait for ready, start sync + bag, monitor episode, shutdown on termination.</li>
-<li><strong><code>launch/training_logging.py</code></strong> — sync + bag only, for attaching to an existing stack.</li>
+<li><strong><code>*_synced</code></strong> — time-aligned bundles from <code>time_sync_node</code> (<code>state/ground_truth</code>, <code>control/joint_command</code>, <code>control/grfs</code>, <code>local_plan</code>, <code>state/estimate</code>).</li>
+<li><strong><code>*_raw</code></strong> — all full-rate topics (states, plans, foot plans, body-force, <code>cmd_vel</code>, terrain map) for richer post-hoc inspection.</li>
 </ul>
-<h2 id="bugs-feature-requests">Bugs &amp; Feature Requests<a class="headerlink" href="#bugs-feature-requests" title="Permanent link">&para;</a></h2>
-<p>Please report bugs and request features using the <a href="https://github.com/robomechanics/quad-sdk/issues">Issue Tracker</a>.</p>
+<p>Post-process with the <a href="../../packages/quad_logger/">Quad Logger</a> tools.</p>
+<p>To record against an already-running stack without the full orchestration:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>ros2<span class="w"> </span>launch<span class="w"> </span>quad_perf_tests<span class="w"> </span>iteration_logging.py
+</code></pre></div>
+<h2 id="driving-with-the-cmd_vel-publisher">Driving with the cmd_vel publisher<a class="headerlink" href="#driving-with-the-cmd_vel-publisher" title="Permanent link">&para;</a></h2>
+<p>For tracking/stress tests that don't need the goal-seeking planner, the <code>cmd_vel_publisher_node</code> feeds deterministic or randomized velocity commands instead. See the <a href="../../packages/quad_perf_tests/"><code>quad_perf_tests</code></a> reference.</p>
+<h2 id="troubleshooting">Troubleshooting<a class="headerlink" href="#troubleshooting" title="Permanent link">&para;</a></h2>
+<details class="warning">
+<summary>Iterations hang on startup or controllers never activate</summary>
+<p>Stale Gazebo transport state from a previous run. The runner clears <code>/tmp/gz-*</code> and restarts the ROS 2 daemon between iterations — if you launched <code>run_iteration.py</code> directly, kill leftover <code>gz sim</code> processes manually first.</p>
+</details>
+<details class="warning">
+<summary>Every iteration times out</summary>
+<p>The robot isn't reaching the goal. Check <code>plan_delay</code> is long enough for the planners to come up, and confirm the world/robot combination is feasible by running it once interactively with a GUI.</p>
+</details>
+<details class="warning">
+<summary><code>run_iterations</code> counts a failed run as done</summary>
+<p>After <code>--max_retries</code> attempts an iteration is counted anyway to avoid an infinite loop. Inspect that run's logs/bags to see why it failed.</p>
+</details>
 
 
 
@@ -2283,7 +2208,7 @@
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-timeago"><span class="timeago" datetime="2026-04-29T23:15:14+00:00" locale="en"></span></span><span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-iso_date">2026-04-29</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-timeago"><span class="timeago" datetime="2026-05-23T23:17:05+00:00" locale="en"></span></span><span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-iso_date">2026-05-23</span>
   </span>
 
     
@@ -2321,7 +2246,7 @@
       <nav class="md-footer__inner md-grid" aria-label="Footer" >
         
           
-          <a href="../quad_logger/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Quad Logger">
+          <a href="../logging/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Logging &amp; Playback">
             <div class="md-footer__button md-icon">
               
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
@@ -2331,20 +2256,20 @@
                 Previous
               </span>
               <div class="md-ellipsis">
-                Quad Logger
+                Logging & Playback
               </div>
             </div>
           </a>
         
         
           
-          <a href="../quad_perf_tests/" class="md-footer__link md-footer__link--next" aria-label="Next: Quad Perf Tests">
+          <a href="../adding-a-robot/" class="md-footer__link md-footer__link--next" aria-label="Next: Adding a New Robot">
             <div class="md-footer__title">
               <span class="md-footer__direction">
                 Next
               </span>
               <div class="md-ellipsis">
-                Quad Perf Tests
+                Adding a New Robot
               </div>
             </div>
             <div class="md-footer__button md-icon">

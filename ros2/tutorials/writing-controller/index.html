@@ -1202,8 +1202,6 @@
       
         
       
-        
-      
     
     
       
@@ -1293,27 +1291,6 @@
   
   <span class="md-ellipsis">
     Quad Logger
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../packages/quad_training/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    Quad Training
   </span>
   
 
@@ -1536,11 +1513,11 @@
   
   
     <li class="md-nav__item">
-      <a href="../training/" class="md-nav__link">
+      <a href="../iteration-testing/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
-    Training Data Collection
+    Batch Iteration Testing
   </span>
   
 
@@ -2220,10 +2197,10 @@
 </code></pre></div>
 <h2 id="patterns-to-follow">Patterns to follow<a class="headerlink" href="#patterns-to-follow" title="Permanent link">&para;</a></h2>
 <ul>
-<li><strong>Don't allocate in the control loop.</strong> <code>computeLegCommandArray</code> is called at 1 kHz on a real-time-ish thread. Allocate buffers in the constructor.</li>
+<li><strong>Don't allocate in the control loop.</strong> <code>computeLegCommandArray</code> is called at 500 Hz on a real-time-ish thread. Allocate buffers in the constructor.</li>
 <li><strong>Trust <code>state.foot_in_contact</code></strong> — the contact estimator publishes per-leg booleans. Branch on these rather than reinventing contact detection.</li>
 <li><strong>Use <code>QuadKD2</code></strong> for FK/IK. Don't roll your own — joint sign/offset is per-robot config.</li>
-<li><strong>Log via <code>RCLCPP_DEBUG_THROTTLE</code></strong> when tuning. Plain <code>RCLCPP_INFO</code> at 1 kHz floods the console.</li>
+<li><strong>Log via <code>RCLCPP_DEBUG_THROTTLE</code></strong> when tuning. Plain <code>RCLCPP_INFO</code> at 500 Hz floods the console.</li>
 </ul>
 <h2 id="what-about-learned-policies">What about learned policies?<a class="headerlink" href="#what-about-learned-policies" title="Permanent link">&para;</a></h2>
 <p>For ONNX-based learned controllers, inherit from <code>LearnedController</code> (which itself derives from <code>LegController</code>). See <a href="../specialized-controllers/">Specialized Controllers</a>.</p>
@@ -2247,7 +2224,7 @@
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-timeago"><span class="timeago" datetime="2026-04-29T23:15:14+00:00" locale="en"></span></span><span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-iso_date">2026-04-29</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-timeago"><span class="timeago" datetime="2026-05-23T23:17:05+00:00" locale="en"></span></span><span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-iso_date">2026-05-23</span>
   </span>
 
     
