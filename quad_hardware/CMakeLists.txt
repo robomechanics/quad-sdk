@@ -74,10 +74,6 @@ install(TARGETS quad_hardware
 install(DIRECTORY include/
   DESTINATION include)
 
-install(DIRECTORY launch
-  DESTINATION share/${PROJECT_NAME}
-  OPTIONAL)
-
 install(FILES quad_hardware_plugins.xml
   DESTINATION share/${PROJECT_NAME})
 

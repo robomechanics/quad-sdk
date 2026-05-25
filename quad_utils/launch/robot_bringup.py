@@ -126,7 +126,10 @@ def load_robot_params(context, *args, **kwargs):
         SetLaunchConfiguration('robot_urdf', urdf),
         SetLaunchConfiguration('robot_sdf', sdf),
         SetLaunchConfiguration('robot_urdf_path', urdf_path),
-        SetLaunchConfiguration('robot_sdf_path', sdf_path)
+        SetLaunchConfiguration('robot_sdf_path', sdf_path),
+        # The merged effective config is also handed to robot_driver.py (sim
+        # mode) so its spawners use the exact same param file as the gz CM.
+        SetLaunchConfiguration('merged_config_path', controller_config_path),
     ]
 
 
@@ -202,140 +205,32 @@ def spawn_sdf_model(context, *args, **kwargs):
     )
     return [spawn_node]
 
-def _build_spawner_param_files(context):
-    """Build the --param-file set for the ros2_control spawners.
-
-    Returns (law_override_path, merged_config_path):
-      - merged_config_path: deep-merge of controllers.yaml + <robot>.yaml +
-        sim.yaml -- controller types, each controller's gains, and the sim
-        run-context flags. Byte-equivalent to the old monolithic go2.yaml;
-        QuadKD2 reads the leg/frame/body params straight from it.
-      - law_override_path: an optional temp file overriding locomotion_controller's
-        `controller` (the READY-mode leg-control LAW) from the `controller` launch
-        arg. None when the arg is empty (the default) or not a valid law -- then
-        the law in <robot>.yaml stands. The supervisor still switches MODES at
-        runtime regardless; this only picks which locomotion law runs."""
-    robot_type = LaunchConfiguration('robot_type').perform(context)
-    config_file = f'{robot_type}.yaml'
-    quad_utils_config = os.path.join(
-        FindPackageShare('quad_utils').perform(context), 'config')
-    quad_controllers_config = os.path.join(
-        FindPackageShare('quad_controllers').perform(context), 'config')
-    robot_config_path = os.path.join(quad_utils_config, config_file)
-    merged_config_path = merge_yaml_files([
-        os.path.join(quad_controllers_config, 'controllers.yaml'),
-        robot_config_path,
-        os.path.join(quad_controllers_config, 'sim.yaml'),
-    ])
-
-    valid_laws = {'inverse_dynamics', 'grf_pid', 'joint', 'underbrush',
-                  'inertia_estimation', 'learned'}
-    controller_id = LaunchConfiguration('controller').perform(context)
-    law_override_path = None
-    if controller_id in valid_laws:
-        override = {'/**/locomotion_controller':
-                    {'ros__parameters': {'controller': controller_id}}}
-        fd, law_override_path = tempfile.mkstemp(
-            prefix='quad_law_override_', suffix='.yaml')
-        with os.fdopen(fd, 'w') as f:
-            yaml.safe_dump(override, f, default_flow_style=False)
-    return law_override_path, merged_config_path
-
-
-def spawn_controller_broadcasters(context, *args, **kwargs):
-    namespace = LaunchConfiguration('namespace').perform(context)
-    gazebo_scripts_path = FindPackageShare('gazebo_scripts').perform(context)
-    spawn_joint_state_broadcaster = ExecuteProcess(
-        cmd=[
-            'ros2', 'run', 'controller_manager', 'spawner',
-            'joint_state_broadcaster',
-            '--controller-manager', f'/{namespace}/controller_manager',
-            '--controller-manager-timeout', '120',
-            '--switch-timeout', '180',
-        ],
-        # output='screen'
-    )
-
-    # ros2_control path: spawn joint_state_broadcaster + the 5 ros2_control
-    # controllers (sit active, the rest inactive; the mode_supervisor activates
-    # them). sit_controller is spawned ACTIVE so the robot holds the sit pose
-    # from spawn (matching robot_driver, which inits control_mode_ = SIT). The
-    # other mode controllers load inactive; the supervisor switches them.
-    active_controllers = ['sit_controller']
-    inactive_controllers = [
-        'locomotion_controller', 'safety_controller',
-        'sit_to_ready_controller', 'ready_to_sit_controller',
-    ]
-    law_override_path, merged_config_path = _build_spawner_param_files(context)
-    common = [
-        '--controller-manager', f'/{namespace}/controller_manager',
-        '--controller-manager-timeout', '120',
-        '--switch-timeout', '180',
-        # merged_config_path = controllers.yaml + <robot>.yaml + sim.yaml,
-        # so it carries the controller types, each controller's gains, and
-        # the sim run-context flags (interface_mode, is_hardware). The
-        # locomotion law comes from <robot>.yaml's `controller:` param unless
-        # the `controller` launch arg overrides it.
-        '--param-file', merged_config_path,
-    ]
-    # Optional launch-time law override (controller:=<law>); empty default
-    # leaves <robot>.yaml's `controller:` in charge.
-    if law_override_path:
-        common += ['--param-file', law_override_path]
-
-    spawn_sit = ExecuteProcess(
-        cmd=['ros2', 'run', 'controller_manager', 'spawner',
-             *active_controllers, *common])
-    spawn_inactive = ExecuteProcess(
-        cmd=['ros2', 'run', 'controller_manager', 'spawner',
-             *inactive_controllers, '--inactive', *common])
-
-    chain_after_jsb = RegisterEventHandler(
-        OnProcessExit(
-            target_action=spawn_joint_state_broadcaster,
-            on_exit=[spawn_sit, spawn_inactive],
-        )
-    )
-
-    return [
-        TimerAction(
-            period=0.5,
-            actions=[chain_after_jsb, spawn_joint_state_broadcaster],
-        )
-    ]
-
-
-
 def launch_robot_driver(context, *args, **kwargs):
-    namespace = LaunchConfiguration('namespace').perform(context)
+    """Launch the shared control stack (robot_driver.py) in SIM mode.
 
-    # The controllers are driven by the mode_supervisor (controller-switching
-    # FSM). mode_supervisor reads its controller-name mappings + timings from the
-    # NODE file (controllers.yaml) and its is_hardware flag from the SIM context
-    # overlay (sim.yaml). These replace the /**/mode_supervisor block that used
-    # to live in <robot>.yaml.
-    quad_controllers_config = os.path.join(
-        FindPackageShare('quad_controllers').perform(context), 'config')
-    controllers_yaml = os.path.join(quad_controllers_config, 'controllers.yaml')
-    sim_yaml = os.path.join(quad_controllers_config, 'sim.yaml')
-    # No explicit namespace: quad_gazebo pushes the robot namespace onto the
-    # whole group already (like robot_state_publisher etc.). Setting it here
-    # too double-namespaced it (/robot_1/robot_1/mode_supervisor).
-    mode_supervisor_node = Node(
-        package='quad_supervisor',
-        executable='mode_supervisor',
-        name='mode_supervisor',
-        output='screen',
-        parameters=[
-            controllers_yaml,
-            sim_yaml,
-            # controller_manager service lives under the robot namespace;
-            # set the absolute name so the supervisor targets the right one.
-            {'controller_manager': f'/{namespace}/controller_manager',
-             'use_sim_time': LaunchConfiguration('use_sim_time')},
-        ],
-    )
-    return [mode_supervisor_node]
+    robot_driver.py spawns the broadcasters + the 5 switchable mode controllers
+    (sit active) + the mode_supervisor against Gazebo's gz_ros2_control CM. The
+    SAME file run directly (use_sim:=false) is the on-robot hardware entry point
+    -- so sim and hardware share one implementation. The merged effective config
+    (built in load_robot_params, also fed to the gz plugin via the SDF) is handed
+    in as sim_config_file so the spawners use the identical param file. No
+    namespace is pushed here: quad_gazebo already pushed it onto this group."""
+    quad_utils_launch = os.path.join(
+        FindPackageShare('quad_utils').perform(context),
+        'launch', 'robot_driver.py')
+    return [
+        IncludeLaunchDescription(
+            PythonLaunchDescriptionSource(quad_utils_launch),
+            launch_arguments={
+                'use_sim': 'true',
+                'robot_type': LaunchConfiguration('robot_type'),
+                'namespace': LaunchConfiguration('namespace'),
+                'controller': LaunchConfiguration('controller'),
+                'sim_config_file': LaunchConfiguration('merged_config_path'),
+                'use_sim_time': LaunchConfiguration('use_sim_time'),
+            }.items(),
+        )
+    ]
 
 def access_terrain_map(context, *args, **kwargs):
     namespace = LaunchConfiguration('namespace').perform(context)
@@ -483,7 +378,6 @@ def generate_launch_description():
         OpaqueFunction(function=spawn_sdf_model),
         OpaqueFunction(function=harmonic_ros_bridge),
         OpaqueFunction(function=access_terrain_map),
-        OpaqueFunction(function=spawn_controller_broadcasters),
         OpaqueFunction(function=launch_robot_driver),
         OpaqueFunction(function=launch_contact_state_publisher),
         OpaqueFunction(function= launch_visualization_plugins)
