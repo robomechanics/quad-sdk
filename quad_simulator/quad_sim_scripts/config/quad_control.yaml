@@ -1,0 +1,39 @@
+/**/controller_manager:
+    ros__parameters:
+      update_rate: 1000
+      joint_state_broadcaster:
+        type: joint_state_broadcaster/JointStateBroadcaster
+      # Position Controllers ---------------------------------
+      joint_controller:
+        type: effort_controllers/QuadController
+        
+/**/joint_controller:
+  ros__parameters:
+      joints:
+        - '0'
+        - '1'
+        - '2'
+        - '3'
+        - '4'
+        - '5'
+        - '6'
+        - '7'
+        - '8'
+        - '9'
+        - '10'
+        - '11'
+      topics:
+        control:
+          joint_command: control/joint_command
+      limits:
+        # torque_lims: [21.0, 21.0, 32.0] # For Spirit
+        # speed_lims: [37.7, 37.7, 25.1] # For Spirit
+
+        # torque_lims: [33.5, 33.5, 33.5] # For A1
+        # speed_lims: [21.0, 21.0, 21.0] # For A1
+
+        torque_lims: [23.7, 23.7, 45.0] # For Go2/ Go2W
+        speed_lims: [30.0, 30.0, 15.7] # For Go2/ Go2W
+
+        # torque_lims: [200.0, 200.0, 320.0] # For B2
+        # speed_lims: [23.0, 23.0, 14.0] # For B2

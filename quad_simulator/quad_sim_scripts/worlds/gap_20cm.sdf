@@ -1,0 +1,43 @@
+<?xml version="1.0"?>
+<sdf version='1.6'>
+  <world name='default'>
+    <physics type="ode">
+    <max_step_size>0.001</max_step_size>
+    <real_time_factor>1</real_time_factor>
+    <real_time_update_rate>1000</real_time_update_rate>
+        <ode>
+            <solver>
+              <iters>300</iters>
+            </solver>
+        </ode>
+    </physics>
+
+    <scene>
+      <shadows>false</shadows>
+    </scene>
+
+    <gravity>0 0 -9.81</gravity>
+
+    <plugin filename="libgz-sim8-physics-system" name="gz::sim::systems::Physics"></plugin>
+    <plugin filename="libgz-sim8-scene-broadcaster-system" name="gz::sim::systems::SceneBroadcaster"></plugin>
+    <plugin filename="libgz-sim8-sensors-system" name="gz::sim::systems::Sensors"/>
+    <plugin filename="libgz-sim8-user-commands-system" name="gz::sim::systems::UserCommands"/>
+    <plugin filename="libgz-sim8-contact-system.so" name="gz::sim::systems::Contact"></plugin>
+    <plugin filename="libgz-sim8-imu-system.so" name="gz::sim::systems::Imu"></plugin>
+    <plugin filename="libgz-sim8-forcetorque-system.so" name="gz::sim::systems::ForceTorque"/>
+    <plugin filename="libgz-sim-apply-link-wrench-system.so" name="gz::sim::systems::ApplyLinkWrench"/>
+
+    <light name="sun" type="directional">
+      <cast_shadows>true</cast_shadows>
+      <pose>0 0 10 0 0 0</pose>
+      <diffuse>1 1 1 1</diffuse>
+      <specular>0.1 0.1 0.1 1</specular>
+      <direction>-1 0 -1</direction>
+    </light>
+
+    <include>
+      <uri>model://gap_20cm</uri>
+      <pose>-2 -2 -0.1  0 0 0</pose>
+    </include>
+  </world>
+</sdf>

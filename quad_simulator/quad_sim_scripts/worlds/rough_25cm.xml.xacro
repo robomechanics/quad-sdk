@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mujoco model="rough_25cm" xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+  <xacro:arg name="meshdir" default=""/>
+  <xacro:arg name="mjcf_path" default=""/>
+  <!-- Absolute path to the PNG heightmap rasterized from rough_25cm.stl. -->
+  <xacro:arg name="terrain_heightmap" default=""/>
+
+  <compiler
+    angle="radian"
+    meshdir="$(arg meshdir)"
+    texturedir="$(arg meshdir)"
+    autolimits="true"/>
+
+
+  <option 
+    timestep="0.002"
+    iterations="100"
+    ls_iterations="20"
+    tolerance="1e-6"
+    cone="elliptic"
+    impratio="100"
+    noslip_iterations="200"
+    noslip_tolerance="1e-7">
+    <flag override="enable"/>
+  </option>
+
+  <include file="$(arg mjcf_path)"/>
+
+
+  <asset>
+    <hfield name="terrain" file="$(arg terrain_heightmap)" size="5.0 4.0 0.1966 0.5"/>
+  </asset>
+
+  <worldbody>
+    <light directional="true" diffuse=".8 .8 .8" specular=".2 .2 .2" pos="0 0 5" dir="0 0 -1"/>
+
+    <geom name="floor" type="hfield" hfield="terrain" pos="3 0 0.0100" conaffinity="1"
+          priority="2" condim="4"
+          friction="1.0 0.05 0.05"
+          solref="0.002 1" solimp="0.9 0.95 0.01"
+          rgba="0.8 0.9 0.8 1"/>
+  </worldbody>
+</mujoco>
