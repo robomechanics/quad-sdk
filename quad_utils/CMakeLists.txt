@@ -8,6 +8,7 @@ endif()
 # find dependencies
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
+find_package(rclcpp_lifecycle REQUIRED)
 find_package(std_msgs REQUIRED)
 find_package(nav_msgs)
 find_package(nav2_msgs)
@@ -124,8 +125,9 @@ target_link_libraries(rviz_interface_node
 # )
 
 
-ament_target_dependencies(quad_utils 
+ament_target_dependencies(quad_utils
   rclcpp
+  rclcpp_lifecycle
   std_msgs
   nav_msgs
   nav2_msgs
@@ -245,7 +247,7 @@ install(
 ament_export_include_directories(include)
 ament_export_libraries(quad_utils)
 ament_export_dependencies(
-  rclcpp std_msgs nav_msgs nav2_msgs sensor_msgs geometry_msgs visualization_msgs
+  rclcpp rclcpp_lifecycle std_msgs nav_msgs nav2_msgs sensor_msgs geometry_msgs visualization_msgs
   grid_map_core grid_map_ros grid_map_pcl grid_map_msgs quad_msgs
   pcl_msgs pcl_conversions Eigen3 tf2 tf2_geometry_msgs cv_bridge pluginlib filters
   pinocchio

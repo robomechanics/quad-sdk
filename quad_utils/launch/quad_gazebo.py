@@ -106,7 +106,9 @@ def launch_robot_group(context, *args, **kwargs):
     for config in robot_configs:
         robot_ns = config["name"]
         robot_type = config["type"]
-        controller = config["controller"]
+        # Optional: "" (or absent) means use the leg-control law set in
+        # <robot>.yaml; a law name overrides it at launch.
+        controller = config.get("controller", "")
         init_pose = config["init_pose"]
 
         robot_launch_file = PathJoinSubstitution([
@@ -125,7 +127,7 @@ def launch_robot_group(context, *args, **kwargs):
                     'controller': TextSubstitution(text=controller),
                     'init_pose' : TextSubstitution(text=init_pose),
                     'world': LaunchConfiguration('world'),
-                    'use_sim_time': LaunchConfiguration('use_sim_time')
+                    'use_sim_time': LaunchConfiguration('use_sim_time'),
                 }.items()
             )
         ])
@@ -179,8 +181,8 @@ def generate_launch_description():
         DeclareLaunchArgument('rviz', default_value='true', description='Launch RViz'),
         DeclareLaunchArgument('use_sim_time', default_value='true', description='Whether to use Computer Clock or Sim Clock'),
         DeclareLaunchArgument(
-            'robot_configs', default_value=('[{"name": "robot_1", "type": "go2", "controller": "inverse_dynamics", "init_pose": "-x 0.0 -y 0.0 -z 3.0"}]'),
-            description='A JSON List of robot configurations: MUST specify name, type, controller, and spawn pose. init_pose accepts -x/-y/-z and optionally -R/-P/-Y for orientation.'
+            'robot_configs', default_value=('[{"name": "robot_1", "type": "go2", "init_pose": "-x 0.0 -y 0.0 -z 3.0"}]'),
+            description='A JSON List of robot configurations: MUST specify name, type, and spawn pose. Optional "controller" overrides the leg-control law from <robot>.yaml. init_pose accepts -x/-y/-z and optionally -R/-P/-Y for orientation.'
         ),
         DeclareLaunchArgument('scenario', default_value="none", description='Custom Obstacle Scenario to Spawn e.g. Underbrush, Procedural Underbrush)'),
         DeclareLaunchArgument('obstacles', default_value='[]',

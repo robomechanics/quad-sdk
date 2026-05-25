@@ -4,6 +4,12 @@ Stephen Brawner (brawner@gmail.com)
      Commit Version: 1.6.0-4-g7f85cfe  Build Version: 1.6.7995.38578
      For more information, please see http://wiki.ros.org/sw_urdf_exporter -->
 <robot name="go2" xmlns:xacro="http://www.ros.org/wiki/xacro">
+  <!-- Backend selection: use_sim=true -> gz_ros2_control (Gazebo, default);
+       use_sim=false -> quad_hardware/UnitreeSystem (real Go2 via DDS).
+       read_only (hardware only) -> true commands no torque (safe bring-up). -->
+  <xacro:arg name="use_sim" default="true" />
+  <xacro:arg name="read_only" default="true" />
+  <xacro:arg name="network_interface" default="eth0" />
   <link
     name="body">
     <inertial>
@@ -1372,6 +1378,7 @@ Stephen Brawner (brawner@gmail.com)
     name="front_camera">
   </link>
 
+  <xacro:if value="$(arg use_sim)">
   <ros2_control name="GazeboSimSystem" type="system">
     <hardware>
       <plugin>gz_ros2_control/GazeboSimSystem</plugin>
@@ -1437,6 +1444,58 @@ Stephen Brawner (brawner@gmail.com)
       <state_interface name="position" />
     </joint>
   </ros2_control>
+  </xacro:if>
+
+  <xacro:unless value="$(arg use_sim)">
+  <!-- Real Go2 hardware via quad_hardware/UnitreeSystem. Five command
+       interfaces per joint drive the onboard motor PD; effort/pos/vel states
+       come from rt/lowstate. IMU is exposed as a sensor for
+       imu_sensor_broadcaster. -->
+  <xacro:macro name="unitree_hw_joint" params="jname">
+    <joint name="${jname}">
+      <command_interface name="position" />
+      <command_interface name="velocity" />
+      <command_interface name="kp" />
+      <command_interface name="kd" />
+      <command_interface name="effort" />
+      <state_interface name="position" />
+      <state_interface name="velocity" />
+      <state_interface name="effort" />
+    </joint>
+  </xacro:macro>
+  <ros2_control name="UnitreeSystem" type="system">
+    <hardware>
+      <plugin>quad_hardware/UnitreeSystem</plugin>
+      <param name="network_interface">$(arg network_interface)</param>
+      <param name="read_only">$(arg read_only)</param>
+    </hardware>
+    <xacro:unitree_hw_joint jname="0" />
+    <xacro:unitree_hw_joint jname="1" />
+    <xacro:unitree_hw_joint jname="2" />
+    <xacro:unitree_hw_joint jname="3" />
+    <xacro:unitree_hw_joint jname="4" />
+    <xacro:unitree_hw_joint jname="5" />
+    <xacro:unitree_hw_joint jname="6" />
+    <xacro:unitree_hw_joint jname="7" />
+    <xacro:unitree_hw_joint jname="8" />
+    <xacro:unitree_hw_joint jname="9" />
+    <xacro:unitree_hw_joint jname="10" />
+    <xacro:unitree_hw_joint jname="11" />
+    <sensor name="imu">
+      <state_interface name="orientation.x" />
+      <state_interface name="orientation.y" />
+      <state_interface name="orientation.z" />
+      <state_interface name="orientation.w" />
+      <state_interface name="angular_velocity.x" />
+      <state_interface name="angular_velocity.y" />
+      <state_interface name="angular_velocity.z" />
+      <state_interface name="linear_acceleration.x" />
+      <state_interface name="linear_acceleration.y" />
+      <state_interface name="linear_acceleration.z" />
+    </sensor>
+  </ros2_control>
+  </xacro:unless>
+
   <link name="cmu_text">
     <visual>
       <origin xyz="0 0 0" rpy="0 0 0" />

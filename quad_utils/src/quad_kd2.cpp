@@ -4,39 +4,81 @@
 
 using namespace quad_utils;
 
-QuadKD2::QuadKD2(rclcpp::Node::SharedPtr node) : node_(node) { initModel(""); }
+QuadKD2::QuadKD2(rclcpp::Node::SharedPtr node) {
+  params_iface_ = node->get_node_parameters_interface();
+  logger_ = node->get_logger();
+  clock_ = node->get_clock();
 
-QuadKD2::QuadKD2(rclcpp::Node::SharedPtr node, std::string ns) : node_(node) {
-  initModel("/" + ns + "/");
+  std::string robot_description_string;
+  if (!node->get_parameter("robot_description", robot_description_string)) {
+    RCLCPP_FATAL(logger_, "Failed to load robot_description. Shutting down.");
+    rclcpp::shutdown();
+  }
+  initModel(robot_description_string, "");
+}
+
+QuadKD2::QuadKD2(rclcpp::Node::SharedPtr node, std::string ns) {
+  params_iface_ = node->get_node_parameters_interface();
+  logger_ = node->get_logger();
+  clock_ = node->get_clock();
+
+  std::string robot_description_string;
+  if (!node->get_parameter("robot_description", robot_description_string)) {
+    RCLCPP_FATAL(logger_, "Failed to load robot_description. Shutting down.");
+    rclcpp::shutdown();
+  }
+  initModel(robot_description_string, "/" + ns + "/");
+}
+
+QuadKD2::QuadKD2(rclcpp_lifecycle::LifecycleNode::SharedPtr node,
+                 std::string ns) {
+  params_iface_ = node->get_node_parameters_interface();
+  logger_ = node->get_logger();
+  clock_ = node->get_clock();
+
+  std::string robot_description_string;
+  if (!node->get_parameter("robot_description", robot_description_string)) {
+    RCLCPP_FATAL(logger_, "Failed to load robot_description. Shutting down.");
+    rclcpp::shutdown();
+  }
+  initModel(robot_description_string, "/" + ns + "/");
 }
 
 void QuadKD2::initModel(std::string ns) {
   std::string robot_description_string;
 
-  if (!node_->get_parameter("robot_description", robot_description_string)) {
-    RCLCPP_FATAL(node_->get_logger(),
-                 "Failed to load robot_description. Shutting down.");
+  if (!loadROSParamDefault(params_iface_, std::string("robot_description"),
+                           robot_description_string, std::string(""))) {
+    RCLCPP_FATAL(logger_, "Failed to load robot_description. Shutting down.");
     rclcpp::shutdown();
+  }
+
+  initModel(robot_description_string, ns);
+}
+
+void QuadKD2::initModel(const std::string& robot_description, std::string ns) {
+  if (!clock_) {
+    clock_ = rclcpp::Clock::make_shared();
   }
 
   try {
     pinocchio::urdf::buildModelFromXML(
-        robot_description_string, pinocchio::JointModelFreeFlyer(), model_);
+        robot_description, pinocchio::JointModelFreeFlyer(), model_);
     data_ = pinocchio::Data(model_);
-    RCLCPP_INFO(node_->get_logger(),
+    RCLCPP_INFO(logger_,
                 "Loaded Pinocchio model with %d joints and %d bodies.",
                 model_.njoints, model_.nbodies);
   } catch (const std::exception& e) {
-    RCLCPP_FATAL(node_->get_logger(), "Error loading model.");
+    RCLCPP_FATAL(logger_, "Error loading model.");
     rclcpp::shutdown();
   }
 
   // Get the Body Frame ID
   std::string body_frame_name;
-  loadROSParamDefault(node_, std::string("body.frame"), body_frame_name,
+  loadROSParamDefault(params_iface_, std::string("body.frame"), body_frame_name,
                       std::string("body"));
   if (body_frame_name.empty()) {
-    RCLCPP_FATAL(node_->get_logger(),
+    RCLCPP_FATAL(logger_,
                  "Parameter 'body.frame' must be set in the robot yaml.");
     rclcpp::shutdown();
     return;
@@ -59,14 +101,14 @@ void QuadKD2::initModel(std::string ns) {
 
     // Load joint names
     std::string abad_name, hip_name, knee_name;
-    loadROSParamDefault(node_, p + ".joints.abad.name", abad_name,
+    loadROSParamDefault(params_iface_, p +".joints.abad.name", abad_name,
                         std::string(""));
-    loadROSParamDefault(node_, p + ".joints.hip.name", hip_name,
+    loadROSParamDefault(params_iface_, p +".joints.hip.name", hip_name,
                         std::string(""));
-    loadROSParamDefault(node_, p + ".joints.knee.name", knee_name,
+    loadROSParamDefault(params_iface_, p +".joints.knee.name", knee_name,
                         std::string(""));
     if (abad_name.empty() || hip_name.empty() || knee_name.empty()) {
-      RCLCPP_FATAL(node_->get_logger(),
+      RCLCPP_FATAL(logger_,
                    "Missing joint name config for %s. Expected "
                    "'%s.joints.(abad|hip|knee).name'",
                    p.c_str(), p.c_str());
@@ -77,33 +119,33 @@ void QuadKD2::initModel(std::string ns) {
 
     // Load Bridge Parameters which account for discrepancies between Robot URDF
     // Models (Diff Axis of Rotation, Origin)
-    loadROSParamDefault(node_, p + ".joints.abad.sign", limb.abad_conv.sign,
+    loadROSParamDefault(params_iface_, p +".joints.abad.sign", limb.abad_conv.sign,
                         1.0);
-    loadROSParamDefault(node_, p + ".joints.abad.offset",
+    loadROSParamDefault(params_iface_, p +".joints.abad.offset",
                         limb.abad_conv.origin_offset, 0.0);
 
-    loadROSParamDefault(node_, p + ".joints.hip.sign", limb.hip_conv.sign, 1.0);
-    loadROSParamDefault(node_, p + ".joints.hip.offset",
+    loadROSParamDefault(params_iface_, p +".joints.hip.sign", limb.hip_conv.sign, 1.0);
+    loadROSParamDefault(params_iface_, p +".joints.hip.offset",
                         limb.hip_conv.origin_offset, 0.0);
 
-    loadROSParamDefault(node_, p + ".joints.knee.sign", limb.knee_conv.sign,
+    loadROSParamDefault(params_iface_, p +".joints.knee.sign", limb.knee_conv.sign,
                         1.0);
-    loadROSParamDefault(node_, p + ".joints.knee.offset",
+    loadROSParamDefault(params_iface_, p +".joints.knee.offset",
                         limb.knee_conv.origin_offset, 0.0);
 
     std::string hip_frame_name, upper_frame_name, lower_frame_name,
         toe_frame_name;
-    loadROSParamDefault(node_, p + ".frames.hip", hip_frame_name,
+    loadROSParamDefault(params_iface_, p +".frames.hip", hip_frame_name,
                         std::string(""));
-    loadROSParamDefault(node_, p + ".frames.upper", upper_frame_name,
+    loadROSParamDefault(params_iface_, p +".frames.upper", upper_frame_name,
                         std::string(""));
-    loadROSParamDefault(node_, p + ".frames.lower", lower_frame_name,
+    loadROSParamDefault(params_iface_, p +".frames.lower", lower_frame_name,
                         std::string(""));
-    loadROSParamDefault(node_, p + ".frames.toe", toe_frame_name,
+    loadROSParamDefault(params_iface_, p +".frames.toe", toe_frame_name,
                         std::string(""));
     if (hip_frame_name.empty() || upper_frame_name.empty() ||
         lower_frame_name.empty() || toe_frame_name.empty()) {
-      RCLCPP_FATAL(node_->get_logger(),
+      RCLCPP_FATAL(logger_,
                    "Missing frame name config for %s. Expected "
                    "'%s.frames.(hip|upper|lower|toe)'",
                    p.c_str(), p.c_str());
@@ -551,7 +593,7 @@ bool QuadKD2::legbaseToFootIKLegbaseFrame(int leg_index,
   // Start IK, check foot pos is at least l0 away from leg base, clamp otherwise
   double temp = l0 / sqrt(z * z + y * y);
   if (abs(temp) > 1) {
-    RCLCPP_DEBUG_THROTTLE(node_->get_logger(), *node_->get_clock(), 1e9,
+    RCLCPP_DEBUG_THROTTLE(logger_, *clock_, 1e9,
                           "Foot too close, choosing closest alternative\n");
     is_exact = false;
     temp = std::max(std::min(temp, 1.0), -1.0);
@@ -575,7 +617,7 @@ bool QuadKD2::legbaseToFootIKLegbaseFrame(int leg_index,
     q0 = (q0_pin - limbs_[leg_index].abad_conv.origin_offset) /
          limbs_[leg_index].abad_conv.sign;
     is_exact = false;
-    RCLCPP_DEBUG_THROTTLE(node_->get_logger(), *node_->get_clock(), 1e9,
+    RCLCPP_DEBUG_THROTTLE(logger_, *clock_, 1e9,
                           "Abad limits exceeded, clamping to %5.3f \n", q0);
   }
 
@@ -588,7 +630,7 @@ bool QuadKD2::legbaseToFootIKLegbaseFrame(int leg_index,
   double temp2 =
       (l1_ * l1_ + x * x + z * z - l2_ * l2_) / (2 * l1_ * sqrt(x * x + z * z));
   if (abs(temp2) > acos_eps) {
-    RCLCPP_DEBUG_THROTTLE(node_->get_logger(), *node_->get_clock(), 1e9,
+    RCLCPP_DEBUG_THROTTLE(logger_, *clock_, 1e9,
                           "Foot location too far for hip, choosing closest"
                           " alternative \n");
     is_exact = false;
@@ -599,7 +641,7 @@ bool QuadKD2::legbaseToFootIKLegbaseFrame(int leg_index,
   double temp3 = (l1_ * l1_ + l2_ * l2_ - x * x - z * z) / (2 * l1_ * l2_);
 
   if (temp3 > acos_eps || temp3 < -acos_eps) {
-    RCLCPP_DEBUG_THROTTLE(node_->get_logger(), *node_->get_clock(), 1e9,
+    RCLCPP_DEBUG_THROTTLE(logger_, *clock_, 1e9,
                           "Foot location too far for knee, choosing closest"
                           " alternative \n");
     is_exact = false;
@@ -620,7 +662,7 @@ bool QuadKD2::legbaseToFootIKLegbaseFrame(int leg_index,
     q1 = (q1_pin - limbs_[leg_index].hip_conv.origin_offset) /
          limbs_[leg_index].hip_conv.sign;
     is_exact = false;
-    RCLCPP_DEBUG_THROTTLE(node_->get_logger(), *node_->get_clock(), 1e9,
+    RCLCPP_DEBUG_THROTTLE(logger_, *clock_, 1e9,
                           "Hip limits exceeded, clamping to %5.3f \n", q1);
   }
 
@@ -640,14 +682,14 @@ bool QuadKD2::legbaseToFootIKLegbaseFrame(int leg_index,
     q2 = (q2_pin - limbs_[leg_index].knee_conv.origin_offset) /
          limbs_[leg_index].knee_conv.sign;
     is_exact = false;
-    RCLCPP_DEBUG_THROTTLE(node_->get_logger(), *node_->get_clock(), 1e9,
+    RCLCPP_DEBUG_THROTTLE(logger_, *clock_, 1e9,
                           "Knee limits exceeded, clamping to %5.3f \n", q2);
   }
 
   // q1 is undefined if q2=0, resolve this
   if (q2 == 0) {
     q1 = 0;
-    RCLCPP_DEBUG_THROTTLE(node_->get_logger(), *node_->get_clock(), 1e9,
+    RCLCPP_DEBUG_THROTTLE(logger_, *clock_, 1e9,
                           "Hip value undefined (in singularity), setting to"
                           " %5.3f \n",
                           q1);
@@ -655,7 +697,7 @@ bool QuadKD2::legbaseToFootIKLegbaseFrame(int leg_index,
   }
 
   if (z_body_frame - l0 * sin(q0) > 0) {
-    RCLCPP_DEBUG_THROTTLE(node_->get_logger(), *node_->get_clock(), 1e9,
+    RCLCPP_DEBUG_THROTTLE(logger_, *clock_, 1e9,
                           "IK solution is in hip-inverted region! Beware!\n");
     is_exact = false;
   }

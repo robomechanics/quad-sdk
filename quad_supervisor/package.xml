@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
+<package format="3">
+  <name>quad_supervisor</name>
+  <version>0.1.0</version>
+  <description>
+    Mode supervisor (C++) for the ros2_control quad-sdk stack. Reproduces
+    robot_driver's control-mode FSM (SIT/READY/SIT_TO_READY/READY_TO_SIT/SAFETY)
+    by switching ros2_control controllers via controller_manager's
+    switch_controller service.
+  </description>
+  <maintainer email="ologandavid@gmail.com">David Ologan</maintainer>
+  <license>MIT</license>
+
+  <buildtool_depend>ament_cmake</buildtool_depend>
+
+  <depend>rclcpp</depend>
+  <depend>std_msgs</depend>
+  <depend>quad_msgs</depend>
+  <depend>controller_manager_msgs</depend>
+
+  <export>
+    <build_type>ament_cmake</build_type>
+  </export>
+</package>

@@ -1,0 +1,39 @@
+<library path="quad_controllers">
+  <class
+    name="quad_controllers/LegControlController"
+    type="quad_controllers::LegControlController"
+    base_class_type="controller_interface::ControllerInterface">
+    <description>
+      READY-mode controller: delegates to a selectable leg-control law
+      (inverse_dynamics / grf_pid / joint / underbrush / inertia_estimation /
+      learned) and falls back to a stand pose when the law fails or no state is
+      available.
+    </description>
+  </class>
+  <class
+    name="quad_controllers/PoseController"
+    type="quad_controllers::PoseController"
+    base_class_type="controller_interface::ControllerInterface">
+    <description>
+      Holds every leg at a fixed joint pose with PD gains. Used for SIT.
+    </description>
+  </class>
+  <class
+    name="quad_controllers/SafetyController"
+    type="quad_controllers::SafetyController"
+    base_class_type="controller_interface::ControllerInterface">
+    <description>
+      Holds every joint at zero position with safety PD gains. Used for SAFETY.
+    </description>
+  </class>
+  <class
+    name="quad_controllers/TransitionController"
+    type="quad_controllers::TransitionController"
+    base_class_type="controller_interface::ControllerInterface">
+    <description>
+      Linearly interpolates every joint from from_angles to to_angles over a
+      configurable duration with PD gains. Used for SIT_TO_READY and
+      READY_TO_SIT.
+    </description>
+  </class>
+</library>

@@ -106,7 +106,9 @@ def launch_robot_group(context, *args, **kwargs):
     for config in robot_configs:
         robot_ns = config["name"]
         robot_type = config["type"]
-        controller = config["controller"]
+        # Optional: "" (or absent) means use the leg-control law set in
+        # <robot>.yaml; a law name overrides it at launch.
+        controller = config.get("controller", "")
         init_pose = config["init_pose"]
 
         robot_launch_file = PathJoinSubstitution([

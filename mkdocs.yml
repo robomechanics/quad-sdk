@@ -157,6 +157,7 @@ nav:
   - Architecture:
       - Overview: architecture/overview.md
       - ROS2 Migration: architecture/ros2-migration.md
+      - Control Stack: architecture/control-stack.md
       - Pinocchio Integration: architecture/pinocchio-integration.md
   - Packages:
       - Overview: packages/index.md
@@ -167,6 +168,10 @@ nav:
           - Conflict Based Search: packages/conflict_based_search.md
       - Control & Estimation:
           - Robot Driver: packages/robot_driver.md
+          - Quad Controllers: packages/quad_controllers.md
+          - Quad Estimators: packages/quad_estimators.md
+          - Quad Supervisor: packages/quad_supervisor.md
+          - Quad Hardware: packages/quad_hardware.md
           - Body Force Estimator: packages/body_force_estimator.md
       - Simulation:
           - Quad Simulator: packages/quad_simulator.md

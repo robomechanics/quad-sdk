@@ -1,0 +1,13 @@
+# ===========================================================================
+# SIM run-context overlay.
+#
+# Merge AFTER the node file (controllers.yaml) and the robot file (e.g.
+# go2.yaml) to select the simulation run context. Gazebo has no onboard joint
+# PD, so controllers output effort; is_hardware is false (mode_supervisor FSM
+# sim branch). State topic is fixed in controllers.yaml (state/ground_truth).
+# ===========================================================================
+
+/**:
+  ros__parameters:
+    interface_mode: effort
+    is_hardware: false

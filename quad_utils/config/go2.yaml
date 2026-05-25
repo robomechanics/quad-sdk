@@ -87,37 +87,79 @@
         g_ub: [!!float 2e19, !!float 2e19,  !!float 2e19,  !!float 2e19, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, !!float 2e19, !!float 2e19,  !!float 2e19,  !!float 2e19, !!float 2e19, !!float 2e19,  !!float 2e19,  !!float 2e19,  !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19]
       friction_coefficient: 0.6
        
-/**/robot_driver:
-  ros__parameters:    
-    robot_driver:
-      sit_kp: [10.0, 10.0, 10.0]
-      sit_kd: [1.0, 1.0, 1.0]
-      stand_kp: [60.0, 60.0, 60.0]
-      stand_kd: [2.0, 2.0, 2.0]
-      stance_kp: [60.0, 60.0, 60.0] # 40 Learned, 30 MPC
-      stance_kd: [4.0, 4.0, 4.0]
-      swing_kp: [60.0, 60.0, 60.0] #[10.0, 10.0, 10.0]
-      swing_kd: [4.0, 4.0, 4.0]
-      swing_kp_cart: [0.0, 0.0, 0.0] # N/m
-      swing_kd_cart: [0.0, 0.0, 0.0] # N/m
-      safety_kp: [0.0, 0.0, 0.0]
-      safety_kd: [2.0, 2.0, 2.0]
-      stand_joint_angles: [0.0, 0.8, -1.5] # go2
-      sit_joint_angles: [0.0, 1.36, -2.65]
-
-/**/controller_manager:
-  ros__parameters:
-    update_rate: 500
-    joint_state_broadcaster:
-      type: joint_state_broadcaster/JointStateBroadcaster
-    joint_controller:
-      type: effort_controllers/QuadController
-
 /**/joint_controller:
   ros__parameters:
     topics:
       control:
         joint_command: control/joint_command
+
+# ---------------------------------------------------------------------------
+# ros2_control stack controller params (opt-in, control_stack:=ros2_control).
+# ROBOT-specific gains/poses only. The run-context flags (interface_mode,
+# robot_state_topic) now live in the context overlays (quad_controllers/config/
+# sim.yaml | hardware.yaml) and are merged in at launch; the controller TYPE map
+# and mode_supervisor mappings live in quad_controllers/config/controllers.yaml.
+# robot_config_file points at the installed go2.yaml so each controller's
+# QuadKD2 impl node can read the leg/frame/body params under /**: above. The
+# value here is a sane default but is overridden at launch by robot_bringup.py
+# (via the spawner --param-file) with the absolute installed path resolved from
+# FindPackageShare('quad_utils').
+# ---------------------------------------------------------------------------
+/**/locomotion_controller:
+  ros__parameters:
+    robot_config_file: ""
+    controller: inverse_dynamics
+    stance_kp: [60.0, 60.0, 60.0]
+    stance_kd: [4.0, 4.0, 4.0]
+    swing_kp: [60.0, 60.0, 60.0]
+    swing_kd: [4.0, 4.0, 4.0]
+    swing_kp_cart: [0.0, 0.0, 0.0]
+    swing_kd_cart: [0.0, 0.0, 0.0]
+    stand_kp: [60.0, 60.0, 60.0]
+    stand_kd: [2.0, 2.0, 2.0]
+    stand_joint_angles: [0.0, 0.8, -1.5]
+    cmd_vel_filter_const: 0.10
+    cmd_vel_scale: 1.0
+    policy_inference_rate: 50.0
+    model_path: ""
+    # Underbrush swing-law params (consumed only when controller: underbrush).
+    # Copied from robot_driver.yaml's underbrush_swing block; tuned for a gait
+    # period of 0.54.
+    underbrush_swing:
+      retract_vel: 15.0          # rad/s retraction speed at proximal link
+      tau_push: 2.0              # N m forward torque at distal link
+      tau_contact_start: 3.0     # N m contact initiation detection threshold
+      tau_contact_end: 3.0       # N m contact break detection threshold
+      min_switch: 0.1            # s minimum time between switching
+      t_down: 0.135              # s time before requiring leg extension
+      t_up: 0.04                 # s time before allowing contact initiation
+
+/**/sit_controller:
+  ros__parameters:
+    joint_angles: [0.0, 1.36, -2.65]
+    kp: [10.0, 10.0, 10.0]
+    kd: [1.0, 1.0, 1.0]
+
+/**/safety_controller:
+  ros__parameters:
+    kp: [0.0, 0.0, 0.0]
+    kd: [2.0, 2.0, 2.0]
+
+/**/sit_to_ready_controller:
+  ros__parameters:
+    from_angles: [0.0, 1.36, -2.65]
+    to_angles: [0.0, 0.8, -1.5]
+    duration: 1.0
+    kp: [60.0, 60.0, 60.0]
+    kd: [2.0, 2.0, 2.0]
+
+/**/ready_to_sit_controller:
+  ros__parameters:
+    from_angles: [0.0, 0.8, -1.5]
+    to_angles: [0.0, 1.36, -2.65]
+    duration: 1.0
+    kp: [60.0, 60.0, 60.0]
+    kd: [2.0, 2.0, 2.0]
 
 /**:
   ros__parameters:

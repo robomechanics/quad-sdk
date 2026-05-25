@@ -24,6 +24,11 @@ SOFTWARE.
 -->
 <robot name="spirit" xmlns:xacro="http://www.ros.org/wiki/xacro">
   <xacro:arg name="prefix" default=""/>
+  <!-- Backend selection: use_sim=true -> gz_ros2_control (Gazebo, default);
+       use_sim=false -> quad_hardware/SpiritSystem (real Spirit 40 via MBLink).
+       read_only (hardware only) -> true commands no torque (safe bring-up). -->
+  <xacro:arg name="use_sim" default="true"/>
+  <xacro:arg name="read_only" default="true"/>
   <xacro:property name="prefix" value="$(arg prefix)"/>
   <!-- Define materials -->
   <material name="gray">
@@ -977,6 +982,7 @@ SOFTWARE.
     <origin xyz="-0.04 0 -0.005" rpy="0 0 3.14159"/>
   </joint>
 
+  <xacro:if value="$(arg use_sim)">
   <ros2_control name="GazeboSimSystem" type="system">
     <hardware>
       <plugin>gz_ros2_control/GazeboSimSystem</plugin>
@@ -1042,6 +1048,55 @@ SOFTWARE.
       <state_interface name="position" />
     </joint>
   </ros2_control>
-  
+  </xacro:if>
+
+  <xacro:unless value="$(arg use_sim)">
+  <!-- Real Spirit 40 hardware via quad_hardware/SpiritSystem (MBLink). Five
+       command interfaces per joint drive the onboard motor PD; effort is
+       derived from joint current. IMU is exposed for imu_sensor_broadcaster. -->
+  <xacro:macro name="spirit_hw_joint" params="jname">
+    <joint name="${jname}">
+      <command_interface name="position" />
+      <command_interface name="velocity" />
+      <command_interface name="kp" />
+      <command_interface name="kd" />
+      <command_interface name="effort" />
+      <state_interface name="position" />
+      <state_interface name="velocity" />
+      <state_interface name="effort" />
+    </joint>
+  </xacro:macro>
+  <ros2_control name="SpiritSystem" type="system">
+    <hardware>
+      <plugin>quad_hardware/SpiritSystem</plugin>
+      <param name="read_only">$(arg read_only)</param>
+    </hardware>
+    <xacro:spirit_hw_joint jname="0" />
+    <xacro:spirit_hw_joint jname="1" />
+    <xacro:spirit_hw_joint jname="2" />
+    <xacro:spirit_hw_joint jname="3" />
+    <xacro:spirit_hw_joint jname="4" />
+    <xacro:spirit_hw_joint jname="5" />
+    <xacro:spirit_hw_joint jname="6" />
+    <xacro:spirit_hw_joint jname="7" />
+    <xacro:spirit_hw_joint jname="8" />
+    <xacro:spirit_hw_joint jname="9" />
+    <xacro:spirit_hw_joint jname="10" />
+    <xacro:spirit_hw_joint jname="11" />
+    <sensor name="imu">
+      <state_interface name="orientation.x" />
+      <state_interface name="orientation.y" />
+      <state_interface name="orientation.z" />
+      <state_interface name="orientation.w" />
+      <state_interface name="angular_velocity.x" />
+      <state_interface name="angular_velocity.y" />
+      <state_interface name="angular_velocity.z" />
+      <state_interface name="linear_acceleration.x" />
+      <state_interface name="linear_acceleration.y" />
+      <state_interface name="linear_acceleration.z" />
+    </sensor>
+  </ros2_control>
+  </xacro:unless>
+
 </robot>
 

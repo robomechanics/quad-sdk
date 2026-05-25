@@ -3,6 +3,7 @@
 
 #include <math.h>
 #include <rclcpp/rclcpp.hpp>
+#include <rclcpp_lifecycle/lifecycle_node.hpp>
 #include <Eigen/Core>
 #include <pinocchio/algorithm/kinematics.hpp>
 #include <pinocchio/algorithm/frames.hpp>
@@ -57,10 +58,25 @@ class QuadKD2 {
   QuadKD2(rclcpp::Node::SharedPtr node, std::string ns);
 
   /**
+   * @brief Constructor for QuadKD Class
+   * @param[in] node Shared Pointer to ROS2 LifecycleNode
+   * @param[in] ns Namespace
+   * @return Constructed object of type QuadKD
+   */
+  QuadKD2(rclcpp_lifecycle::LifecycleNode::SharedPtr node, std::string ns);
+
+  /**
    * @brief Initialize model for the class
    * @param[in] ns Namespace
    */
   void initModel(std::string ns);
+
+  /**
+   * @brief Initialize model for the class from a robot_description string
+   * @param[in] robot_description URDF robot description string
+   * @param[in] ns Namespace
+   */
+  void initModel(const std::string& robot_description, std::string ns);
 
   /**
    * @brief Create an Eigen Eigen::Matrix4d containing a homogeneous transform
@@ -511,8 +527,14 @@ class QuadKD2 {
   /// Pinocchio data type
   mutable pinocchio::Data data_;
 
-  /// Shared pointer to ROS2 Node for pubs/subs
-  rclcpp::Node::SharedPtr node_;
+  /// Shared pointer to the node parameters interface for param access
+  rclcpp::node_interfaces::NodeParametersInterface::SharedPtr params_iface_;
+
+  /// Logger for the class
+  rclcpp::Logger logger_ = rclcpp::get_logger("QuadKD2");
+
+  /// Shared pointer to a clock for throttled logging
+  rclcpp::Clock::SharedPtr clock_;
 
   /// Pinocchio frame ID for body link
   pinocchio::FrameIndex body_fid_;

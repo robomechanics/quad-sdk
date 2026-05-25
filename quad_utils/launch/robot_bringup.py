@@ -9,8 +9,42 @@ from launch_ros.substitutions import FindPackageShare
 from launch.event_handlers import OnProcessStart, OnProcessExit
 from functools import partial
 import os
+import tempfile
 import xacro
 import yaml
+
+
+def _deep_merge_dicts(base, overlay):
+    """Recursively merge overlay into base (in place) and return base.
+    Dicts merge key-by-key; for any non-dict value (scalars AND lists) the
+    overlay value REPLACES the base value. Matches the precedence ros2_control
+    uses when later --param-file entries override earlier ones."""
+    for key, val in overlay.items():
+        if (key in base and isinstance(base[key], dict)
+                and isinstance(val, dict)):
+            _deep_merge_dicts(base[key], val)
+        else:
+            base[key] = val
+    return base
+
+
+def merge_yaml_files(paths):
+    """Deep-merge a list of YAML files (later files override earlier ones;
+    dicts merge recursively, lists/scalars are replaced) and write the result
+    to a NamedTemporaryFile, returning its path. Used so a single effective
+    config file can be handed to the gz-plugin SDF and the ros2_control
+    spawners — keeping the merged params byte-identical to the old monolithic
+    go2.yaml."""
+    merged = {}
+    for path in paths:
+        with open(path, 'r') as f:
+            data = yaml.safe_load(f) or {}
+        _deep_merge_dicts(merged, data)
+    fd, out_path = tempfile.mkstemp(prefix='quad_controller_cfg_', suffix='.yaml')
+    with os.fdopen(fd, 'w') as f:
+        yaml.safe_dump(merged, f, default_flow_style=False)
+    return out_path
+
 
 def load_robot_params(context, *args, **kwargs):
     # Load Robot URDF and Robot Centric Parameters
@@ -65,7 +99,21 @@ def load_robot_params(context, *args, **kwargs):
     urdf_path = os.path.join(desc_path, 'models', robot_type, 'urdf', urdf_file)
     sdf_path = os.path.join(desc_path, 'models', robot_type, sdf_file)
 
-    controller_config_path = os.path.join(FindPackageShare('quad_utils').perform(context), 'config', config_file)
+    # Build the effective controller config by deep-merging the robot-agnostic
+    # NODE file (controllers.yaml) + the ROBOT file (<robot>.yaml) + the SIM
+    # context overlay (sim.yaml), later files overriding earlier ones. The
+    # merged temp file is byte-equivalent to the old monolithic go2.yaml and is
+    # what the SDF/gz-plugin loads, so the ros2_control path gets the full
+    # effective config from one file.
+    quad_controllers_config = os.path.join(
+        FindPackageShare('quad_controllers').perform(context), 'config')
+    quad_utils_config = os.path.join(
+        FindPackageShare('quad_utils').perform(context), 'config')
+    controller_config_path = merge_yaml_files([
+        os.path.join(quad_controllers_config, 'controllers.yaml'),
+        os.path.join(quad_utils_config, config_file),
+        os.path.join(quad_controllers_config, 'sim.yaml'),
+    ])
 
     # Load URDF and SDF from disk
     urdf = xacro.process_file(urdf_path).toxml()
@@ -154,6 +202,46 @@ def spawn_sdf_model(context, *args, **kwargs):
     )
     return [spawn_node]
 
+def _build_spawner_param_files(context):
+    """Build the --param-file set for the ros2_control spawners.
+
+    Returns (law_override_path, merged_config_path):
+      - merged_config_path: deep-merge of controllers.yaml + <robot>.yaml +
+        sim.yaml -- controller types, each controller's gains, and the sim
+        run-context flags. Byte-equivalent to the old monolithic go2.yaml;
+        QuadKD2 reads the leg/frame/body params straight from it.
+      - law_override_path: an optional temp file overriding locomotion_controller's
+        `controller` (the READY-mode leg-control LAW) from the `controller` launch
+        arg. None when the arg is empty (the default) or not a valid law -- then
+        the law in <robot>.yaml stands. The supervisor still switches MODES at
+        runtime regardless; this only picks which locomotion law runs."""
+    robot_type = LaunchConfiguration('robot_type').perform(context)
+    config_file = f'{robot_type}.yaml'
+    quad_utils_config = os.path.join(
+        FindPackageShare('quad_utils').perform(context), 'config')
+    quad_controllers_config = os.path.join(
+        FindPackageShare('quad_controllers').perform(context), 'config')
+    robot_config_path = os.path.join(quad_utils_config, config_file)
+    merged_config_path = merge_yaml_files([
+        os.path.join(quad_controllers_config, 'controllers.yaml'),
+        robot_config_path,
+        os.path.join(quad_controllers_config, 'sim.yaml'),
+    ])
+
+    valid_laws = {'inverse_dynamics', 'grf_pid', 'joint', 'underbrush',
+                  'inertia_estimation', 'learned'}
+    controller_id = LaunchConfiguration('controller').perform(context)
+    law_override_path = None
+    if controller_id in valid_laws:
+        override = {'/**/locomotion_controller':
+                    {'ros__parameters': {'controller': controller_id}}}
+        fd, law_override_path = tempfile.mkstemp(
+            prefix='quad_law_override_', suffix='.yaml')
+        with os.fdopen(fd, 'w') as f:
+            yaml.safe_dump(override, f, default_flow_style=False)
+    return law_override_path, merged_config_path
+
+
 def spawn_controller_broadcasters(context, *args, **kwargs):
     namespace = LaunchConfiguration('namespace').perform(context)
     gazebo_scripts_path = FindPackageShare('gazebo_scripts').perform(context)
@@ -168,35 +256,51 @@ def spawn_controller_broadcasters(context, *args, **kwargs):
         # output='screen'
     )
 
-    spawn_joint_controller = ExecuteProcess(
-        cmd=[
-            'ros2', 'run', 'controller_manager', 'spawner',
-            'joint_controller',
-            '--controller-manager', f'/{namespace}/controller_manager',
-            '--controller-manager-timeout', '120',
-            '--switch-timeout', '180',
-        ],
-        # output='screen'
-    )
+    # ros2_control path: spawn joint_state_broadcaster + the 5 ros2_control
+    # controllers (sit active, the rest inactive; the mode_supervisor activates
+    # them). sit_controller is spawned ACTIVE so the robot holds the sit pose
+    # from spawn (matching robot_driver, which inits control_mode_ = SIT). The
+    # other mode controllers load inactive; the supervisor switches them.
+    active_controllers = ['sit_controller']
+    inactive_controllers = [
+        'locomotion_controller', 'safety_controller',
+        'sit_to_ready_controller', 'ready_to_sit_controller',
+    ]
+    law_override_path, merged_config_path = _build_spawner_param_files(context)
+    common = [
+        '--controller-manager', f'/{namespace}/controller_manager',
+        '--controller-manager-timeout', '120',
+        '--switch-timeout', '180',
+        # merged_config_path = controllers.yaml + <robot>.yaml + sim.yaml,
+        # so it carries the controller types, each controller's gains, and
+        # the sim run-context flags (interface_mode, is_hardware). The
+        # locomotion law comes from <robot>.yaml's `controller:` param unless
+        # the `controller` launch arg overrides it.
+        '--param-file', merged_config_path,
+    ]
+    # Optional launch-time law override (controller:=<law>); empty default
+    # leaves <robot>.yaml's `controller:` in charge.
+    if law_override_path:
+        common += ['--param-file', law_override_path]
 
-    # joint_controller fires only after joint_state_broadcaster exits.
-    # Per-robot serialisation; across robots the six joint_state_broadcaster
-    # spawners still go in parallel but at least each robot's own pair is
-    # ordered.
-    chain_jc_after_jsb = RegisterEventHandler(
+    spawn_sit = ExecuteProcess(
+        cmd=['ros2', 'run', 'controller_manager', 'spawner',
+             *active_controllers, *common])
+    spawn_inactive = ExecuteProcess(
+        cmd=['ros2', 'run', 'controller_manager', 'spawner',
+             *inactive_controllers, '--inactive', *common])
+
+    chain_after_jsb = RegisterEventHandler(
         OnProcessExit(
             target_action=spawn_joint_state_broadcaster,
-            on_exit=[spawn_joint_controller],
+            on_exit=[spawn_sit, spawn_inactive],
         )
     )
 
     return [
         TimerAction(
             period=0.5,
-            actions=[
-                chain_jc_after_jsb,
-                spawn_joint_state_broadcaster,
-            ]
+            actions=[chain_after_jsb, spawn_joint_state_broadcaster],
         )
     ]
 
@@ -204,28 +308,34 @@ def spawn_controller_broadcasters(context, *args, **kwargs):
 
 def launch_robot_driver(context, *args, **kwargs):
     namespace = LaunchConfiguration('namespace').perform(context)
-    robot_type = LaunchConfiguration('robot_type').perform(context)
-    controller = LaunchConfiguration('controller').perform(context)
-    estimator = LaunchConfiguration('estimator').perform(context)
-    urdf = LaunchConfiguration('robot_urdf').perform(context)
-    sdf = LaunchConfiguration('robot_sdf').perform(context)
-    quad_utils_path = FindPackageShare('quad_utils').perform(context)
 
-    robot_driver_node = IncludeLaunchDescription(
-            PythonLaunchDescriptionSource(
-                os.path.join(quad_utils_path, 'launch', 'robot_driver.py')
-            ),
-            launch_arguments={
-                'robot_type': robot_type,
-                'controller': controller,
-                'estimator': estimator,
-                'mocap': 'false',
-                'is_hardware': 'false',
-                'namespace': namespace,
-                'robot_description': urdf,
-            }.items()
-        )
-    return [robot_driver_node]
+    # The controllers are driven by the mode_supervisor (controller-switching
+    # FSM). mode_supervisor reads its controller-name mappings + timings from the
+    # NODE file (controllers.yaml) and its is_hardware flag from the SIM context
+    # overlay (sim.yaml). These replace the /**/mode_supervisor block that used
+    # to live in <robot>.yaml.
+    quad_controllers_config = os.path.join(
+        FindPackageShare('quad_controllers').perform(context), 'config')
+    controllers_yaml = os.path.join(quad_controllers_config, 'controllers.yaml')
+    sim_yaml = os.path.join(quad_controllers_config, 'sim.yaml')
+    # No explicit namespace: quad_gazebo pushes the robot namespace onto the
+    # whole group already (like robot_state_publisher etc.). Setting it here
+    # too double-namespaced it (/robot_1/robot_1/mode_supervisor).
+    mode_supervisor_node = Node(
+        package='quad_supervisor',
+        executable='mode_supervisor',
+        name='mode_supervisor',
+        output='screen',
+        parameters=[
+            controllers_yaml,
+            sim_yaml,
+            # controller_manager service lives under the robot namespace;
+            # set the absolute name so the supervisor targets the right one.
+            {'controller_manager': f'/{namespace}/controller_manager',
+             'use_sim_time': LaunchConfiguration('use_sim_time')},
+        ],
+    )
+    return [mode_supervisor_node]
 
 def access_terrain_map(context, *args, **kwargs):
     namespace = LaunchConfiguration('namespace').perform(context)
@@ -238,28 +348,6 @@ def access_terrain_map(context, *args, **kwargs):
             arguments=['/mapping/terrain_map', 'terrain_map'],  # relative → becomes /robot_X/terrain_map
             # output='screen',
             parameters=[{'use_sim_time': True}],
-        )
-    ]
-
-def spawn_sdf_model_with_driver(context, *arg, **kwargs):
-    [spawn_node] = spawn_sdf_model(context)
-    namespace = LaunchConfiguration('namespace').perform(context)
-    robot_type = LaunchConfiguration('robot_type').perform(context)
-    controller = LaunchConfiguration('controller').perform(context)
-    urdf = LaunchConfiguration('robot_urdf').perform(context)
-    mocap = LaunchConfiguration('mocap').perform(context)
-    is_hardware = LaunchConfiguration('is_hardware').perform(context)
-
-    def on_exit_rd(inner_context, *args, **kwargs):
-        return launch_robot_driver(namespace, robot_type, controller, urdf, inner_context)
-    
-    return [
-        spawn_node,
-        RegisterEventHandler(
-            OnProcessExit(
-                target_action=spawn_node,
-                on_exit=[OpaqueFunction(function=on_exit_rd)]
-            )
         )
     ]
 
@@ -384,7 +472,7 @@ def generate_launch_description():
         DeclareLaunchArgument('world', default_value = 'flat.sdf', description = 'Loaded World SDF File'),
         DeclareLaunchArgument('robot_type', default_value = 'spirit', description='Robot type'),
         DeclareLaunchArgument('namespace', default_value = 'robot_1', description='Robot namespace'),
-        DeclareLaunchArgument('controller', default_value = 'inverse_kinematics', description='Controller type'),
+        DeclareLaunchArgument('controller', default_value='', description='READY-mode leg-control law override (inverse_dynamics | grf_pid | joint | underbrush | inertia_estimation | learned). Empty = use the robot YAML default.'),
         DeclareLaunchArgument('estimator', default_value = 'comp_filter', description='State estimator type (comp_filter or ekf_filter)'),
         DeclareLaunchArgument('init_pose', default_value = '-x 2.0 -y 0.0 -z 15', description= "Initial Robot Position"),
         DeclareLaunchArgument('is_hardware', default_value = 'false', description="Simulation or Hardware"),

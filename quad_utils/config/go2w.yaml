@@ -70,23 +70,59 @@
         g_ub: [!!float 2e19, !!float 2e19,  !!float 2e19,  !!float 2e19, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, !!float 2e19, !!float 2e19,  !!float 2e19,  !!float 2e19, !!float 2e19, !!float 2e19,  !!float 2e19,  !!float 2e19,  !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19]
       friction_coefficient: 1.0  # rubber tires roll/grip flat ground
 
-/**/robot_driver:
-  ros__parameters:    
-    robot_driver:
-      sit_kp: [10.0, 10.0, 10.0]
-      sit_kd: [1.0, 1.0, 1.0]
-      stand_kp: [35.0, 35.0, 35.0] #[20.0, 20.0, 20.0]
-      stand_kd: [2.0, 2.0, 2.0]
-      stance_kp: [10.0, 10.0, 10.0] #[10.0, 10.0, 10.0]
-      stance_kd: [1.0, 1.0, 1.0]
-      swing_kp: [10.0, 10.0, 10.0] #[10.0, 10.0, 10.0]
-      swing_kd: [1.0, 1.0, 1.0]
-      swing_kp_cart: [0.0, 0.0, 0.0] # N/m
-      swing_kd_cart: [0.0, 0.0, 0.0] # N/m
-      safety_kp: [0.0, 0.0, 0.0]
-      safety_kd: [2.0, 2.0, 2.0]
-      stand_joint_angles: [0.0, 0.6, 1.6]
-      sit_joint_angles: [0.0, 0.2, 0.2]
+# ---------------------------------------------------------------------------
+# ros2_control stack controller params. ROBOT-specific gains/poses only,
+# migrated from this robot's former /**/robot_driver: block. The run-context
+# flags (interface_mode, robot_state_topic) live in the context overlays
+# (quad_controllers/config/sim.yaml | hardware.yaml) and are merged in at
+# launch; the controller TYPE map and mode_supervisor mappings live in
+# quad_controllers/config/controllers.yaml. cmd_vel_*/policy_inference_rate/
+# model_path mirror go2.yaml's values.
+# ---------------------------------------------------------------------------
+/**/locomotion_controller:
+  ros__parameters:
+    robot_config_file: ""
+    controller: inverse_dynamics
+    stance_kp: [10.0, 10.0, 10.0]
+    stance_kd: [1.0, 1.0, 1.0]
+    swing_kp: [10.0, 10.0, 10.0]
+    swing_kd: [1.0, 1.0, 1.0]
+    swing_kp_cart: [0.0, 0.0, 0.0]
+    swing_kd_cart: [0.0, 0.0, 0.0]
+    stand_kp: [35.0, 35.0, 35.0]
+    stand_kd: [2.0, 2.0, 2.0]
+    stand_joint_angles: [0.0, 0.6, 1.6]
+    cmd_vel_filter_const: 0.10
+    cmd_vel_scale: 1.0
+    policy_inference_rate: 50.0
+    model_path: ""
+
+/**/sit_controller:
+  ros__parameters:
+    joint_angles: [0.0, 0.2, 0.2]
+    kp: [10.0, 10.0, 10.0]
+    kd: [1.0, 1.0, 1.0]
+
+/**/safety_controller:
+  ros__parameters:
+    kp: [0.0, 0.0, 0.0]
+    kd: [2.0, 2.0, 2.0]
+
+/**/sit_to_ready_controller:
+  ros__parameters:
+    from_angles: [0.0, 0.2, 0.2]
+    to_angles: [0.0, 0.6, 1.6]
+    duration: 1.0
+    kp: [35.0, 35.0, 35.0]
+    kd: [2.0, 2.0, 2.0]
+
+/**/ready_to_sit_controller:
+  ros__parameters:
+    from_angles: [0.0, 0.6, 1.6]
+    to_angles: [0.0, 0.2, 0.2]
+    duration: 1.0
+    kp: [35.0, 35.0, 35.0]
+    kd: [2.0, 2.0, 2.0]
 
 /**/controller_manager:
   ros__parameters:

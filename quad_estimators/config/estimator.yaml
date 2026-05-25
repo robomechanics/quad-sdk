@@ -1,0 +1,64 @@
+# Estimator tuning parameters for the quad_estimators state-estimator nodes.
+#
+# Migrated out of the retired robot_driver package: the values below were
+# previously carried under robot_driver.yaml's robot_driver.* block and read by
+# the ported EKFEstimator / CompFilterEstimator with a "robot_driver." prefix.
+# That prefix has been dropped in the source, so the params are now flat under
+# each node.
+#
+# Keys use the ACTUAL running node names (ekf_estimator_node /
+# comp_filter_estimator_node, set in the *_node.cpp constructors and used as the
+# default node name by quad_hardware/launch/robot_driver.py). Each node uses
+# automatically_declare_parameters_from_overrides(true), so a flat block here is
+# declared and read directly.
+#
+# Shared loop/mocap params (update_rate, mocap_rate, mocap_dropout_threshold) are
+# duplicated under both nodes. filter_time_constant is carried for parity with
+# robot_driver.yaml but is not currently consumed by either estimator.
+
+/**/ekf_estimator_node:
+  ros__parameters:
+    update_rate: 500.0
+    mocap_rate: 360.0  # must match the mocap frame rate or velocity estimates mis-scale
+    mocap_dropout_threshold: 0.035  # s
+    filter_time_constant: 0.01  # s (parity only; not read by the EKF)
+
+    # EKF noise and bias parameters
+    bias_x: 0.0
+    bias_y: 0.0
+    bias_z: 0.0
+    bias_r: 0.0
+    bias_p: 0.0
+    bias_w: 0.0
+    na: 0.001      # accelerometer noise (position process)
+    nv: 0.005      # velocity process noise
+    ng: 0.01       # gyro noise
+    ba: 0.001      # accelerometer bias
+    bg: 0.001      # gyro bias
+    nf: 0.1        # foot position process noise (high - feet move during swing)
+    nfk: 0.005     # forward kinematics measurement noise
+    ne: 0.005      # encoder velocity measurement noise
+    nfh: 0.01      # foot height measurement noise
+    P0: 0.001      # initial covariance (low - GT init is accurate)
+    contact_w: 100.0  # weight on foot contact
+    thresh_out: 10.0  # innovation outlier rejection threshold
+    foot_radius: 0.02 # toe radius
+
+/**/comp_filter_estimator_node:
+  ros__parameters:
+    update_rate: 500.0
+    mocap_rate: 360.0  # must match the mocap frame rate or velocity estimates mis-scale
+    mocap_dropout_threshold: 0.035  # s
+    filter_time_constant: 0.01  # s (parity only; not read by the comp filter)
+
+    # Complementary filter coefficients in state-space form,
+    # which can be computed by c2d(1/s*(1-G(s))) and c2d(s*G(s)),
+    # where G(s) is a second-order low-pass filter
+    low_pass_a: [1.863081589528582, -0.871860350323577, 1.0, 0.0]
+    low_pass_b: [2.0, 0.0]
+    low_pass_c: [1.469526956982712, -1.476621472298373]
+    low_pass_d: [1.616290836790004]
+    high_pass_a: [1.901347508294054, -0.905986628426631, 1.0, 0.0]
+    high_pass_b: [0.062500000000000, 0.0]
+    high_pass_c: [0.031912805108981, -0.028979795079613]
+    high_pass_d: [0.0009996017974875904]

@@ -4,12 +4,13 @@
   <name>quad_utils</name>
   <version>0.0.0</version>
   <description>TODO: Package description</description>
-  <maintainer email="ologandavid@gmail.com">rml</maintainer>
+  <maintainer email="ologandavid@gmail.com">David Ologan</maintainer>
   <license>MIT</license>
 
   <buildtool_depend>ament_cmake</buildtool_depend>
 
   <depend>rclcpp</depend>
+  <depend>rclcpp_lifecycle</depend>
   <depend>std_msgs</depend>
   <depend>sensor_msgs</depend>
   <depend>geometry_msgs</depend>

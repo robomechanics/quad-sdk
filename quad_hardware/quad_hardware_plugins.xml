@@ -1,0 +1,20 @@
+<library path="quad_hardware">
+  <class
+    name="quad_hardware/UnitreeSystem"
+    type="quad_hardware::UnitreeSystem"
+    base_class_type="hardware_interface::SystemInterface">
+    <description>
+      ros2_control SystemInterface for Unitree Go2 / Go2-W quadrupeds,
+      wrapping the Unitree SDK2 DDS contract (rt/lowcmd, rt/lowstate).
+    </description>
+  </class>
+  <class
+    name="quad_hardware/SpiritSystem"
+    type="quad_hardware::SpiritSystem"
+    base_class_type="hardware_interface::SystemInterface">
+    <description>
+      ros2_control SystemInterface for the Ghost Robotics Spirit 40, wrapping
+      the MBLink mainboard protocol.
+    </description>
+  </class>
+</library>

@@ -1,0 +1,68 @@
+# ===========================================================================
+# NODE-specific ros2_control config — robot-agnostic AND run-context-agnostic.
+#
+# This file holds only the parameters that are identical across every robot
+# (go2, spirit, ...) and every run context (sim vs hardware): the
+# controller_manager update_rate + controller TYPE map, the imu broadcaster
+# wiring, and the mode_supervisor's controller-name mappings + timings.
+#
+# It is /**/-keyed (wildcard node names) so it composes cleanly under any robot
+# namespace in a multi-robot launch. It is meant to be MERGED with:
+#   - a ROBOT file (e.g. quad_utils/config/go2.yaml) — gains, poses, joints,
+#     kinematics/limits, planners.
+#   - a CONTEXT overlay (sim.yaml or hardware.yaml) — interface_mode and
+#     is_hardware.
+#
+# Do NOT put robot-specific gains/poses or context flags (interface_mode,
+# is_hardware) here. The controller_manager service name is set by each launch
+# file, not here. robot_state_topic lives here (below) because the control law
+# always reads state/ground_truth in both sim and hardware; state/estimate is
+# debug-only, so it is a fixed node constant, not a sim/hardware context param.
+# ===========================================================================
+
+/**/controller_manager:
+  ros__parameters:
+    update_rate: 500
+    joint_state_broadcaster:
+      type: joint_state_broadcaster/JointStateBroadcaster
+    imu_sensor_broadcaster:
+      type: imu_sensor_broadcaster/IMUSensorBroadcaster
+    # legacy effort_controllers/QuadController (control_stack:=robot_driver path)
+    joint_controller:
+      type: effort_controllers/QuadController
+    # ros2_control stack controllers (opt-in, only spawned when
+    # control_stack:=ros2_control; the legacy joint_controller above is kept
+    # so the default robot_driver path is byte-identical).
+    locomotion_controller:
+      type: quad_controllers/LegControlController
+    sit_controller:
+      type: quad_controllers/PoseController
+    safety_controller:
+      type: quad_controllers/SafetyController
+    sit_to_ready_controller:
+      type: quad_controllers/TransitionController
+    ready_to_sit_controller:
+      type: quad_controllers/TransitionController
+
+/**/imu_sensor_broadcaster:
+  ros__parameters:
+    sensor_name: imu
+    frame_id: imu
+
+# locomotion_controller's state feedback. Always state/ground_truth (sim and
+# hardware); state/estimate is debug-only, so this is a fixed node constant
+# rather than a sim/hardware context param.
+/**/locomotion_controller:
+  ros__parameters:
+    robot_state_topic: state/ground_truth
+
+/**/mode_supervisor:
+  ros__parameters:
+    locomotion_controller: locomotion_controller
+    sit_controller: sit_controller
+    safety_controller: safety_controller
+    sit_to_ready_controller: sit_to_ready_controller
+    ready_to_sit_controller: ready_to_sit_controller
+    transition_duration: 1.0
+    heartbeat_timeout: 0.2
+    state_timeout: 0.1

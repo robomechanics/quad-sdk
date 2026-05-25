@@ -1,0 +1,14 @@
+# ===========================================================================
+# HARDWARE run-context overlay.
+#
+# Merge AFTER the node file (controllers.yaml) and the robot file (e.g.
+# go2.yaml) to select the hardware run context. The robot's onboard motor PD
+# tracks pos/vel/kp/kd/effort commands, so interface_mode is motor; is_hardware
+# is true (mode_supervisor FSM hardware branch). State topic is fixed in
+# controllers.yaml (state/ground_truth); state/estimate exists only for debug.
+# ===========================================================================
+
+/**:
+  ros__parameters:
+    interface_mode: motor
+    is_hardware: true

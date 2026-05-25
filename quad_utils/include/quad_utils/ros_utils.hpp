@@ -119,6 +119,42 @@ inline bool loadROSParamDefault(rclcpp::Node::SharedPtr node,
   return true;
 }
 
+/**
+ * @brief Load ros parameter into class variable using a parameters interface
+ * @param[in] params Node parameters interface
+ * @param[in] paramName string storing key of param in rosparam server
+ * @param[in] varName address of variable to store loaded param
+ * @param[in] defaultVal default value to use if rosparam server doesn't contain
+ * key
+ * @return boolean (true if found rosparam, false if loaded default)
+ */
+template <class ParamType>
+inline bool loadROSParamDefault(
+    rclcpp::node_interfaces::NodeParametersInterface::SharedPtr params,
+    std::string paramName, ParamType& varName, ParamType defaultVal) {
+  if (!params->has_parameter(paramName)) {
+    try {
+      rcl_interfaces::msg::ParameterDescriptor descriptor;
+      params->declare_parameter(
+          paramName, rclcpp::ParameterValue(defaultVal), descriptor);
+    } catch (const rclcpp::exceptions::ParameterAlreadyDeclaredException& e) {
+    }
+  }
+
+  try {
+    rclcpp::Parameter param = params->get_parameter(paramName);
+    varName = param.get_value<ParamType>();
+  } catch (const std::exception& e) {
+    varName = defaultVal;
+    RCLCPP_INFO(
+        rclcpp::get_logger("quad_utils"),
+        "Can't find param %s on rosparam server, loading default value.",
+        paramName.c_str());
+    return false;
+  }
+  return true;
+}
+
 // /**
 //  * @brief Interpolate two headers
 //  * @param[out] msg State message to popluate
