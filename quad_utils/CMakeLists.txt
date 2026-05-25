@@ -33,6 +33,9 @@ find_package(pluginlib REQUIRED)
 find_package(filters REQUIRED)
 find_package(tf2_ros REQUIRED)
 
+find_package(mujoco_vendor QUIET)
+find_package(glfw3 QUIET)
+
 add_library(quad_utils
   src/rviz_interface.cpp
   src/fast_terrain_map.cpp
@@ -63,6 +66,10 @@ add_executable(mesh_to_grid_map_node
   src/mesh_to_grid_map_node.cpp
   src/mesh_to_grid_map_converter.cpp)
 
+add_executable(mjcf_to_grid_map_node
+  src/mjcf_to_grid_map_node.cpp
+  src/mjcf_to_grid_map_converter.cpp)
+
 add_executable(rviz_interface_node
   src/rviz_interface_node.cpp
   src/rviz_interface.cpp)
@@ -91,6 +98,15 @@ target_include_directories(rviz_interface_node PUBLIC
   $<INSTALL_INTERFACE:include>
 )
 
+
+target_include_directories(mjcf_to_grid_map_node PUBLIC
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+  $<INSTALL_INTERFACE:include>
+  ${PCL_INCLUDE_DIRS}
+  ${EIGEN3_INCLUDE_DIRS}
+)
+
+
 # target_include_directories(trajectory_publisher_node PUBLIC
 #   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
 #   $<INSTALL_INTERFACE:include>
@@ -109,6 +125,17 @@ target_link_libraries(mesh_to_grid_map_node
   ${tf2_LIBRARIES}
   ${tf2_geometry_msgs_LIBRARIES}
 )
+
+
+target_link_libraries(mjcf_to_grid_map_node
+  quad_utils
+  ${PCL_LIBRARIES}
+  Eigen3::Eigen
+  ${PYTHON_LIBRARIES}
+  ${tf2_LIBRARIES}
+  ${tf2_geometry_msgs_LIBRARIES}
+)
+
 
 target_link_libraries(rviz_interface_node
   quad_utils
@@ -147,6 +174,27 @@ ament_target_dependencies(quad_utils
 )
 
 ament_target_dependencies(mesh_to_grid_map_node rclcpp)
+
+
+ament_target_dependencies(mjcf_to_grid_map_node
+  rclcpp
+  std_msgs
+  sensor_msgs
+  geometry_msgs
+  visualization_msgs
+  grid_map_core
+  grid_map_ros
+  grid_map_pcl
+  grid_map_msgs
+  quad_msgs
+  pcl_msgs
+  pcl_conversions
+  Eigen3
+  tf2
+  tf2_geometry_msgs
+  cv_bridge
+)
+
 
 ament_target_dependencies(rviz_interface_node
   rclcpp
@@ -194,6 +242,26 @@ install(TARGETS
   DESTINATION lib/${PROJECT_NAME}
 )
 
+
+if(mujoco_vendor_FOUND AND glfw3_FOUND)
+  add_executable(mujoco_recorder_node src/mujoco_recorder_node.cpp)
+  set_target_properties(mujoco_recorder_node PROPERTIES OUTPUT_NAME mujoco_recorder)
+  target_link_libraries(mujoco_recorder_node
+    mujoco::mujoco
+    glfw
+  )
+  ament_target_dependencies(mujoco_recorder_node
+    rclcpp
+    sensor_msgs
+    nav_msgs
+  )
+  install(TARGETS mujoco_recorder_node
+    DESTINATION lib/${PROJECT_NAME}
+  )
+else()
+  message(STATUS "mujoco_recorder_node: skipping (mujoco_vendor or glfw3 not found)")
+endif()
+
 # install(TARGETS
 #   trajectory_publisher_node
 #   DESTINATION lib/${PROJECT_NAME}
@@ -215,6 +283,7 @@ install(TARGETS
 
 install(TARGETS
   mesh_to_grid_map_node
+  mjcf_to_grid_map_node
   rviz_interface_node
   remote_heartbeat_node
   # trajectory_publisher_node

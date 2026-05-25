@@ -1,0 +1,225 @@
+<mujoco model="spirit">
+  <!-- <compiler angle="radian" meshdir="assets" autolimits="true"/> -->
+
+  <option cone="elliptic" impratio="100"/>
+
+  <default>
+    <default class="spirit">
+      <geom friction="0.4" margin="0.001" condim="1"/>
+      <joint axis="0 -1 0" damping="0.0" armature="0.01" frictionloss="0.0"/>
+      <motor ctrlrange="-21 21"/>
+      <default class="abduction">
+        <joint axis="1 0 0" range="-0.707 0.707"/>
+      </default>
+      <default class="hip">
+        <default class="front_hip">
+          <joint range="-1.57 3.14"/>
+        </default>
+        <default class="back_hip">
+          <joint range="-3.14 1.57"/>
+        </default>
+      </default>
+      <default class="knee">
+        <joint axis="0 1 0" range="-6.28 6.28"/>
+        <motor ctrlrange="-32 32"/>
+      </default>
+      <default class="visual">
+        <geom type="mesh" contype="0" conaffinity="0" group="2"/>
+      </default>
+      <default class="collision">
+        <geom group="3"/>
+        <default class="foot">
+          <geom type="sphere" size="0.02" priority="1" condim="6"
+            friction="0.5 0.02 0.01"/>
+        </default>
+      </default>
+    </default>
+  </default>
+
+  <asset>
+    <material name="darkgray" rgba="0.1 0.1 0.1 1"/>
+    <material name="gray"     rgba="0.2 0.2 0.2 1"/>
+    <material name="silver"   rgba="0.3 0.3 0.3 1"/>
+  </asset>
+
+  <worldbody>
+    <body name="body" pos="0 0 0.4" childclass="spirit">
+      <inertial pos="0 0 0" mass="7.388"
+        diaginertia="0.0642434782 0.1284869565 0.1284869565"/>
+      <freejoint name="floating_base"/>
+      <geom size="0.1675 0.12 0.052" type="box" material="darkgray"/>
+      <site name="imu" pos="0 0 0"/>
+
+      <!-- Front-Left leg (hip0 / joints 8, 0, 1) -->
+      <body name="hip0" pos="0.2263 0.07 0">
+        <inertial pos="0 0.028 0" mass="0.575"
+          diaginertia="0.00066963541 0.00066963541 0.0008696875"/>
+        <joint name="8" class="abduction"/>
+        <geom size="0.055 0.04" pos="0 0.028 0" quat="0.707107 0.707107 0 0"
+          type="cylinder" material="gray"/>
+        <body name="upper0" pos="0 0.10098 0">
+          <inertial pos="-0.040 -0.041 0" mass="0.792"
+            diaginertia="0.005 0.0070 0.0070"/>
+          <joint name="0" class="front_hip"/>
+          <geom size="0.103 0.011 0.0275" pos="-0.103 -0.022 0"
+            type="box" material="silver"/>
+          <body name="lower0" pos="-0.206 0 0">
+            <inertial pos="0.092 0 0" mass="0.096"
+              diaginertia="1.3e-05 0.00047 0.00047"/>
+            <joint name="1" class="knee"/>
+            <geom size="0.013 0.103" pos="0.103 0 0" quat="0.707107 0 0.707107 0"
+              type="cylinder" material="darkgray"/>
+            <geom name="toe0" pos="0.206 0 0" class="foot"/>
+            <body name="toe0" pos="0.206 0 0"/>
+          </body>
+        </body>
+      </body>
+
+      <!-- Rear-Left leg (hip1 / joints 9, 2, 3) -->
+      <body name="hip1" pos="-0.2263 0.07 0">
+        <inertial pos="0 0.028 0" mass="0.575"
+          diaginertia="0.00066963541 0.00066963541 0.0008696875"/>
+        <joint name="9" class="abduction"/>
+        <geom size="0.055 0.04" pos="0 0.028 0" quat="0.707107 0.707107 0 0"
+          type="cylinder" material="gray"/>
+        <body name="upper1" pos="0 0.10098 0">
+          <inertial pos="-0.040 -0.041 0" mass="0.792"
+            diaginertia="0.005 0.0070 0.0070"/>
+          <joint name="2" class="back_hip"/>
+          <geom size="0.103 0.011 0.0275" pos="-0.103 -0.022 0"
+            type="box" material="silver"/>
+          <body name="lower1" pos="-0.206 0 0">
+            <inertial pos="0.092 0 0" mass="0.096"
+              diaginertia="1.3e-05 0.00047 0.00047"/>
+            <joint name="3" class="knee"/>
+            <geom size="0.013 0.103" pos="0.103 0 0" quat="0.707107 0 0.707107 0"
+              type="cylinder" material="darkgray"/>
+            <geom name="toe1" pos="0.206 0 0" class="foot"/>
+            <body name="toe1" pos="0.206 0 0"/>
+          </body>
+        </body>
+      </body>
+
+      <!-- Front-Right leg (hip2 / joints 10, 4, 5) -->
+      <body name="hip2" pos="0.2263 -0.07 0">
+        <inertial pos="0 -0.028 0" mass="0.575"
+          diaginertia="0.00066963541 0.00066963541 0.0008696875"/>
+        <joint name="10" class="abduction"/>
+        <geom size="0.055 0.04" pos="0 -0.028 0" quat="0.707107 0.707107 0 0"
+          type="cylinder" material="gray"/>
+        <body name="upper2" pos="0 -0.10098 0">
+          <inertial pos="-0.040 0.041 0" mass="0.792"
+            diaginertia="0.005 0.0070 0.0070"/>
+          <joint name="4" class="front_hip"/>
+          <geom size="0.103 0.011 0.0275" pos="-0.103 0.022 0"
+            type="box" material="silver"/>
+          <body name="lower2" pos="-0.206 0 0">
+            <inertial pos="0.092 0 0" mass="0.096"
+              diaginertia="1.3e-05 0.00047 0.00047"/>
+            <joint name="5" class="knee"/>
+            <geom size="0.013 0.103" pos="0.103 0 0" quat="0.707107 0 0.707107 0"
+              type="cylinder" material="darkgray"/>
+            <geom name="toe2" pos="0.206 0 0" class="foot"/>
+            <body name="toe2" pos="0.206 0 0"/>
+          </body>
+        </body>
+      </body>
+
+      <!-- Rear-Right leg (hip3 / joints 11, 6, 7) -->
+      <body name="hip3" pos="-0.2263 -0.07 0">
+        <inertial pos="0 -0.028 0" mass="0.575"
+          diaginertia="0.00066963541 0.00066963541 0.0008696875"/>
+        <joint name="11" class="abduction"/>
+        <geom size="0.055 0.04" pos="0 -0.028 0" quat="0.707107 0.707107 0 0"
+          type="cylinder" material="gray"/>
+        <body name="upper3" pos="0 -0.10098 0">
+          <inertial pos="-0.040 0.041 0" mass="0.792"
+            diaginertia="0.005 0.0070 0.0070"/>
+          <joint name="6" class="back_hip"/>
+          <geom size="0.103 0.011 0.0275" pos="-0.103 0.022 0"
+            type="box" material="silver"/>
+          <body name="lower3" pos="-0.206 0 0">
+            <inertial pos="0.092 0 0" mass="0.096"
+              diaginertia="1.3e-05 0.00047 0.00047"/>
+            <joint name="7" class="knee"/>
+            <geom size="0.013 0.103" pos="0.103 0 0" quat="0.707107 0 0.707107 0"
+              type="cylinder" material="darkgray"/>
+            <geom name="toe3" pos="0.206 0 0" class="foot"/>
+            <body name="toe3" pos="0.206 0 0"/>
+          </body>
+        </body>
+      </body>
+    </body>
+  </worldbody>
+
+  <actuator>
+    <motor class="abduction" name="motor_8"  joint="8"/>
+    <motor class="hip"       name="motor_0"  joint="0"/>
+    <motor class="knee"      name="motor_1"  joint="1"/>
+    <motor class="abduction" name="motor_9"  joint="9"/>
+    <motor class="hip"       name="motor_2"  joint="2"/>
+    <motor class="knee"      name="motor_3"  joint="3"/>
+    <motor class="abduction" name="motor_10" joint="10"/>
+    <motor class="hip"       name="motor_4"  joint="4"/>
+    <motor class="knee"      name="motor_5"  joint="5"/>
+    <motor class="abduction" name="motor_11" joint="11"/>
+    <motor class="hip"       name="motor_6"  joint="6"/>
+    <motor class="knee"      name="motor_7"  joint="7"/>
+  </actuator>
+
+  <sensor>
+    <jointpos name="pos_8"  joint="8"/>
+    <jointpos name="pos_0"  joint="0"/>
+    <jointpos name="pos_1"  joint="1"/>
+    <jointpos name="pos_9"  joint="9"/>
+    <jointpos name="pos_2"  joint="2"/>
+    <jointpos name="pos_3"  joint="3"/>
+    <jointpos name="pos_10" joint="10"/>
+    <jointpos name="pos_4"  joint="4"/>
+    <jointpos name="pos_5"  joint="5"/>
+    <jointpos name="pos_11" joint="11"/>
+    <jointpos name="pos_6"  joint="6"/>
+    <jointpos name="pos_7"  joint="7"/>
+
+    <jointvel name="vel_8"  joint="8"/>
+    <jointvel name="vel_0"  joint="0"/>
+    <jointvel name="vel_1"  joint="1"/>
+    <jointvel name="vel_9"  joint="9"/>
+    <jointvel name="vel_2"  joint="2"/>
+    <jointvel name="vel_3"  joint="3"/>
+    <jointvel name="vel_10" joint="10"/>
+    <jointvel name="vel_4"  joint="4"/>
+    <jointvel name="vel_5"  joint="5"/>
+    <jointvel name="vel_11" joint="11"/>
+    <jointvel name="vel_6"  joint="6"/>
+    <jointvel name="vel_7"  joint="7"/>
+
+    <jointactuatorfrc name="trq_8"  joint="8"  noise="0.01"/>
+    <jointactuatorfrc name="trq_0"  joint="0"  noise="0.01"/>
+    <jointactuatorfrc name="trq_1"  joint="1"  noise="0.01"/>
+    <jointactuatorfrc name="trq_9"  joint="9"  noise="0.01"/>
+    <jointactuatorfrc name="trq_2"  joint="2"  noise="0.01"/>
+    <jointactuatorfrc name="trq_3"  joint="3"  noise="0.01"/>
+    <jointactuatorfrc name="trq_10" joint="10" noise="0.01"/>
+    <jointactuatorfrc name="trq_4"  joint="4"  noise="0.01"/>
+    <jointactuatorfrc name="trq_5"  joint="5"  noise="0.01"/>
+    <jointactuatorfrc name="trq_11" joint="11" noise="0.01"/>
+    <jointactuatorfrc name="trq_6"  joint="6"  noise="0.01"/>
+    <jointactuatorfrc name="trq_7"  joint="7"  noise="0.01"/>
+
+    <framequat     name="imu_quat" objtype="site" objname="imu"/>
+    <gyro          name="imu_gyro" site="imu"/>
+    <accelerometer name="imu_acc"  site="imu"/>
+
+    <framepos      name="frame_pos" objtype="site" objname="imu"/>
+    <framelinvel   name="frame_vel" objtype="site" objname="imu"/>
+  </sensor>
+
+  <keyframe>
+    <!-- qpos order: base(7) + [8,0,1, 9,2,3, 10,4,5, 11,6,7]
+         standing pose: abduction=0, upper=0.78, knee=1.57 -->
+    <key name="home"
+      qpos="0 0 0.32 1 0 0 0   0 0.78 1.57   0 0.78 1.57   0 0.78 1.57   0 0.78 1.57"
+      ctrl="0 0.78 1.57   0 0.78 1.57   0 0.78 1.57   0 0.78 1.57"/>
+  </keyframe>
+</mujoco>
