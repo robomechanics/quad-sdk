@@ -2,6 +2,7 @@
 #define EKF_ESTIMATOR_H
 
 #include <robot_driver/estimators/state_estimator.hpp>
+#include <quad_msgs/msg/foot_contact.hpp>
 
 #include <eigen3/Eigen/Eigen>
 #include <vector>
@@ -242,6 +243,22 @@ class EKFEstimator : public StateEstimator {
 
   // Binary flag denoting estimator initialization
   bool initialized = true;
+
+  // Debug flag: only when true does the EKF capture/apply the init yaw offset
+  // (used for IMU-vs-mocap testing). Defaults off -> init_yaw_offset_ stays 0
+  // and the EKF runs on plain IMU yaw.
+  bool debug_ = false;
+
+  // Constant world-yaw datum captured once at init: (seed yaw) - (IMU yaw).
+  // Applied to the IMU orientation each step so heading is pinned to the same
+  // world frame as the position seed, while roll/pitch stay IMU (gravity-true).
+  double init_yaw_offset_ = 0.0;
+
+  // Guard: setInitialState runs twice in updateOnce; only the FIRST call sees
+  // the mocap seed orientation, so capture the yaw offset only once. Without
+  // this the second call recomputes it from the (already IMU-overwritten)
+  // orientation and resets it to 0.
+  bool init_yaw_offset_set_ = false;
 
   std::string robot_name_;
 

@@ -51,3 +51,9 @@ void StateEstimator::loadSensorMsg(
   last_imu_msg_ = last_imu_msg;
   last_joint_state_msg_ = last_joint_state_msg;
 }
+
+void StateEstimator::loadFootContactMsg(
+    const quad_msgs::msg::FootContact& msg) {
+  last_foot_contact_msg_ = msg;
+  foot_contact_received_ = true;
+}

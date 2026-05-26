@@ -2,6 +2,10 @@
 echo "Sourcing ~/ros2_ws/install/setup.bash"
 source ~/ros2_ws/install/setup.bash
 
+# Destination for ros2 bag logs (used by logging.py via quad_plan logging:=true)
+export QUAD_LOGGER_SRC=/home/rml_admin/ros2_ws/src/quad-sdk/quad_logger
+mkdir -p "$QUAD_LOGGER_SRC/bags/archive"
+
 echo "Connected to robot with wifi or ethernet? (w/e)"
 read input
 if [[ $input == "E" || $input == "e" ]]; then
