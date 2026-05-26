@@ -9,9 +9,83 @@ from launch.substitutions import PathJoinSubstitution
 
 import os
 import json
+import math
 import shutil
 import xacro
+import xml.etree.ElementTree as ET
 from datetime import datetime
+
+
+def _parse_init_pose(s):
+    """Parse "-x X -y Y -z Z [-R r -P p -Y yaw]" into a flag->float dict."""
+    out = {}
+    tokens = s.split()
+    i = 0
+    while i + 1 < len(tokens):
+        flag = tokens[i]
+        if flag in ('-x', '-y', '-z', '-R', '-P', '-Y'):
+            try:
+                out[flag] = float(tokens[i + 1])
+            except ValueError:
+                pass
+            i += 2
+        else:
+            i += 1
+    return out
+
+
+def _rpy_to_quat_wxyz(roll, pitch, yaw):
+    """ZYX intrinsic RPY -> MuJoCo (w, x, y, z) quaternion."""
+    cr, sr = math.cos(roll / 2), math.sin(roll / 2)
+    cp, sp = math.cos(pitch / 2), math.sin(pitch / 2)
+    cy, sy = math.cos(yaw / 2), math.sin(yaw / 2)
+    qw = cr * cp * cy + sr * sp * sy
+    qx = sr * cp * cy - cr * sp * sy
+    qy = cr * sp * cy + sr * cp * sy
+    qz = cr * cp * sy - sr * sp * cy
+    return qw, qx, qy, qz
+
+
+def _patch_mjcf_keyframe(src_mjcf_path, init_pose_str, keyframe_name='home', out_dir='/tmp'):
+    """Write a copy of the per-robot MJCF whose `<key name=keyframe_name>`
+    qpos has its first 3 (xyz) and, if RPY supplied, next 4 (wxyz quat)
+    values overridden from `init_pose_str`. Returns the patched file path,
+    or the original path if no override is needed / keyframe is missing.
+
+    The MJCF is included by the world MJCF via `<include file=...>`, so
+    patching it is what makes mujoco_ros2_control's `initial_keyframe`
+    apply at the requested spawn pose instead of the model default."""
+    pose = _parse_init_pose(init_pose_str) if init_pose_str else {}
+    if not pose:
+        return src_mjcf_path
+
+    tree = ET.parse(src_mjcf_path)
+    root = tree.getroot()
+    key_el = None
+    for k in root.findall('.//keyframe/key'):
+        if k.get('name') == keyframe_name:
+            key_el = k
+            break
+    if key_el is None:
+        return src_mjcf_path
+
+    vals = (key_el.get('qpos') or '').split()
+    if len(vals) < 7:
+        return src_mjcf_path
+
+    if '-x' in pose: vals[0] = repr(pose['-x'])
+    if '-y' in pose: vals[1] = repr(pose['-y'])
+    if '-z' in pose: vals[2] = repr(pose['-z'])
+    if any(f in pose for f in ('-R', '-P', '-Y')):
+        qw, qx, qy, qz = _rpy_to_quat_wxyz(
+            pose.get('-R', 0.0), pose.get('-P', 0.0), pose.get('-Y', 0.0))
+        vals[3:7] = [repr(qw), repr(qx), repr(qy), repr(qz)]
+
+    key_el.set('qpos', ' '.join(vals))
+
+    out_path = os.path.join(out_dir, f'_quad_robot_mjcf_{os.path.basename(src_mjcf_path)}')
+    tree.write(out_path)
+    return out_path
 
 
 def prepare_world(context, *args, **kwargs):
@@ -35,18 +109,37 @@ def prepare_world(context, *args, **kwargs):
     if not robot_configs:
         raise RuntimeError("'robot_configs' must contain at least one robot")
     robot_type = robot_configs[0]['type']
+    init_pose = robot_configs[0].get('init_pose', '')
 
     desc_share = FindPackageShare(f'{robot_type}_description').perform(context)
     mjcf_dir = os.path.join(desc_share, 'models', robot_type, f'{robot_type}_mjc')
 
     world_name = world.rsplit('.xml', 1)[0]
     sim_share = FindPackageShare('quad_sim_scripts').perform(context)
-    terrain_mesh = os.path.join(sim_share, 'models', world_name, 'meshes', f'{world_name}.stl')
+    meshes_dir = os.path.join(sim_share, 'models', world_name, 'meshes')
+    terrain_mesh = os.path.join(meshes_dir, f'{world_name}.stl')
+
+    # Hfield worlds (rough_*, slope_*) consume `terrain_heightmap` as an
+    # absolute path to a PNG or MuJoCo binary .bin. Convention: the file
+    # lives next to the STL as `<world>.{bin,png}` — prefer .bin (native
+    # MuJoCo hfield, faster load, no rasterisation drift) and fall back
+    # to .png. If neither exists pass the empty string; flat-style worlds
+    # default the arg and ignore it, so this stays backward-compatible.
+    terrain_heightmap = ''
+    for ext in ('bin', 'png'):
+        candidate = os.path.join(meshes_dir, f'{world_name}.{ext}')
+        if os.path.isfile(candidate):
+            terrain_heightmap = candidate
+            break
+
+    robot_mjcf_path = _patch_mjcf_keyframe(
+        os.path.join(mjcf_dir, f'{robot_type}.xml'), init_pose)
 
     processed = xacro.process_file(xacro_path, mappings={
         'meshdir': os.path.join(mjcf_dir, 'assets'),
-        'mjcf_path': os.path.join(mjcf_dir, f'{robot_type}.xml'),
+        'mjcf_path': robot_mjcf_path,
         'terrain_mesh': terrain_mesh,
+        'terrain_heightmap': terrain_heightmap,
     }).toxml()
 
     out_path = os.path.join('/tmp', f'_quad_world_{robot_type}_{world}')

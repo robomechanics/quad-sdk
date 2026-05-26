@@ -13,15 +13,19 @@
     autolimits="true"/>
 
 
-  <option 
+  <option
     timestep="0.002"
-    iterations="100"
+    iterations="80"
     ls_iterations="20"
     tolerance="1e-6"
     cone="elliptic"
-    impratio="100"
-    noslip_iterations="200"
-    noslip_tolerance="1e-7">
+    impratio="5"
+    noslip_iterations="5"
+    noslip_tolerance="1e-6"
+
+    jacobian="dense"
+    integrator="implicit"
+    >
     <flag override="enable"/>
   </option>
 
@@ -29,16 +33,16 @@
 
 
   <asset>
-    <hfield name="terrain" file="$(arg terrain_heightmap)" size="5.0 4.0 0.1966 0.5"/>
+    <hfield name="terrain" file="$(arg terrain_heightmap)" size="5.0000 4.0000 0.2188 0.5000"/>
   </asset>
-
+ <!-- hfield was generated 180 degrees flipped from ply, so rviz displayed the map incorrectly. Fixed with euler angle addition.  -->
   <worldbody>
     <light directional="true" diffuse=".8 .8 .8" specular=".2 .2 .2" pos="0 0 5" dir="0 0 -1"/>
-
-    <geom name="floor" type="hfield" hfield="terrain" pos="3 0 0.0100" conaffinity="1"
-          priority="2" condim="4"
-          friction="1.0 0.05 0.05"
-          solref="0.002 1" solimp="0.9 0.95 0.01"
-          rgba="0.8 0.9 0.8 1"/>
+    <geom name="floor" type="hfield" hfield="terrain" pos="3.0000 0.0000 0.0" conaffinity="1"
+          priority="2" condim="6" euler="0 0 3.14159"/>
   </worldbody>
 </mujoco>
+
+<!--     o_solref="0.007 1"
+    o_solimp="0.95 0.99 0.002"
+    o_friction="1.0 1.0 0.05 0.05 0.05" -->

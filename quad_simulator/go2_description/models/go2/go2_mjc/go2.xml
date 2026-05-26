@@ -1,5 +1,4 @@
 <mujoco model="go2">
-  <!-- <compiler angle="radian" meshdir="~/ros2_ws/install/go2_description/share/go2_description/models/go2/go2_mjc/assets" autolimits="true" /> -->
 
   <!-- <option cone="pyramidal" impratio="10" /> -->
 
