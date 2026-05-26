@@ -17,7 +17,7 @@ In Motive → Settings → Streaming, configure NatNet exactly like this. Only t
 
 ![Motive streaming page 1](../assets/rml/mocapsettings.png){ loading=lazy }
 
-![Motive streaming page 2](../assets/rml/fig-04.png){ loading=lazy }
+![Motive streaming page 2](../assets/rml/mocap2.png){ loading=lazy }
 
 | Field | Value |
 |---|---|
@@ -63,7 +63,7 @@ For room calibration steps, see the separate **RML Mocap Guide**.
 
 OptiTrack and Quad-SDK do **not** use the same axis convention, so the two frames have to be reconciled before mocap poses are usable by the stack.
 
-![Mocap room with OptiTrack world frame](../assets/rml/mocap-room-frames.jpg){ loading=lazy }
+![Mocap room with OptiTrack world frame](../assets/rml/frames_mocap.png){ loading=lazy }
 
 The OptiTrack world frame is anchored at the ground-plane calibration square (the L-marker on the floor):
 
@@ -78,11 +78,17 @@ In other words OptiTrack is **Z-forward / Y-up / X-right**, while Quad-SDK expec
 !!! info "The driver handles the rotation for you"
     You do **not** apply this rotation yourself. The `mocap4r2_optitrack_driver` external dependency rotates every published robot state from the OptiTrack convention into the Quad-SDK convention, so downstream nodes (EKF, planners, controller) already receive poses in **X-forward / Y-up**. Just make sure the rigid body is defined with the COM offset above and the world is calibrated against the floor L-square.
 
-## Camera frame rate (eSync 2)
+## Camera frame rate
 
 Default target is **360 Hz**. If Motive caps you at ≤ 250 Hz, the eSync 2 device is configured for the wrong sync source.
 
-![eSync 2 settings](../assets/rml/esync-settings.png){ loading=lazy }
+<div class="grid" markdown>
+
+![eSync 2 sync input settings](../assets/rml/mocap3.png){ loading=lazy }
+
+![eSync 2 camera rate](../assets/rml/mocap4.png){ loading=lazy }
+
+</div>
 
 In Motive → Devices → eSync 2 → Sync Input Settings:
 

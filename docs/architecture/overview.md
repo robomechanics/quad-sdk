@@ -33,7 +33,7 @@ flowchart TB
 
   subgraph EXEC[Execution]
     HW[hardware_interface]
-    SIM[Gazebo / MuJoCo / Isaac Sim]
+    SIM[Gazebo / MuJoCo / IsaacSim]
   end
 
   TM --> GP
@@ -128,4 +128,4 @@ Single-robot scenarios pass a `robot_configs` JSON list with one entry; multi-ro
     Global search (~hundreds of milliseconds, RRT-Connect) and local refinement (~3 ms, NMPC) live on different timescales. Splitting them lets each be tuned and replaced independently.
 
 !!! info "Why three simulators?"
-    Each backend earns its place. **Gazebo Harmonic** is feature-rich (sensors, physics plugins, fluid contact) and covers every platform. **MuJoCo** is fast, deterministic, and renders without a GPU — ideal for headless training rigs and perf tests. **NVIDIA Isaac Sim 5.1** *(beta)* brings high-fidelity rendering and GPU-accelerated scenes for the Spirit 40 and Go2 — it needs a separate [IsaacLab conda install](https://isaac-sim.github.io/IsaacLab/main/source/setup/installation/index.html); see [Running in Isaac Sim](../tutorials/isaac-sim.md). The controller and planning stacks run unmodified across all three. See the [simulator support matrix](../platforms.md#simulator-support).
+    Each backend earns its place. **Gazebo Harmonic** is feature-rich (sensors, physics plugins, fluid contact) and covers every platform. **MuJoCo** is fast, deterministic, and renders without a GPU — ideal for headless training rigs and perf tests. **NVIDIA IsaacSim 5.1** *(beta)* brings high-fidelity rendering and GPU-accelerated scenes for the Spirit 40 and Go2 — it needs a separate [IsaacLab conda install](https://isaac-sim.github.io/IsaacLab/main/source/setup/installation/index.html); see [Running in IsaacSim](../tutorials/isaac-sim.md). The controller and planning stacks run unmodified across all three. See the [simulator support matrix](../platforms.md#simulator-support).

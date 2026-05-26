@@ -18,7 +18,7 @@ Quad-SDK is developed and tested on **Ubuntu 24.04** with **ROS 2 Jazzy**. Three
 - **HSL solver for IPOPT** — the NMPC controller requires the HSL routines (free for academic use). Request access at <https://licences.stfc.ac.uk/product/coin-hsl>, then drop the source tarball next to the IPOPT submodule (see [HSL setup](#hsl-solver-setup) below).
 
 !!! tip "Don't have hardware?"
-    Quad-SDK runs end-to-end in **Gazebo Harmonic**, **MuJoCo**, or **NVIDIA Isaac Sim** with no hardware attached. Use the [Quickstart](quickstart.md) once installed. (Isaac Sim is **beta** and needs a separate Isaac Sim 5.1 / [IsaacLab conda install](https://isaac-sim.github.io/IsaacLab/main/source/setup/installation/index.html) — see [Running in Isaac Sim](../tutorials/isaac-sim.md).)
+    Quad-SDK runs end-to-end in **Gazebo Harmonic**, **MuJoCo**, or **NVIDIA IsaacSim** with no hardware attached. Use the [Quickstart](quickstart.md) once installed. (IsaacSim is **beta** and needs a separate IsaacSim 5.1 / [IsaacLab conda install](https://isaac-sim.github.io/IsaacLab/main/source/setup/installation/index.html) — see [Running in IsaacSim](../tutorials/isaac-sim.md).)
 
 ## Docker install
 

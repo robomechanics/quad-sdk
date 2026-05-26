@@ -27,7 +27,7 @@ colcon build --cmake-args -DCMAKE_BUILD_TYPE=Release \
 Build everything:
 
 ```bash
-colcon build --cmake-args -DCMAKE_BUILD_TYPE=Release
+colcon build --executor sequential --cmake-args -DCMAKE_BUILD_TYPE=Release
 ```
 
 ## Docker container (MPC / Underbrush)
@@ -90,7 +90,7 @@ Steps 1, 3, 4, 5 run on the **remote laptop**. Step 2 runs **on the robot via SS
 
     ```bash
     cd ros2_ws
-    source src/quad_sdk/quad_utils/scripts/launch_remote_env.sh
+    source src/quad-sdk/quad_utils/scripts/launch_remote_env.sh
     ros2 launch mocap4r2_optitrack_driver mocap.py
     ```
 
@@ -110,7 +110,7 @@ Steps 1, 3, 4, 5 run on the **remote laptop**. Step 2 runs **on the robot via SS
 
     ```bash
     cd ros2_ws
-    source src/quad_sdk/quad_utils/scripts/launch_remote_env.sh
+    source src/quad-sdk/quad_utils/scripts/launch_remote_env.sh
     ros2 launch quad_utils remote_driver.launch
     ```
 
@@ -120,7 +120,7 @@ Steps 1, 3, 4, 5 run on the **remote laptop**. Step 2 runs **on the robot via SS
 
     ```bash
     cd ros2_ws
-    source src/quad_sdk/quad_utils/scripts/launch_remote_env.sh
+    source src/quad-sdk/quad_utils/scripts/launch_remote_env.sh
     ros2 topic pub /robot_1/control/mode std_msgs/UInt8 "data: 1"
     ```
 
@@ -128,7 +128,7 @@ Steps 1, 3, 4, 5 run on the **remote laptop**. Step 2 runs **on the robot via SS
 
     ```bash
     cd ros2_ws
-    source src/quad_sdk/quad_utils/scripts/launch_remote_env.sh
+    source src/quad-sdk/quad_utils/scripts/launch_remote_env.sh
     ros2 launch quad_utils quad_plan.py
     ```
 

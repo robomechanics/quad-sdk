@@ -2,7 +2,7 @@
 
 ## Overview
 
-This package is the Isaac Sim 5.1 integration for Quad-SDK — an alternative to the Gazebo simulator used elsewhere in the stack. It contains the Isaac-side simulation loop (`isaac_bridge.py`), the URDF prep pipeline that adapts Quad-SDK robot descriptions for Isaac's URDF importer, the four-cord underbrush scenario, and one-shot URDF→USD conversion tooling. The bridge exchanges ROS 2 messages with the rest of Quad-SDK using Isaac Sim's bundled Jazzy rclpy, so the controller and planning stacks run unmodified.
+This package is the IsaacSim 5.1 integration for Quad-SDK — an alternative to the Gazebo simulator used elsewhere in the stack. It contains the Isaac-side simulation loop (`isaac_bridge.py`), the URDF prep pipeline that adapts Quad-SDK robot descriptions for Isaac's URDF importer, the four-cord underbrush scenario, and one-shot URDF→USD conversion tooling. The bridge exchanges ROS 2 messages with the rest of Quad-SDK using IsaacSim's bundled Jazzy rclpy, so the controller and planning stacks run unmodified.
 
 Supported robots are listed in `isaac_bridge.py`'s `ROBOT_REGISTRY` — currently `spirit` and `go2`. Supported terrains are any name with matching `gazebo_scripts/models/<name>/meshes/<name>.{stl,ply}` (e.g. `flat`, `step_20cm`, `gap_40cm`, `rough_25cm`).
 
@@ -16,7 +16,7 @@ The source code is released under a [BSD-3-Clause License](LICENSE).
 
 **Maintainer:** David Ologan (ologandavid@gmail.com)
 
-Tested under Isaac Sim 5.1 / [IsaacLab] (Python 3.11, conda) and [ROS2] Jazzy (Python 3.12, system) on Ubuntu 24.04. This is research code; expect frequent changes and no fitness for any particular purpose.
+Tested under IsaacSim 5.1 / [IsaacLab] (Python 3.11, conda) and [ROS2] Jazzy (Python 3.12, system) on Ubuntu 24.04. This is research code; expect frequent changes and no fitness for any particular purpose.
 
 ## Build
 
@@ -24,7 +24,7 @@ Tested under Isaac Sim 5.1 / [IsaacLab] (Python 3.11, conda) and [ROS2] Jazzy (P
 colcon build --packages-select isaac_plugins
 ```
 
-The package itself only installs Python scripts. Isaac Sim 5.1 and IsaacLab must be installed separately in a conda environment named `isaaclab`; see the [IsaacLab installation guide][IsaacLab-install]. The bridge auto-discovers Isaac's bundled rclpy and prepends the bundled DDS libs to `LD_LIBRARY_PATH` at startup — do *not* source `/opt/ros/jazzy/setup.bash` in the same shell as the bridge.
+The package itself only installs Python scripts. IsaacSim 5.1 and IsaacLab must be installed separately in a conda environment named `isaaclab`; see the [IsaacLab installation guide][IsaacLab-install]. The bridge auto-discovers Isaac's bundled rclpy and prepends the bundled DDS libs to `LD_LIBRARY_PATH` at startup — do *not* source `/opt/ros/jazzy/setup.bash` in the same shell as the bridge.
 
 ## Usage
 
@@ -61,7 +61,7 @@ Common bridge flags: `--cinematic` (follow camera + three-point lighting), `--sc
 ```
 ┌─ Terminal 1: Isaac + bridge (conda Python 3.11) ─────────┐
 │   isaac_bridge.py                                         │
-│   ├─ Isaac Sim 5.1 physics @ 1000 Hz                      │
+│   ├─ IsaacSim 5.1 physics @ 1000 Hz                      │
 │   ├─ Robot URDF imported at runtime                       │
 │   ├─ Terrain STL with SDF pose applied                    │
 │   └─ rclpy node using Isaac's bundled Jazzy               │
