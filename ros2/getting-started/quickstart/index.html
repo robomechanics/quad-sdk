@@ -378,6 +378,23 @@
   
   
     <li class="md-tabs__item">
+      <a href="../../roadmap/" class="md-tabs__link">
+        
+  
+    
+  
+  Roadmap
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
       <a href="../../faq/" class="md-tabs__link">
         
   
@@ -1757,6 +1774,26 @@
   
   
     <li class="md-nav__item">
+      <a href="../../roadmap/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Roadmap
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../faq/" class="md-nav__link">
         
   
@@ -1807,7 +1844,7 @@
         
           
         
-        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_8" >
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_9" >
         
           
           
@@ -1823,14 +1860,14 @@
             </a>
             
               
-              <label class="md-nav__link " for="__nav_8" id="__nav_8_label" tabindex="0">
+              <label class="md-nav__link " for="__nav_9" id="__nav_9_label" tabindex="0">
                 <span class="md-nav__icon md-icon"></span>
               </label>
             
           </div>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_8">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_9_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_9">
             <span class="md-nav__icon md-icon"></span>
             🔒 RML
           </label>
@@ -2123,7 +2160,7 @@
 <li><code>~/ros2_ws/install/setup.bash</code> sourced in every terminal</li>
 </ul>
 <h2 id="1-launch-the-simulator">1. Launch the simulator<a class="headerlink" href="#1-launch-the-simulator" title="Permanent link">&para;</a></h2>
-<div class="tabbed-set tabbed-alternate" data-tabs="1:4"><input checked="checked" id="__tabbed_1_1" name="__tabbed_1" type="radio" /><input id="__tabbed_1_2" name="__tabbed_1" type="radio" /><input id="__tabbed_1_3" name="__tabbed_1" type="radio" /><input id="__tabbed_1_4" name="__tabbed_1" type="radio" /><div class="tabbed-labels"><label for="__tabbed_1_1">Gazebo Harmonic — single robot</label><label for="__tabbed_1_2">Gazebo Harmonic — multi-robot</label><label for="__tabbed_1_3">MuJoCo</label><label for="__tabbed_1_4">Isaac Sim (beta)</label></div>
+<div class="tabbed-set tabbed-alternate" data-tabs="1:4"><input checked="checked" id="__tabbed_1_1" name="__tabbed_1" type="radio" /><input id="__tabbed_1_2" name="__tabbed_1" type="radio" /><input id="__tabbed_1_3" name="__tabbed_1" type="radio" /><input id="__tabbed_1_4" name="__tabbed_1" type="radio" /><div class="tabbed-labels"><label for="__tabbed_1_1">Gazebo Harmonic — single robot</label><label for="__tabbed_1_2">Gazebo Harmonic — multi-robot</label><label for="__tabbed_1_3">MuJoCo</label><label for="__tabbed_1_4">IsaacSim (beta)</label></div>
 <div class="tabbed-content">
 <div class="tabbed-block">
 <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>ros2<span class="w"> </span>launch<span class="w"> </span>quad_utils<span class="w"> </span>quad_gazebo.py
@@ -2139,8 +2176,8 @@
 </code></pre></div>
 </div>
 <div class="tabbed-block">
-<p>Isaac Sim 5.1 is a <strong>beta</strong> backend and needs a separate <a href="https://isaac-sim.github.io/IsaacLab/main/source/setup/installation/index.html">IsaacLab conda install</a> (not part of the Docker image). It runs as a three-terminal flow — Isaac bridge + ROS bringup + planning — and currently covers the <strong>Spirit 40</strong> and <strong>Go2</strong>.</p>
-<p>See <a href="../../tutorials/isaac-sim/">Running in Isaac Sim</a> for the full setup and run instructions.</p>
+<p>IsaacSim 5.1 is a <strong>beta</strong> backend and needs a separate <a href="https://isaac-sim.github.io/IsaacLab/main/source/setup/installation/index.html">IsaacLab conda install</a> (not part of the Docker image). It runs as a three-terminal flow — Isaac bridge + ROS bringup + planning — and currently covers the <strong>Spirit 40</strong> and <strong>Go2</strong>.</p>
+<p>See <a href="../../tutorials/isaac-sim/">Running in IsaacSim</a> for the full setup and run instructions.</p>
 </div>
 </div>
 </div>
@@ -2277,7 +2314,7 @@
   LP --&gt; NMPC[nmpc_controller]
   NMPC --&gt; LP
   LP --&gt; RD[robot_driver]
-  RD --&gt; SIM[Gazebo / MuJoCo / Isaac Sim]
+  RD --&gt; SIM[Gazebo / MuJoCo / IsaacSim]
   SIM --&gt; EST[state_estimator]
   EST --&gt; LP
   EST --&gt; GP
@@ -2326,7 +2363,7 @@
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-timeago"><span class="timeago" datetime="2026-05-23T23:17:05+00:00" locale="en"></span></span><span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-iso_date">2026-05-23</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-timeago"><span class="timeago" datetime="2026-05-26T17:47:57+00:00" locale="en"></span></span><span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-iso_date">2026-05-26</span>
   </span>
 
     

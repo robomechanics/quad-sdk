@@ -24,7 +24,7 @@
     
     
       
-        <title>Running in Isaac Sim - Quad-SDK</title>
+        <title>Running in IsaacSim - Quad-SDK</title>
       
     
     
@@ -63,7 +63,7 @@
       
         <meta  property="og:type"  content="website" >
       
-        <meta  property="og:title"  content="Running in Isaac Sim - Quad-SDK" >
+        <meta  property="og:title"  content="Running in IsaacSim - Quad-SDK" >
       
         <meta  property="og:description"  content="Open-source full-stack framework for agile quadrupedal locomotion" >
       
@@ -79,7 +79,7 @@
       
         <meta  name="twitter:card"  content="summary_large_image" >
       
-        <meta  name="twitter:title"  content="Running in Isaac Sim - Quad-SDK" >
+        <meta  name="twitter:title"  content="Running in IsaacSim - Quad-SDK" >
       
         <meta  name="twitter:description"  content="Open-source full-stack framework for agile quadrupedal locomotion" >
       
@@ -115,7 +115,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#running-in-isaac-sim" class="md-skip">
+        <a href="#running-in-isaacsim" class="md-skip">
           Skip to content
         </a>
       
@@ -154,7 +154,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Running in Isaac Sim
+              Running in IsaacSim
             
           </span>
         </div>
@@ -367,6 +367,23 @@
     
   
   Platforms
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../roadmap/" class="md-tabs__link">
+        
+  
+    
+  
+  Roadmap
 
       </a>
     </li>
@@ -1748,6 +1765,26 @@
   
   
     <li class="md-nav__item">
+      <a href="../../roadmap/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Roadmap
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../faq/" class="md-nav__link">
         
   
@@ -1798,7 +1835,7 @@
         
           
         
-        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_8" >
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_9" >
         
           
           
@@ -1814,14 +1851,14 @@
             </a>
             
               
-              <label class="md-nav__link " for="__nav_8" id="__nav_8_label" tabindex="0">
+              <label class="md-nav__link " for="__nav_9" id="__nav_9_label" tabindex="0">
                 <span class="md-nav__icon md-icon"></span>
               </label>
             
           </div>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_8">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_9_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_9">
             <span class="md-nav__icon md-icon"></span>
             🔒 RML
           </label>
@@ -2093,16 +2130,16 @@
   
 
 
-<h1 id="running-in-isaac-sim">Running in Isaac Sim<a class="headerlink" href="#running-in-isaac-sim" title="Permanent link">&para;</a></h1>
-<p>NVIDIA Isaac Sim 5.1 is an alternative simulation backend to Gazebo and MuJoCo, adding high-fidelity rendering and GPU-accelerated PhysX dynamics. The controller and planning stacks run <strong>unmodified</strong> — the bridge just exchanges the same ROS 2 messages over DDS.</p>
+<h1 id="running-in-isaacsim">Running in IsaacSim<a class="headerlink" href="#running-in-isaacsim" title="Permanent link">&para;</a></h1>
+<p>NVIDIA IsaacSim 5.1 is an alternative simulation backend to Gazebo and MuJoCo, adding high-fidelity rendering and GPU-accelerated PhysX dynamics. The controller and planning stacks run <strong>unmodified</strong> — the bridge just exchanges the same ROS 2 messages over DDS.</p>
 <div class="admonition warning">
 <p class="admonition-title">Beta integration</p>
-<p>The Isaac Sim backend is <strong>still in beta</strong>. It currently supports the <strong>Spirit 40</strong> and <strong>Go2</strong> only, contact reporting is a heuristic, and PhysX gains may need scaling (<code>--tau-scale</code>). Expect rough edges and frequent changes. For production runs use Gazebo or MuJoCo. Full status, known limitations, and roadmap live in <a href="https://github.com/robomechanics/quad-sdk/blob/main/quad_simulator/isaac_plugins/README.md"><code>quad_simulator/isaac_plugins/README.md</code></a>.</p>
+<p>The IsaacSim backend is <strong>still in beta</strong>. It currently supports the <strong>Spirit 40</strong> and <strong>Go2</strong> only, contact reporting is a heuristic, and PhysX gains may need scaling (<code>--tau-scale</code>). Expect rough edges and frequent changes. For production runs use Gazebo or MuJoCo. Full status, known limitations, and roadmap live in <a href="https://github.com/robomechanics/quad-sdk/blob/main/quad_simulator/isaac_plugins/README.md"><code>quad_simulator/isaac_plugins/README.md</code></a>.</p>
 </div>
 <h2 id="requirements">Requirements<a class="headerlink" href="#requirements" title="Permanent link">&para;</a></h2>
-<p>Isaac Sim is <strong>not</strong> part of the Quad-SDK Docker images — it needs a separate install.</p>
+<p>IsaacSim is <strong>not</strong> part of the Quad-SDK Docker images — it needs a separate install.</p>
 <ul>
-<li><strong>Isaac Sim 5.1 + IsaacLab</strong> in a conda environment named <code>isaaclab</code> (Python 3.11). Follow the official <a href="https://isaac-sim.github.io/IsaacLab/main/source/setup/installation/index.html">IsaacLab installation guide <span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><path d="M3.75 2h3.5a.75.75 0 0 1 0 1.5h-3.5a.25.25 0 0 0-.25.25v8.5c0 .138.112.25.25.25h8.5a.25.25 0 0 0 .25-.25v-3.5a.75.75 0 0 1 1.5 0v3.5A1.75 1.75 0 0 1 12.25 14h-8.5A1.75 1.75 0 0 1 2 12.25v-8.5C2 2.784 2.784 2 3.75 2m6.854-1h4.146a.25.25 0 0 1 .25.25v4.146a.25.25 0 0 1-.427.177L13.03 4.03 9.28 7.78a.75.75 0 0 1-1.042-.018.75.75 0 0 1-.018-1.042l3.75-3.75-1.543-1.543A.25.25 0 0 1 10.604 1"/></svg></span></a>.</li>
+<li><strong>IsaacSim 5.1 + IsaacLab</strong> in a conda environment named <code>isaaclab</code> (Python 3.11). Follow the official <a href="https://isaac-sim.github.io/IsaacLab/main/source/setup/installation/index.html">IsaacLab installation guide <span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><path d="M3.75 2h3.5a.75.75 0 0 1 0 1.5h-3.5a.25.25 0 0 0-.25.25v8.5c0 .138.112.25.25.25h8.5a.25.25 0 0 0 .25-.25v-3.5a.75.75 0 0 1 1.5 0v3.5A1.75 1.75 0 0 1 12.25 14h-8.5A1.75 1.75 0 0 1 2 12.25v-8.5C2 2.784 2.784 2 3.75 2m6.854-1h4.146a.25.25 0 0 1 .25.25v4.146a.25.25 0 0 1-.427.177L13.03 4.03 9.28 7.78a.75.75 0 0 1-1.042-.018.75.75 0 0 1-.018-1.042l3.75-3.75-1.543-1.543A.25.25 0 0 1 10.604 1"/></svg></span></a>.</li>
 <li><strong>ROS 2 Jazzy</strong> (system Python 3.12) — the rest of the Quad-SDK stack, as usual.</li>
 <li>Ubuntu 24.04, an NVIDIA GPU with current drivers.</li>
 </ul>
@@ -2118,7 +2155,7 @@
 </code></pre></div>
 <h2 id="running">Running<a class="headerlink" href="#running" title="Permanent link">&para;</a></h2>
 <p>Three terminals. <code>--terrain</code> and <code>--robot</code> must match between the bridge (terminal 1) and the bringup (terminal 2).</p>
-<div class="tabbed-set tabbed-alternate" data-tabs="1:3"><input checked="checked" id="__tabbed_1_1" name="__tabbed_1" type="radio" /><input id="__tabbed_1_2" name="__tabbed_1" type="radio" /><input id="__tabbed_1_3" name="__tabbed_1" type="radio" /><div class="tabbed-labels"><label for="__tabbed_1_1">1. Isaac sim + bridge</label><label for="__tabbed_1_2">2. ROS bringup</label><label for="__tabbed_1_3">3. Planning</label></div>
+<div class="tabbed-set tabbed-alternate" data-tabs="1:4"><input checked="checked" id="__tabbed_1_1" name="__tabbed_1" type="radio" /><input id="__tabbed_1_2" name="__tabbed_1" type="radio" /><input id="__tabbed_1_3" name="__tabbed_1" type="radio" /><input id="__tabbed_1_4" name="__tabbed_1" type="radio" /><div class="tabbed-labels"><label for="__tabbed_1_1">1. IsaacSim + bridge</label><label for="__tabbed_1_2">2. ROS bringup</label><label for="__tabbed_1_3">3. Planning</label><label for="__tabbed_1_4">4. Stand (once)</label></div>
 <div class="tabbed-content">
 <div class="tabbed-block">
 <p>Conda <code>isaaclab</code> env (Python 3.11) — <strong>no</strong> ROS 2 sourced here:</p>
@@ -2142,18 +2179,13 @@
 <a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="w">    </span>namespace:<span class="o">=</span>robot_1<span class="w"> </span>robot_type:<span class="o">=</span>spirit
 </code></pre></div>
 </div>
-</div>
-</div>
-<p>Then sit → stand → walk:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="c1"># Stand</span>
-<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>ros2<span class="w"> </span>topic<span class="w"> </span>pub<span class="w"> </span>--once<span class="w"> </span>/robot_1/control/control_mode<span class="w"> </span>std_msgs/msg/UInt8<span class="w"> </span><span class="s1">&#39;data: 1&#39;</span>
-<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a>sleep<span class="w"> </span><span class="m">3</span>
-<a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a><span class="c1"># Walk</span>
-<a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a>ros2<span class="w"> </span>topic<span class="w"> </span>pub<span class="w"> </span>--once<span class="w"> </span>/robot_1/control/control_mode<span class="w"> </span>std_msgs/msg/UInt8<span class="w"> </span><span class="s1">&#39;data: 2&#39;</span>
-<a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a><span class="c1"># Drive</span>
-<a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a>ros2<span class="w"> </span>topic<span class="w"> </span>pub<span class="w"> </span>--rate<span class="w"> </span><span class="m">10</span><span class="w"> </span>/robot_1/control/cmd_vel<span class="w"> </span>geometry_msgs/msg/Twist<span class="w"> </span><span class="se">\</span>
-<a id="__codelineno-4-8" name="__codelineno-4-8" href="#__codelineno-4-8"></a><span class="w">    </span><span class="s1">&#39;{linear: {x: 0.3}, angular: {z: 0.0}}&#39;</span>
+<div class="tabbed-block">
+<p>Once terminals 1–3 are up and joint state is flowing, ramp the robot to stand. Issue this command once from any terminal:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>ros2<span class="w"> </span>topic<span class="w"> </span>pub<span class="w"> </span>--once<span class="w"> </span>/robot_1/control/control_mode<span class="w"> </span>std_msgs/msg/UInt8<span class="w"> </span><span class="s1">&#39;data: 1&#39;</span>
 </code></pre></div>
+</div>
+</div>
+</div>
 <h2 id="supported-robots-and-terrains">Supported robots and terrains<a class="headerlink" href="#supported-robots-and-terrains" title="Permanent link">&para;</a></h2>
 <ul>
 <li><strong>Robots</strong> — <code>spirit</code> and <code>go2</code> (the entries in the bridge <code>ROBOT_REGISTRY</code>).</li>
@@ -2219,7 +2251,7 @@
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-timeago"><span class="timeago" datetime="2026-05-23T00:38:20+00:00" locale="en"></span></span><span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-iso_date">2026-05-23</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-timeago"><span class="timeago" datetime="2026-05-26T17:47:57+00:00" locale="en"></span></span><span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-iso_date">2026-05-26</span>
   </span>
 
     

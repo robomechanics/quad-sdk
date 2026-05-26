@@ -13,6 +13,10 @@
         <link rel="canonical" href="https://robomechanics.github.io/quad-sdk/ros2/roadmap/">
       
       
+        <link rel="prev" href="../platforms/">
+      
+      
+        <link rel="next" href="../faq/">
       
       
       <link rel="icon" href="../assets/quad_sdk_promo.png">
@@ -361,6 +365,25 @@
     
   
   Platforms
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+    
+  
+  
+    <li class="md-tabs__item md-tabs__item--active">
+      <a href="./" class="md-tabs__link">
+        
+  
+    
+  
+  Roadmap
 
       </a>
     </li>
@@ -1633,6 +1656,102 @@
       
   
   
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    Roadmap
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  <span class="md-ellipsis">
+    Roadmap
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#perception-stack-integration" class="md-nav__link">
+    <span class="md-ellipsis">
+      Perception stack integration
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#extending-quadkd2-for-wheeled-legged-robots" class="md-nav__link">
+    <span class="md-ellipsis">
+      Extending QuadKD2 for wheeled-legged robots
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#isaacsim-60-support" class="md-nav__link">
+    <span class="md-ellipsis">
+      IsaacSim 6.0 support
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#ros2_control-integration" class="md-nav__link">
+    <span class="md-ellipsis">
+      ros2_control integration
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
   
   
     <li class="md-nav__item">
@@ -1686,7 +1805,7 @@
         
           
         
-        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_8" >
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_9" >
         
           
           
@@ -1702,14 +1821,14 @@
             </a>
             
               
-              <label class="md-nav__link " for="__nav_8" id="__nav_8_label" tabindex="0">
+              <label class="md-nav__link " for="__nav_9" id="__nav_9_label" tabindex="0">
                 <span class="md-nav__icon md-icon"></span>
               </label>
             
           </div>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_8">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_9_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_9">
             <span class="md-nav__icon md-icon"></span>
             🔒 RML
           </label>
@@ -1889,6 +2008,50 @@
     
   
   
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#perception-stack-integration" class="md-nav__link">
+    <span class="md-ellipsis">
+      Perception stack integration
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#extending-quadkd2-for-wheeled-legged-robots" class="md-nav__link">
+    <span class="md-ellipsis">
+      Extending QuadKD2 for wheeled-legged robots
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#isaacsim-60-support" class="md-nav__link">
+    <span class="md-ellipsis">
+      IsaacSim 6.0 support
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#ros2_control-integration" class="md-nav__link">
+    <span class="md-ellipsis">
+      ros2_control integration
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
 </nav>
                   </div>
                 </div>
@@ -1911,7 +2074,15 @@
 
 
 <h1 id="roadmap">Roadmap<a class="headerlink" href="#roadmap" title="Permanent link">&para;</a></h1>
-<p><em>Coming soon — this page will track upcoming features, planned content, and known gaps. Edit this file (<code>docs/roadmap.md</code>) to populate it.</em></p>
+<p>Active workstreams for Quad-SDK. Each item below is in scope for the current development cycle; finer-grained tasks (PR-sized) live in the relevant package README or GitHub issues.</p>
+<h2 id="perception-stack-integration">Perception stack integration<a class="headerlink" href="#perception-stack-integration" title="Permanent link">&para;</a></h2>
+<p>Wire the perception terrain stack end-to-end into the planning + control loop so that locally-sensed terrain (depth / LiDAR-derived heightmaps) drives the global body planner and local planner without the operator pre-loading a static <code>GridMap</code>. Today the perception nodes publish maps but the planners still consume the pre-loaded terrain; closing this gap unlocks fully-onboard outdoor runs.</p>
+<h2 id="extending-quadkd2-for-wheeled-legged-robots">Extending QuadKD2 for wheeled-legged robots<a class="headerlink" href="#extending-quadkd2-for-wheeled-legged-robots" title="Permanent link">&para;</a></h2>
+<p>Generalize the Pinocchio-backed <a href="../architecture/pinocchio-integration/"><code>QuadKD2</code></a> kinematics/dynamics layer to support wheeled-legged platforms. Concretely: add continuous wheel joints to the URDF mapping logic, model wheel–ground contact (rolling + slip) alongside the existing per-toe contact model, and expose wheel velocities through the existing FK/Jacobian APIs so controllers and the body force estimator do not need to special-case wheel feet.</p>
+<h2 id="isaacsim-60-support">IsaacSim 6.0 support<a class="headerlink" href="#isaacsim-60-support" title="Permanent link">&para;</a></h2>
+<p>Port the <a href="../packages/isaac_plugins/"><code>isaac_plugins</code></a> bridge from IsaacSim 5.1 to 6.0. The 6.0 <code>URDFImporter</code> is class-based — <code>omni.kit.commands</code> registration is gone and per-import physics knobs (mesh approximation, joint armature, contact offsets) move to a post-import USD pass. The bridge's runtime path needs the matching rewrite, plus a refreshed IsaacLab conda env recipe. See the <a href="https://github.com/robomechanics/quad-sdk/blob/main/quad_simulator/isaac_plugins/README.md#roadmap"><code>isaac_plugins</code> README roadmap</a> for the live punch list.</p>
+<h2 id="ros2_control-integration">ros2_control integration<a class="headerlink" href="#ros2_control-integration" title="Permanent link">&para;</a></h2>
+<p>Migrate the <a href="../packages/robot_driver/"><code>robot_driver</code></a> off its bespoke manufacturer-SDK loops onto the standard <a href="https://control.ros.org/"><code>ros2_control</code></a> framework: implement a <code>hardware_interface::SystemInterface</code> per supported platform (Unitree Go2, Spirit 40), expose joint state / effort interfaces, and drive the existing inverse-dynamics and MPC controllers as <code>controller_manager</code> plugins. This brings Quad-SDK in line with the wider ROS 2 ecosystem (shared controllers, easier hardware swaps, standard launch patterns) and removes a class of bringup-time wiring bugs.</p>
 
 
 
@@ -1932,7 +2103,7 @@
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-timeago"><span class="timeago" datetime="2026-04-29T23:15:14+00:00" locale="en"></span></span><span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-iso_date">2026-04-29</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-timeago"><span class="timeago" datetime="2026-05-26T17:47:57+00:00" locale="en"></span></span><span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-iso_date">2026-05-26</span>
   </span>
 
     
@@ -1965,6 +2136,44 @@
       
         <footer class="md-footer">
   
+    
+      
+      <nav class="md-footer__inner md-grid" aria-label="Footer" >
+        
+          
+          <a href="../platforms/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Platforms">
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              <div class="md-ellipsis">
+                Platforms
+              </div>
+            </div>
+          </a>
+        
+        
+          
+          <a href="../faq/" class="md-footer__link md-footer__link--next" aria-label="Next: FAQ">
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              <div class="md-ellipsis">
+                FAQ
+              </div>
+            </div>
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
     
   
   <div class="md-footer-meta md-typeset">

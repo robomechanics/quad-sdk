@@ -378,6 +378,23 @@
   
   
     <li class="md-tabs__item">
+      <a href="../../roadmap/" class="md-tabs__link">
+        
+  
+    
+  
+  Roadmap
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
       <a href="../../faq/" class="md-tabs__link">
         
   
@@ -1793,6 +1810,26 @@
   
   
     <li class="md-nav__item">
+      <a href="../../roadmap/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Roadmap
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../faq/" class="md-nav__link">
         
   
@@ -1843,7 +1880,7 @@
         
           
         
-        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_8" >
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_9" >
         
           
           
@@ -1859,14 +1896,14 @@
             </a>
             
               
-              <label class="md-nav__link " for="__nav_8" id="__nav_8_label" tabindex="0">
+              <label class="md-nav__link " for="__nav_9" id="__nav_9_label" tabindex="0">
                 <span class="md-nav__icon md-icon"></span>
               </label>
             
           </div>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_8">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_9_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_9">
             <span class="md-nav__icon md-icon"></span>
             🔒 RML
           </label>
@@ -2173,22 +2210,22 @@
 
 <div class="admonition warning">
 <p class="admonition-title">Beta</p>
-<p>The Isaac Sim backend is in beta and needs a separate IsaacLab conda install. For a setup + run walkthrough see <a href="../../tutorials/isaac-sim/">Running in Isaac Sim</a>. This page mirrors <a href="https://github.com/robomechanics/quad-sdk/blob/main/quad_simulator/isaac_plugins/README.md"><code>quad_simulator/isaac_plugins/README.md</code></a> — edit that file to update.</p>
+<p>The IsaacSim backend is in beta and needs a separate IsaacLab conda install. For a setup + run walkthrough see <a href="../../tutorials/isaac-sim/">Running in IsaacSim</a>. This page mirrors <a href="https://github.com/robomechanics/quad-sdk/blob/main/quad_simulator/isaac_plugins/README.md"><code>quad_simulator/isaac_plugins/README.md</code></a> — edit that file to update.</p>
 </div>
 <h1 id="isaac-plugins">Isaac Plugins<a class="headerlink" href="#isaac-plugins" title="Permanent link">&para;</a></h1>
 <h2 id="overview">Overview<a class="headerlink" href="#overview" title="Permanent link">&para;</a></h2>
-<p>This package is the Isaac Sim 5.1 integration for Quad-SDK — an alternative to the Gazebo simulator used elsewhere in the stack. It contains the Isaac-side simulation loop (<code>isaac_bridge.py</code>), the URDF prep pipeline that adapts Quad-SDK robot descriptions for Isaac's URDF importer, the four-cord underbrush scenario, and one-shot URDF→USD conversion tooling. The bridge exchanges ROS 2 messages with the rest of Quad-SDK using Isaac Sim's bundled Jazzy rclpy, so the controller and planning stacks run unmodified.</p>
+<p>This package is the IsaacSim 5.1 integration for Quad-SDK — an alternative to the Gazebo simulator used elsewhere in the stack. It contains the Isaac-side simulation loop (<code>isaac_bridge.py</code>), the URDF prep pipeline that adapts Quad-SDK robot descriptions for Isaac's URDF importer, the four-cord underbrush scenario, and one-shot URDF→USD conversion tooling. The bridge exchanges ROS 2 messages with the rest of Quad-SDK using IsaacSim's bundled Jazzy rclpy, so the controller and planning stacks run unmodified.</p>
 <p>Supported robots are listed in <code>isaac_bridge.py</code>'s <code>ROBOT_REGISTRY</code> — currently <code>spirit</code> and <code>go2</code>. Supported terrains are any name with matching <code>gazebo_scripts/models/&lt;name&gt;/meshes/&lt;name&gt;.{stl,ply}</code> (e.g. <code>flat</code>, <code>step_20cm</code>, <code>gap_40cm</code>, <code>rough_25cm</code>).</p>
 <h3 id="license">License<a class="headerlink" href="#license" title="Permanent link">&para;</a></h3>
 <p>The source code is released under a <a href="../../quad_simulator/isaac_plugins/LICENSE">BSD-3-Clause License</a>.</p>
 <p><strong>Author:</strong> David Ologan</p>
 <p><strong>Affiliation:</strong> <a href="https://www.cmu.edu/me/robomechanicslab/">Robomechanics Lab</a>, Carnegie Mellon University</p>
 <p><strong>Maintainer:</strong> David Ologan (ologandavid@gmail.com)</p>
-<p>Tested under Isaac Sim 5.1 / <a href="https://isaac-sim.github.io/IsaacLab/">IsaacLab</a> (Python 3.11, conda) and <a href="https://docs.ros.org/en/jazzy/">ROS2</a> Jazzy (Python 3.12, system) on Ubuntu 24.04. This is research code; expect frequent changes and no fitness for any particular purpose.</p>
+<p>Tested under IsaacSim 5.1 / <a href="https://isaac-sim.github.io/IsaacLab/">IsaacLab</a> (Python 3.11, conda) and <a href="https://docs.ros.org/en/jazzy/">ROS2</a> Jazzy (Python 3.12, system) on Ubuntu 24.04. This is research code; expect frequent changes and no fitness for any particular purpose.</p>
 <h2 id="build">Build<a class="headerlink" href="#build" title="Permanent link">&para;</a></h2>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>colcon<span class="w"> </span>build<span class="w"> </span>--packages-select<span class="w"> </span>isaac_plugins
 </code></pre></div>
-<p>The package itself only installs Python scripts. Isaac Sim 5.1 and IsaacLab must be installed separately in a conda environment named <code>isaaclab</code>; see the <a href="https://isaac-sim.github.io/IsaacLab/main/source/setup/installation/index.html">IsaacLab installation guide</a>. The bridge auto-discovers Isaac's bundled rclpy and prepends the bundled DDS libs to <code>LD_LIBRARY_PATH</code> at startup — do <em>not</em> source <code>/opt/ros/jazzy/setup.bash</code> in the same shell as the bridge.</p>
+<p>The package itself only installs Python scripts. IsaacSim 5.1 and IsaacLab must be installed separately in a conda environment named <code>isaaclab</code>; see the <a href="https://isaac-sim.github.io/IsaacLab/main/source/setup/installation/index.html">IsaacLab installation guide</a>. The bridge auto-discovers Isaac's bundled rclpy and prepends the bundled DDS libs to <code>LD_LIBRARY_PATH</code> at startup — do <em>not</em> source <code>/opt/ros/jazzy/setup.bash</code> in the same shell as the bridge.</p>
 <h2 id="usage">Usage<a class="headerlink" href="#usage" title="Permanent link">&para;</a></h2>
 <p>Three terminals; <code>--terrain</code> and <code>--robot</code> must match between the bridge and the bringup.</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="c1"># Terminal 1 — Isaac sim + bridge (conda isaaclab env, Python 3.11)</span>
@@ -2217,7 +2254,7 @@
 <h2 id="architecture">Architecture<a class="headerlink" href="#architecture" title="Permanent link">&para;</a></h2>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>┌─ Terminal 1: Isaac + bridge (conda Python 3.11) ─────────┐
 <a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>│   isaac_bridge.py                                         │
-<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>│   ├─ Isaac Sim 5.1 physics @ 1000 Hz                      │
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>│   ├─ IsaacSim 5.1 physics @ 1000 Hz                      │
 <a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>│   ├─ Robot URDF imported at runtime                       │
 <a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>│   ├─ Terrain STL with SDF pose applied                    │
 <a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a>│   └─ rclpy node using Isaac&#39;s bundled Jazzy               │
@@ -2403,7 +2440,7 @@
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-timeago"><span class="timeago" datetime="2026-05-23T00:38:20+00:00" locale="en"></span></span><span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-iso_date">2026-05-23</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-timeago"><span class="timeago" datetime="2026-05-26T17:47:57+00:00" locale="en"></span></span><span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-iso_date">2026-05-26</span>
   </span>
 
     
