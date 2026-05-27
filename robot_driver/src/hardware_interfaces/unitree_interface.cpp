@@ -1,5 +1,6 @@
 #include "robot_driver/hardware_interfaces/unitree_interface.hpp"
 
+#include <cstdlib>
 #include <iostream>
 #include <unistd.h>
 
@@ -23,7 +24,12 @@ UnitreeInterface::UnitreeInterface(const std::string& robot_name)
 }
 
 void UnitreeInterface::loadInterface(int /*argc*/, char** /*argv*/) {
-  std::string net_iface = "eth0";
+  // ROBOT_MCU_IFACE is set by init_robot.sh based on which interface holds an
+  // IP on the MCU subnet (192.168.123.0/24). Falls back to eth0 if unset.
+  const char* env_iface = std::getenv("ROBOT_MCU_IP");
+  std::string net_iface = (env_iface && *env_iface) ? env_iface : "eth0";
+  std::cout << "UnitreeInterface: using network interface '" << net_iface
+            << "' for MCU DDS domain." << std::endl;
 
   unitree::robot::ChannelFactory::Instance()->Init(0, net_iface);
 

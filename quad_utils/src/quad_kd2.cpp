@@ -120,7 +120,7 @@ void QuadKD2::initModel(std::string ns) {
     limb.abad_jid = model_.getJointId(limb.joint_names[0]);
     limb.hip_jid = model_.getJointId(limb.joint_names[1]);
     limb.knee_jid = model_.getJointId(limb.joint_names[2]);
-    limb.toe_jid = model_.getFrameId("j" + toe_frame_name);
+    limb.toe_jid = limb.toe_fid;
 
     // Set Indicies for q and v vector creation (Pinocchio Internal Mapping)
     // i.e. Joint Order that Pinocchio Expects When Performing Updates

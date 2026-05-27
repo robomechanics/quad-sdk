@@ -8,5 +8,5 @@ echo "Launch remote driver? [y/n]"
 read input
 
 if [[ $input == "Y" || $input == "y" ]]; then
-	ros2 launch quad_utils remote_driver.launch
+	ros2 launch quad_utils remote_driver.py
 fi
