@@ -105,6 +105,7 @@
       stand_joint_angles: [0.0, 0.8, -1.5] # go2
       sit_joint_angles: [0.0, 1.36, -2.65]
 
+
 /**/controller_manager:
   ros__parameters:
     update_rate: 500

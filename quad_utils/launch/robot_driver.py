@@ -51,7 +51,7 @@ def generate_launch_description():
     mocap = DeclareLaunchArgument('mocap', default_value='true')
     logging = DeclareLaunchArgument('logging', default_value='false')
     controller = DeclareLaunchArgument('controller', default_value='inverse_dynamics')
-    model_path = DeclareLaunchArgument('model_path', default_value='./policies/models/***')
+    model_path = DeclareLaunchArgument('model_path', default_value='./policies/models/***')    
     provider = DeclareLaunchArgument('provider', default_value = "tensorrt")
     estimator = DeclareLaunchArgument('estimator', default_value="ekf_filter")
     debug_estimator = DeclareLaunchArgument('debug_estimator', default_value="none",

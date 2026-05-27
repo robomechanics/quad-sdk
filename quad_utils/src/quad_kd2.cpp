@@ -121,6 +121,7 @@ void QuadKD2::initModel(std::string ns) {
     limb.hip_jid = model_.getJointId(limb.joint_names[1]);
     limb.knee_jid = model_.getJointId(limb.joint_names[2]);
     limb.toe_jid = model_.getFrameId("j" + toe_frame_name);
+    limb.toe_jid = limb.toe_fid;
 
     // Set Indicies for q and v vector creation (Pinocchio Internal Mapping)
     // i.e. Joint Order that Pinocchio Expects When Performing Updates
@@ -147,7 +148,7 @@ void QuadKD2::initModel(std::string ns) {
     l1_ = knee_offset_.cwiseAbs().maxCoeff();
 
     // Extract Length of Calf
-    foot_offset_ = model_.frames[limb.toe_jid].placement.translation();
+    foot_offset_ = model_.frames[limb.toe_fid].placement.translation();
     l2_ = foot_offset_.cwiseAbs().maxCoeff();
 
     // Extract Joint Limits for Each Leg

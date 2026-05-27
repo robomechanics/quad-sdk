@@ -1,5 +1,6 @@
 #include "robot_driver/hardware_interfaces/unitree_interface.hpp"
 
+#include <cstdlib>
 #include <iostream>
 #include <unistd.h>
 
@@ -23,7 +24,12 @@ UnitreeInterface::UnitreeInterface(const std::string& robot_name)
 }
 
 void UnitreeInterface::loadInterface(int /*argc*/, char** /*argv*/) {
-  std::string net_iface = "eth0";
+  // ROBOT_MCU_IFACE is set by init_robot.sh based on which interface holds an
+  // IP on the MCU subnet (192.168.123.0/24). Falls back to eth0 if unset.
+  const char* env_iface = std::getenv("ROBOT_MCU_IFACE");
+  std::string net_iface = (env_iface && *env_iface) ? env_iface : "eth0";
+  std::cout << "UnitreeInterface: using network interface '" << net_iface
+            << "' for MCU DDS domain." << std::endl;
 
   unitree::robot::ChannelFactory::Instance()->Init(0, net_iface);
 
@@ -259,6 +265,9 @@ bool UnitreeInterface::recv(sensor_msgs::msg::JointState& joint_state_msg,
     }
   }
 
+  // Unitree SDK packs the quaternion as (w, x, y, z); ROS sensor_msgs::Imu
+  // uses (x, y, z, w). Verified empirically: with the robot level on the
+  // floor, the SDK[0] slot carries the scalar component (~1.0 modulo yaw).
   imu_msg.orientation.w = low_state_.imu_state().quaternion()[0];
   imu_msg.orientation.x = low_state_.imu_state().quaternion()[1];
   imu_msg.orientation.y = low_state_.imu_state().quaternion()[2];

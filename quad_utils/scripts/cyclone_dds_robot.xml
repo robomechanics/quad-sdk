@@ -10,6 +10,7 @@
             <AllowMulticast>false</AllowMulticast>
             <DontRoute>true</DontRoute>
             <MaxMessageSize>65500B</MaxMessageSize>
+            <FragmentSize>1452B</FragmentSize>
         </General>
         <Internal>
             <SocketReceiveBufferSize min="128MB"/>
@@ -17,7 +18,6 @@
             <Watermarks>
                 <WhcHigh>500kB</WhcHigh>
             </Watermarks>
-            <FragmentSize>1452B</FragmentSize>
         </Internal>
         <Discovery>
             <Peers>

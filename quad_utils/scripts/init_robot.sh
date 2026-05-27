@@ -2,15 +2,31 @@
 echo "Sourcing ros2_ws/install/setup.bash"
 source /root/ros2_ws/install/setup.bash
 
-# Find the robot's own IP on the Unitree MCU subnet (192.168.123.0/24).
-# The MCU is at 192.168.123.161; we just need an address on the same subnet.
-ROBOT_MCU_IP=$(ip -4 -o addr show | awk '$4 ~ /^192\.168\.123\./ {split($4, a, "/"); print a[1]; exit}')
+# CycloneDDS asks the kernel for a 128MB socket receive buffer (see
+# cyclone_dds_robot.xml). On this Jetson the default net.core.rmem_max is
+# ~416KB, which makes rmw_create_node abort with "failed to initialize rcl node".
+# Raise the kernel limits before launching anything ROS. Needs root (we are).
+DDS_BUF=134217728  # 128 MiB, matches <SocketReceiveBufferSize min="128MB"/>
+if [[ $(cat /proc/sys/net/core/rmem_max 2>/dev/null) -lt $DDS_BUF ]]; then
+    echo "Raising net.core.rmem_max / wmem_max to 128MB for CycloneDDS"
+    sysctl -w net.core.rmem_max=$DDS_BUF >/dev/null \
+        || echo "WARNING: failed to set net.core.rmem_max (need root?)"
+    sysctl -w net.core.wmem_max=$DDS_BUF >/dev/null \
+        || echo "WARNING: failed to set net.core.wmem_max (need root?)"
+fi
+
+# Find the robot's own IP and interface name on the Unitree MCU subnet
+# (192.168.123.0/24). The MCU is at 192.168.123.161; we just need an
+# address on the same subnet. The Unitree SDK also needs the interface
+# *name* (e.g. enP8p1s0) — exported as ROBOT_MCU_IFACE for unitree_interface.cpp.
+read ROBOT_MCU_IFACE ROBOT_MCU_IP < <(ip -4 -o addr show \
+    | awk '$4 ~ /^192\.168\.123\./ {split($4, a, "/"); print $2, a[1]; exit}')
 if [[ -z "$ROBOT_MCU_IP" ]]; then
     echo "WARNING: No interface has an IP on 192.168.123.0/24 (MCU network)."
     echo "         The Unitree MCU will be unreachable. Check that the built-in"
     echo "         ethernet is up and has an address on that subnet."
 else
-    echo "Robot MCU-side IP detected: $ROBOT_MCU_IP"
+    echo "Robot MCU-side IP detected: $ROBOT_MCU_IP on $ROBOT_MCU_IFACE"
 fi
 
 # Find the robot's own IP on the ROS2 comms subnet (192.168.8.0/24).
@@ -25,6 +41,7 @@ else
 fi
 
 export ROBOT_MCU_IP
+export ROBOT_MCU_IFACE
 export ROBOT_ROS_IP
 
 echo "Setting ROS_DOMAIN_ID to 42 and RMW_IMPLEMENTATION to rmw_cyclonedds_cpp"
