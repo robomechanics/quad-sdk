@@ -88,8 +88,8 @@
       swing_kd_cart: [0.0, 0.0, 0.0] # N/m
       safety_kp: [0.0, 0.0, 0.0]
       safety_kd: [2.0, 2.0, 2.0]
-      stand_joint_angles: [0.0, 0.76, 1.52]
-      sit_joint_angles: [0.0, 0.2, 0.2]
+      stand_joint_angles: [0.0, 0.8, -1.5]
+      sit_joint_angles: [0.0, 1.36, -2.65]
 
 /**/controller_manager:
   ros__parameters:
@@ -120,18 +120,18 @@
           offset: 0.0
         hip:
           name: "0"
-          sign: 1.0
-          offset: 0.0
+          sign: -1.0
+          offset: 1.5708
         knee:
           name: "1"
           sign: 1.0
-          offset: 0.0
+          offset: -3.1415
       frames:
-        hip: "hip0"
-        upper: "upper0"
-        lower: "lower0"
-        toe: "toe0"
-    leg_1: 
+        hip: "FL_hip"
+        upper: "FL_thigh"
+        lower: "FL_calf"
+        toe: "FL_foot"
+    leg_1:
       joints:
         abad:
           name: "9"
@@ -139,18 +139,18 @@
           offset: 0.0
         hip:
           name: "2"
-          sign: 1.0
-          offset: 0.0
+          sign: -1.0
+          offset: 1.5708
         knee:
           name: "3"
           sign: 1.0
-          offset: 0.0
+          offset: -3.1415
       frames:
-        hip: "hip1"
-        upper: "upper1"
-        lower: "lower1"
-        toe: "toe1"
-    leg_2: 
+        hip: "RL_hip"
+        upper: "RL_thigh"
+        lower: "RL_calf"
+        toe: "RL_foot"
+    leg_2:
       joints:
         abad:
           name: "10"
@@ -158,18 +158,18 @@
           offset: 0.0
         hip:
           name: "4"
-          sign: 1.0
-          offset: 0.0
+          sign: -1.0
+          offset: 1.5708
         knee:
           name: "5"
           sign: 1.0
-          offset: 0.0
+          offset: -3.1415
       frames:
-        hip: "hip2"
-        upper: "upper2"
-        lower: "lower2"
-        toe: "toe2"
-    leg_3: 
+        hip: "FR_hip"
+        upper: "FR_thigh"
+        lower: "FR_calf"
+        toe: "FR_foot"
+    leg_3:
       joints:
         abad:
           name: "11"
@@ -177,14 +177,14 @@
           offset: 0.0
         hip:
           name: "6"
-          sign: 1.0
-          offset: 0.0
+          sign: -1.0
+          offset: 1.5708
         knee:
           name: "7"
           sign: 1.0
-          offset: 0.0
+          offset: -3.1415
       frames:
-        hip: "hip3"
-        upper: "upper3"
-        lower: "lower3"
-        toe: "toe3"
+        hip: "RR_hip"
+        upper: "RR_thigh"
+        lower: "RR_calf"
+        toe: "RR_foot"

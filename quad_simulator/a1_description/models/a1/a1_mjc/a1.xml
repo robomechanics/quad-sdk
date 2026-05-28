@@ -3,19 +3,25 @@
 
   <option cone="elliptic" impratio="100"/>
 
+  <!-- Modified damping values for the a1.xml from 2.0 and 1.0 to 0.1 -->
+
   <default>
     <default class="a1">
       <geom friction="0.6" margin="0.001"/>
-      <joint axis="0 1 0" damping="2" armature="0.01" frictionloss="0.2"/>
+      <joint axis="0 1 0" damping="0.1" armature="0.01" frictionloss="0.2"/>
       <motor ctrlrange="-33.5 33.5"/>
       <default class="abduction">
-        <joint axis="1 0 0" damping="1" range="-0.802851 0.802851"/>
+      
+        <joint axis="1 0 0" damping="0.1" range="-0.802851 0.802851"/>  
+        <!-- <position ctrlrange="-0.802851 0.802851"/> -->
       </default>
       <default class="hip">
         <joint range="-1.0472 4.18879"/>
+        <!-- <position ctrlrange="-1.0472 4.18879"/> -->
       </default>
       <default class="knee">
         <joint range="-2.69653 -0.916298"/>
+        <motor ctrlrange="-33.5 33.5"/>
       </default>
       <default class="visual">
         <geom type="mesh" contype="0" conaffinity="0" group="2" material="dark"/>
@@ -63,11 +69,18 @@
     <mesh class="a1" file="trunk.obj"/>
   </asset>
 
+
+
+
+
+
+
+
   <worldbody>
     <light name="spotlight" mode="targetbodycom" target="trunk" pos="0 -1 2"/>
     <body name="trunk" pos="0 0 0.43" childclass="a1">
       <freejoint name="floating_base"/>
-      <inertial mass="4.713" pos="0 0.0041 -0.0005"
+      <inertial mass="6.0" pos="0 0.0041 -0.0005"
         fullinertia="0.0158533 0.0377999 0.0456542 -3.66e-05 -6.11e-05 -2.75e-05"/>
       <geom class="visual" mesh="trunk" material="carbonfibre"/>
       <geom class="collision" size="0.125 0.04 0.057" type="box"/>

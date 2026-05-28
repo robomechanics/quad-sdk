@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<mujoco model="step_20cm" xmlns:xacro="http://www.ros.org/wiki/xacro">
+<mujoco model="step_30cm" xmlns:xacro="http://www.ros.org/wiki/xacro">
 
   <xacro:arg name="meshdir" default=""/>
   <xacro:arg name="mjcf_path" default=""/>
@@ -38,8 +38,8 @@
     <geom 
       name="step_upper" 
       type="box" 
-      size="2 2 0.15"   
-      pos="5 0 0.05"       
+      size="2 2 0.2"   
+      pos="5 0 0.1"       
       rgba="0.8 0.9 0.8 1"
       friction="1.5 0.1 0.05"
       solref="0.007 1"
