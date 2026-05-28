@@ -1477,4 +1477,5 @@ Stephen Brawner (brawner@gmail.com)
       <state_interface name="position" />
     </joint>
   </ros2_control>
+
 </robot>

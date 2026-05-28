@@ -51,11 +51,9 @@ def generate_launch_description():
     mocap = DeclareLaunchArgument('mocap', default_value='true')
     logging = DeclareLaunchArgument('logging', default_value='false')
     controller = DeclareLaunchArgument('controller', default_value='inverse_dynamics')
-    model_path = DeclareLaunchArgument('model_path', default_value='./policies/models/***')
+    model_path = DeclareLaunchArgument('model_path', default_value='/root/ros2_ws/src/quad-sdk/robot_driver/models/go2/go2_policy.onnx')
     provider = DeclareLaunchArgument('provider', default_value = "tensorrt")
     estimator = DeclareLaunchArgument('estimator', default_value="ekf_filter")
-    debug_estimator = DeclareLaunchArgument('debug_estimator', default_value="none",
-                                            description='Parallel ride-along estimator (publishes to topics.state.estimate for comparison). Set to "none" to disable.')
     is_hardware = DeclareLaunchArgument('is_hardware', default_value='true')
     namespace = DeclareLaunchArgument('namespace', default_value='robot_1')
     robot_description = DeclareLaunchArgument('robot_description', default_value='')
@@ -103,7 +101,6 @@ def generate_launch_description():
                     'namespace': LaunchConfiguration('namespace'),
                     'robot_type': LaunchConfiguration('robot_type'),
                     'estimator_id': LaunchConfiguration('estimator'),
-                    'debug_estimator_id': LaunchConfiguration('debug_estimator'),
                     'model_path': LaunchConfiguration('model_path'),
                     'provider': LaunchConfiguration('provider'),
                     'robot_description': ParameterValue(
@@ -141,7 +138,6 @@ def generate_launch_description():
         model_path,
         provider,
         estimator,
-        debug_estimator,
         is_hardware,
         namespace,
         robot_description,

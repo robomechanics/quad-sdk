@@ -39,11 +39,11 @@ Get a robot standing and walking in simulation in under five minutes.
     ros2 launch quad_utils quad_mujoco.py
     ```
 
-=== "IsaacSim (beta)"
+=== "Isaac Sim (beta)"
 
-    IsaacSim 5.1 is a **beta** backend and needs a separate [IsaacLab conda install](https://isaac-sim.github.io/IsaacLab/main/source/setup/installation/index.html) (not part of the Docker image). It runs as a three-terminal flow — Isaac bridge + ROS bringup + planning — and currently covers the **Spirit 40** and **Go2**.
+    Isaac Sim 5.1 is a **beta** backend and needs a separate [IsaacLab conda install](https://isaac-sim.github.io/IsaacLab/main/source/setup/installation/index.html) (not part of the Docker image). It runs as a three-terminal flow — Isaac bridge + ROS bringup + planning — and currently covers the **Spirit 40** and **Go2**.
 
-    See [Running in IsaacSim](../tutorials/isaac-sim.md) for the full setup and run instructions.
+    See [Running in Isaac Sim](../tutorials/isaac-sim.md) for the full setup and run instructions.
 
 The robot will spawn in a default world. The clock is driven by sim time; check `ros2 topic echo /clock` if downstream nodes look stalled.
 
@@ -136,7 +136,7 @@ flowchart LR
   LP --> NMPC[nmpc_controller]
   NMPC --> LP
   LP --> RD[robot_driver]
-  RD --> SIM[Gazebo / MuJoCo / IsaacSim]
+  RD --> SIM[Gazebo / MuJoCo / Isaac Sim]
   SIM --> EST[state_estimator]
   EST --> LP
   EST --> GP

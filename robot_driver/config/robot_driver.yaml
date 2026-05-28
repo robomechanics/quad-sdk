@@ -23,12 +23,12 @@
       high_pass_d: [0.0009996017974875904]
 
       # EKF noise and bias parameters
-      bias_x: -0.10
-      bias_y: -0.17
-      bias_z: -0.35
-      bias_r: -0.0047
-      bias_p: -0.0079
-      bias_w: -0.0082
+      bias_x: 0.0
+      bias_y: 0.0
+      bias_z: 0.0
+      bias_r: 0.0
+      bias_p: 0.0
+      bias_w: 0.0
       na: 0.001      # accelerometer noise (position process)
       nv: 0.005      # velocity process noise
       ng: 0.01       # gyro noise
@@ -38,12 +38,12 @@
       nfk: 0.005     # forward kinematics measurement noise
       ne: 0.005      # encoder velocity measurement noise
       nfh: 0.01      # foot height measurement noise
-      P0: 3.0      # initial covariance (low - GT init is accurate)
+      P0: 0.001      # initial covariance (low - GT init is accurate)
       contact_w: 100.0  # weight on foot contact
       thresh_out: 10.0  # innovation outlier rejection threshold
-      foot_radius: 0.022 # toe radius
+      foot_radius: 0.02 # toe radius
 
-      model_path: /root/ros2_ws/src/quad-sdk/robot_driver/include/robot_driver/models/go2/policy.onnx # Path to Policy Onnx File
+      model_path: /root/ros2_ws/src/quad-sdk/robot_driver/models/go2/go2_policy.onnx # Path to Policy Onnx File
       policy_inference_rate: 50.0  # Hz, rate at which learned policy runs inference (PD tracking runs at update_rate)
       cmd_vel_filter_const: 0.10
       cmd_vel_scale: 1.0

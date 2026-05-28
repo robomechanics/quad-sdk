@@ -2,7 +2,6 @@
 #define STATE_ESTIMATOR_H
 
 #include <quad_msgs/msg/contact_mode.hpp>
-#include <quad_msgs/msg/foot_contact.hpp>
 #include <quad_msgs/msg/robot_state.hpp>
 #include <quad_utils/quad_kd2.hpp>
 #include <quad_utils/ros_utils.hpp>
@@ -73,14 +72,6 @@ class StateEstimator {
   void loadSensorMsg(sensor_msgs::msg::Imu last_imu_msg,
                      sensor_msgs::msg::JointState last_joint_state_msg);
 
-  /**
-   * @brief Load measured foot-contact data (Unitree foot-force sensor).
-   * Pushed in by robot_driver each tick, rather than subscribed, so the
-   * estimator stays synchronized with the IMU/joint sample it was given.
-   * @param[in] msg Foot-contact message (raw force + thresholded contact)
-   */
-  void loadFootContactMsg(const quad_msgs::msg::FootContact& msg);
-
  protected:
   /// Robot Namespace
   std::string robot_ns_;
@@ -102,12 +93,6 @@ class StateEstimator {
 
   /// Most recent joint data
   sensor_msgs::msg::JointState last_joint_state_msg_;
-
-  /// Most recent measured foot-contact data (Unitree foot-force sensor)
-  quad_msgs::msg::FootContact last_foot_contact_msg_;
-
-  /// Whether a foot-contact message has been received at least once
-  bool foot_contact_received_ = false;
 };
 
 #endif  // STATE_ESTIMATOR_H

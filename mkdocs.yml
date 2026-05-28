@@ -10,6 +10,10 @@ copyright: Copyright &copy; Robomechanics Lab, Carnegie Mellon University
 # Per-package READMEs (included verbatim) link to source files outside docs/
 # (e.g. ../quad_msgs/msg/RobotState.msg) — these render fine on GitHub but
 # don't resolve as docs pages. Demote those to info so --strict still passes.
+# roadmap.md is kept in-tree but intentionally left out of the nav for now —
+# tell MkDocs not to warn about it.
+not_in_nav: |
+  roadmap.md
 
 validation:
   links:
@@ -185,7 +189,6 @@ nav:
       - Writing Your Own Controller: tutorials/writing-controller.md
       - Specialized Controllers: tutorials/specialized-controllers.md
   - Platforms: platforms.md
-  - Roadmap: roadmap.md
   - FAQ: faq.md
   - 🔒 RML:
       - 🔒 Lab Hub: rml/index.md

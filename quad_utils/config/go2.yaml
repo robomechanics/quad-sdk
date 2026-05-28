@@ -5,7 +5,8 @@
       h_min: 0.075                            # Minimum ground clearance of body corners, m
       h_nom: 0.3                             # Nominal ground clearance of body, m
       v_max: 2.0                              # Maximum robot velocity, m/s
-      v_nom: 0.75                             # Nominal velocity, m/s (used during connect function)                  # Nominal velocity, m/s (used during connect function)
+      v_nom: 0.75                             # Nominal velocity, m/s (used during connect function)
+      v_nom: 0.75                             # Nominal velocity, m/s (used during connect function)
       robot_l: 0.3                            # Length of robot body, m
       robot_w: 0.3                            # Width of robot body, m
       robot_h: 0.05                           # Vertical distance between leg base and bottom of robot, m
@@ -89,20 +90,37 @@
 /**/robot_driver:
   ros__parameters:    
     robot_driver:
+      # for learned
       sit_kp: [10.0, 10.0, 10.0]
       sit_kd: [1.0, 1.0, 1.0]
       stand_kp: [60.0, 60.0, 60.0]
       stand_kd: [2.0, 2.0, 2.0]
-      stance_kp: [60.0, 60.0, 60.0] # 40 Learned, 30 MPC
-      stance_kd: [4.0, 4.0, 4.0]
-      swing_kp: [60.0, 60.0, 60.0] #[10.0, 10.0, 10.0]
-      swing_kd: [4.0, 4.0, 4.0]
+      stance_kp: [25.0, 25.0, 25.0] # Isaac Lab stock Go2 RL gains; was 60 (too stiff for learned policy)
+      stance_kd: [5.0, 5.0, 5.0]
+      swing_kp: [10.0, 10.0, 10.0] #[10.0, 10.0, 10.0]
+      swing_kd: [5.0, 5.0, 5.0]
       swing_kp_cart: [0.0, 0.0, 0.0] # N/m
       swing_kd_cart: [0.0, 0.0, 0.0] # N/m
       safety_kp: [0.0, 0.0, 0.0]
       safety_kd: [2.0, 2.0, 2.0]
       stand_joint_angles: [0.0, 0.8, -1.5] # go2
       sit_joint_angles: [0.0, 1.36, -2.65]
+      # for MPC
+      # sit_kp: [10.0, 10.0, 10.0]
+      # sit_kd: [1.0, 1.0, 1.0]
+      # stand_kp: [60.0, 60.0, 60.0]
+      # stand_kd: [2.0, 2.0, 2.0]
+      # stance_kp: [60.0, 60.0, 60.0] # 40 Learned, 30 MPC
+      # stance_kd: [4.0, 4.0, 4.0]
+      # swing_kp: [60.0, 60.0, 60.0] #[10.0, 10.0, 10.0]
+      # swing_kd: [4.0, 4.0, 4.0]
+      # swing_kp_cart: [0.0, 0.0, 0.0] # N/m
+      # swing_kd_cart: [0.0, 0.0, 0.0] # N/m
+      # safety_kp: [0.0, 0.0, 0.0]
+      # safety_kd: [2.0, 2.0, 2.0]
+      # stand_joint_angles: [0.0, 0.8, -1.5] # go2
+      # sit_joint_angles: [0.0, 1.36, -2.65]
+
 
 /**/controller_manager:
   ros__parameters:

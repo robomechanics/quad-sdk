@@ -24,9 +24,9 @@ Quad-SDK ships configs and hardware interfaces for the following quadrupeds. **H
 
 ## Simulator support
 
-Quad-SDK runs in three simulators: **Gazebo Harmonic**, **MuJoCo**, and **NVIDIA IsaacSim 5.1**. Each robot's verified coverage:
+Quad-SDK runs in three simulators: **Gazebo Harmonic**, **MuJoCo**, and **NVIDIA Isaac Sim 5.1**. Each robot's verified coverage:
 
-| Robot | Gazebo | MuJoCo | IsaacSim |
+| Robot | Gazebo | MuJoCo | Isaac Sim |
 |---|:---:|:---:|:---:|
 | **Spirit 40** | :material-check: | :material-check: | :material-check: |
 | **Go2** | :material-check: | :material-check: | :material-check: |
@@ -39,7 +39,7 @@ Quad-SDK runs in three simulators: **Gazebo Harmonic**, **MuJoCo**, and **NVIDIA
 
 - **Gazebo Harmonic** — every platform.
 - **MuJoCo** — every platform except the A1.
-- **IsaacSim 5.1** *(beta)* — Spirit 40 and Go2 (the robots in the Isaac bridge `ROBOT_REGISTRY`). Requires a separate IsaacLab conda install ([install guide](https://isaac-sim.github.io/IsaacLab/main/source/setup/installation/index.html)). See [Running in IsaacSim](tutorials/isaac-sim.md) for setup and run instructions.
+- **Isaac Sim 5.1** *(beta)* — Spirit 40 and Go2 (the robots in the Isaac bridge `ROBOT_REGISTRY`). Requires a separate IsaacLab conda install ([install guide](https://isaac-sim.github.io/IsaacLab/main/source/setup/installation/index.html)). See [Running in Isaac Sim](tutorials/isaac-sim.md) for setup and run instructions.
 
 ## Adding a new platform
 

@@ -46,7 +46,7 @@ jobs:
 
             cd /root/ros2_ws
             colcon test --event-handlers console_direct+ --parallel-workers 1 \
-              --packages-skip mocap4r2_control mocap4r2_optitrack_driver
+              --packages-skip mocap4r2_control
             colcon test-result --verbose
 
       - run:

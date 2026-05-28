@@ -86,7 +86,7 @@ def generate_launch_description():
         DeclareLaunchArgument('cbs_mode', default_value='false', description='Suppress GBP spin-loop solo planning (used by multi_robot.py for CBS).'),
         DeclareLaunchArgument(
             'robot_configs',
-            default_value='[{"name": "robot_1", "type": "go2", "controller_mode" : "inverse_dynamics", "reference": "twist", "twist_input": "joy"}]',
+            default_value='[{"name": "robot_1", "type": "go2", "controller_mode" : "inverse_dynamics", "reference": "gbpl", "twist_input": "none"}]',
             description='A JSON List of robot configurations: MUST specifiy name, type, and controller_mode, reference'
         ),
         OpaqueFunction(function=launch_robot_group)

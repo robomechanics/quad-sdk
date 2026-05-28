@@ -93,7 +93,7 @@ class LearnedPolicy : public LegController {
   sensor_msgs::msg::Imu last_imu_msg_;
 
   /// Newest Velocity Command
-  Eigen::VectorXd cmd_vel_msg_{Eigen::VectorXd::Zero(3)};
+  Eigen::VectorXd cmd_vel_msg_{Eigen::VectorXd::Zero(6)};
 
   /// Time of Newest Velocity Command Message
   rclcpp::Time last_cmd_vel_msg_time_;
