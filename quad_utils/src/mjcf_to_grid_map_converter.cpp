@@ -1,15 +1,3 @@
-// #include <pcl_ros/point_cloud.h> // might cause a conflict
-// #include "grid_map_msgs/msg/grid_map.hpp"
-// #include "grid_map_msgs/srv/ProcessFile.hpp"
-// #include <grid_map_pcl/GridMapPclConverter.hpp>
-// #include <grid_map_ros/grid_map_ros.hpp>
-
-// #include <pcl/io/vtk_lib_io.h>
-// #include <pcl_conversions/pcl_conversions.h>
-// #include "ament_index_cpp/get_package_share_directory.hpp"
-
-// #include <quad_utils/mjcf_to_grid_map_converter.hpp>
-
 #include <rclcpp/rclcpp.hpp>
 #include <grid_map_msgs/msg/grid_map.hpp>
 #include <grid_map_msgs/srv/process_file.hpp>
@@ -96,12 +84,6 @@ void MjcfToGridMapConverter::advertiseServices() {  // UPDATED
           "load_mesh_from_file",
           std::bind(&MjcfToGridMapConverter::loadMeshService, this,
                     std::placeholders::_1, std::placeholders::_2));
-
-  // save_grid_map_srv_ = nh_private_.advertiseService(
-  //     "save_grid_map_to_file", &MjcfToGridMapConverter::saveGridMapService,
-  //     this);
-  // load_map_service_server_ = nh_private_.advertiseService(
-  //     "load_mesh_from_file", &MjcfToGridMapConverter::loadMeshService, this);
 }
 
 void MjcfToGridMapConverter::getParametersFromRos() {  // UPDATED
@@ -122,18 +104,6 @@ void MjcfToGridMapConverter::getParametersFromRos() {  // UPDATED
 
   node_->declare_parameter("world", world_name_);
   node_->get_parameter("world", world_name_);
-
-
-
-  // nh_private_.param("grid_map_resolution", grid_map_resolution_,
-  //                   grid_map_resolution_);
-  // nh_private_.param("layer_name", layer_name_, layer_name_);
-  // nh_private_.param("latch_grid_map_pub", latch_grid_map_pub_,
-  //                   latch_grid_map_pub_);
-  // nh_private_.param("verbose", verbose_, verbose_);
-  // nh_private_.param("frame_id_mesh_loaded", frame_id_mesh_loaded_,
-  //                   frame_id_mesh_loaded_);
-  // nh_private_.param("world", world_name_, world_name_);
 }
 
 void MjcfToGridMapConverter::meshCallback(  // UPDATED
@@ -181,29 +151,6 @@ bool MjcfToGridMapConverter::meshToGridMap(
   // Add x and y layers to map
   map.add("x", x_data);
   map.add("y", y_data);
-
-  // Check on the Values of the Z layer
-  //  if (map.exists("z")) {
-  //      std::vector<grid_map::Index> corners = {
-  //          grid_map::Index(0, 0),
-  //          grid_map::Index(map.getSize()(0) - 1, 0),
-  //          grid_map::Index(0, map.getSize()(1) - 1),
-  //          grid_map::Index(map.getSize()(0) - 1, map.getSize()(1) - 1)
-  //      };
-
-  //     for (size_t i = 0; i < corners.size(); ++i) {
-  //         const auto& index = corners[i];
-  //         try {
-  //             float z = map.at("z", index);
-  //             std::cout << "Corner " << i << " at index (" << index(0) << ",
-  //             " << index(1)
-  //                       << ") has z = " << z << std::endl;
-  //         } catch (const std::exception& e) {
-  //             std::cerr << "Error accessing z at corner " << i << ": " <<
-  //             e.what() << std::endl;
-  //         }
-  //     }
-  // }
 
   // Printing some debug info about the mesh and the map
   if (verbose_) {

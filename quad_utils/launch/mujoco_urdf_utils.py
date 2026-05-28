@@ -1,10 +1,10 @@
-"""MuJoCo-specific URDF construction.
+"""
+MuJoCo-specific URDF construction.
 
-The Gazebo URDF (`<robot>.urdf.xacro`) is the single source of truth for
-robot structure. To run the same robot in MuJoCo we synthesise the
-MuJoCo-specific elements at launch time instead of maintaining a parallel
-`<robot>_mujoco.urdf.xacro` file. The injected pieces are:
-
+MuJoCo requires specific elements in the URDF that are not needed for Gazebo, 
+but are needed for MuJoCo. To run the same robot in both simulators without 
+maintaining two separate URDFs, this file injects MuJoCo specific elements at 
+launch. These include: 
   * a `<mujoco>` block with the asset compiler and the `mujoco_ros2_control`
     plugin reference;
   * a `<ros2_control name="MujocoSystem">` block whose hardware plugin is
@@ -21,11 +21,8 @@ Per-robot data (joint maps, floating-base joint name) lives in
 
 import os
 import xml.etree.ElementTree as ET
-
 import xacro
-
 from mujoco_profiles import get_profile
-
 
 def build_mujoco_urdf(robot_type, urdf_path, desc_path, world_path,
                       namespace, plugin_params_path):
@@ -43,7 +40,6 @@ def build_mujoco_urdf(robot_type, urdf_path, desc_path, world_path,
         base_urdf, profile, world_path, namespace,
         meshdir, plugin_params_path,
     )
-
 
 def _inject_mujoco_elements(urdf_xml, profile, world_path, namespace,
                             meshdir, plugin_params_path):

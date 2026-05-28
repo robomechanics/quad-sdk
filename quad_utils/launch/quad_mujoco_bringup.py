@@ -1,4 +1,5 @@
-r"""MuJoCo-side ROS bringup: per-robot URDF + driver + ground truth.
+"""
+MuJoCo-side ROS bringup, used by quad_mujoco.py to launch the per-robot stack
 
 What this brings up (under <namespace>, pushed by the parent
 quad_mujoco.py via PushRosNamespace):
@@ -9,31 +10,12 @@ quad_mujoco.py via PushRosNamespace):
     - contact_state_publisher_node
     - visualization_plugins.py include
     - mujoco_estimator       (ground-truth odom/imu from mjData)
-
-What this does NOT bring up:
-    - The MuJoCo world / ros2_control_node (launched by quad_mujoco.py)
-    - The terrain map raw publisher / filters (launched by quad_mujoco.py
-      via mjcf_mapping.py — this file only relays the result into the
-      robot namespace)
-    - The planning stack       (launched separately)
-
-URDF synthesis: the standard Gazebo `<robot>.urdf.xacro` is processed
-through `mujoco_urdf_utils.build_mujoco_urdf`, which strips the
-GazeboSimSystem ros2_control block and injects a MujocoSystem block plus
-per-joint transmissions referencing MJCF actuator names. The synthesized
-URDF is set as the `robot_urdf` LaunchConfiguration so downstream nodes
-(robot_state_publisher, robot_driver, visualization) all see the same
-MuJoCo-flavoured description.
-
-This launch is intended to be `IncludeLaunchDescription`d from
-quad_mujoco.py inside a per-robot `PushRosNamespace`. Calling it
-standalone works for a single robot if you also start mujoco_ros2_control
-yourself.
 """
 
 import os
 import sys
-
+from launch_ros.actions import Node
+from launch_ros.substitutions import FindPackageShare
 from launch import LaunchDescription
 from launch.actions import (
     DeclareLaunchArgument, ExecuteProcess, IncludeLaunchDescription,
@@ -43,14 +25,14 @@ from launch.actions import (
 from launch.event_handlers import OnProcessExit
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch.substitutions import LaunchConfiguration
-from launch_ros.actions import Node
-from launch_ros.substitutions import FindPackageShare
+
 
 # Launch files are loaded by ros2 launch via importlib spec, so this
 # directory isn't on sys.path by default. Make sibling helper modules
 # (e.g. mujoco_urdf_utils) importable.
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import mujoco_urdf_utils  # noqa: E402
+
 
 
 _ROBOT_FILES = {
@@ -314,7 +296,7 @@ def generate_launch_description():
         DeclareLaunchArgument('world', default_value='flat.xml',
                               description='MJCF world file name'),
         DeclareLaunchArgument('world_path', default_value='',
-                              description='Full MJCF path (set by quad_mujoco.py prepare_world; empty resolves from `world`)'),
+                              description='Full MJCF path (set by quad_mujoco.py)'),
         DeclareLaunchArgument('robot_type', default_value='spirit',
                               description='Robot type'),
         DeclareLaunchArgument('namespace', default_value='robot_1',
@@ -324,7 +306,7 @@ def generate_launch_description():
         DeclareLaunchArgument('estimator', default_value='comp_filter',
                               description='State estimator type (comp_filter or ekf_filter)'),
         DeclareLaunchArgument('init_pose', default_value='-x 0.0 -y 0.0 -z 0.5',
-                              description='Initial robot position (consumed by quad_mujoco.py world prep, kept here for parity)'),
+                              description='Initial robot position'),
         DeclareLaunchArgument('use_sim_time', default_value='true',
                               description='Use simulation clock'),
         OpaqueFunction(function=load_robot_params),
