@@ -7,7 +7,7 @@
         </General>
         <Discovery>
             <Peers>
-                <Peer address="192.168.8.18"/>
+                <Peer address="${REMOTE_ROBOT_IP}"/>
             </Peers>
             <ParticipantIndex>auto</ParticipantIndex>
         </Discovery>

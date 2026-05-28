@@ -24,9 +24,10 @@ UnitreeInterface::UnitreeInterface(const std::string& robot_name)
 }
 
 void UnitreeInterface::loadInterface(int /*argc*/, char** /*argv*/) {
-  // ROBOT_MCU_IFACE is set by init_robot.sh based on which interface holds an
-  // IP on the MCU subnet (192.168.123.0/24). Falls back to eth0 if unset.
-  const char* env_iface = std::getenv("ROBOT_MCU_IP");
+  // ROBOT_MCU_IFACE is the interface NAME (e.g. "enP8p1s0") on the MCU subnet
+  // (192.168.123.0/24); init_robot.sh detects and exports it. The Unitree SDK
+  // wants a name here, not an IP. Falls back to eth0 if unset.
+  const char* env_iface = std::getenv("ROBOT_MCU_IFACE");
   std::string net_iface = (env_iface && *env_iface) ? env_iface : "eth0";
   std::cout << "UnitreeInterface: using network interface '" << net_iface
             << "' for MCU DDS domain." << std::endl;
