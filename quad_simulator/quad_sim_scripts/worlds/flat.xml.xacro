@@ -14,6 +14,6 @@
 
   <worldbody>
     <light directional="true" diffuse=".8 .8 .8" specular=".2 .2 .2" pos="0 0 5" dir="0 0 -1"/>
-    <geom name="floor" type="box" size="4.5 2 0.05" pos="2.5 0 0.02" rgba="0.8 0.9 0.8 1"/>
+    <geom name="floor" type="box" size="4.5 2 0.05" pos="2.5 0 -0.05" rgba="0.8 0.9 0.8 1"/>
   </worldbody>
 </mujoco>

@@ -3,7 +3,7 @@
 
   <xacro:arg name="meshdir" default=""/>
   <xacro:arg name="mjcf_path" default=""/>
-  <!-- Absolute path to the PNG heightmap rasterized from rough_40cm_huge.stl. -->
+
   <xacro:arg name="terrain_heightmap" default=""/>
 
   <compiler
@@ -12,42 +12,34 @@
     texturedir="$(arg meshdir)"
     autolimits="true"/>
 
+  <size memory="256M"/>
+
+
+  <option
+    timestep="0.002"
+    iterations="80"
+    ls_iterations="20"
+    tolerance="1e-6"
+    cone="elliptic"
+    impratio="5"
+    noslip_iterations="5"
+    noslip_tolerance="1e-6"
+    jacobian="dense"
+    integrator="implicit"
+    >
+    <flag override="enable"/>
+  </option>
+
   <include file="$(arg mjcf_path)"/>
 
-  <!-- size = "radius_x radius_y elev_max base_depth", derived from STL bounds:
-       X extent 30m, Y extent 30m, Z range 0..2.6m. -->
+
   <asset>
     <hfield name="terrain" file="$(arg terrain_heightmap)" size="15.0 15.0 2.6 0.5"/>
   </asset>
 
   <worldbody>
     <light directional="true" diffuse=".8 .8 .8" specular=".2 .2 .2" pos="0 0 5" dir="0 0 -1"/>
-    <!-- Position chosen to match the PLY this terrain is paired with:
-         rough_40cm_huge.ply has X in [-2,28], Y in [-20,10], Z in [-0.1,2.5].
-         The planner's `mjcf_to_grid_map_converter` ingests that PLY with no
-         transform, so the hfield must occupy the same world span — center
-         (13, -5), Z origin at -0.1 — or `quad_plan` foothold targets will
-         be offset from where the heightfield actually is and feet won't
-         swing. margin=0.01 is the contact-pair margin (MuJoCo takes max of
-         the two geoms); foot priority=1 dictates friction/condim. -->
-    <!-- margin=0.01 widens the contact detection band by 1cm; that's the
-         only attribute on the floor that takes effect, because the foot
-         carries priority=1 and dictates all other contact params at the
-         contact pair. Don't crank stiffness here; stiffening past the
-         foot's default solref/solimp via priority=2 causes the heightfield
-         to chatter (the constraint solver bounces between cells). -->
-    <!-- priority="2" beats every robot geom (foot is priority=1, everything
-         else priority=0), so these params apply to every contact pair that
-         involves the floor — global from the floor's side. friction is the
-         (sliding, torsional, rolling) triple; rolling=0.05 (was 0.001) is
-         what stops spherical feet from rolling along the surface and
-         dragging the body with them. -->
-    <!-- pos.z = -0.1 puts the hfield in the planner's Z frame. The BIN
-         heightmap normalises against STL Z=[0, 2.6], so pos.z=0 would put
-         the sim surface at world z=[0, 2.6]; the PLY ingested by
-         mjcf_to_grid_map_converter is at z=[-0.1, 2.5]. The 0.1 m offset
-         is what caused INVALID_START_STATE and feet sliding (NMPC foot
-         targets sat below the actual sim surface). -->
+
     <geom name="floor" type="hfield" hfield="terrain" pos="0 0 -0.1" rgba="0.8 0.9 0.8 1"
           priority="2" condim="6"
           friction="1.5 0.1 0.05"
