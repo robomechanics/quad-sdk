@@ -1,3 +1,7 @@
+"""
+Main Ros2 launch file for Mujoco simulation with quadrupeds. 
+"""
+
 from ament_index_python import get_package_share_directory
 from launch import LaunchDescription
 from launch.actions import DeclareLaunchArgument, OpaqueFunction, GroupAction, IncludeLaunchDescription, ExecuteProcess, SetLaunchConfiguration
@@ -152,7 +156,7 @@ def launch_robot_mapping(context, *args, **kwargs):
     mapping_launch_path = PathJoinSubstitution([
         FindPackageShare('quad_utils'),
         'launch',
-        'mjcf_mapping.py'
+        'mujoco_mapping.py'
     ])
     return [
         GroupAction([
@@ -282,106 +286,6 @@ def launch_mujoco_world(context, *args, **kwargs):
         )
     ]
 
-# def launch_mujoco_world(context, *args, **kwargs):
-#     world_name = LaunchConfiguration('world').perform(context)
-    
-#     world_path = PathJoinSubstitution([
-#         FindPackageShare('quad_sim_scripts'),
-#         'models',
-#         world_name
-#     ])
-    
-#     return [
-#         Node(
-#             package='mujoco_ros2_control',
-#             executable='ros2_control_node',
-#             name='mujoco',
-#             parameters=[
-#                 {'robot_description': ''},  # filled by robot_bringup
-#                 {'use_sim_time': LaunchConfiguration('use_sim_time')},
-#                 {'mujoco_model_path': world_path},
-#             ],
-#             output='screen'
-#         )
-#     ]
-
-
-# def launch_recording(context, *args, **kwargs):
-#     recording = LaunchConfiguration('recording').perform(context).lower() == 'true'
-#     if not recording:
-#         return []
-
-#     if shutil.which('ffmpeg') is None:
-#         raise RuntimeError(
-#             "recording=true but `ffmpeg` is not installed. "
-#             "Install it with `sudo apt install ffmpeg` (and optionally "
-#             "`xdotool` to crop the capture to the MuJoCo window)."
-#         )
-
-#     quad_logger_src = os.environ.get('QUAD_LOGGER_SRC')
-#     if quad_logger_src is None:
-#         raise RuntimeError(
-#             "recording=true but QUAD_LOGGER_SRC env variable is not set. "
-#             "Point it at the quad_logger source dir, e.g. "
-#             "`export QUAD_LOGGER_SRC=$HOME/ros2_ws/src/quad-sdk/quad_logger`."
-#         )
-
-#     logs_dir = os.path.join(quad_logger_src, 'logs')
-#     os.makedirs(logs_dir, exist_ok=True)
-
-#     robot_configs = json.loads(LaunchConfiguration('robot_configs').perform(context))
-#     robot_type = robot_configs[0]['type'] if robot_configs else 'mujoco'
-#     timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
-#     output_path = os.path.join(logs_dir, f'mujoco_{robot_type}_{timestamp}.mp4')
-
-#     display = os.environ.get('DISPLAY', ':0')
-
-#     # Capture via x11grab. The MuJoCo viewer takes a moment to come up, so we
-#     # poll for its window with xdotool and then grab that window's region —
-#     # this avoids recording the desktop while the viewer is still loading and
-#     # crops out everything but MuJoCo. If xdotool isn't available or the
-#     # window isn't found within the retry budget, fall back to full-screen
-#     # capture so the user still gets a recording.
-#     #
-#     # `exec` replaces bash with ffmpeg so SIGTERM from launch reaches ffmpeg
-#     # directly; ffmpeg writes the mp4 trailer on signal so the file is
-#     # playable. sigterm_timeout gives it room to finalize before SIGKILL.
-#     record_script = f'''
-# set -e
-# out={output_path!r}
-# disp={display!r}
-# geom=""
-# if command -v xdotool >/dev/null 2>&1; then
-#     for _ in $(seq 1 20); do
-#         wid=$(xdotool search --name "MuJoCo" 2>/dev/null | head -n1 || true)
-#         if [ -n "$wid" ]; then
-#             eval "$(xdotool getwindowgeometry --shell "$wid")"
-#             geom="-video_size ${{WIDTH}}x${{HEIGHT}} -i ${{disp}}+${{X}},${{Y}}"
-#             break
-#         fi
-#         sleep 0.5
-#     done
-# fi
-# if [ -z "$geom" ]; then
-#     echo "[launch_recording] capturing full display ${{disp}} (xdotool/MuJoCo window unavailable)" >&2
-#     geom="-i ${{disp}}"
-# fi
-# exec ffmpeg -hide_banner -loglevel warning -y \\
-#     -f x11grab -framerate 30 $geom \\
-#     -c:v libx264 -preset ultrafast -pix_fmt yuv420p "$out"
-# '''
-
-#     return [
-#         ExecuteProcess(
-#             cmd=['bash', '-lc', record_script],
-#             output='screen',
-#             shell=False,
-#             sigterm_timeout='10',
-#         )
-#     ]
-
-
-
 def _resolve_quad_logger_src(context):
     """Return the quad_logger SOURCE dir (not install/share).
 
@@ -392,7 +296,7 @@ def _resolve_quad_logger_src(context):
     """
     quad_logger_src = os.environ.get('QUAD_LOGGER_SRC')
     if quad_logger_src and os.path.isdir(quad_logger_src):
-        return quad_logger_src
+        return quad_logger_src  
 
     share = FindPackageShare('quad_logger').perform(context)
     # share = <ws>/install/quad_logger/share/quad_logger

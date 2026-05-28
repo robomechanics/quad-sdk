@@ -77,12 +77,6 @@ class MujocoRecorder : public rclcpp::Node {
     }
     data_ = mj_makeData(model_);
 
-    // MuJoCo's offscreen framebuffer defaults to 640x480 (set by the MJCF
-    // <visual><global offwidth=... offheight=.../> tag). If we render to a
-    // viewport bigger than the FBO, only the FBO-sized region gets drawn
-    // and readback past that region is undefined — output mp4 ends up
-    // showing the scene in just the bottom-left of each frame. Resize the
-    // FBO config BEFORE mjr_makeContext allocates the GPU buffers.
     model_->vis.global.offwidth  = width_;
     model_->vis.global.offheight = height_;
 

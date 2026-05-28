@@ -1,17 +1,14 @@
-"""Per-robot MuJoCo injection profiles.
+"""
+Per-robot MuJoCo injection profiles.
 
-Each profile captures the robot-specific bits that the Gazebo URDF doesn't
-carry: the floating-base joint name MuJoCo uses for odometry, and the
-mapping from ros2_control joint names to MuJoCo actuator/joint names. These
-mirror the rows that lived in the (now retired) `<robot>_mujoco.urdf.xacro`
-files as `<xacro:mujoco_joint>` entries.
-
+Each profile contains the robot-specific information for MuJoCo: the 
+floating-base joint name MuJoCo uses for odometry and mapping from ros2_control 
+joint names to MuJoCo actuator/joint names.
 
 To support a new robot, add an entry to `PROFILES` keyed by `robot_type`.
 The generic injection logic in `mujoco_urdf_utils.py` consumes these
 profiles unchanged.
 """
-
 
 _GO2_PROFILE = {
     'odom_free_joint_name': 'floating_base',
@@ -32,10 +29,6 @@ _GO2_PROFILE = {
     ],
 }
 
-
-# a1's URDF (and ros2_control block) uses the same numeric joint names as go2,
-# and its mjcf uses the same FL_/FR_/RL_/RR_ actuator names — so the mapping
-# is identical to go2.
 _A1_PROFILE = {
     'odom_free_joint_name': 'floating_base',
     'initial_keyframe': 'home',
@@ -54,9 +47,6 @@ _A1_PROFILE = {
         ('11', 'RR_hip_joint'),
     ],
 }
-
-
-
 
 _GO1_PROFILE = {
     'odom_free_joint_name': 'floating_base',
@@ -78,12 +68,6 @@ _GO1_PROFILE = {
     ],
 }
 
-
-# spot.xml uses Boston-Dynamics' short actuator names: f/h = front/hind,
-# l/r = left/right; hx = hip abduction, hy = hip flexion (thigh),
-# kn = knee (calf). The ros2_control side uses the numeric scheme shared
-# with go2/a1 (8/0/1 = FL hip/thigh/calf, 9/2/3 = RL, 10/4/5 = FR,
-# 11/6/7 = RR).
 _SPOT_PROFILE = {
     'odom_free_joint_name': 'floating_base',
     'initial_keyframe': 'home',
@@ -103,12 +87,6 @@ _SPOT_PROFILE = {
     ],
 }
 
-
-# b2's mjcf has `<motor name="FL_thigh" joint="FL_thigh_joint"/>` etc, and a
-# `floating_base_joint` freejoint (not `floating_base`). The transmission
-# matcher in mujoco_ros2_control compares against the actuator's *joint*
-# name, so we map to the `_joint`-suffixed names. Numeric ros2_control
-# scheme matches go2/a1/spot.
 _B2_PROFILE = {
     'odom_free_joint_name': 'floating_base_joint',
     'initial_keyframe': 'home',
@@ -127,7 +105,6 @@ _B2_PROFILE = {
         ('11', 'RR_hip_joint'),
     ],
 }
-
 
 _SPIRIT_PROFILE = {
     'odom_free_joint_name': 'floating_base',
@@ -148,7 +125,6 @@ _SPIRIT_PROFILE = {
     ],
 }
 
-
 PROFILES = {
     'go2': _GO2_PROFILE,
     'go1': _GO1_PROFILE,
@@ -158,11 +134,9 @@ PROFILES = {
     'spirit': _SPIRIT_PROFILE,
 }
 
-
 def has_profile(robot_type):
     """Whether on-the-fly MuJoCo URDF generation is supported for this robot."""
     return robot_type in PROFILES
-
 
 def get_profile(robot_type):
     """Return the profile for `robot_type` or raise with a fix-it hint."""
