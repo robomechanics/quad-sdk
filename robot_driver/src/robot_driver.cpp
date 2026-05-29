@@ -566,6 +566,37 @@ bool RobotDriver::updateState() {
       // Orientation from IMU quaternion
       last_robot_state_msg_.body.pose.orientation = last_imu_msg_.orientation;
 
+      last_robot_state_msg_.body.pose.position.x = 0.0;
+      last_robot_state_msg_.body.pose.position.y = 0.0;
+      last_robot_state_msg_.body.pose.position.z = 0.0;
+      quad_utils::fkRobotState(*quadKD2_, last_robot_state_msg_);
+      double min_foot_z = 0.0;
+      for (const auto& foot : last_robot_state_msg_.feet.feet) {
+        min_foot_z = std::min(min_foot_z, foot.position.z);
+      }
+      last_robot_state_msg_.body.pose.position.z = -min_foot_z;
+
+      static rclcpp::Time last_xy_time = state_timestamp;
+      static double xy_x = 0.0;
+      static double xy_y = 0.0;
+      const double dt_xy = (state_timestamp - last_xy_time).seconds();
+      last_xy_time = state_timestamp;
+      if (dt_xy > 0.0 && dt_xy < 0.1) {
+        tf2::Quaternion q(last_imu_msg_.orientation.x,
+                          last_imu_msg_.orientation.y,
+                          last_imu_msg_.orientation.z,
+                          last_imu_msg_.orientation.w);
+        double roll, pitch, yaw;
+        tf2::Matrix3x3(q).getRPY(roll, pitch, yaw);
+        const double cy = std::cos(yaw), sy = std::sin(yaw);
+        const double vx_w = cmd_vel_[0] * cy - cmd_vel_[1] * sy;
+        const double vy_w = cmd_vel_[0] * sy + cmd_vel_[1] * cy;
+        xy_x += vx_w * dt_xy;
+        xy_y += vy_w * dt_xy;
+      }
+      last_robot_state_msg_.body.pose.position.x = xy_x;
+      last_robot_state_msg_.body.pose.position.y = xy_y;
+
       // Angular velocity from IMU gyroscope
       last_robot_state_msg_.body.twist.angular = last_imu_msg_.angular_velocity;
 
