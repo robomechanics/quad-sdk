@@ -48,8 +48,6 @@ RobotDriver::RobotDriver(std::shared_ptr<rclcpp::Node> node, int argc,
                                   std::string("inverse_dynamics"));
   quad_utils::loadROSParamDefault(node_, "estimator_id", estimator_id_,
                                   std::string("comp_filter"));
-  quad_utils::loadROSParamDefault(node_, "debug_estimator_id",
-                                  debug_estimator_id_, std::string("none"));
   quad_utils::loadROSParam(node_, "robot_driver.update_rate", update_rate_);
   quad_utils::loadROSParam(node_, "robot_driver.publish_rate", publish_rate_);
   quad_utils::loadROSParam(node_, "robot_driver.mocap_rate", mocap_rate_);
@@ -236,36 +234,6 @@ void RobotDriver::initStateEstimator() {
   if (state_estimator_ != nullptr) {
     state_estimator_->init();
   }
-
-  // Optional parallel "ride-along" estimator. Runs on the same sensor inputs
-  // and publishes to topics.state.estimate for comparison, but its output
-  // never feeds the controller.
-  if (debug_estimator_id_ == "none" || debug_estimator_id_.empty()) {
-    debug_state_estimator_ = nullptr;
-  } else if (debug_estimator_id_ == estimator_id_) {
-    RCLCPP_WARN(node_->get_logger(),
-                "debug_estimator_id ('%s') matches active estimator_id; "
-                "skipping ride-along.",
-                debug_estimator_id_.c_str());
-    debug_state_estimator_ = nullptr;
-  } else if (debug_estimator_id_ == "comp_filter") {
-    RCLCPP_INFO(node_->get_logger(), "Ride-along estimator: comp_filter");
-    debug_state_estimator_ =
-        std::make_shared<CompFilterEstimator>(node_, robot_ns, quadKD2_);
-  } else if (debug_estimator_id_ == "ekf_filter") {
-    RCLCPP_INFO(node_->get_logger(), "Ride-along estimator: ekf_filter");
-    debug_state_estimator_ =
-        std::make_shared<EKFEstimator>(node_, robot_ns, quadKD2_);
-  } else {
-    RCLCPP_ERROR(node_->get_logger(),
-                 "Invalid debug_estimator_id '%s', skipping ride-along",
-                 debug_estimator_id_.c_str());
-    debug_state_estimator_ = nullptr;
-  }
-
-  if (debug_state_estimator_ != nullptr) {
-    debug_state_estimator_->init();
-  }
 }
 
 void RobotDriver::initLegController() {
@@ -416,10 +384,6 @@ void RobotDriver::mocapCallback(
               dynamic_cast<CompFilterEstimator*>(state_estimator_.get())) {
         c->mocapCallBackHelper(msg, pos);
       }
-      if (CompFilterEstimator* dc = dynamic_cast<CompFilterEstimator*>(
-              debug_state_estimator_.get())) {
-        dc->mocapCallBackHelper(msg, pos);
-      }
     } else {
       RCLCPP_WARN_THROTTLE(node_->get_logger(), *node_->get_clock(), 500,
                            "Mocap time diff exceeds max dropout threshold: "
@@ -539,17 +503,6 @@ bool RobotDriver::updateState() {
         fc_msg.contact_states[i] = (raw[i] > foot_contact_threshold_);
       }
       foot_contact_pub_->publish(fc_msg);
-
-      // Push the measured foot contact into the estimator(s) so the EKF uses
-      // the real foot-force contact instead of the planner's expected GRFs.
-      // Pushed (not subscribed) since the data is already in-process and must
-      // stay aligned with this tick's IMU/joint sample.
-      if (state_estimator_ != nullptr) {
-        state_estimator_->loadFootContactMsg(fc_msg);
-      }
-      if (debug_state_estimator_ != nullptr) {
-        debug_state_estimator_->loadFootContactMsg(fc_msg);
-      }
     }
 
     // For learned controllers on hardware, populate state directly from
@@ -563,39 +516,53 @@ bool RobotDriver::updateState() {
       last_robot_state_msg_.joints = last_joint_state_msg_;
       last_robot_state_msg_.joints.header.stamp = state_timestamp;
 
-      // Orientation from IMU quaternion
+      // Orientation from IMU quaternion. Guard against an uninitialized
+      // quaternion (the IMU msg defaults to (0,0,0,0) until the first
+      // hardware lowstate arrives): a zero-norm quaternion turns the FK
+      // rotation into NaN, which would silently floor the body height below.
+      const auto& q_imu = last_imu_msg_.orientation;
+      const double quat_norm = std::sqrt(q_imu.x * q_imu.x + q_imu.y * q_imu.y +
+                                         q_imu.z * q_imu.z + q_imu.w * q_imu.w);
+      if (quat_norm < 0.5) {
+        RCLCPP_WARN_THROTTLE(
+            node_->get_logger(), *node_->get_clock(), 1000,
+            "updateState: IMU orientation not yet valid; skipping state fill");
+        return true;
+      }
       last_robot_state_msg_.body.pose.orientation = last_imu_msg_.orientation;
 
+      // Fake the body height from leg kinematics: place the body at the
+      // origin, run FK, then lift the body so the lowest foot rests on the
+      // ground plane (z = 0). The lowest standing foot is below the body
+      // origin, so its FK z is negative and -min_foot_z is the stand height.
+      //
+      // Seed min_foot_z from +inf (not 0.0) and skip non-finite samples so a
+      // bad FK frame can't clamp the body to z = 0; if no usable foot is
+      // found, hold the last good height instead of dropping into the floor.
+      static double last_good_z = 0.0;
       last_robot_state_msg_.body.pose.position.x = 0.0;
       last_robot_state_msg_.body.pose.position.y = 0.0;
       last_robot_state_msg_.body.pose.position.z = 0.0;
       quad_utils::fkRobotState(*quadKD2_, last_robot_state_msg_);
-      double min_foot_z = 0.0;
+      double min_foot_z = std::numeric_limits<double>::infinity();
       for (const auto& foot : last_robot_state_msg_.feet.feet) {
-        min_foot_z = std::min(min_foot_z, foot.position.z);
+        if (std::isfinite(foot.position.z)) {
+          min_foot_z = std::min(min_foot_z, foot.position.z);
+        }
       }
-      last_robot_state_msg_.body.pose.position.z = -min_foot_z;
+      if (std::isfinite(min_foot_z)) {
+        last_good_z = -min_foot_z;
+      }
+      last_robot_state_msg_.body.pose.position.z = last_good_z;
 
-      static rclcpp::Time last_xy_time = state_timestamp;
-      static double xy_x = 0.0;
-      static double xy_y = 0.0;
-      const double dt_xy = (state_timestamp - last_xy_time).seconds();
-      last_xy_time = state_timestamp;
-      if (dt_xy > 0.0 && dt_xy < 0.1) {
-        tf2::Quaternion q(last_imu_msg_.orientation.x,
-                          last_imu_msg_.orientation.y,
-                          last_imu_msg_.orientation.z,
-                          last_imu_msg_.orientation.w);
-        double roll, pitch, yaw;
-        tf2::Matrix3x3(q).getRPY(roll, pitch, yaw);
-        const double cy = std::cos(yaw), sy = std::sin(yaw);
-        const double vx_w = cmd_vel_[0] * cy - cmd_vel_[1] * sy;
-        const double vy_w = cmd_vel_[0] * sy + cmd_vel_[1] * cy;
-        xy_x += vx_w * dt_xy;
-        xy_y += vy_w * dt_xy;
-      }
-      last_robot_state_msg_.body.pose.position.x = xy_x;
-      last_robot_state_msg_.body.pose.position.y = xy_y;
+      // Anchor x/y at the origin so the robot stays centered in the map.
+      // We have no absolute horizontal reference on hardware (mocap is off
+      // for the learned controller), so integrating cmd_vel only accumulates
+      // dead-reckoning drift and walks the robot off the map. Height (above)
+      // and orientation (below) still track the real robot; only the
+      // horizontal position is pinned.
+      last_robot_state_msg_.body.pose.position.x = 0.0;
+      last_robot_state_msg_.body.pose.position.y = 0.0;
 
       // Angular velocity from IMU gyroscope
       last_robot_state_msg_.body.twist.angular = last_imu_msg_.angular_velocity;
@@ -655,49 +622,6 @@ bool RobotDriver::updateState() {
             "updateState returning false: estimator updateOnce failed");
       }
 
-      // Run the ride-along estimator on the same sensor inputs. Its output
-      // goes to debug_estimate_msg_ and is published on topics.state.estimate
-      // for comparison; it never reaches the controller.
-      //
-      // Gate the first seed on READY (standing): if we initialize during sit
-      // or the sit->stand transient, the contact-aided EKF dead-reckons
-      // through legs extending / feet breaking contact and accumulates x/y
-      // drift before the robot is even walking. Waiting for a settled standing
-      // pose makes it start coincident with the mocap-fused comp filter.
-      // Once seeded it keeps running across all modes.
-      if (debug_state_estimator_ != nullptr && result &&
-          (debug_estimator_seeded_ || control_mode_ == READY)) {
-        bool first_seed = !debug_estimator_seeded_;
-        if (!debug_estimator_seeded_) {
-          // Seed from the primary's first valid output so both filters
-          // initialize from the same pose (EKF reads X0 from this msg).
-          debug_estimate_msg_ = last_robot_state_msg_;
-          debug_estimator_seeded_ = true;
-        }
-        debug_state_estimator_->loadSensorMsg(last_imu_msg_,
-                                              last_joint_state_msg_);
-        if (last_mocap_msg_ != nullptr) {
-          debug_state_estimator_->loadMocapMsg(last_mocap_msg_);
-        }
-        debug_state_estimator_->updateOnce(debug_estimate_msg_);
-
-        // One-time init diagnostic: shows the seed (mocap-fused comp filter
-        // pose) vs the ride-along's first published estimate, so we can see
-        // whether they start coincident.
-        if (first_seed) {
-          RCLCPP_INFO(
-              node_->get_logger(),
-              "EKF ride-along init: seed(comp/mocap)=(%.3f, %.3f, %.3f) "
-              "first_est=(%.3f, %.3f, %.3f)",
-              last_robot_state_msg_.body.pose.position.x,
-              last_robot_state_msg_.body.pose.position.y,
-              last_robot_state_msg_.body.pose.position.z,
-              debug_estimate_msg_.body.pose.position.x,
-              debug_estimate_msg_.body.pose.position.y,
-              debug_estimate_msg_.body.pose.position.z);
-        }
-      }
-
       return result;
     } else {
       RCLCPP_WARN_THROTTLE(
@@ -707,61 +631,6 @@ bool RobotDriver::updateState() {
     }
   } else {
     // State information coming through sim subscribers, not hardware interface.
-    // Optionally run EKF in parallel for testing (does not affect control).
-    if (debug_estimator_ && state_estimator_ != nullptr &&
-        rclcpp::Time(last_robot_state_msg_.header.stamp).seconds() != 0) {
-      // Initialize EKF once robot is in stand mode (control_mode_ == READY)
-      if (!ekf_initialized_) {
-        if (control_mode_ != READY) {
-          return true;  // Not standing yet, skip EKF
-        }
-        ekf_estimate_msg_ = last_robot_state_msg_;
-        ekf_initialized_ = true;
-        RCLCPP_INFO(node_->get_logger(),
-                    "EKF initialized from ground truth state (Z=%.3f)",
-                    last_robot_state_msg_.body.pose.position.z);
-      }
-
-      // Build IMU msg from ground truth state
-      sensor_msgs::msg::Imu imu_from_gt;
-      imu_from_gt.header = last_robot_state_msg_.header;
-      imu_from_gt.orientation = last_robot_state_msg_.body.pose.orientation;
-      imu_from_gt.angular_velocity = last_robot_state_msg_.body.twist.angular;
-
-      // Derive accelerometer reading from ground truth velocity.
-      // A real IMU measures specific force = (linear_accel - gravity) in body
-      // frame. We compute world-frame accel from finite differences, then
-      // convert to what an accelerometer would read:
-      //   accel_imu = R^T * (a_world - g)   but since a_world already excludes
-      //   gravity in Newton's law, the IMU actually reads
-      // R^T * (a_world + g_up)
-      //   i.e. R^T * (dv/dt + [0,0,9.81])
-      Eigen::Vector3d vel_world(last_robot_state_msg_.body.twist.linear.x,
-                                last_robot_state_msg_.body.twist.linear.y,
-                                last_robot_state_msg_.body.twist.linear.z);
-      double dt_gt = 1.0 / update_rate_;
-      Eigen::Vector3d accel_world = (vel_world - ekf_last_vel_) / dt_gt;
-      ekf_last_vel_ = vel_world;
-
-      // IMU reads specific force in body frame: R^T * (a + g)
-      Eigen::Quaterniond q_orient(
-          last_robot_state_msg_.body.pose.orientation.w,
-          last_robot_state_msg_.body.pose.orientation.x,
-          last_robot_state_msg_.body.pose.orientation.y,
-          last_robot_state_msg_.body.pose.orientation.z);
-      Eigen::Matrix3d R_world_body = q_orient.toRotationMatrix();
-      Eigen::Vector3d g_world(0.0, 0.0, 9.81);
-      Eigen::Vector3d accel_body =
-          R_world_body.transpose() * (accel_world + g_world);
-      imu_from_gt.linear_acceleration.x = accel_body.x();
-      imu_from_gt.linear_acceleration.y = accel_body.y();
-      imu_from_gt.linear_acceleration.z = accel_body.z();
-
-      // Feed ground truth sensor data to the estimator
-      state_estimator_->loadSensorMsg(imu_from_gt,
-                                      last_robot_state_msg_.joints);
-      state_estimator_->updateOnce(ekf_estimate_msg_);
-    }
     return true;
   }
 }
@@ -772,13 +641,6 @@ void RobotDriver::publishState() {
     imu_pub_->publish(last_imu_msg_);
     joint_state_pub_->publish(last_joint_state_msg_);
     robot_state_pub_->publish(last_robot_state_msg_);
-
-    // Publish ride-along estimator output on topics.state.estimate for
-    // side-by-side comparison with the active estimator (drives no control).
-    if (debug_state_estimator_ != nullptr && debug_estimator_seeded_) {
-      debug_estimate_msg_.header.stamp = node_->now();
-      state_estimate_pub_->publish(debug_estimate_msg_);
-    }
   }
 }
 
@@ -982,10 +844,6 @@ void RobotDriver::publishControl(bool is_valid) {
   msg.header.stamp = node_->now();
   msg.twist = last_cmd_vel_msg_;
   cmd_vel_stamped_pub_->publish(msg);
-  if (debug_estimator_ && ekf_initialized_) {
-    ekf_estimate_msg_.header.stamp = node_->now();
-    state_estimate_pub_->publish(ekf_estimate_msg_);
-  }
 
   // Send command to the robot
   if (is_hardware_ && is_valid) {

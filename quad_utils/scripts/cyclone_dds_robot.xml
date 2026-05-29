@@ -13,8 +13,13 @@
             <FragmentSize>1452B</FragmentSize>
         </General>
         <Internal>
-            <SocketReceiveBufferSize min="128MB"/>
-            <SocketSendBufferSize min="128MB"/>
+            <!-- min="default": use the OS default as the floor, so node startup never
+                 fails if the kernel won't grant a large buffer (avoids the
+                 rmw_create_node crash when net.core.rmem_max is low).
+                 max="128MB": still request a big buffer for throughput/loss resilience
+                 when the kernel allows it (raise net.core.rmem_max to actually get it). -->
+            <SocketReceiveBufferSize min="default" max="128MB"/>
+            <SocketSendBufferSize min="default" max="128MB"/>
             <Watermarks>
                 <WhcHigh>500kB</WhcHigh>
             </Watermarks>
