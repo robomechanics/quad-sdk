@@ -31,6 +31,7 @@ def launch_bag_recording(context, *args, **kwargs):
         f"{topic_prefix}/local_plan",
         f"{topic_prefix}/control/grfs",
         f"{topic_prefix}/control/joint_command",
+        f"{topic_prefix}/control/leg_command",
         f"{topic_prefix}/control/mode",
         f"{topic_prefix}/foot_plan_continuous",
         f"{topic_prefix}/foot_plan_discrete",
@@ -39,6 +40,7 @@ def launch_bag_recording(context, *args, **kwargs):
         f"{topic_prefix}/state/foot_contact",
         f"{topic_prefix}/cmd_vel_stamped",
         "/terrain_map",
+        "/clock"
     ]
 
     topic_list_2 = [
@@ -54,6 +56,7 @@ def launch_bag_recording(context, *args, **kwargs):
         f"{topic_prefix}/local_plan",
         f"{topic_prefix}/control/grfs",
         f"{topic_prefix}/control/joint_command",
+        f"{topic_prefix}/control/leg_command",
         f"{topic_prefix}/control/mode",
         f"{topic_prefix}/foot_plan_continuous",
         f"{topic_prefix}/foot_plan_discrete",
@@ -61,7 +64,8 @@ def launch_bag_recording(context, *args, **kwargs):
         f"{topic_prefix}/body_force/toe_forces",
         f"{topic_prefix}/state/foot_contact",
         f"{topic_prefix}/cmd_vel_stamped",
-        "/terrain_map"
+        "/terrain_map",
+        "/clock"
     ]
 
     return [

@@ -14,21 +14,39 @@ from pxr import Gf, PhysxSchema, Sdf, Usd, UsdGeom, UsdPhysics, UsdShade
 # Values mirror the debug-tuned RobotVinesEnvCfg in the underbrush
 # training pipeline, adjusted to be stiffer here (RL-soft vines sag
 # into the ground at the demo spawn z).
-LINK_LENGTH = 0.18
-LINK_RADIUS = 0.020
-LINK_MASS = 0.06
-NUM_LINKS = 6
+# --- Gazebo-matched (ROS1/ROS2 compliant_cord SDF) ---
+LINK_LENGTH = 0.22
+LINK_RADIUS = 0.005
+LINK_MASS = 0.01
+NUM_LINKS = 7
 CONE_ANGLE_DEG = 35.0
 
 LOOP_PRISMATIC_LIMIT = 0.15
 DRIVE_STIFFNESS = 100.0
 DRIVE_DAMPING = 8.0
 DRIVE_MAX_FORCE = 100.0
-LINK_LINEAR_DAMPING = 5.0
-LINK_ANGULAR_DAMPING_RB = 5.0
+LINK_LINEAR_DAMPING = 0.0
+LINK_ANGULAR_DAMPING_RB = 0.0
 
 JOINT_ARMATURE = 5.0e-4
-JOINT_ANGULAR_DAMPING = 10.0
+JOINT_ANGULAR_DAMPING = 0.005
+
+# --- Isaac-stiffened (RL-debug-tuned, no sag at demo spawn z) ---
+# LINK_LENGTH = 0.18
+# LINK_RADIUS = 0.020
+# LINK_MASS = 0.06
+# NUM_LINKS = 6
+# CONE_ANGLE_DEG = 35.0
+#
+# LOOP_PRISMATIC_LIMIT = 0.15
+# DRIVE_STIFFNESS = 100.0
+# DRIVE_DAMPING = 8.0
+# DRIVE_MAX_FORCE = 100.0
+# LINK_LINEAR_DAMPING = 5.0
+# LINK_ANGULAR_DAMPING_RB = 5.0
+#
+# JOINT_ARMATURE = 5.0e-4
+# JOINT_ANGULAR_DAMPING = 10.0
 
 VINE_COLOR = (0.05, 0.30, 0.05)
 

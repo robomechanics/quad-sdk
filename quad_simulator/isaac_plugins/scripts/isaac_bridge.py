@@ -74,7 +74,9 @@ ROBOT_REGISTRY: dict[str, dict] = {
         ),
         'toe_links': ['toe0', 'toe1', 'toe2', 'toe3'],
         'sit_q_per_leg': (0.0, 0.0, 0.0),
-        'spawn_y': 0.25,
+        # 'armature': (4.4316e-3, 4.4316e-3, 1.77264e-2),
+        'toe_damping': 0.1,
+        'spawn_y': 0.0,
         'spawn_z': 0.3,
     },
     'go2': {
@@ -207,6 +209,8 @@ def parse_args() -> argparse.Namespace:
     args.urdf = args.urdf or str(robot_cfg['urdf'])
     args.toe_links = list(robot_cfg['toe_links'])
     args.sit_q_per_leg = tuple(robot_cfg['sit_q_per_leg'])
+    args.armature = tuple(robot_cfg.get('armature') or (0.0, 0.0, 0.0))
+    args.toe_damping = float(robot_cfg.get('toe_damping', 0.0))
     args.spawn_x = float(robot_cfg.get('spawn_x', 0.0))
     args.spawn_y = float(robot_cfg.get('spawn_y', 0.0))
     cli_spawn_z = getattr(args, 'spawn_z', None)
@@ -645,6 +649,45 @@ _JOINT_NAME_RE_SRC = r'^j_(abad|hip|knee)_([0-3])$'
 _JOINT_OFFSET = {'abad': 0, 'hip': 1, 'knee': 2}
 
 
+def _apply_toe_damping(stage, body_root: str, toe_links, damping: float) -> None:
+    """Set PhysxRigidBodyAPI linear/angular damping on toe links."""
+    if damping <= 0.0:
+        return
+    from pxr import PhysxSchema
+    applied = 0
+    for name in toe_links:
+        prim = stage.GetPrimAtPath(f'{body_root}/{name}')
+        if not (prim and prim.IsValid()):
+            continue
+        api = PhysxSchema.PhysxRigidBodyAPI.Apply(prim)
+        api.CreateLinearDampingAttr().Set(damping)
+        api.CreateAngularDampingAttr().Set(damping)
+        applied += 1
+    _step(f'toe damping {damping} applied on {applied} toe rigid bodies')
+
+
+def _apply_joint_armature(stage, armature) -> None:
+    """Set PhysxJointAPI.armature on j_{abad,hip,knee}_{0..3} joints."""
+    import re
+    from pxr import PhysxSchema, UsdPhysics
+    if not any(armature):
+        return
+    joint_re = re.compile(_JOINT_NAME_RE_SRC)
+    applied = 0
+    for prim in stage.Traverse():
+        if not prim.IsA(UsdPhysics.RevoluteJoint):
+            continue
+        match = joint_re.match(prim.GetName())
+        if match is None:
+            continue
+        value = float(armature[_JOINT_OFFSET[match.group(1)]])
+        PhysxSchema.PhysxJointAPI.Apply(prim).CreateArmatureAttr().Set(value)
+        applied += 1
+    _step(f'armature applied on {applied} joints: '
+          f'abad={armature[0]:.4e}, hip={armature[1]:.4e}, '
+          f'knee={armature[2]:.4e}')
+
+
 def _author_initial_state(stage, art_path: str, args) -> None:
     """Write base pose and joint sit positions into USD pre-reset.
 
@@ -929,6 +972,7 @@ def main() -> None:
     _step(f'articulation found at {art_path}')
 
     _set_articulation_solver_iters(stage, art_path)
+    _apply_joint_armature(stage, args.armature)
     _author_initial_state(stage, art_path, args)
 
     articulation = SingleArticulation(prim_path=art_path, name=args.robot)
@@ -941,6 +985,7 @@ def main() -> None:
     ]
     for toe in toe_prims:
         world.scene.add(toe)
+    _apply_toe_damping(stage, body_root, args.toe_links, args.toe_damping)
     _step('articulation + toes added to scene; resetting world')
 
     if args.scene == 'underbrush':

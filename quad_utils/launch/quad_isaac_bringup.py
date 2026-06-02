@@ -348,11 +348,12 @@ def generate_launch_description() -> LaunchDescription:
             'terrain', default_value='',
             description=(
                 'Terrain name matching the bridge\'s --terrain flag '
-                '(e.g. rough_25cm, step_20cm). When set, the raw map '
-                'publisher reads the actual STL\'s heightmap via '
-                'mesh_to_grid_map_node (matching Gazebo). When unset '
-                'or "flat", flat_terrain_publisher emits a flat z=0 '
-                'map.'
+                '(e.g. flat, big_flat, rough_25cm, step_20cm). When '
+                'set, the raw map publisher reads the actual STL\'s '
+                'heightmap via mesh_to_grid_map_node (matching Gazebo). '
+                'Leave empty to fall back to flat_terrain_publisher, '
+                'which synthesizes a 20x20m z=0 map without needing '
+                'a mesh model.'
             ),
         ),
         DeclareLaunchArgument(

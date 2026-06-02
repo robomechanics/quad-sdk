@@ -21,7 +21,7 @@
     local_footstep_planner:
         hip_clearance: 0.1
         foothold_search_radius: 0.25
-        period: 0.36 # s
+        period: 0.54 # s
         ground_clearance: 0.07 # tune
         duty_cycles: [0.5, 0.5, 0.5, 0.5]
         phase_offsets: [0.0, 0.5, 0.5, 0.0] 
@@ -112,6 +112,7 @@
     motor_limits:
       torque: [21.0, 21.0, 32.0]
       speed: [37.7, 37.7, 25.1]
+      armature: [4.4316e-3, 4.4316e-3, 1.77264e-2]
     leg_0:
       joints:
         abad:

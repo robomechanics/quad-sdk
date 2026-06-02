@@ -160,9 +160,17 @@ void QuadKD2::initModel(std::string ns) {
                      model_.upperPositionLimit[limb.knee_pin_pos_idx]};
   }
 
+  std::vector<double> armature;
+  loadROSParamDefault(node_, std::string("motor_limits.armature"), armature,
+                      std::vector<double>(3, 0.0));
+  for (int i = 0; i < num_feet_; ++i) {
+    model_.armature[limbs_[i].abad_pin_vel_idx] = armature[0];
+    model_.armature[limbs_[i].hip_pin_vel_idx] = armature[1];
+    model_.armature[limbs_[i].knee_pin_vel_idx] = armature[2];
+  }
+
   g_body_legbases_.resize(4);
   for (int leg_index = 0; leg_index < 4; leg_index++) {
-    // Compute transforms to the Legbase (Used in Local Planner)
     pinocchio::JointIndex j_abad = limbs_[leg_index].abad_jid;
     g_body_legbases_[leg_index] =
         convertSE3ToAffine(model_.jointPlacements[j_abad]);
