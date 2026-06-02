@@ -2215,7 +2215,7 @@
 <h1 id="isaac-plugins">Isaac Plugins<a class="headerlink" href="#isaac-plugins" title="Permanent link">&para;</a></h1>
 <h2 id="overview">Overview<a class="headerlink" href="#overview" title="Permanent link">&para;</a></h2>
 <p>This package is the IsaacSim 5.1 integration for Quad-SDK — an alternative to the Gazebo simulator used elsewhere in the stack. It contains the Isaac-side simulation loop (<code>isaac_bridge.py</code>), the URDF prep pipeline that adapts Quad-SDK robot descriptions for Isaac's URDF importer, the four-cord underbrush scenario, and one-shot URDF→USD conversion tooling. The bridge exchanges ROS 2 messages with the rest of Quad-SDK using IsaacSim's bundled Jazzy rclpy, so the controller and planning stacks run unmodified.</p>
-<p>Supported robots are listed in <code>isaac_bridge.py</code>'s <code>ROBOT_REGISTRY</code> — currently <code>spirit</code> and <code>go2</code>. Supported terrains are any name with matching <code>gazebo_scripts/models/&lt;name&gt;/meshes/&lt;name&gt;.{stl,ply}</code> (e.g. <code>flat</code>, <code>step_20cm</code>, <code>gap_40cm</code>, <code>rough_25cm</code>).</p>
+<p>Supported robots are listed in <code>isaac_bridge.py</code>'s <code>ROBOT_REGISTRY</code> — currently <code>spirit</code> and <code>go2</code>. Supported terrains are any name with matching <code>quad_sim_scripts/models/&lt;name&gt;/meshes/&lt;name&gt;.{stl,ply}</code> (e.g. <code>flat</code>, <code>step_20cm</code>, <code>gap_40cm</code>, <code>rough_25cm</code>).</p>
 <h3 id="license">License<a class="headerlink" href="#license" title="Permanent link">&para;</a></h3>
 <p>The source code is released under a <a href="../../quad_simulator/isaac_plugins/LICENSE">BSD-3-Clause License</a>.</p>
 <p><strong>Author:</strong> David Ologan</p>
@@ -2328,7 +2328,7 @@
 <ul>
 <li>Bridge runs at 1000 Hz with PhysX TGS, 64/16 solver iters.</li>
 <li>Multi-robot via <code>ROBOT_REGISTRY</code> (currently <code>spirit</code>, <code>go2</code>).</li>
-<li>Multi-terrain via <code>--terrain &lt;name&gt;</code> matching <code>gazebo_scripts/models/</code>.</li>
+<li>Multi-terrain via <code>--terrain &lt;name&gt;</code> matching <code>quad_sim_scripts/models/</code>.</li>
 <li>Terrain pose pulled from matching world <code>.sdf</code> <code>&lt;include&gt;&lt;pose&gt;</code>.</li>
 <li>Real heightmap to the planner via <code>mesh_to_grid_map_node</code> (same path Gazebo uses).</li>
 <li>TF chain populated by <code>rviz_interface_node</code> + ground-truth <code>robot_state_publisher</code> consuming the renamed clean URDF.</li>

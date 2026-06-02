@@ -2330,10 +2330,10 @@
 <div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>blender<span class="w"> </span>--background<span class="w"> </span>--python<span class="w"> </span>src/quad-sdk/scripts/bag_to_blender.py<span class="w"> </span>--<span class="w"> </span><span class="se">\</span>
 <a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a><span class="w">    </span>--json<span class="w"> </span>recording.json<span class="w"> </span><span class="se">\</span>
 <a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a><span class="w">    </span>--urdf_meshes<span class="w"> </span>src/quad-sdk/quad_simulator/go2_description/models/go2/meshes<span class="w"> </span><span class="se">\</span>
-<a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a><span class="w">    </span>--terrain<span class="w"> </span>src/quad-sdk/quad_simulator/gazebo_scripts/models/step_20cm/meshes/step_20cm.stl<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a><span class="w">    </span>--terrain<span class="w"> </span>src/quad-sdk/quad_simulator/quad_sim_scripts/models/step_20cm/meshes/step_20cm.stl<span class="w"> </span><span class="se">\</span>
 <a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a><span class="w">    </span>--output<span class="w"> </span>with_terrain.blend
 </code></pre></div>
-<p>Available terrains in <code>quad_simulator/gazebo_scripts/models/</code>:</p>
+<p>Available terrains in <code>quad_simulator/quad_sim_scripts/models/</code>:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>flat/           slope_20/       step_10cm/      step_20cm/
 <a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a>step_25cm/      step_30cm/      gap_20cm/       gap_40cm/
 <a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a>gap_80cm/       rough_25cm/     rough_40cm_huge/  parkour_local_min/
@@ -2351,7 +2351,7 @@
 <a id="__codelineno-8-10" name="__codelineno-8-10" href="#__codelineno-8-10"></a>blender<span class="w"> </span>--background<span class="w"> </span>--python<span class="w"> </span>src/quad-sdk/scripts/bag_to_blender.py<span class="w"> </span>--<span class="w"> </span><span class="se">\</span>
 <a id="__codelineno-8-11" name="__codelineno-8-11" href="#__codelineno-8-11"></a><span class="w">    </span>--json<span class="w"> </span>go2_walk.json<span class="w"> </span><span class="se">\</span>
 <a id="__codelineno-8-12" name="__codelineno-8-12" href="#__codelineno-8-12"></a><span class="w">    </span>--urdf_meshes<span class="w"> </span>src/quad-sdk/quad_simulator/go2_description/models/go2/meshes<span class="w"> </span><span class="se">\</span>
-<a id="__codelineno-8-13" name="__codelineno-8-13" href="#__codelineno-8-13"></a><span class="w">    </span>--terrain<span class="w"> </span>src/quad-sdk/quad_simulator/gazebo_scripts/models/flat/meshes/flat.stl<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-8-13" name="__codelineno-8-13" href="#__codelineno-8-13"></a><span class="w">    </span>--terrain<span class="w"> </span>src/quad-sdk/quad_simulator/quad_sim_scripts/models/flat/meshes/flat.stl<span class="w"> </span><span class="se">\</span>
 <a id="__codelineno-8-14" name="__codelineno-8-14" href="#__codelineno-8-14"></a><span class="w">    </span>--output<span class="w"> </span>go2_walk.blend
 <a id="__codelineno-8-15" name="__codelineno-8-15" href="#__codelineno-8-15"></a>
 <a id="__codelineno-8-16" name="__codelineno-8-16" href="#__codelineno-8-16"></a><span class="c1"># Render MP4 (first 5 seconds at 60fps, bag is ~500Hz so step=8)</span>
