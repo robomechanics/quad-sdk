@@ -51,23 +51,8 @@ install(TARGETS contact_state_publisher_node
 )
 
 install(
-  DIRECTORY worlds
-  DESTINATION share/${PROJECT_NAME}/
-)
-
-install(
-  DIRECTORY models
-  DESTINATION share/${PROJECT_NAME}/
-)
-
-install(
   DIRECTORY include/
   DESTINATION include
-)
-
-install(
-  DIRECTORY config/
-  DESTINATION share/${PROJECT_NAME}/config
 )
 
 

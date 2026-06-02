@@ -17,7 +17,7 @@ The pipeline is:
 1. **CAD** — design the part in your CAD package
 2. **Export** — `.stl` (mesh) + `.ply` (point cloud) at metric scale
 3. **Wrap** — drop a `model.config` and `<world>.world` next to the meshes
-4. **Install** — copy into `quad_simulator/gazebo_scripts/worlds`
+4. **Install** — copy into `quad_simulator/quad_sim_scripts/worlds`
 5. **Verify** — spawn and confirm the robot lands on the surface
 
 ## Step 1 — CAD
@@ -61,7 +61,7 @@ If you also keep the original `.sldprt` (or `.f3d`, etc.) in the folder, reprodu
 Copy the folder into:
 
 ```
-quad-sdk/quad_simulator/gazebo_scripts/worlds/<part_name>/
+quad-sdk/quad_simulator/quad_sim_scripts/worlds/<part_name>/
 ```
 
 ## Step 5 — Verify

@@ -21,7 +21,6 @@
 #include <string>
 #include <memory>
 
-
 namespace mjcf_to_grid_map {
 
 constexpr double kDefaultGridMapResolution = 0.2;
@@ -99,7 +98,6 @@ class MjcfToGridMapConverter {
 
   // World-frame translation applied to the loaded mesh so RViz visualization
   // matches the MuJoCo `<geom pos="...">` offset in the world xacro.
-
 
   // Control Parameters
 };

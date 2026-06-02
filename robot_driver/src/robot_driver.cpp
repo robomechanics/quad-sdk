@@ -575,8 +575,7 @@ bool RobotDriver::updateState() {
       // would have been rejected earlier in initLegController() so this
       // path is unreachable anyway.
 #ifdef HAS_ONNXRUNTIME
-      if (auto c = std::dynamic_pointer_cast<LearnedPolicy>(
-              leg_controller_)) {
+      if (auto c = std::dynamic_pointer_cast<LearnedPolicy>(leg_controller_)) {
         c->updateImuMsg(last_imu_msg_);
       }
 #endif
@@ -1001,12 +1000,10 @@ void RobotDriver::spin() {
     rclcpp::Time t0 = node_->now();
     // Collect new messages on subscriber topics and publish heartbeat
     rclcpp::spin_some(node_);
-    double dt_spin = (node_->now() - t0).seconds();
 
     // Get the newest state information
     rclcpp::Time t1 = node_->now();
     bool state_valid = updateState();
-    double dt_state = (node_->now() - t1).seconds();
 
     if (!state_valid) {
       publishHeartbeat();
@@ -1016,25 +1013,15 @@ void RobotDriver::spin() {
 
     rclcpp::Time t2 = node_->now();
     testDynamics();
-    double dt_dynamics = (node_->now() - t2).seconds();
 
     // Compute the leg command and publish if valid
     rclcpp::Time t3 = node_->now();
     bool is_valid = updateControl();
-    double dt_control = (node_->now() - t3).seconds();
 
     rclcpp::Time t4 = node_->now();
     publishControl(is_valid);
     publishState();
     publishHeartbeat();
-    double dt_publish = (node_->now() - t4).seconds();
-
-    double dt_total = (node_->now() - t0).seconds();
-    // RCLCPP_INFO_THROTTLE(node_->get_logger(), *node_->get_clock(), 2000,
-    //                      "Loop: total=%.4f spin=%.4f state=%.4f dyn=%.4f "
-    //                      "ctrl=%.4f pub=%.4f (%.1f Hz)",
-    //                      dt_total, dt_spin, dt_state, dt_dynamics,
-    //                      dt_control, dt_publish, 1.0 / dt_total);
     r.sleep();
   }
 

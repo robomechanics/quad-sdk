@@ -6,29 +6,29 @@
 using std::placeholders::_1;
 
 MujocoEstimator::MujocoEstimator() : Node("mujoco_estimator") {
-
   const std::vector<std::string> default_joint_order = {
-        "8", "0", "1", "9", "2", "3", "10", "4", "5", "11", "6", "7"};
-    quadsdk_joint_order_.clear();
-    quadsdk_joint_order_.reserve(12);
-    const char* slot_names[3] = {"abad", "hip", "knee"};
-    bool all_found = true;
-    for (int leg = 0; leg < 4 && all_found; ++leg) {
-      for (int slot = 0; slot < 3; ++slot) {
-        const std::string param =
-            "leg_" + std::to_string(leg) + ".joints." + slot_names[slot] + ".name";
-        const std::string name =
-            this->declare_parameter<std::string>(param, std::string{});
-        if (name.empty()) {
-          RCLCPP_WARN(this->get_logger(),
-            "Missing joint parameter for robot, falling back to default joint order");
-          quadsdk_joint_order_ = default_joint_order;
-          all_found = false;
-          break;
-        }
-        quadsdk_joint_order_.push_back(name);
+      "8", "0", "1", "9", "2", "3", "10", "4", "5", "11", "6", "7"};
+  quadsdk_joint_order_.clear();
+  quadsdk_joint_order_.reserve(12);
+  const char* slot_names[3] = {"abad", "hip", "knee"};
+  bool all_found = true;
+  for (int leg = 0; leg < 4 && all_found; ++leg) {
+    for (int slot = 0; slot < 3; ++slot) {
+      const std::string param = "leg_" + std::to_string(leg) + ".joints." +
+                                slot_names[slot] + ".name";
+      const std::string name =
+          this->declare_parameter<std::string>(param, std::string{});
+      if (name.empty()) {
+        RCLCPP_WARN(this->get_logger(),
+                    "Missing joint parameter for robot, falling back to "
+                    "default joint order");
+        quadsdk_joint_order_ = default_joint_order;
+        all_found = false;
+        break;
       }
+      quadsdk_joint_order_.push_back(name);
     }
+  }
 
   // Odometry subscriber — MuJoCo publishes world-frame position/linear vel,
   // body-frame angular vel for the free joint (see mujoco_system_interface.cpp)

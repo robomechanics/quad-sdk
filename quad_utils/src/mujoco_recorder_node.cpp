@@ -1,19 +1,3 @@
-// Offscreen MuJoCo recorder.
-//
-// Loads the same MJCF world that mujoco_ros2_control is simulating, mirrors
-// /<ns>/joint_states + /<ns>/odom into its own mjData, calls mj_forward
-// (kinematics-only — no physics step), renders frames offscreen, and pipes
-// raw RGB into a ffmpeg subprocess that encodes mp4.
-//
-// We shadow-load the MJCF instead of reading mjData out of the simulator
-// because mujoco_ros2_control doesn't expose its mjData pointer. The cost
-// is one extra MJCF load (cheap, no physics work).
-//
-// GL context: a hidden GLFW window. That works on the user's X11 setup;
-// for true headless (CI/Docker), swap GLFW for EGL via `mjr_setBuffer` on
-// an EGL context. Not done here because GLFW is already pulled in by the
-// rest of the mujoco stack and the user has a display.
-
 #include <array>
 #include <chrono>
 #include <cstdio>
@@ -46,8 +30,10 @@ class MujocoRecorder : public rclcpp::Node {
     declare_parameter<double>("camera_azimuth", 90.0);
     declare_parameter<bool>("camera_track_robot", true);
     declare_parameter<std::string>("odom_free_joint_name", "floating_base");
-    declare_parameter<std::vector<std::string>>("joint_map_ros", std::vector<std::string>{});
-    declare_parameter<std::vector<std::string>>("joint_map_mjc", std::vector<std::string>{});
+    declare_parameter<std::vector<std::string>>("joint_map_ros",
+                                                std::vector<std::string>{});
+    declare_parameter<std::vector<std::string>>("joint_map_mjc",
+                                                std::vector<std::string>{});
 
     const auto mjcf_path = get_parameter("mjcf_path").as_string();
     namespace_ = get_parameter("namespace").as_string();
@@ -64,7 +50,8 @@ class MujocoRecorder : public rclcpp::Node {
       throw std::runtime_error("`mjcf_path` parameter is empty");
     }
     if (ros_names.size() != mjc_names.size()) {
-      throw std::runtime_error("`joint_map_ros` and `joint_map_mjc` length mismatch");
+      throw std::runtime_error(
+          "`joint_map_ros` and `joint_map_mjc` length mismatch");
     }
     // libx264 with yuv420p chroma subsampling refuses odd dimensions.
     if (width_ & 1) --width_;
@@ -77,7 +64,7 @@ class MujocoRecorder : public rclcpp::Node {
     }
     data_ = mj_makeData(model_);
 
-    model_->vis.global.offwidth  = width_;
+    model_->vis.global.offwidth = width_;
     model_->vis.global.offheight = height_;
 
     // Resolve qpos addresses once. The profile maps each ros2_control joint
@@ -87,7 +74,8 @@ class MujocoRecorder : public rclcpp::Node {
       const int jid = mj_name2id(model_, mjOBJ_JOINT, mjc_names[i].c_str());
       if (jid < 0) {
         RCLCPP_WARN(get_logger(),
-                    "MJCF joint '%s' not found; ros2_control name '%s' won't be mirrored.",
+                    "MJCF joint '%s' not found; ros2_control name '%s' won't "
+                    "be mirrored.",
                     mjc_names[i].c_str(), ros_names[i].c_str());
         continue;
       }
@@ -108,7 +96,8 @@ class MujocoRecorder : public rclcpp::Node {
       throw std::runtime_error("glfwInit failed (no DISPLAY?)");
     }
     glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
-    window_ = glfwCreateWindow(width_, height_, "mujoco_recorder", nullptr, nullptr);
+    window_ =
+        glfwCreateWindow(width_, height_, "mujoco_recorder", nullptr, nullptr);
     if (!window_) {
       glfwTerminate();
       throw std::runtime_error("glfwCreateWindow failed");
@@ -118,9 +107,9 @@ class MujocoRecorder : public rclcpp::Node {
     mjv_defaultScene(&scene_);
     mjv_makeScene(model_, &scene_, 2000);
     mjv_defaultCamera(&cam_);
-    cam_.distance  = get_parameter("camera_distance").as_double();
+    cam_.distance = get_parameter("camera_distance").as_double();
     cam_.elevation = get_parameter("camera_elevation").as_double();
-    cam_.azimuth   = get_parameter("camera_azimuth").as_double();
+    cam_.azimuth = get_parameter("camera_azimuth").as_double();
     cam_.lookat[0] = 0.0;
     cam_.lookat[1] = 0.0;
     cam_.lookat[2] = 0.3;
@@ -158,7 +147,8 @@ class MujocoRecorder : public rclcpp::Node {
         "/" + namespace_ + "/joint_states", qos,
         [this](sensor_msgs::msg::JointState::ConstSharedPtr msg) {
           std::lock_guard<std::mutex> lk(mu_);
-          for (size_t i = 0; i < msg->name.size() && i < msg->position.size(); ++i) {
+          for (size_t i = 0; i < msg->name.size() && i < msg->position.size();
+               ++i) {
             latest_jpos_[msg->name[i]] = msg->position[i];
           }
         });
@@ -168,25 +158,22 @@ class MujocoRecorder : public rclcpp::Node {
           std::lock_guard<std::mutex> lk(mu_);
           // ROS quat is (x,y,z,w); MJCF qpos for a free joint is (w,x,y,z).
           latest_base_ = {
-              msg->pose.pose.position.x,
-              msg->pose.pose.position.y,
-              msg->pose.pose.position.z,
-              msg->pose.pose.orientation.w,
-              msg->pose.pose.orientation.x,
-              msg->pose.pose.orientation.y,
+              msg->pose.pose.position.x,    msg->pose.pose.position.y,
+              msg->pose.pose.position.z,    msg->pose.pose.orientation.w,
+              msg->pose.pose.orientation.x, msg->pose.pose.orientation.y,
               msg->pose.pose.orientation.z,
           };
           have_base_ = true;
         });
 
-    timer_ = create_wall_timer(
-        std::chrono::milliseconds(std::max(1, 1000 / fps_)),
-        std::bind(&MujocoRecorder::tick, this));
+    timer_ =
+        create_wall_timer(std::chrono::milliseconds(std::max(1, 1000 / fps_)),
+                          std::bind(&MujocoRecorder::tick, this));
 
     RCLCPP_INFO(get_logger(),
                 "Recording to %s (%dx%d @ %d fps), namespace=%s, mjcf=%s",
-                output_path_.c_str(), width_, height_, fps_,
-                namespace_.c_str(), mjcf_path.c_str());
+                output_path_.c_str(), width_, height_, fps_, namespace_.c_str(),
+                mjcf_path.c_str());
   }
 
   ~MujocoRecorder() override {
@@ -200,14 +187,13 @@ class MujocoRecorder : public rclcpp::Node {
       mjr_freeContext(&con_);
       mjv_freeScene(&scene_);
     }
-    if (data_)  mj_deleteData(data_);
+    if (data_) mj_deleteData(data_);
     if (model_) mj_deleteModel(model_);
     if (window_) {
       glfwDestroyWindow(window_);
       glfwTerminate();
     }
-    RCLCPP_INFO(get_logger(),
-                "Recording done: %lu frames -> %s",
+    RCLCPP_INFO(get_logger(), "Recording done: %lu frames -> %s",
                 static_cast<unsigned long>(frames_written_),
                 output_path_.c_str());
   }
@@ -228,8 +214,13 @@ class MujocoRecorder : public rclcpp::Node {
 
     if (free_qposadr_ >= 0 && have_base) {
       double* q = data_->qpos + free_qposadr_;
-      q[0] = base[0]; q[1] = base[1]; q[2] = base[2];
-      q[3] = base[3]; q[4] = base[4]; q[5] = base[5]; q[6] = base[6];
+      q[0] = base[0];
+      q[1] = base[1];
+      q[2] = base[2];
+      q[3] = base[3];
+      q[4] = base[4];
+      q[5] = base[5];
+      q[6] = base[6];
       if (track_) {
         cam_.lookat[0] = base[0];
         cam_.lookat[1] = base[1];
@@ -254,12 +245,12 @@ class MujocoRecorder : public rclcpp::Node {
     // isn't upside-down.
     const size_t row = static_cast<size_t>(width_) * 3;
     for (int y = 0; y < height_; ++y) {
-      std::memcpy(&flip_buf_[y * row],
-                  &rgb_buf_[(height_ - 1 - y) * row], row);
+      std::memcpy(&flip_buf_[y * row], &rgb_buf_[(height_ - 1 - y) * row], row);
     }
 
     if (ffmpeg_) {
-      const size_t n = std::fwrite(flip_buf_.data(), 1, flip_buf_.size(), ffmpeg_);
+      const size_t n =
+          std::fwrite(flip_buf_.data(), 1, flip_buf_.size(), ffmpeg_);
       if (n != flip_buf_.size()) {
         RCLCPP_ERROR(get_logger(),
                      "ffmpeg pipe short write %zu/%zu — encoder may have died.",
@@ -278,12 +269,12 @@ class MujocoRecorder : public rclcpp::Node {
 
   // MuJoCo
   mjModel* model_ = nullptr;
-  mjData*  data_  = nullptr;
+  mjData* data_ = nullptr;
   int free_qposadr_ = -1;
   std::unordered_map<std::string, int> joint_qposadr_;
-  mjvScene   scene_{};
-  mjvCamera  cam_{};
-  mjvOption  opt_{};
+  mjvScene scene_{};
+  mjvCamera cam_{};
+  mjvOption opt_{};
   mjvPerturb pert_{};
   mjrContext con_{};
 

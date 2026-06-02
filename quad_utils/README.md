@@ -78,7 +78,7 @@ Publishes a stamped `std_msgs/Header` at a fixed rate on `heartbeat/remote`. The
 
 ### `mesh_to_grid_map_node`
 
-Converts a triangle mesh (e.g. terrain STL from `gazebo_scripts/models/`) into a `grid_map_msgs/GridMap` layer usable by the planners.
+Converts a triangle mesh (e.g. terrain STL from `quad_sim_scripts/models/`) into a `grid_map_msgs/GridMap` layer usable by the planners.
 
 ### `grid_map_filters_demo`
 

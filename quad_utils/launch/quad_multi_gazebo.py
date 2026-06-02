@@ -15,7 +15,7 @@ def launch_ignition_world(context, *args, **kwargs):
     verbose = LaunchConfiguration('verbose').perform(context).lower() == 'true'
     paused = LaunchConfiguration('paused').perform(context).lower() == 'true'
 
-    pkg_share = FindPackageShare('gazebo_scripts').perform(context)
+    pkg_share = FindPackageShare('quad_sim_scripts').perform(context)
     world_path = os.path.join(pkg_share, 'worlds', f"{world_name}")
 
     gz_args = [world_path]

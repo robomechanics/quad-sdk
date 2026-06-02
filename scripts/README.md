@@ -120,11 +120,11 @@ Pass a terrain STL from the simulator models:
 blender --background --python src/quad-sdk/scripts/bag_to_blender.py -- \
     --json recording.json \
     --urdf_meshes src/quad-sdk/quad_simulator/go2_description/models/go2/meshes \
-    --terrain src/quad-sdk/quad_simulator/gazebo_scripts/models/step_20cm/meshes/step_20cm.stl \
+    --terrain src/quad-sdk/quad_simulator/quad_sim_scripts/models/step_20cm/meshes/step_20cm.stl \
     --output with_terrain.blend
 ```
 
-Available terrains in `quad_simulator/gazebo_scripts/models/`:
+Available terrains in `quad_simulator/quad_sim_scripts/models/`:
 
 ```
 flat/           slope_20/       step_10cm/      step_20cm/
@@ -147,7 +147,7 @@ python3 src/quad-sdk/scripts/extract_bag.py \
 blender --background --python src/quad-sdk/scripts/bag_to_blender.py -- \
     --json go2_walk.json \
     --urdf_meshes src/quad-sdk/quad_simulator/go2_description/models/go2/meshes \
-    --terrain src/quad-sdk/quad_simulator/gazebo_scripts/models/flat/meshes/flat.stl \
+    --terrain src/quad-sdk/quad_simulator/quad_sim_scripts/models/flat/meshes/flat.stl \
     --output go2_walk.blend
 
 # Render MP4 (first 5 seconds at 60fps, bag is ~500Hz so step=8)

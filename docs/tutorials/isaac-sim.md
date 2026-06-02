@@ -80,7 +80,7 @@ Three terminals. `--terrain` and `--robot` must match between the bridge (termin
 ## Supported robots and terrains
 
 - **Robots** — `spirit` and `go2` (the entries in the bridge `ROBOT_REGISTRY`).
-- **Terrains** — any name with a matching mesh under `gazebo_scripts/models/<name>/meshes/<name>.{stl,ply}`, e.g. `flat`, `step_20cm`, `gap_40cm`, `rough_25cm`. With `--terrain` unset, a flat `GridMap` fallback is published.
+- **Terrains** — any name with a matching mesh under `quad_sim_scripts/models/<name>/meshes/<name>.{stl,ply}`, e.g. `flat`, `step_20cm`, `gap_40cm`, `rough_25cm`. With `--terrain` unset, a flat `GridMap` fallback is published.
 
 ## Useful bridge flags
 

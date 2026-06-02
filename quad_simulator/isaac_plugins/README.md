@@ -4,7 +4,7 @@
 
 This package is the IsaacSim 5.1 integration for Quad-SDK — an alternative to the Gazebo simulator used elsewhere in the stack. It contains the Isaac-side simulation loop (`isaac_bridge.py`), the URDF prep pipeline that adapts Quad-SDK robot descriptions for Isaac's URDF importer, the four-cord underbrush scenario, and one-shot URDF→USD conversion tooling. The bridge exchanges ROS 2 messages with the rest of Quad-SDK using IsaacSim's bundled Jazzy rclpy, so the controller and planning stacks run unmodified.
 
-Supported robots are listed in `isaac_bridge.py`'s `ROBOT_REGISTRY` — currently `spirit` and `go2`. Supported terrains are any name with matching `gazebo_scripts/models/<name>/meshes/<name>.{stl,ply}` (e.g. `flat`, `step_20cm`, `gap_40cm`, `rough_25cm`).
+Supported robots are listed in `isaac_bridge.py`'s `ROBOT_REGISTRY` — currently `spirit` and `go2`. Supported terrains are any name with matching `quad_sim_scripts/models/<name>/meshes/<name>.{stl,ply}` (e.g. `flat`, `step_20cm`, `gap_40cm`, `rough_25cm`).
 
 ### License
 
@@ -109,7 +109,7 @@ Implemented:
 
 - Bridge runs at 1000 Hz with PhysX TGS, 64/16 solver iters.
 - Multi-robot via `ROBOT_REGISTRY` (currently `spirit`, `go2`).
-- Multi-terrain via `--terrain <name>` matching `gazebo_scripts/models/`.
+- Multi-terrain via `--terrain <name>` matching `quad_sim_scripts/models/`.
 - Terrain pose pulled from matching world `.sdf` `<include><pose>`.
 - Real heightmap to the planner via `mesh_to_grid_map_node` (same path Gazebo uses).
 - TF chain populated by `rviz_interface_node` + ground-truth `robot_state_publisher` consuming the renamed clean URDF.

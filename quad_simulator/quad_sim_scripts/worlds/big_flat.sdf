@@ -6,9 +6,9 @@
     <real_time_factor>1</real_time_factor>
     <real_time_update_rate>1000</real_time_update_rate>
         <ode>
-            <solver>
-              <iters>300</iters>
-            </solver>
+            <solver> 
+              <iters>300</iters> 
+            </solver>  
         </ode>
     </physics>
 
@@ -18,14 +18,41 @@
 
     <gravity>0 0 -9.81</gravity>
 
-    <plugin filename="libgz-sim8-physics-system" name="gz::sim::systems::Physics"></plugin>
-    <plugin filename="libgz-sim8-scene-broadcaster-system" name="gz::sim::systems::SceneBroadcaster"></plugin>
-    <plugin filename="libgz-sim8-sensors-system" name="gz::sim::systems::Sensors"/>
-    <plugin filename="libgz-sim8-user-commands-system" name="gz::sim::systems::UserCommands"/>
-    <plugin filename="libgz-sim8-contact-system.so" name="gz::sim::systems::Contact"></plugin>
-    <plugin filename="libgz-sim8-imu-system.so" name="gz::sim::systems::Imu"></plugin>
-    <plugin filename="libgz-sim8-forcetorque-system.so" name="gz::sim::systems::ForceTorque"/>
-    <plugin filename="libgz-sim-apply-link-wrench-system.so" name="gz::sim::systems::ApplyLinkWrench"/>
+    <!-- Add system-level physics and sensor plugins to each world -->
+    <plugin
+      filename="libgz-sim8-physics-system"
+      name="gz::sim::systems::Physics">
+    </plugin>
+
+    <plugin
+      filename="libgz-sim8-scene-broadcaster-system"
+      name="gz::sim::systems::SceneBroadcaster">
+    </plugin>
+
+    <plugin 
+      filename="libgz-sim8-sensors-system"
+      name="gz::sim::systems::Sensors"/>
+
+    <plugin 
+      filename="libgz-sim8-user-commands-system"
+      name="gz::sim::systems::UserCommands"/>
+    <plugin
+      filename="libgz-sim8-contact-system.so"
+      name="gz::sim::systems::Contact">
+    </plugin>
+
+    <plugin 
+      filename="libgz-sim8-imu-system.so"
+      name="gz::sim::systems::Imu">
+    </plugin>
+
+    <plugin 
+      filename="libgz-sim8-forcetorque-system.so"
+      name="gz::sim::systems::ForceTorque"/>
+
+    <plugin
+      filename="libgz-sim-apply-link-wrench-system.so"
+      name="gz::sim::systems::ApplyLinkWrench"/>
 
     <light name="sun" type="directional">
       <cast_shadows>true</cast_shadows>
@@ -37,7 +64,21 @@
 
     <include>
       <uri>model://big_flat</uri>
-      <pose>-2 -2 -0.1  0 0 0</pose>
+      <!-- Keep z=-0.0: this is the physics-correct setup. The mesh
+           is a 0.1 m thick slab (z=0..+0.1 in mesh-local) and Gazebo
+           uses the same mesh for collision, so the walking surface
+           ends up at world z=+0.1. The visual penetration you may see
+           in RViz is a *rendering* artifact, not a physics problem:
+           the mesh-to-grid-map publisher samples the STL in
+           mesh-local coordinates and does not apply this world pose,
+           so the GridMap displays terrain at z=+0.1 while RViz draws
+           the robot model anchored at the gazebo TF (also at z=+0.1).
+           Identical-Z surfaces clash with the robot's lower-body
+           URDF visuals that extend a couple cm below the foot frame.
+           Sinking the mesh to z=-0.1 like flat.sdf BREAKS PHYSICS —
+           the collision then has nothing under the robots' fall path
+           and they drop through the world. -->
+      <pose>-11 -11 -0.0  0 0 0</pose>
     </include>
   </world>
 </sdf>

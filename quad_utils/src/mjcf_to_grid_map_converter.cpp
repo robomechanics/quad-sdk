@@ -252,7 +252,6 @@ bool MjcfToGridMapConverter::loadMeshFromFile(
     return false;
   }
 
-
   bool mesh_converted = meshToGridMap(mesh_from_file, frame_id_mesh_loaded_,
                                       node_->now().nanoseconds());
   if (!mesh_converted) {

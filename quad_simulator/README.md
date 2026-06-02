@@ -5,7 +5,8 @@
 This directory is a meta-package that groups the Mujoco and Gazebo simulation infrastructure and all supported robot descriptions used by Quad-SDK. It contains:
 
 - **`gazebo_plugins/`** — Gazebo system plugins for controller bridging and state estimation injection.
-- **`gazebo_scripts/`** — terrain worlds, meshes, and bring-up scripts for Gazebo Harmonic.
+- **`gazebo_scripts/`** — Gazebo-specific bring-up code (the `contact_state_publisher_node` that converts Gazebo contact sensor topics into `GRFArray` messages).
+- **`quad_sim_scripts/`** — shared simulation assets (terrain worlds, models, RViz configs, control YAMLs) used by both Gazebo and MuJoCo launches.
 - **`*_description/`** — URDF/meshes for each supported platform (see below).
 
 The simulation side of Quad-SDK targets **Gazebo Harmonic** (via `ros_gz_bridge`) on ROS2 Jazzy; legacy Gazebo Classic support has been removed. A MuJoCo back-end is also available — see the top-level `quad_mujoco.py` launch file.
@@ -51,7 +52,11 @@ Plugins are registered via `controller_plugin.xml` and loaded into each simulate
 
 ### `gazebo_scripts`
 
-Terrain models, worlds, and utility scripts. Available terrain models (under `gazebo_scripts/models/`):
+Gazebo-specific bring-up. Provides the `contact_state_publisher_node` executable, which subscribes to per-toe `ros_gz_interfaces/msg/Contacts` topics from the Gazebo contact sensor bridge and republishes the foot-contact state as a `GRFArray` for the rest of the stack.
+
+### `quad_sim_scripts`
+
+Shared simulation assets used by both Gazebo and MuJoCo launches: terrain worlds (`.sdf` and `.xml.xacro`), terrain models, RViz config, and MuJoCo control YAMLs. Available terrain models (under `quad_sim_scripts/models/`):
 
 ```
 flat                 big_flat             slope_20             slope_20_hole
@@ -65,7 +70,7 @@ rough_25cm           rough_40cm_huge      parkour_local_min
 
 ```bash
 colcon build --packages-select \
-  gazebo_plugins gazebo_scripts \
+  gazebo_plugins gazebo_scripts quad_sim_scripts \
   a1_description b2_description go1_description go2_description go2w_description \
   spirit_description spot_description underbrush_description vision60_description
 ```

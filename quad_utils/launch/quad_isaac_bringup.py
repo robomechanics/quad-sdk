@@ -66,10 +66,10 @@ def launch_terrain(context, *args, **kwargs):
     Raw publisher switches based on the `terrain` launch arg:
       - terrain unset (or 'flat'): use isaac_plugins/flat_terrain_publisher.py
         which synthesizes a flat z=0 GridMap. Fine for flat ground.
-      - terrain set to a name with a matching gazebo_scripts model: use
+      - terrain set to a name with a matching quad_sim_scripts model: use
         quad_utils mesh_to_grid_map_node, the same node Gazebo's
         mapping.py uses. It reads
-        gazebo_scripts/share/.../models/<terrain>/meshes/<terrain>.ply
+        quad_sim_scripts/share/.../models/<terrain>/meshes/<terrain>.ply
         and publishes real terrain heights so the planner's
         getZRelToTerrain matches the physics under Isaac's loaded STL.
 

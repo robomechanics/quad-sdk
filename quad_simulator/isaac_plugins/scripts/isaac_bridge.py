@@ -147,7 +147,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         '--terrain', default=None,
         help=(
-            'Terrain STL: short name (resolved against gazebo_scripts '
+            'Terrain STL: short name (resolved against quad_sim_scripts '
             'models/<name>/meshes/<name>.stl) or absolute .stl path. '
             'Suppresses --ground; pose from matching world .sdf.'
         ),
@@ -238,14 +238,14 @@ def _resolve_terrain_stl(terrain_arg: str | None) -> Path | None:
     if not (candidate.is_absolute() or candidate.suffix == '.stl'):
         candidate = (
             WORKSPACE_INSTALL
-            / 'gazebo_scripts/share/gazebo_scripts/models'
+            / 'quad_sim_scripts/share/quad_sim_scripts/models'
             / terrain_arg / 'meshes' / f'{terrain_arg}.stl'
         )
     if not candidate.is_file():
         raise SystemExit(
             f'--terrain: STL not found at {candidate}. For short '
-            'names, ensure gazebo_scripts is built '
-            '(colcon build --packages-select gazebo_scripts).'
+            'names, ensure quad_sim_scripts is built '
+            '(colcon build --packages-select quad_sim_scripts).'
         )
     return candidate
 

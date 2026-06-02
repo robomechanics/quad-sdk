@@ -156,7 +156,6 @@ def spawn_sdf_model(context, *args, **kwargs):
 
 def spawn_controller_broadcasters(context, *args, **kwargs):
     namespace = LaunchConfiguration('namespace').perform(context)
-    gazebo_scripts_path = FindPackageShare('gazebo_scripts').perform(context)
     spawn_joint_state_broadcaster = ExecuteProcess(
         cmd=[
             'ros2', 'run', 'controller_manager', 'spawner',

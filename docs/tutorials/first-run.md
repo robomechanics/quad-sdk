@@ -44,7 +44,7 @@ The `quad_gazebo.py` launch file accepts these parameters:
 | `robot_configs` | Single Go2 at origin | JSON list of robots and their configs |
 | `gui` | `false` | Show the Gazebo viewer |
 | `paused` | `false` | Start paused |
-| `world` | `flat.sdf` | Pick a world from `quad_simulator/gazebo_scripts/worlds` |
+| `world` | `flat.sdf` | Pick a world from `quad_simulator/quad_sim_scripts/worlds` |
 | `live_plot` | `false` | Auto-launch PlotJuggler |
 | `dash` | `false` | Auto-launch the rqt dashboard |
 | `logging` | `false` | Record a bag |
