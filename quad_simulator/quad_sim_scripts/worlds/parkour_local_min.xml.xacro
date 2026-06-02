@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mujoco model="parkour_local_min" xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+  <xacro:arg name="meshdir" default=""/>
+  <xacro:arg name="mjcf_path" default=""/>
+  <xacro:arg name="terrain_mesh" default=""/>
+
+  <compiler
+    angle="radian"
+    meshdir="$(arg meshdir)"
+    texturedir="$(arg meshdir)"
+    autolimits="true"/>
+
+  <include file="$(arg mjcf_path)"/>
+
+  <asset>
+    <mesh name="terrain" file="$(arg terrain_mesh)"/>
+  </asset>
+
+  <worldbody>
+    <light directional="true" diffuse=".8 .8 .8" specular=".2 .2 .2" pos="0 0 5" dir="0 0 -1"/>
+
+    <geom name="floor_visual" type="mesh" mesh="terrain" pos="-2 -2 -0.1"
+          rgba="0.8 0.9 0.8 1" contype="0" conaffinity="0" group="1"/>
+
+    <!-- West side: main slab + south "finger" + north arm.
+         All top z=0 in world (mesh top z=0.1, offset -0.1). -->
+    <geom
+      name="parkour_west_main"
+      type="box"
+      size="2 2 0.05"
+      pos="0 0 -0.05"
+      rgba="0.8 0.9 0.8 1"
+      friction="1.5 0.1 0.05"
+      solref="0.007 1"
+      solimp="0.95 0.99 0.002"
+    />
+
+    <geom
+      name="parkour_west_south_finger"
+      type="box"
+      size="0.3048 0.5189 0.05"
+      pos="2.3048 -1.4811 -0.05"
+      rgba="0.8 0.9 0.8 1"
+      friction="1.5 0.1 0.05"
+      solref="0.007 1"
+      solimp="0.95 0.99 0.002"
+    />
+
+    <geom
+      name="parkour_north_arm"
+      type="box"
+      size="1.4 0.95 0.05"
+      pos="3.4 1.05 -0.05"
+      rgba="0.8 0.9 0.8 1"
+      friction="1.5 0.1 0.05"
+      solref="0.007 1"
+      solimp="0.95 0.99 0.002"
+    />
+
+    <!-- East side: 3-step staircase descending west from the east block.
+         East block is full height (y[0,4]); mid step y[0,1.9]; low step
+         y[0,1.0379]. All tops at z=0 world. -->
+    <geom
+      name="parkour_east_block"
+      type="box"
+      size="1 2 0.05"
+      pos="6 0 -0.05"
+      rgba="0.8 0.9 0.8 1"
+      friction="1.5 0.1 0.05"
+      solref="0.007 1"
+      solimp="0.95 0.99 0.002"
+    />
+
+    <geom
+      name="parkour_east_mid_step"
+      type="box"
+      size="0.2808 0.95 0.05"
+      pos="4.7192 -1.05 -0.05"
+      rgba="0.8 0.9 0.8 1"
+      friction="1.5 0.1 0.05"
+      solref="0.007 1"
+      solimp="0.95 0.99 0.002"
+    />
+
+    <geom
+      name="parkour_east_low_step"
+      type="box"
+      size="0.3048 0.5189 0.05"
+      pos="4.1336 -1.4811 -0.05"
+      rgba="0.8 0.9 0.8 1"
+      friction="1.5 0.1 0.05"
+      solref="0.007 1"
+      solimp="0.95 0.99 0.002"
+    />
+
+    <!-- Wall: a thin overhead beam (top slab) over the west portion of the
+         gap and a full-height column on the east. The clearance under the
+         beam x in [2, 4.4384] world, z in [0, 0.8621] is the parkour
+         "doorway" feature - the wall hangs as a ceiling rather than
+         reaching the ground. -->
+    <geom
+      name="wall_ceiling_slab"
+      type="box"
+      size="1.2192 0.1 0.0689"
+      pos="3.2192 0 0.9311"
+      rgba="0.4 0.4 0.45 1"
+      friction="1.5 0.1 0.05"
+      solref="0.007 1"
+      solimp="0.95 0.99 0.002"
+    />
+
+    <geom
+      name="wall_east_column"
+      type="box"
+      size="0.2808 0.1 0.5"
+      pos="4.7192 0 0.5"
+      rgba="0.4 0.4 0.45 1"
+      friction="1.5 0.1 0.05"
+      solref="0.007 1"
+      solimp="0.95 0.99 0.002"
+    />
+
+    <geom
+      name="wall_north_column"
+      type="box"
+      size="0.1 0.95 0.5"
+      pos="4.9 1.05 0.5"
+      rgba="0.4 0.4 0.45 1"
+      friction="1.5 0.1 0.05"
+      solref="0.007 1"
+      solimp="0.95 0.99 0.002"
+    />
+  </worldbody>
+</mujoco>

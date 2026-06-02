@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mujoco model="flat" xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+  <xacro:arg name="meshdir" default=""/>
+  <xacro:arg name="mjcf_path" default=""/>
+
+  <compiler
+    angle="radian"
+    meshdir="$(arg meshdir)"
+    texturedir="$(arg meshdir)"
+    autolimits="true"/>
+
+  <include file="$(arg mjcf_path)"/>
+
+  <worldbody>
+    <light directional="true" diffuse=".8 .8 .8" specular=".2 .2 .2" pos="0 0 5" dir="0 0 -1"/>
+    <geom name="floor" type="box" size="4.5 2 0.05" pos="2.5 0 -0.05" rgba="0.8 0.9 0.8 1"/>
+  </worldbody>
+</mujoco>

@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mujoco model="slope_20" xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+  <xacro:arg name="meshdir" default=""/>
+  <xacro:arg name="mjcf_path" default=""/>
+  <xacro:arg name="terrain_mesh" default=""/>
+
+  <compiler
+    angle="radian"
+    meshdir="$(arg meshdir)"
+    texturedir="$(arg meshdir)"
+    autolimits="true"/>
+
+  <option
+    timestep="0.0015"
+    iterations="100"
+    ls_iterations="20"
+    tolerance="1e-6"
+    impratio="1.5"
+     />
+
+  <include file="$(arg mjcf_path)"/>
+
+  <asset>
+    <mesh name="terrain" file="$(arg terrain_mesh)"/>
+  </asset>
+
+  <worldbody>
+    <light directional="true" diffuse=".8 .8 .8" specular=".2 .2 .2" pos="0 0 5" dir="0 0 -1"/>
+
+    <geom name="floor_visual" type="mesh" mesh="terrain" pos="-2 -2 -0.1"
+          rgba="0.8 0.9 0.8 1" contype="0" conaffinity="0" group="1"/>
+
+    <!-- 20% slope (4 m run / 0.8 m rise; angle = atan(0.2) ~= 0.1974 rad)
+         in three pieces: flat lower pad, tilted ramp, flat upper pad. -->
+    <geom
+      name="slope_lower"
+      type="box"
+      size="1.5 2 0.05"
+      pos="-0.5 0 -0.05"
+      rgba="0.8 0.9 0.8 1"
+      priority="2" condim="3"
+      margin="0.005"
+      friction="0.8 0.05 0.05"
+      solref="0.02 1"
+      solimp="0.9 0.95 0.001"
+    />
+
+    <geom
+      name="slope_ramp"
+      type="box"
+      size="2.0396 2 0.05"
+      pos="3.0098 0 0.351"
+      euler="0 -0.1974 0"
+      rgba="0.8 0.9 0.8 1"
+      priority="2" condim="3"
+      margin="0.005"
+      friction="0.8 0.05 0.05"
+      solref="0.02 1"
+      solimp="0.9 0.95 0.001"
+    />
+
+    <geom
+      name="slope_upper"
+      type="box"
+      size="1 2 0.45"
+      pos="6 0 0.35"
+      rgba="0.8 0.9 0.8 1"
+      priority="2" condim="3"
+      margin="0.005"
+      friction="0.8 0.05 0.05"
+      solref="0.02 1"
+      solimp="0.9 0.95 0.001"
+    />
+  </worldbody>
+</mujoco>

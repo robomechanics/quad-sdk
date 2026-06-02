@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mujoco model="step_15cm_local_min" xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+  <xacro:arg name="meshdir" default=""/>
+  <xacro:arg name="mjcf_path" default=""/>
+  <xacro:arg name="terrain_mesh" default=""/>
+
+  <compiler
+    angle="radian"
+    meshdir="$(arg meshdir)"
+    texturedir="$(arg meshdir)"
+    autolimits="true"/>
+
+  <include file="$(arg mjcf_path)"/>
+
+  <asset>
+    <mesh name="terrain" file="$(arg terrain_mesh)"/>
+  </asset>
+
+  <worldbody>
+    <light directional="true" diffuse=".8 .8 .8" specular=".2 .2 .2" pos="0 0 5" dir="0 0 -1"/>
+
+    <geom name="floor_visual" type="mesh" mesh="terrain" pos="-2 -2 -0.1"
+          rgba="0.8 0.9 0.8 1" contype="0" conaffinity="0" group="1"/>
+
+    <!-- Lower platform is split into 4 pieces by two notches (mesh frame
+         drawings; world frame = mesh - (2,2,0.1)):
+           A west_col   : x in [0  ,1.5], y in [0     ,4     ]
+           B east_hall  : x in [2.5,5  ], y in [0     ,1.5   ]
+           C east_arm   : x in [2.5,4  ], y in [1.5   ,4     ]
+           D bridge     : x in [1.5,2.5], y in [2.5066,4     ]
+         The gaps between them force the snake path A -> D -> C -> B
+         -> upper step. -->
+    <geom
+      name="step_lower_A_west_col"
+      type="box"
+      size="0.75 2 0.05"
+      pos="-1.25 0 -0.05"
+      rgba="0.8 0.9 0.8 1"
+      friction="1.5 0.1 0.05"
+      solref="0.007 1"
+      solimp="0.95 0.99 0.002"
+    />
+
+    <geom
+      name="step_lower_B_east_hall"
+      type="box"
+      size="1.25 0.75 0.05"
+      pos="1.75 -1.25 -0.05"
+      rgba="0.8 0.9 0.8 1"
+      friction="1.5 0.1 0.05"
+      solref="0.007 1"
+      solimp="0.95 0.99 0.002"
+    />
+
+    <geom
+      name="step_lower_C_east_arm"
+      type="box"
+      size="0.75 1.25 0.05"
+      pos="1.25 0.75 -0.05"
+      rgba="0.8 0.9 0.8 1"
+      friction="1.5 0.1 0.05"
+      solref="0.007 1"
+      solimp="0.95 0.99 0.002"
+    />
+
+    <geom
+      name="step_lower_D_bridge"
+      type="box"
+      size="0.5 0.7467 0.05"
+      pos="0 1.2533 -0.05"
+      rgba="0.8 0.9 0.8 1"
+      friction="1.5 0.1 0.05"
+      solref="0.007 1"
+      solimp="0.95 0.99 0.002"
+    />
+
+    <geom
+      name="step_upper"
+      type="box"
+      size="2 2 0.125"
+      pos="5 0 0.025"
+      rgba="0.8 0.9 0.8 1"
+      friction="1.5 0.1 0.05"
+      solref="0.007 1"
+      solimp="0.95 0.99 0.002"
+    />
+  </worldbody>
+</mujoco>

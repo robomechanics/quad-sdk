@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mujoco model="gap_40cm_local_min" xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+  <xacro:arg name="meshdir" default=""/>
+  <xacro:arg name="mjcf_path" default=""/>
+  <xacro:arg name="terrain_mesh" default=""/>
+
+  <compiler
+    angle="radian"
+    meshdir="$(arg meshdir)"
+    texturedir="$(arg meshdir)"
+    autolimits="true"/>
+
+  <include file="$(arg mjcf_path)"/>
+
+  <asset>
+    <mesh name="terrain" file="$(arg terrain_mesh)"/>
+  </asset>
+
+  <worldbody>
+    <light directional="true" diffuse=".8 .8 .8" specular=".2 .2 .2" pos="0 0 5" dir="0 0 -1"/>
+
+    <geom name="floor_visual" type="mesh" mesh="terrain" pos="-2 -2 -0.1"
+          rgba="0.8 0.9 0.8 1" contype="0" conaffinity="0" group="1"/>
+
+    <!-- Lower platforms (top z=0 world; mesh top z=0.1, offset -0.1).
+         A 40 cm gap at mesh x in [4,4.4], y in [0,1.9] separates west/north
+         from south/east. -->
+    <geom
+      name="gap_west_block"
+      type="box"
+      size="2 2 0.05"
+      pos="0 0 -0.05"
+      rgba="0.8 0.9 0.8 1"
+      friction="1.5 0.1 0.05"
+      solref="0.007 1"
+      solimp="0.95 0.99 0.002"
+    />
+
+    <geom
+      name="gap_north_arm"
+      type="box"
+      size="1.4 0.95 0.05"
+      pos="3.4 1.05 -0.05"
+      rgba="0.8 0.9 0.8 1"
+      friction="1.5 0.1 0.05"
+      solref="0.007 1"
+      solimp="0.95 0.99 0.002"
+    />
+
+    <geom
+      name="gap_south_block"
+      type="box"
+      size="1.3 0.95 0.05"
+      pos="3.7 -1.05 -0.05"
+      rgba="0.8 0.9 0.8 1"
+      friction="1.5 0.1 0.05"
+      solref="0.007 1"
+      solimp="0.95 0.99 0.002"
+    />
+
+    <geom
+      name="gap_east_block"
+      type="box"
+      size="1 2 0.05"
+      pos="6 0 -0.05"
+      rgba="0.8 0.9 0.8 1"
+      friction="1.5 0.1 0.05"
+      solref="0.007 1"
+      solimp="0.95 0.99 0.002"
+    />
+
+    <!-- L-shaped wall pillar 1 m tall (world z in [0, 1]) that blocks the
+         direct west->east route through the natural gap, creating the
+         local-minimum trap. -->
+    <geom
+      name="wall_ew_bar"
+      type="box"
+      size="1.5 0.1 0.5"
+      pos="3.5 0 0.5"
+      rgba="0.4 0.4 0.45 1"
+      friction="1.5 0.1 0.05"
+      solref="0.007 1"
+      solimp="0.95 0.99 0.002"
+    />
+
+    <geom
+      name="wall_base_under_gap"
+      type="box"
+      size="0.2 0.1 0.05"
+      pos="2.2 0 -0.05"
+      rgba="0.4 0.4 0.45 1"
+      friction="1.5 0.1 0.05"
+      solref="0.007 1"
+      solimp="0.95 0.99 0.002"
+    />
+
+    <geom
+      name="wall_north_column"
+      type="box"
+      size="0.1 0.95 0.5"
+      pos="4.9 1.05 0.5"
+      rgba="0.4 0.4 0.45 1"
+      friction="1.5 0.1 0.05"
+      solref="0.007 1"
+      solimp="0.95 0.99 0.002"
+    />
+  </worldbody>
+</mujoco>
