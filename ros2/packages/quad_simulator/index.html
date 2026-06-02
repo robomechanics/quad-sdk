@@ -1255,6 +1255,15 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#mujoco_plugins" class="md-nav__link">
+    <span class="md-ellipsis">
+      mujoco_plugins
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#quad_sim_scripts" class="md-nav__link">
     <span class="md-ellipsis">
       quad_sim_scripts
@@ -2157,6 +2166,15 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#mujoco_plugins" class="md-nav__link">
+    <span class="md-ellipsis">
+      mujoco_plugins
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#quad_sim_scripts" class="md-nav__link">
     <span class="md-ellipsis">
       quad_sim_scripts
@@ -2230,6 +2248,7 @@
 <ul>
 <li><strong><code>gazebo_plugins/</code></strong> — Gazebo system plugins for controller bridging and state estimation injection.</li>
 <li><strong><code>gazebo_scripts/</code></strong> — Gazebo-specific bring-up code (the <code>contact_state_publisher_node</code> that converts Gazebo contact sensor topics into <code>GRFArray</code> messages).</li>
+<li><strong><code>mujoco_plugins/</code></strong> — MuJoCo ground-truth state estimator (the MuJoCo-side counterpart to <code>gazebo_plugins</code>' <code>estimator_plugin</code>).</li>
 <li><strong><code>quad_sim_scripts/</code></strong> — shared simulation assets (terrain worlds, models, RViz configs, control YAMLs) used by both Gazebo and MuJoCo launches.</li>
 <li><strong><code>*_description/</code></strong> — URDF/meshes for each supported platform (see below).</li>
 </ul>
@@ -2295,6 +2314,8 @@
 <p>Plugins are registered via <code>controller_plugin.xml</code> and loaded into each simulated model by the URDF/SDF.</p>
 <h3 id="gazebo_scripts"><code>gazebo_scripts</code><a class="headerlink" href="#gazebo_scripts" title="Permanent link">&para;</a></h3>
 <p>Gazebo-specific bring-up. Provides the <code>contact_state_publisher_node</code> executable, which subscribes to per-toe <code>ros_gz_interfaces/msg/Contacts</code> topics from the Gazebo contact sensor bridge and republishes the foot-contact state as a <code>GRFArray</code> for the rest of the stack.</p>
+<h3 id="mujoco_plugins"><code>mujoco_plugins</code><a class="headerlink" href="#mujoco_plugins" title="Permanent link">&para;</a></h3>
+<p>MuJoCo-side ground-truth estimator. Provides the <code>mujoco_estimator</code> executable, which subscribes to <code>mujoco_ros2_control</code>'s <code>/odom</code> and <code>/joint_states</code> and republishes the world-frame and body-frame <code>RobotState</code> at 500 Hz — the MuJoCo counterpart to Gazebo's <code>estimator_plugin</code>. Foot positions/velocities are computed via QuadKD2 forward kinematics from the latched <code>robot_description</code>.</p>
 <h3 id="quad_sim_scripts"><code>quad_sim_scripts</code><a class="headerlink" href="#quad_sim_scripts" title="Permanent link">&para;</a></h3>
 <p>Shared simulation assets used by both Gazebo and MuJoCo launches: terrain worlds (<code>.sdf</code> and <code>.xml.xacro</code>), terrain models, RViz config, and MuJoCo control YAMLs. Available terrain models (under <code>quad_sim_scripts/models/</code>):</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>flat                 big_flat             slope_20             slope_20_hole

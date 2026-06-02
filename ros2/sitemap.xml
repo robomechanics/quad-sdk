@@ -85,6 +85,10 @@
          <lastmod>2026-06-02</lastmod>
     </url>
     <url>
+         <loc>https://robomechanics.github.io/quad-sdk/ros2/packages/mujoco_plugins/</loc>
+         <lastmod>2026-06-02</lastmod>
+    </url>
+    <url>
          <loc>https://robomechanics.github.io/quad-sdk/ros2/packages/nmpc_controller/</loc>
          <lastmod>2026-06-02</lastmod>
     </url>
@@ -162,6 +166,10 @@
     </url>
     <url>
          <loc>https://robomechanics.github.io/quad-sdk/ros2/tutorials/logging/</loc>
+         <lastmod>2026-06-02</lastmod>
+    </url>
+    <url>
+         <loc>https://robomechanics.github.io/quad-sdk/ros2/tutorials/mujoco-sim/</loc>
          <lastmod>2026-06-02</lastmod>
     </url>
     <url>

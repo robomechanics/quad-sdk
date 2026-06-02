@@ -115,7 +115,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#blender-bag-visualization" class="md-skip">
+        <a href="#scripts" class="md-skip">
           Skip to content
         </a>
       
@@ -1406,6 +1406,15 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#blender-bag-visualization" class="md-nav__link">
+    <span class="md-ellipsis">
+      Blender Bag Visualization
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#prerequisites" class="md-nav__link">
     <span class="md-ellipsis">
       Prerequisites
@@ -1487,6 +1496,15 @@
   <a href="#notes" class="md-nav__link">
     <span class="md-ellipsis">
       Notes
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#linting" class="md-nav__link">
+    <span class="md-ellipsis">
+      Linting
     </span>
   </a>
   
@@ -2081,6 +2099,15 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#blender-bag-visualization" class="md-nav__link">
+    <span class="md-ellipsis">
+      Blender Bag Visualization
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#prerequisites" class="md-nav__link">
     <span class="md-ellipsis">
       Prerequisites
@@ -2167,6 +2194,15 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#linting" class="md-nav__link">
+    <span class="md-ellipsis">
+      Linting
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -2194,7 +2230,13 @@
 <p class="admonition-title">Source of truth</p>
 <p>This page mirrors <a href="https://github.com/robomechanics/quad-sdk/blob/main/scripts/README.md"><code>scripts/README.md</code></a>. Edit that file to update.</p>
 </div>
-<h1 id="blender-bag-visualization">Blender Bag Visualization<a class="headerlink" href="#blender-bag-visualization" title="Permanent link">&para;</a></h1>
+<h1 id="scripts">Scripts<a class="headerlink" href="#scripts" title="Permanent link">&para;</a></h1>
+<p>Utility scripts for Quad-SDK development. Two unrelated workflows live here:</p>
+<ul>
+<li><strong>Blender Bag Visualization</strong> — generate animated scenes and MP4 videos from recorded ROS2 bag files.</li>
+<li><strong>Linting</strong> — run <code>cpplint</code> over the C++ source tree (<code>lint_soft.sh</code>, <code>lint_hard.sh</code>).</li>
+</ul>
+<h2 id="blender-bag-visualization">Blender Bag Visualization<a class="headerlink" href="#blender-bag-visualization" title="Permanent link">&para;</a></h2>
 <p>Generate animated Blender scenes and MP4 videos from recorded ROS2 bag files.</p>
 <h2 id="prerequisites">Prerequisites<a class="headerlink" href="#prerequisites" title="Permanent link">&para;</a></h2>
 <ul>
@@ -2379,6 +2421,31 @@
 <li>To adjust the camera angle, open the .blend file in Blender and reposition the <code>Camera</code> object or its <code>CameraTracker</code> parent.</li>
 <li>The script currently supports the Go2 robot. For other robots, update the kinematic constants and mesh paths in <code>bag_to_blender.py</code>.</li>
 </ul>
+<h2 id="linting">Linting<a class="headerlink" href="#linting" title="Permanent link">&para;</a></h2>
+<p><code>lint_soft.sh</code> and <code>lint_hard.sh</code> run <code>cpplint</code> over the C++ source tree to catch style and basic-quality issues before pushing. Both require <code>cpplint</code> on <code>$PATH</code> (<code>pip install --user cpplint</code>).</p>
+<table>
+<thead>
+<tr>
+<th>Script</th>
+<th>Behavior</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>lint_soft.sh</code></td>
+<td>Suppresses copyright/runtime/build/casting/function-size categories; useful as a quick pre-commit gate. Excludes <code>external/</code>, generated NMPC headers, and <code>matlab_msg_gen/</code>.</td>
+</tr>
+<tr>
+<td><code>lint_hard.sh</code></td>
+<td>Runs <code>cpplint</code> with the default category set from the parent directory — closer to the CI lint. Excludes only <code>external/</code> and the generated NMPC headers.</td>
+</tr>
+</tbody>
+</table>
+<p>Run from the repo root:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a>./scripts/lint_soft.sh<span class="w">    </span><span class="c1"># fast, permissive — daily-use gate</span>
+<a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a>./scripts/lint_hard.sh<span class="w">    </span><span class="c1"># full categories — CI-parity check</span>
+</code></pre></div>
+<p>Either script exits non-zero on the first violation (<code>set -e</code>), so wire them into pre-push hooks if desired.</p>
 
 
 
