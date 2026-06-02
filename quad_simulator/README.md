@@ -6,6 +6,7 @@ This directory is a meta-package that groups the Mujoco and Gazebo simulation in
 
 - **`gazebo_plugins/`** — Gazebo system plugins for controller bridging and state estimation injection.
 - **`gazebo_scripts/`** — Gazebo-specific bring-up code (the `contact_state_publisher_node` that converts Gazebo contact sensor topics into `GRFArray` messages).
+- **`mujoco_plugins/`** — MuJoCo ground-truth state estimator (the MuJoCo-side counterpart to `gazebo_plugins`' `estimator_plugin`).
 - **`quad_sim_scripts/`** — shared simulation assets (terrain worlds, models, RViz configs, control YAMLs) used by both Gazebo and MuJoCo launches.
 - **`*_description/`** — URDF/meshes for each supported platform (see below).
 
@@ -53,6 +54,10 @@ Plugins are registered via `controller_plugin.xml` and loaded into each simulate
 ### `gazebo_scripts`
 
 Gazebo-specific bring-up. Provides the `contact_state_publisher_node` executable, which subscribes to per-toe `ros_gz_interfaces/msg/Contacts` topics from the Gazebo contact sensor bridge and republishes the foot-contact state as a `GRFArray` for the rest of the stack.
+
+### `mujoco_plugins`
+
+MuJoCo-side ground-truth estimator. Provides the `mujoco_estimator` executable, which subscribes to `mujoco_ros2_control`'s `/odom` and `/joint_states` and republishes the world-frame and body-frame `RobotState` at 500 Hz — the MuJoCo counterpart to Gazebo's `estimator_plugin`. Foot positions/velocities are computed via QuadKD2 forward kinematics from the latched `robot_description`.
 
 ### `quad_sim_scripts`
 

@@ -1,4 +1,11 @@
-# Blender Bag Visualization
+# Scripts
+
+Utility scripts for Quad-SDK development. Two unrelated workflows live here:
+
+- **Blender Bag Visualization** — generate animated scenes and MP4 videos from recorded ROS2 bag files.
+- **Linting** — run `cpplint` over the C++ source tree (`lint_soft.sh`, `lint_hard.sh`).
+
+## Blender Bag Visualization
 
 Generate animated Blender scenes and MP4 videos from recorded ROS2 bag files.
 
@@ -175,3 +182,21 @@ bpy.ops.render.render(animation=True)
 - The camera automatically tracks the robot's XY position during playback.
 - To adjust the camera angle, open the .blend file in Blender and reposition the `Camera` object or its `CameraTracker` parent.
 - The script currently supports the Go2 robot. For other robots, update the kinematic constants and mesh paths in `bag_to_blender.py`.
+
+## Linting
+
+`lint_soft.sh` and `lint_hard.sh` run `cpplint` over the C++ source tree to catch style and basic-quality issues before pushing. Both require `cpplint` on `$PATH` (`pip install --user cpplint`).
+
+| Script | Behavior |
+|---|---|
+| `lint_soft.sh` | Suppresses copyright/runtime/build/casting/function-size categories; useful as a quick pre-commit gate. Excludes `external/`, generated NMPC headers, and `matlab_msg_gen/`. |
+| `lint_hard.sh` | Runs `cpplint` with the default category set from the parent directory — closer to the CI lint. Excludes only `external/` and the generated NMPC headers. |
+
+Run from the repo root:
+
+```bash
+./scripts/lint_soft.sh    # fast, permissive — daily-use gate
+./scripts/lint_hard.sh    # full categories — CI-parity check
+```
+
+Either script exits non-zero on the first violation (`set -e`), so wire them into pre-push hooks if desired.
