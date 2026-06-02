@@ -33,7 +33,7 @@ mapping:
           params:
             input_layer: z
             output_layer: z_inpainted
-            radius: 0.4
+            radius: 0.1
 
         filter3:
           # Reduce noise with a radial blurring filter.
@@ -42,7 +42,7 @@ mapping:
           params:
             input_layer: z_inpainted
             output_layer: z_smooth
-            radius: 0.2
+            radius: 0.05
 
         filter4:
           # Compute surface normals.
@@ -51,7 +51,7 @@ mapping:
           params:
             input_layer: z_inpainted
             output_layers_prefix: normal_vectors_
-            radius: 0.15
+            radius: 0.1
             normal_vector_positive_axis: z
 
         filter5:
@@ -61,7 +61,7 @@ mapping:
           params:
             input_layer: z_smooth
             output_layers_prefix: smooth_normal_vectors_
-            radius: 0.4
+            radius: 0.2
             normal_vector_positive_axis: z
 
         filter6:
@@ -117,7 +117,7 @@ mapping:
           params:
             input_layer: traversability_hole_mask
             output_layer: traversability_hole_mask_filtered
-            radius: 0.075
+            radius: 0.01
 
         filter11:
           # Set lower threshold on traversability hole mask.

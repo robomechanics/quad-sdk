@@ -11,7 +11,7 @@
       stand_cmd_vel_threshold: 0.1
       stand_pos_error_threshold: 0.05
     local_footstep_planner:
-      grf_weight: 0.45
+      grf_weight: 0.5
       standing_error_threshold: 0.03 # m
       foothold_obj_threshold: 0.6 # Note: For now must match /grid_map_filters/traversability_mask_lower_threshold/lower_threshold
       obj_fun_layer: traversability

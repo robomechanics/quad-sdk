@@ -13,7 +13,7 @@ def generate_launch_description():
             description='Input used to generate terrain data'),
         DeclareLaunchArgument('frame_id_mesh_loaded', default_value='map'),
         DeclareLaunchArgument('grid_map_layer_name', default_value='z'),
-        DeclareLaunchArgument('grid_map_resolution', default_value='0.05'),
+        DeclareLaunchArgument('grid_map_resolution', default_value='0.025'),
         DeclareLaunchArgument('latch_grid_map_pub', default_value='true'),
         DeclareLaunchArgument('verbose', default_value='true'),
         DeclareLaunchArgument('world', default_value='step_20cm.sdf'),
