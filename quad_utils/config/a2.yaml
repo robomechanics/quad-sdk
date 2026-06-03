@@ -1,0 +1,187 @@
+/**/global_body_planner:
+  ros__parameters:
+    global_body_planner:
+      h_max: 0.55                             # Maximum height of leg base, m
+      h_min: 0.12                             # Minimum ground clearance of body corners, m
+      h_nom: 0.40                             # Nominal ground clearance of body, m
+      v_max: 1.5                              # Maximum robot velocity, m/s
+      v_nom: 0.5                              # Nominal velocity, m/s (used during connect function)
+      robot_l: 0.519                          # Length between front and rear hip joints, m
+      robot_w: 0.28                           # Width of robot body, m
+      robot_h: 0.08                           # Vertical distance between leg base and bottom of robot, m
+      mass: 40.071                            # Robot mass from URDF links, kg
+      grf_min: 3.0                            # Minimum GRF in units of body weight (only used for sampling)
+      grf_max: 5.0                            # Maximum GRF in units of body weight
+
+/**/local_planner:
+  ros__parameters:
+    local_planner:
+        desired_height: 0.40 # m
+        toe_radius: 0.032 # m
+    local_footstep_planner:
+        hip_clearance: 0.15
+        foothold_search_radius: 0.20
+        period: 0.42 # s
+        ground_clearance: 0.07 # tune
+        duty_cycles: [0.55, 0.55, 0.55, 0.55]
+        phase_offsets: [0.0, 0.5, 0.5, 0.0]
+    nmpc_controller:
+      body:
+        x_dim: 12.0
+        u_dim: 12.0
+        g_dim: 28.0
+        x_weights: [5.0, 5.0, 5.0, 0.5, 0.5, 0.5, 0.1, 0.1, 0.2, 0.05, 0.05, 0.01]
+        u_weights: [!!float 5e-5, !!float 5e-5, !!float 5e-5, !!float 5e-5, !!float 5e-5, !!float 5e-5, !!float 5e-5, !!float 5e-5, !!float 5e-5, !!float 5e-5, !!float 5e-5, !!float 5e-5]
+        x_lb: [!!float -2e19, !!float -2e19, 0.0, -3.14159, -3.14159, -10.0, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19]
+        x_ub: [!!float 2e19, !!float 2e19, !!float 2e19, 3.14159, 3.14159, 10.0, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19]
+        x_lb_soft: [!!float -2e19, !!float -2e19, 0.0, -3.14159, -3.14159, -10.0, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19]
+        x_ub_soft: [!!float 2e19, !!float 2e19, !!float 2e19, 3.14159, 3.14159, 10.0, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19]
+        u_lb: [!!float -2e19, !!float -2e19, 0.0, !!float -2e19, !!float -2e19, 0.0, !!float -2e19, !!float -2e19, 0.0, !!float -2e19, !!float -2e19, 0.0]
+        u_ub: [!!float 2e19, !!float 2e19, 500.0, !!float 2e19, !!float 2e19, 500.0, !!float 2e19, !!float 2e19, 500.0, !!float 2e19, !!float 2e19, 500.0]
+        g_lb: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19]
+        g_ub: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+      feet:
+        x_dim: 24.0
+        u_dim: 24.0
+        g_dim: 28.0
+        x_weights: [7.51, 7.51, 7.51, 7.51, 7.51, 7.51, 7.51, 7.51, 7.51, 7.51, 7.51, 7.51, 0.111, 0.111, 0.111, 0.111, 0.111, 0.111, 0.111, 0.111, 0.111, 0.111, 0.111, 0.111]
+        u_weights: [!!float 5e-5, !!float 5e-5, !!float 5e-5, !!float 5e-5, !!float 5e-5, !!float 5e-5, !!float 5e-5, !!float 5e-5, !!float 5e-5, !!float 5e-5, !!float 5e-5, !!float 5e-5, !!float 5e-5, !!float 5e-5, !!float 5e-5, !!float 5e-5, !!float 5e-5, !!float 5e-5, !!float 5e-5, !!float 5e-5, !!float 5e-5, !!float 5e-5, !!float 5e-5, !!float 5e-5]
+        x_lb: [!!float -2e19, !!float -2e19,  !!float -2e19,  !!float -2e19,  !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19]
+        x_ub: [!!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19]
+        x_lb_soft: [!!float -2e19, !!float -2e19,  !!float -2e19,  !!float -2e19,  !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19]
+        x_ub_soft: [!!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19]
+        u_lb: [-99.9, -99.9, 0.0, -99.9, -99.9, 0.0, -99.9, -99.9, 0.0, -99.9, -99.9, 0.0, -99.9, -99.9, 0.0, -99.9, -99.9, 0.0, -99.9, -99.9, 0.0, -99.9, -99.9, 0.0]
+        u_ub: [!!float 99.9, !!float 99.9, !!float 500.0, !!float 99.9, !!float 99.9, !!float 500.0, !!float 99.9, !!float 99.9, !!float 500.0, !!float 99.9, !!float 99.9, !!float 500.0, !!float 99.9, !!float 99.9, !!float 500.0, !!float 99.9, !!float 99.9, !!float 500.0, !!float 99.9, !!float 99.9, !!float 500.0, !!float 99.9, !!float 99.9, !!float 500.0]
+        g_lb: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, !!float -2e19, !!float -2e19,  !!float -2e19,  !!float -2e19]
+        g_ub: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19]
+      joints:
+        x_dim: 24.0
+        u_dim: 0.0
+        g_dim: 52.0
+        x_weights: [0.0]
+        u_weights: [0.0]
+        x_lb: [-1.01, -2.34, -2.77, -1.01, -1.56, -2.77, -1.01, -2.34, -2.77, -1.01, -1.56, -2.77, -22.0, -22.0, -14.6667, -22.0, -22.0, -14.6667, -22.0, -22.0, -14.6667, -22.0, -22.0, -14.6667]
+        x_ub: [ 1.01,  3.15, -0.54,  1.01,  3.94, -0.54,  1.01,  3.15, -0.54,  1.01,  3.94, -0.54,  22.0,  22.0,  14.6667,  22.0,  22.0,  14.6667,  22.0,  22.0,  14.6667,  22.0,  22.0,  14.6667]
+        x_lb_soft: [-0.8, -2.0, -2.5, -0.8, -1.2, -2.5, -0.8, -2.0, -2.5, -0.8, -1.2, -2.5, -17.6, -17.6, -11.7, -17.6, -17.6, -11.7, -17.6, -17.6, -11.7, -17.6, -17.6, -11.7]
+        x_ub_soft: [ 0.8,  2.8, -0.7,  0.8,  3.5, -0.7,  0.8,  2.8, -0.7,  0.8,  3.5, -0.7,  17.6,  17.6,  11.7,  17.6,  17.6,  11.7,  17.6,  17.6,  11.7,  17.6,  17.6,  11.7]
+        u_lb: [0.0]
+        u_ub: [0.0]
+        g_lb: [!!float -2e19, !!float -2e19,  !!float -2e19,  !!float -2e19, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, !!float -2e19, !!float -2e19,  !!float -2e19,  !!float -2e19, !!float -2e19, !!float -2e19,  !!float -2e19,  !!float -2e19,  !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19]
+        g_ub: [!!float 2e19, !!float 2e19,  !!float 2e19,  !!float 2e19, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, !!float 2e19, !!float 2e19,  !!float 2e19,  !!float 2e19, !!float 2e19, !!float 2e19,  !!float 2e19,  !!float 2e19,  !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19]
+      friction_coefficient: 0.6
+
+/**/robot_driver:
+  ros__parameters:
+    robot_driver:
+      sit_kp: [100.0, 100.0, 100.0]
+      sit_kd: [10.0, 10.0, 10.0]
+      stand_kp: [100.0, 200.0, 300.0]
+      stand_kd: [10.0, 20.0, 30.0]
+      stance_kp: [100.0, 200.0, 200.0]
+      stance_kd: [10.0, 30.0, 30.0]
+      swing_kp: [80.0, 300.0, 300.0]
+      swing_kd: [10.0, 30.0, 30.0]
+      swing_kp_cart: [0.0, 0.0, 0.0] # N/m
+      swing_kd_cart: [0.0, 0.0, 0.0] # N/m
+      safety_kp: [0.0, 0.0, 0.0]
+      safety_kd: [20.0, 20.0, 20.0]
+      stand_joint_angles: [0.0, 0.8, -1.5]
+      sit_joint_angles: [0.0, 1.36, -2.65]
+
+/**/controller_manager:
+  ros__parameters:
+    update_rate: 500
+    joint_state_broadcaster:
+      type: joint_state_broadcaster/JointStateBroadcaster
+    joint_controller:
+      type: effort_controllers/QuadController
+
+/**/joint_controller:
+  ros__parameters:
+    topics:
+      control:
+        joint_command: control/joint_command
+
+/**:
+  ros__parameters:
+    body:
+      frame: "base_link"
+    motor_limits:
+      torque: [120.0, 120.0, 180.0]
+      speed: [22.0, 22.0, 14.6667]
+    leg_0:
+      joints:
+        abad:
+          name: "FL_hip_joint"
+          sign: 1.0
+          offset: 0.0
+        hip:
+          name: "FL_thigh_joint"
+          sign: 1.0
+          offset: 0.0
+        knee:
+          name: "FL_calf_joint"
+          sign: 1.0
+          offset: 0.0
+      frames:
+        hip: "FL_hip"
+        upper: "FL_thigh"
+        lower: "FL_calf"
+        toe: "FL_foot"
+    leg_1:
+      joints:
+        abad:
+          name: "RL_hip_joint"
+          sign: 1.0
+          offset: 0.0
+        hip:
+          name: "RL_thigh_joint"
+          sign: 1.0
+          offset: 0.0
+        knee:
+          name: "RL_calf_joint"
+          sign: 1.0
+          offset: 0.0
+      frames:
+        hip: "RL_hip"
+        upper: "RL_thigh"
+        lower: "RL_calf"
+        toe: "RL_foot"
+    leg_2:
+      joints:
+        abad:
+          name: "FR_hip_joint"
+          sign: 1.0
+          offset: 0.0
+        hip:
+          name: "FR_thigh_joint"
+          sign: 1.0
+          offset: 0.0
+        knee:
+          name: "FR_calf_joint"
+          sign: 1.0
+          offset: 0.0
+      frames:
+        hip: "FR_hip"
+        upper: "FR_thigh"
+        lower: "FR_calf"
+        toe: "FR_foot"
+    leg_3:
+      joints:
+        abad:
+          name: "RR_hip_joint"
+          sign: 1.0
+          offset: 0.0
+        hip:
+          name: "RR_thigh_joint"
+          sign: 1.0
+          offset: 0.0
+        knee:
+          name: "RR_calf_joint"
+          sign: 1.0
+          offset: 0.0
+      frames:
+        hip: "RR_hip"
+        upper: "RR_thigh"
+        lower: "RR_calf"
+        toe: "RR_foot"

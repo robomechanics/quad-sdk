@@ -8,19 +8,22 @@ parameter.physics.gravitational_constant=9.81; % Gravity
 
 % parameter.physics.sim2real_scale_factor=(13.3-11.6620+5.75)/5.75; % Real spirit
 % parameter.physics.sim2real_scale_factor=1; % Sim spirit or A1
-parameter.physics.sim2real_scale_factor=1; % Sim go2
+% parameter.physics.sim2real_scale_factor=1; % Sim go2
+parameter.physics.sim2real_scale_factor=1; % Sim a2
 
 % parameter.physics.mass_body_body=parameter.physics.sim2real_scale_factor*5.75; % Only body weight of spirit
 % parameter.physics.mass_body_body=parameter.physics.sim2real_scale_factor*6.0; % Only body weight of A1
 % parameter.physics.mass_body_body=parameter.physics.sim2real_scale_factor*7.279; % Only body weight of Go2
 % parameter.physics.mass_body_body = parameter.physics.sim2real_scale_factor*32.86; % Only body weight of Spot
-parameter.physics.mass_body_body = parameter.physics.sim2real_scale_factor*5.204; % Only body weight of Go1
+% parameter.physics.mass_body_body = parameter.physics.sim2real_scale_factor*5.204; % Only body weight of Go1
+parameter.physics.mass_body_body = parameter.physics.sim2real_scale_factor*19.651; % Only body weight of A2
 
 % parameter.physics.mass_body_leg=1.478; % Each leg weight of spirit
 % parameter.physics.mass_body_leg=1.935; % Each leg weight of A1
 % parameter.physics.mass_body_leg=2.242; % Each leg weight of GO2
 % parameter.physics.mass_body_leg = 4.385; % Each leg weight of Spot
-parameter.physics.mass_body_leg = 1.974; % Each leg weight of Go1
+% parameter.physics.mass_body_leg = 1.974; % Each leg weight of Go1
+parameter.physics.mass_body_leg = 5.106; % Each leg weight of A2
 
 parameter.physics.mass_body=parameter.physics.mass_body_body+...
     4*parameter.physics.mass_body_leg; % Total body weight
@@ -29,7 +32,8 @@ parameter.physics.mass_body=parameter.physics.mass_body_body+...
 % parameter.physics.hip_offset=[0.1805; 0.047; 0]; % Absolute hip offset from body COM of A1
 % parameter.physics.hip_offset=[0.2263; 0.07; 0]; % Absolute hip offset from body COM of Go2
 % parameter.physics.hip_offset = [0.29785; 0.055; 0]; % Absolute hip offset from body COM of Spot
-parameter.physics.hip_offset = [0.1881; 0.04675; 0]; % Absolute hip offset from body COM of Go1
+% parameter.physics.hip_offset = [0.1881; 0.04675; 0]; % Absolute hip offset from body COM of Go1
+parameter.physics.hip_offset = [0.25944; 0.075113; 0]; % Absolute hip offset from body COM of A2
 
 % parameter.physics.inertia_body=parameter.physics.sim2real_scale_factor*...
 %     diag([0.05; 0.1; 0.1]); % Body inertia of spirit
@@ -45,10 +49,14 @@ parameter.physics.hip_offset = [0.1881; 0.04675; 0]; % Absolute hip offset from 
 %     [0.13143999874591827, 0.0, 0.0;
 %      0.0, 0.13143999874591827, 0.0;
 %      0.0, 0.0, 0.13143999874591827]; % Body Intertia of Spot
+% parameter.physics.inertia_body=parameter.physics.sim2real_scale_factor*...
+%      [0.0168128557, -0.0002296769, -0.0002945293;
+%     -0.0002296769, 0.063009565, -4.18731e-05;
+%     -0.0002945293, -4.18731e-05, 0.0716547275]; % Body Intertia of Go1
 parameter.physics.inertia_body=parameter.physics.sim2real_scale_factor*...
-     [0.0168128557, -0.0002296769, -0.0002945293;
-    -0.0002296769, 0.063009565, -4.18731e-05;
-    -0.0002945293, -4.18731e-05, 0.0716547275]; % Body Intertia of Go1
+     [0.141775328248061, 0.000400505020171, -0.006996487718114;
+     0.000400505020171, 0.407724601564754, -0.000361858857563;
+    -0.006996487718114, -0.000361858857563, 0.472247985516800]; % Body Inertia of A2
 
 parameter.physics.inertia_body=parameter.physics.inertia_body+...
     4*parameter.physics.mass_body_leg*...
@@ -56,7 +64,7 @@ parameter.physics.inertia_body=parameter.physics.inertia_body+...
     parameter.physics.hip_offset(1)^2+parameter.physics.hip_offset(3)^2;
     parameter.physics.hip_offset(1)^2+parameter.physics.hip_offset(2)^2]); % Robot inertia (assume leg mass concentrated at hip)
 
-parameter.name = "go1"; % Model name
+parameter.name = "a2"; % Model name
 parameter.n = 12; % State dimension
 parameter.m = 12; % Input dimension
 

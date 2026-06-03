@@ -26,6 +26,11 @@ def load_robot_params(context, *args, **kwargs):
         urdf_file = 'a1.urdf.xacro'
         sdf_file = 'a1.sdf.xacro'
         config_file = 'a1.yaml'
+    elif robot_type == 'a2':
+        desc_pkg = 'a2_description'
+        urdf_file = 'a2.urdf.xacro'
+        sdf_file = 'a2.sdf.xacro'
+        config_file = 'a2.yaml'
     elif robot_type == 'go1':
         desc_pkg = 'go1_description'
         urdf_file = 'go1.urdf.xacro'
