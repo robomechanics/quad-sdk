@@ -93,7 +93,7 @@ class LearnedPolicy : public LegController {
   sensor_msgs::msg::Imu last_imu_msg_;
 
   /// Newest Velocity Command
-  Eigen::VectorXd cmd_vel_msg_{Eigen::VectorXd::Zero(3)};
+  Eigen::VectorXd cmd_vel_msg_{Eigen::VectorXd::Zero(6)};
 
   /// Time of Newest Velocity Command Message
   rclcpp::Time last_cmd_vel_msg_time_;
@@ -106,6 +106,7 @@ class LearnedPolicy : public LegController {
   Eigen::VectorXd obs_{Eigen::VectorXd::Zero(48)};
   Eigen::VectorXd actions_{Eigen::VectorXd::Zero(12)};
   Eigen::VectorXd raw_actions_{Eigen::VectorXd::Zero(12)};
+  Eigen::VectorXd wheel_actions_{Eigen::VectorXd::Zero(4)};
 
   /// Policy inference rate (Hz), PD tracking at loop rate
   double policy_inference_rate_ = 50.0;
@@ -121,6 +122,9 @@ class LearnedPolicy : public LegController {
   Eigen::VectorXd nominal_stance_pose_{Eigen::VectorXd::Zero(12)};
 
   Eigen::VectorXd temp_actions_{Eigen::VectorXd::Zero(12)};
+
+  bool warned_extra_actions_ = false;
+  bool is_go2w_policy_ = false;
 
   bool initialized_ = true;
 };

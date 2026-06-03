@@ -50,8 +50,12 @@ def generate_launch_description():
     robot_type = DeclareLaunchArgument('robot_type', default_value='go2')
     mocap = DeclareLaunchArgument('mocap', default_value='false')
     logging = DeclareLaunchArgument('logging', default_value='false')
-    controller = DeclareLaunchArgument('controller', default_value='inverse_dynamics')
-    model_path = DeclareLaunchArgument('model_path', default_value='./policies/models/***')
+    controller = DeclareLaunchArgument('controller', default_value='learned')
+    model_path = DeclareLaunchArgument(
+        'model_path',
+        default_value='/home/rml2/ros2_ws/src/quad-sdk/robot_driver/include/robot_driver/models/go2w/policy.onnx',
+        description='Path to learned policy ONNX model'
+    )
     provider = DeclareLaunchArgument('provider', default_value = "tensorrt")
     estimator = DeclareLaunchArgument('estimator', default_value="comp_filter")
     debug_estimator = DeclareLaunchArgument('debug_estimator', default_value="none",

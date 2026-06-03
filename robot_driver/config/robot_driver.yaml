@@ -43,7 +43,9 @@
       thresh_out: 10.0  # innovation outlier rejection threshold
       foot_radius: 0.022 # toe radius
 
-      model_path: /root/ros2_ws/src/quad-sdk/robot_driver/include/robot_driver/models/go2/policy.onnx # Path to Policy Onnx File
+      # Go2-W rough-terrain policy from RobotLab:
+      # /home/rml2/Documents/robotlab_ws/robot_lab/logs/rsl_rl/unitree_go2w_rough/2026-05-07_16-02-38/exported/policy.onnx
+      model_path: /home/rml2/ros2_ws/src/quad-sdk/robot_driver/include/robot_driver/models/go2w/policy.onnx # Path to Policy Onnx File
       policy_inference_rate: 50.0  # Hz, rate at which learned policy runs inference (PD tracking runs at update_rate)
       cmd_vel_filter_const: 0.10
       cmd_vel_scale: 1.0

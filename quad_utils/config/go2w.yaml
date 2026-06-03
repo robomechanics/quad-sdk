@@ -75,12 +75,12 @@
     robot_driver:
       sit_kp: [10.0, 10.0, 10.0]
       sit_kd: [1.0, 1.0, 1.0]
-      stand_kp: [35.0, 35.0, 35.0] #[20.0, 20.0, 20.0]
-      stand_kd: [2.0, 2.0, 2.0]
-      stance_kp: [10.0, 10.0, 10.0] #[10.0, 10.0, 10.0]
-      stance_kd: [1.0, 1.0, 1.0]
-      swing_kp: [10.0, 10.0, 10.0] #[10.0, 10.0, 10.0]
-      swing_kd: [1.0, 1.0, 1.0]
+      stand_kp: [25.0, 25.0, 25.0]
+      stand_kd: [0.5, 0.5, 0.5]
+      stance_kp: [25.0, 25.0, 25.0]
+      stance_kd: [0.5, 0.5, 0.5]
+      swing_kp: [25.0, 25.0, 25.0]
+      swing_kd: [0.5, 0.5, 0.5]
       swing_kp_cart: [0.0, 0.0, 0.0] # N/m
       swing_kd_cart: [0.0, 0.0, 0.0] # N/m
       safety_kp: [0.0, 0.0, 0.0]
@@ -109,13 +109,13 @@
     body:
       frame: "body"
     motor_limits:
-      torque: [300.7, 300.7, 300.0]
-      speed: [30.0, 30.0, 15.7]
+      torque: [23.5, 23.5, 23.5]
+      speed: [30.0, 30.0, 30.0]
     # Wheel motor limits used by QuadWheelController and the Go2-W
     # hardware interface. Single-element arrays (all four wheels share
     # the same limits, since they are identical hub motors).
     wheel_motor_limits:
-      torque: [25.0]   # Nm — Unitree Go2-W hub motor peak torque
+      torque: [23.5]   # Nm - RobotLab Go2-W actuator effort limit
       speed: [30.0]    # rad/s — Unitree Go2-W hub motor peak speed
     leg_0:
       joints:
