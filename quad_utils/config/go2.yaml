@@ -19,7 +19,7 @@
         desired_height: 0.27 # m
         toe_radius: 0.02 # m
     local_footstep_planner:
-        hip_clearance: 0.07
+        hip_clearance: 0.1
         foothold_search_radius: 0.35
         period: 0.54 # s
         ground_clearance: 0.07 # tune

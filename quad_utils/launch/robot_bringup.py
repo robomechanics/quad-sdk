@@ -380,14 +380,14 @@ def launch_pinocchio_test_node(context, *args, **kwargs):
 
 def generate_launch_description():
     return LaunchDescription([
-        DeclareLaunchArgument('world', default_value = 'flat.sdf', description = 'Loaded World SDF File'),
-        DeclareLaunchArgument('robot_type', default_value = 'spirit', description='Robot type'),
+        DeclareLaunchArgument('world', default_value = 'b_beam.sdf', description = 'Loaded World SDF File'),
+        DeclareLaunchArgument('robot_type', default_value = 'go2', description='Robot type'),
         DeclareLaunchArgument('namespace', default_value = 'robot_1', description='Robot namespace'),
         DeclareLaunchArgument('controller', default_value = 'inverse_kinematics', description='Controller type'),
         DeclareLaunchArgument('estimator', default_value = 'comp_filter', description='State estimator type (comp_filter or ekf_filter)'),
         DeclareLaunchArgument('init_pose', default_value = '-x 2.0 -y 0.0 -z 15', description= "Initial Robot Position"),
         DeclareLaunchArgument('is_hardware', default_value = 'false', description="Simulation or Hardware"),
-        DeclareLaunchArgument('mocap', default_value = 'false', description='Launch the Motion Capture Node'),
+        DeclareLaunchArgument('mocap', default_value = 'true', description='Launch the Motion Capture Node'),
         DeclareLaunchArgument('use_sim_time', default_value = 'true', description='Use Simulation Clock or Computer Clock'),
         OpaqueFunction(function=load_robot_params),
         OpaqueFunction(function=launch_robot_urdf_node),
