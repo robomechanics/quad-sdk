@@ -169,7 +169,7 @@ def launch_plot_juggler(context, *args, **kwargs):
 
 def generate_launch_description():
     declared_args = [
-        DeclareLaunchArgument('world', default_value='thin_beam_uniform.sdf', description='SDF world file name to load into simulation'),
+        DeclareLaunchArgument('world', default_value='b_beam.sdf', description='SDF world file name to load into simulation'),
         DeclareLaunchArgument('gui', default_value='true', description='Whether to launch the Gazebo GUI. Defaults on for the single-robot case where the GUI is useful for debugging; the multi-robot launch (quad_multi.py) defaults it off.'),
         DeclareLaunchArgument('paused', default_value='false', description='Whether to start the simulation in a paused state'),
         DeclareLaunchArgument('verbose', default_value='false', description='Launch the simulator in verbose mode'),
@@ -179,7 +179,7 @@ def generate_launch_description():
         DeclareLaunchArgument('rviz', default_value='true', description='Launch RViz'),
         DeclareLaunchArgument('use_sim_time', default_value='true', description='Whether to use Computer Clock or Sim Clock'),
         DeclareLaunchArgument(
-            'robot_configs', default_value=('[{"name": "robot_1", "type": "spirit", "controller": "inverse_dynamics", "init_pose": "-x 0.0 -y 0.0 -z 3.0"}]'),
+            'robot_configs', default_value=('[{"name": "robot_1", "type": "go2", "controller": "inverse_dynamics", "init_pose": "-x 0.0 -y 0.0 -z 3.0"}]'),
             description='A JSON List of robot configurations: MUST specify name, type, controller, and spawn pose. init_pose accepts -x/-y/-z and optionally -R/-P/-Y for orientation.'
         ),
         DeclareLaunchArgument('scenario', default_value="none", description='Custom Obstacle Scenario to Spawn e.g. Underbrush, Procedural Underbrush)'),

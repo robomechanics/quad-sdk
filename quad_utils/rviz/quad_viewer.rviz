@@ -63,6 +63,32 @@ Visualization Manager:
       Use Rainbow: false
       Value: true
     - Alpha: 1
+      Autocompute Intensity Bounds: false
+      Class: grid_map_rviz_plugin/GridMap
+      Color: 200; 200; 200
+      Color Layer: traversability
+      Color Transformer: ""
+      Enabled: true
+      Height Layer: z
+      Height Transformer: GridMapLayer
+      History Length: 1
+      Invert Rainbow: false
+      Max Color: 255; 0; 0
+      Max Intensity: 1.0
+      Min Color: 0; 0; 255
+      Min Intensity: 0.0
+      Name: GridMap2
+      Show Grid Lines: true
+      Topic:
+        Depth: 1
+        Durability Policy: Transient Local
+        Filter size: 10
+        History Policy: Keep Last
+        Reliability Policy: Reliable
+        Value: /mapping/terrain_map
+      Use Rainbow: false
+      Value: true
+    - Alpha: 1
       Class: rviz_default_plugins/RobotModel
       Collision Enabled: false
       Description File: ""

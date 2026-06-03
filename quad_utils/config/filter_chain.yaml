@@ -93,31 +93,64 @@ mapping:
           #     window_length: 0.1
 
         filter8:
-          # Set lower threshold on traversability.
-          name: z_finite_threshold
-          type: gridMapFilters/ThresholdFilter
+          # Produce a binary occupancy indicator in z_finite (0 = NaN/hole, 1 = finite).
+          # We can't use sumOfFinites/meanOfFinites here because Eigen's redux on a
+          # 1x1 NaN matrix returns the NaN element directly (no pairwise op runs),
+          # which propagates NaN through any arithmetic. numberOfFinites is safe
+          # because it uses (x == x).count() — false-counted-as-0 for NaN.
+          name: z_finite_indicator
+          type: gridMapFilters/SlidingWindowMathExpressionFilter
           params:
-            layer: z
+            input_layer: z
             output_layer: z_finite
-            lower_threshold: -1000.0
-            set_to: -1000.0
+            expression: numberOfFinites(z)
+            compute_empty_cells: true
+            edge_handling: empty
+            window_size: 1
 
         filter9:
-          # Compute a hole mask as the difference between the raw and inpainted height
+          # Hole mask = the binary occupancy indicator from filter8.
+          # (Was: 1 - abs(z_finite - z_inpainted). That trick required z_finite
+          #  to be a finite sentinel like -1000 in holes, which the ROS2
+          #  ThresholdFilter API no longer supports — see filter8 comment.)
           name: traversability_hole_mask
           type: gridMapFilters/MathExpressionFilter
           params:
             output_layer: traversability_hole_mask
-            expression: (1.0 - abs(z_finite - z_inpainted))
+            expression: z_finite
 
         filter10:
-          # Filter the hole mask to add a barrier radius
-          name: traversability_filter
-          type: gridMapFilters/MeanInRadiusFilter
+          # Erode the binary safe mask by one cell to remove the boundary-cell
+          # overestimation.
+          #
+          # The grid map's boundary cells (centers at y = +-0.0875 for the
+          # 17.5 cm beam) are marked mask=1 because the raycaster's 1e-5
+          # tolerance counts the beam-edge boundary as a hit. But the cell
+          # occupies y in [-0.10, -0.075] (using the -y edge as an example),
+          # so half of it is off-mesh. atPosition uses nearest-neighbor lookup
+          # so the planner sees mask=1 for any point in that range, places the
+          # toe near y=-0.093, and the toe sphere (r=0.02) contacts the
+          # beam top-side EDGE rather than the flat top -> edge friction is
+          # poor and the robot slips laterally over multiple gait cycles.
+          #
+          # MinInRadius with radius = one cell pulls any boundary cell to 0
+          # (since it has at least one NaN/0-mask neighbor). Interior cells
+          # stay 1. Net effect: usable foothold corridor shrinks by 2 cells
+          # (one each side) but every accepted foothold lands on the flat
+          # mesh top instead of the edge.
+          name: traversability_erode_boundary
+          type: gridMapFilters/MinInRadiusFilter
           params:
             input_layer: traversability_hole_mask
             output_layer: traversability_hole_mask_filtered
-            radius: 0.01
+            # 0.026, not 0.025: CircleIterator's <= radius^2 check is on the
+            # floating-point edge when radius equals exactly the cell pitch,
+            # and floats round different directions on +y vs -y cell centers
+            # (`2.0 - (i+0.5)*0.025` doesn't round symmetrically). At 0.026
+            # the 4-neighbors are unambiguously inside the disk and diagonals
+            # (~0.0354) are unambiguously outside, so erosion is 4-connected
+            # and symmetric.
+            radius: 0.026
 
         filter11:
           # Set lower threshold on traversability hole mask.

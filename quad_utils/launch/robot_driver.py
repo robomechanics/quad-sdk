@@ -59,7 +59,7 @@ def generate_launch_description():
     is_hardware = DeclareLaunchArgument('is_hardware', default_value='false')
     namespace = DeclareLaunchArgument('namespace', default_value='robot_1')
     robot_description = DeclareLaunchArgument('robot_description', default_value='')
-    use_sim_time = DeclareLaunchArgument('use_sim_time', default_value = 'false')
+    use_sim_time = DeclareLaunchArgument('use_sim_time', default_value = 'true')
 
 
     # Paths to included launch files

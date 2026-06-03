@@ -272,9 +272,9 @@ void LocalFootstepPlanner::computeFootPlan(
                                                      foot_position_nominal.y()};
 
         if (!terrain_grid_.isInside(foot_position_grid_map)) {
-          RCLCPP_WARN(node_->get_logger(),
-                      "Foot position is outside the map. Steer the robot in "
-                      "another direction");
+          // RCLCPP_WARN(node_->get_logger(),
+          //             "Foot position is outside the map. Steer the robot in "
+          //             "another direction");
           continue;
         }
         // Toe has 20cm radius so we need to shift the foot height from terrain
