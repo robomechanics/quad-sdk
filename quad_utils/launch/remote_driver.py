@@ -122,7 +122,7 @@ def generate_launch_description():
         DeclareLaunchArgument('live_plot', default_value = 'false', description='Whether to enable live plotting of the simulation data'),
         DeclareLaunchArgument('dash', default_value = 'false', description='Whether to enable the dashboard for visualizing the simulation data'),
         DeclareLaunchArgument('use_sim_time', default_value = 'false', description='Whether to use simulation time'),
-        DeclareLaunchArgument('world', default_value = 'thin_beam.sdf', description='SDF world file name to load into simulation'),
+        DeclareLaunchArgument('world', default_value = 'b_beam.sdf', description='SDF world file name to load into simulation'),
         DeclareLaunchArgument('namespace', default_value = 'robot_1', description='Robot namespace'),
         DeclareLaunchArgument('robot_type', default_value = 'go2', description='Robot type'),
     ]
