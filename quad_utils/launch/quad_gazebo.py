@@ -1,5 +1,5 @@
 from launch import LaunchDescription
-from launch.actions import DeclareLaunchArgument, OpaqueFunction, GroupAction, IncludeLaunchDescription, ExecuteProcess, SetEnvironmentVariable
+from launch.actions import DeclareLaunchArgument, OpaqueFunction, GroupAction, IncludeLaunchDescription, ExecuteProcess
 from launch.substitutions import LaunchConfiguration, TextSubstitution, EnvironmentVariable
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch_ros.actions import PushRosNamespace, Node
@@ -26,25 +26,12 @@ def launch_ignition_world(context, *args, **kwargs):
     if verbose:
         gz_args.extend(['-v', '4'])
 
-    robot_configs = json.loads(LaunchConfiguration('robot_configs').perform(context))
-    model_paths = [
-        os.path.join(FindPackageShare('quad_sim_scripts').perform(context), 'models'),
-        os.path.join(FindPackageShare('quad_sim_scripts').perform(context), 'worlds'),
-    ]
-    for config in robot_configs:
-        desc_pkg = f"{config['type']}_description"
-        model_paths.append(os.path.join(FindPackageShare(desc_pkg).perform(context), 'models'))
-
-    current_resource_path = os.environ.get('GZ_SIM_RESOURCE_PATH', '')
-    gz_resource_path = ':'.join([p for p in [current_resource_path, *model_paths] if p])
-
     gz_sim_launch = PathJoinSubstitution([
         FindPackageShare('ros_gz_sim'), 'launch', 'gz_sim.launch.py'
     ])
 
     return [
         GroupAction([
-            SetEnvironmentVariable('GZ_SIM_RESOURCE_PATH', gz_resource_path),
             PushRosNamespace('remote'),
             IncludeLaunchDescription(
                 PythonLaunchDescriptionSource(gz_sim_launch),

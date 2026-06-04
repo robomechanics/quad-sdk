@@ -32,12 +32,12 @@
         g_dim: 28.0
         x_weights: [5.0, 5.0, 5.0, 0.5, 0.5, 0.5, 0.1, 0.1, 0.2, 0.05, 0.05, 0.01]
         u_weights: [!!float 5e-5, !!float 5e-5, !!float 5e-5, !!float 5e-5, !!float 5e-5, !!float 5e-5, !!float 5e-5, !!float 5e-5, !!float 5e-5, !!float 5e-5, !!float 5e-5, !!float 5e-5]
-        x_lb: [!!float -2e19, !!float -2e19, 0.0, -3.14159, -3.14159, -10.0, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19]
-        x_ub: [!!float 2e19, !!float 2e19, !!float 2e19, 3.14159, 3.14159, 10.0, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19]
-        x_lb_soft: [!!float -2e19, !!float -2e19, 0.0, -3.14159, -3.14159, -10.0, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19]
-        x_ub_soft: [!!float 2e19, !!float 2e19, !!float 2e19, 3.14159, 3.14159, 10.0, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19]
+        x_lb: [!!float -2e19, !!float -2e19, 0.0, -3.14159, -3.14159, -3.14159, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19]
+        x_ub: [!!float 2e19, !!float 2e19, !!float 2e19, 3.14159, 3.14159, 3.14159, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19]
+        x_lb_soft: [!!float -2e19, !!float -2e19, 0.0, -3.14159, -3.14159, -3.14159, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19]
+        x_ub_soft: [!!float 2e19, !!float 2e19, !!float 2e19, 3.14159, 3.14159, 3.14159, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19]
         u_lb: [!!float -2e19, !!float -2e19, 0.0, !!float -2e19, !!float -2e19, 0.0, !!float -2e19, !!float -2e19, 0.0, !!float -2e19, !!float -2e19, 0.0]
-        u_ub: [!!float 2e19, !!float 2e19, 500.0, !!float 2e19, !!float 2e19, 500.0, !!float 2e19, !!float 2e19, 500.0, !!float 2e19, !!float 2e19, 500.0]
+        u_ub: [!!float 2e19, !!float 2e19, 1000.0, !!float 2e19, !!float 2e19, 1000.0, !!float 2e19, !!float 2e19, 1000.0, !!float 2e19, !!float 2e19, 1000.0]
         g_lb: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19]
         g_ub: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
       feet:
@@ -51,7 +51,7 @@
         x_lb_soft: [!!float -2e19, !!float -2e19,  !!float -2e19,  !!float -2e19,  !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19]
         x_ub_soft: [!!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19]
         u_lb: [-99.9, -99.9, 0.0, -99.9, -99.9, 0.0, -99.9, -99.9, 0.0, -99.9, -99.9, 0.0, -99.9, -99.9, 0.0, -99.9, -99.9, 0.0, -99.9, -99.9, 0.0, -99.9, -99.9, 0.0]
-        u_ub: [!!float 99.9, !!float 99.9, !!float 500.0, !!float 99.9, !!float 99.9, !!float 500.0, !!float 99.9, !!float 99.9, !!float 500.0, !!float 99.9, !!float 99.9, !!float 500.0, !!float 99.9, !!float 99.9, !!float 500.0, !!float 99.9, !!float 99.9, !!float 500.0, !!float 99.9, !!float 99.9, !!float 500.0, !!float 99.9, !!float 99.9, !!float 500.0]
+        u_ub: [!!float 99.9, !!float 99.9, !!float 550.0, !!float 99.9, !!float 99.9, !!float 550.0, !!float 99.9, !!float 99.9, !!float 550.0, !!float 99.9, !!float 99.9, !!float 550.0, !!float 99.9, !!float 99.9, !!float 550.0, !!float 99.9, !!float 99.9, !!float 550.0, !!float 99.9, !!float 99.9, !!float 550.0, !!float 99.9, !!float 99.9, !!float 550.0]
         g_lb: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, !!float -2e19, !!float -2e19,  !!float -2e19,  !!float -2e19]
         g_ub: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19]
       joints:
@@ -60,26 +60,26 @@
         g_dim: 52.0
         x_weights: [0.0]
         u_weights: [0.0]
-        x_lb: [-1.01, -2.34, -2.77, -1.01, -1.56, -2.77, -1.01, -2.34, -2.77, -1.01, -1.56, -2.77, -22.0, -22.0, -14.6667, -22.0, -22.0, -14.6667, -22.0, -22.0, -14.6667, -22.0, -22.0, -14.6667]
-        x_ub: [ 1.01,  3.15, -0.54,  1.01,  3.94, -0.54,  1.01,  3.15, -0.54,  1.01,  3.94, -0.54,  22.0,  22.0,  14.6667,  22.0,  22.0,  14.6667,  22.0,  22.0,  14.6667,  22.0,  22.0,  14.6667]
-        x_lb_soft: [-0.8, -2.0, -2.5, -0.8, -1.2, -2.5, -0.8, -2.0, -2.5, -0.8, -1.2, -2.5, -17.6, -17.6, -11.7, -17.6, -17.6, -11.7, -17.6, -17.6, -11.7, -17.6, -17.6, -11.7]
-        x_ub_soft: [ 0.8,  2.8, -0.7,  0.8,  3.5, -0.7,  0.8,  2.8, -0.7,  0.8,  3.5, -0.7,  17.6,  17.6,  11.7,  17.6,  17.6,  11.7,  17.6,  17.6,  11.7,  17.6,  17.6,  11.7]
+        x_lb: [-0.707, -1.57, 0.001, -0.707, -1.57, 0.001, -0.707, -1.57, 0.001, -0.707, -1.57, 0.001, -37.71, -37.71, -25.11,-37.71, -37.71, -25.11,-37.71, -37.71, -25.11,-37.71, -37.71, -25.11]
+        x_ub: [ 0.707,  3.14,  3.14,  0.707,  3.14,  3.14,  0.707,  3.14,  3.14,  0.707,  3.14,  3.14,  37.71,  37.71,  25.11, 37.71,  37.71,  25.11, 37.71,  37.71,  25.11, 37.71,  37.71,  25.11]
+        x_lb_soft: [  -0.5, -1.57,   0.2,   -0.5, -1.57,   0.2,   -0.5, -1.57,   0.2,   -0.5, -1.57,   0.2, -35.0, -35.0, -24.0,-35.0, -35.0, -24.0,-35.0, -35.0, -24.0,-35.0, -35.0, -24.0]
+        x_ub_soft: [   0.5,  3.14,   2.8,    0.5,  3.14,   2.8,    0.5,  3.14,   2.8,    0.5,  3.14,   2.8,  35.0,  35.0,  24.0, 35.0,  35.0,  24.0, 35.0,  35.0,  24.0, 35.0,  35.0,  24.0]
         u_lb: [0.0]
         u_ub: [0.0]
         g_lb: [!!float -2e19, !!float -2e19,  !!float -2e19,  !!float -2e19, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, !!float -2e19, !!float -2e19,  !!float -2e19,  !!float -2e19, !!float -2e19, !!float -2e19,  !!float -2e19,  !!float -2e19,  !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19]
         g_ub: [!!float 2e19, !!float 2e19,  !!float 2e19,  !!float 2e19, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, !!float 2e19, !!float 2e19,  !!float 2e19,  !!float 2e19, !!float 2e19, !!float 2e19,  !!float 2e19,  !!float 2e19,  !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19]
-      friction_coefficient: 0.6
+      friction_coefficient: 0.6 
 
 /**/robot_driver:
   ros__parameters:
     robot_driver:
-      sit_kp: [100.0, 100.0, 100.0]
-      sit_kd: [10.0, 10.0, 10.0]
-      stand_kp: [100.0, 200.0, 300.0]
-      stand_kd: [10.0, 20.0, 30.0]
-      stance_kp: [100.0, 200.0, 200.0]
+      sit_kp: [10.0, 100.0, 100.0]
+      sit_kd: [1.0, 10.0, 10.0]
+      stand_kp: [120.0, 200.0, 300.0]
+      stand_kd: [8.0, 20.0, 30.0]
+      stance_kp: [500.0, 200.0, 200.0]
       stance_kd: [10.0, 30.0, 30.0]
-      swing_kp: [80.0, 300.0, 300.0]
+      swing_kp: [300.0, 300.0, 300.0]
       swing_kd: [10.0, 30.0, 30.0]
       swing_kp_cart: [0.0, 0.0, 0.0] # N/m
       swing_kd_cart: [0.0, 0.0, 0.0] # N/m
@@ -117,12 +117,12 @@
           offset: 0.0
         hip:
           name: "FL_thigh_joint"
-          sign: 1.0
-          offset: 0.0
+          sign: -1.0
+          offset: 1.5708
         knee:
           name: "FL_calf_joint"
           sign: 1.0
-          offset: 0.0
+          offset: -3.1415
       frames:
         hip: "FL_hip"
         upper: "FL_thigh"
@@ -136,12 +136,12 @@
           offset: 0.0
         hip:
           name: "RL_thigh_joint"
-          sign: 1.0
-          offset: 0.0
+          sign: -1.0
+          offset: 1.5708
         knee:
           name: "RL_calf_joint"
           sign: 1.0
-          offset: 0.0
+          offset: -3.1415
       frames:
         hip: "RL_hip"
         upper: "RL_thigh"
@@ -155,12 +155,12 @@
           offset: 0.0
         hip:
           name: "FR_thigh_joint"
-          sign: 1.0
-          offset: 0.0
+          sign: -1.0
+          offset: 1.5708
         knee:
           name: "FR_calf_joint"
           sign: 1.0
-          offset: 0.0
+          offset: -3.1415
       frames:
         hip: "FR_hip"
         upper: "FR_thigh"
@@ -174,12 +174,12 @@
           offset: 0.0
         hip:
           name: "RR_thigh_joint"
-          sign: 1.0
-          offset: 0.0
+          sign: -1.0
+          offset: 1.5708
         knee:
           name: "RR_calf_joint"
           sign: 1.0
-          offset: 0.0
+          offset: -3.1415
       frames:
         hip: "RR_hip"
         upper: "RR_thigh"

@@ -54,15 +54,15 @@ parameter.physics.hip_offset = [0.25944; 0.075113; 0]; % Absolute hip offset fro
 %     -0.0002296769, 0.063009565, -4.18731e-05;
 %     -0.0002945293, -4.18731e-05, 0.0716547275]; % Body Intertia of Go1
 parameter.physics.inertia_body=parameter.physics.sim2real_scale_factor*...
-     [0.141775328248061, 0.000400505020171, -0.006996487718114;
-     0.000400505020171, 0.407724601564754, -0.000361858857563;
-    -0.006996487718114, -0.000361858857563, 0.472247985516800]; % Body Inertia of A2
+     [0.818570, 0.000680, -0.104550;
+      0.000680, 2.082600, 0.000040;
+     -0.104550, 0.000040, 2.412490]; % Full composite inertia of A2 about COM at nominal stance
 
-parameter.physics.inertia_body=parameter.physics.inertia_body+...
-    4*parameter.physics.mass_body_leg*...
-    diag([parameter.physics.hip_offset(2)^2+parameter.physics.hip_offset(3)^2;
-    parameter.physics.hip_offset(1)^2+parameter.physics.hip_offset(3)^2;
-    parameter.physics.hip_offset(1)^2+parameter.physics.hip_offset(2)^2]); % Robot inertia (assume leg mass concentrated at hip)
+% parameter.physics.inertia_body=parameter.physics.inertia_body+...
+%     4*parameter.physics.mass_body_leg*...
+%     diag([parameter.physics.hip_offset(2)^2+parameter.physics.hip_offset(3)^2;
+%     parameter.physics.hip_offset(1)^2+parameter.physics.hip_offset(3)^2;
+%     parameter.physics.hip_offset(1)^2+parameter.physics.hip_offset(2)^2]); % Robot inertia (assume leg mass concentrated at hip)
 
 parameter.name = "a2"; % Model name
 parameter.n = 12; % State dimension

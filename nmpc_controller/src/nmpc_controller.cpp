@@ -36,6 +36,10 @@ NMPCController::NMPCController(rclcpp::Node::SharedPtr node, int robot_id,
       robot_ns_ = "go1";
       default_system = GO1;
       break;
+    case 7:
+      robot_ns_ = "a2";
+      default_system = A2;
+      break;
     default:
       robot_ns_ = "spirit";
       default_system = SPIRIT;
