@@ -21,9 +21,9 @@
     local_footstep_planner:
         hip_clearance: 0.15
         foothold_search_radius: 0.20
-        period: 0.42 # s
+        period: 0.50 # s
         ground_clearance: 0.07 # tune
-        duty_cycles: [0.55, 0.55, 0.55, 0.55]
+        duty_cycles: [0.70, 0.70, 0.70, 0.70]
         phase_offsets: [0.0, 0.5, 0.5, 0.0]
     nmpc_controller:
       body:
@@ -37,7 +37,7 @@
         x_lb_soft: [!!float -2e19, !!float -2e19, 0.0, -3.14159, -3.14159, -3.14159, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19]
         x_ub_soft: [!!float 2e19, !!float 2e19, !!float 2e19, 3.14159, 3.14159, 3.14159, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19]
         u_lb: [!!float -2e19, !!float -2e19, 0.0, !!float -2e19, !!float -2e19, 0.0, !!float -2e19, !!float -2e19, 0.0, !!float -2e19, !!float -2e19, 0.0]
-        u_ub: [!!float 2e19, !!float 2e19, 1000.0, !!float 2e19, !!float 2e19, 1000.0, !!float 2e19, !!float 2e19, 1000.0, !!float 2e19, !!float 2e19, 1000.0]
+        u_ub: [!!float 2e19, !!float 2e19, 10000.0, !!float 2e19, !!float 2e19, 10000.0, !!float 2e19, !!float 2e19, 10000.0, !!float 2e19, !!float 2e19, 10000.0]
         g_lb: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19]
         g_ub: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
       feet:
@@ -51,7 +51,7 @@
         x_lb_soft: [!!float -2e19, !!float -2e19,  !!float -2e19,  !!float -2e19,  !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19, !!float -2e19]
         x_ub_soft: [!!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19]
         u_lb: [-99.9, -99.9, 0.0, -99.9, -99.9, 0.0, -99.9, -99.9, 0.0, -99.9, -99.9, 0.0, -99.9, -99.9, 0.0, -99.9, -99.9, 0.0, -99.9, -99.9, 0.0, -99.9, -99.9, 0.0]
-        u_ub: [!!float 99.9, !!float 99.9, !!float 550.0, !!float 99.9, !!float 99.9, !!float 550.0, !!float 99.9, !!float 99.9, !!float 550.0, !!float 99.9, !!float 99.9, !!float 550.0, !!float 99.9, !!float 99.9, !!float 550.0, !!float 99.9, !!float 99.9, !!float 550.0, !!float 99.9, !!float 99.9, !!float 550.0, !!float 99.9, !!float 99.9, !!float 550.0]
+        u_ub: [!!float 99.9, !!float 99.9, !!float 5500.0, !!float 99.9, !!float 99.9, !!float 5500.0, !!float 99.9, !!float 99.9, !!float 5500.0, !!float 99.9, !!float 99.9, !!float 5500.0, !!float 99.9, !!float 99.9, !!float 5500.0, !!float 99.9, !!float 99.9, !!float 5500.0, !!float 99.9, !!float 99.9, !!float 5500.0, !!float 99.9, !!float 99.9, !!float 5500.0]
         g_lb: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, !!float -2e19, !!float -2e19,  !!float -2e19,  !!float -2e19]
         g_ub: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, !!float 2e19, !!float 2e19, !!float 2e19, !!float 2e19]
       joints:
@@ -77,7 +77,7 @@
       sit_kd: [1.0, 10.0, 10.0]
       stand_kp: [120.0, 200.0, 300.0]
       stand_kd: [8.0, 20.0, 30.0]
-      stance_kp: [500.0, 200.0, 200.0]
+      stance_kp: [500.0, 500.0, 500.0]
       stance_kd: [10.0, 30.0, 30.0]
       swing_kp: [300.0, 300.0, 300.0]
       swing_kd: [10.0, 30.0, 30.0]
@@ -107,8 +107,8 @@
     body:
       frame: "base_link"
     motor_limits:
-      torque: [120.0, 120.0, 180.0]
-      speed: [22.0, 22.0, 14.6667]
+      torque: [10000.0, 10000.0, 10000.0]
+      speed: [50.0, 50.0, 50.0]
     leg_0:
       joints:
         abad:
