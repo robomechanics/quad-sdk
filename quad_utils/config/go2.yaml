@@ -24,7 +24,7 @@
         period: 0.54 # s
         ground_clearance: 0.07 # tune
         duty_cycles: [0.75, 0.75, 0.75, 0.75]
-        phase_offsets: [0.0, 0.75, 0.50, 0.25]
+        phase_offsets: [0.0, 0.50, 0.50, 0.0]
     nmpc_controller:
       body:
         x_dim: 12.0

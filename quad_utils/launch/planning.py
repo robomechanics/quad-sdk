@@ -283,10 +283,10 @@ def generate_launch_description():
         DeclareLaunchArgument('twist_input', default_value='none'),
         DeclareLaunchArgument('controller_mode', default_value='mpc'),
         DeclareLaunchArgument('namespace', default_value='robot_1'),
-        DeclareLaunchArgument('robot_type', default_value='spirit'),
+        DeclareLaunchArgument('robot_type', default_value='go2'),
         DeclareLaunchArgument('leaping', default_value='true'),
         DeclareLaunchArgument('ac', default_value='false'),
-        DeclareLaunchArgument('use_sim_time', default_value='true'),
+        DeclareLaunchArgument('use_sim_time', default_value='false'),
         DeclareLaunchArgument(
             'goal_state',
             default_value='',

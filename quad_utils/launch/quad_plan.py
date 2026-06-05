@@ -81,7 +81,7 @@ def generate_launch_description():
         DeclareLaunchArgument('logging', default_value='false', description='Rosbag Trial Run'),
         DeclareLaunchArgument('leaping', default_value='true', description='Enable Leaping in the Global Planner'),
         DeclareLaunchArgument('ac', default_value='false', description='Enable Adaptive Complexity Planner (Spirit ONLY)'),
-        DeclareLaunchArgument('use_sim_time', default_value='true', description='Use Simulation Clock or Computer Clock'),
+        DeclareLaunchArgument('use_sim_time', default_value='false', description='Use Simulation Clock or Computer Clock'),
         DeclareLaunchArgument('force_app', default_value='false', description='Launch Force Applicator Alongside Planning'),
         DeclareLaunchArgument('cbs_mode', default_value='false', description='Suppress GBP spin-loop solo planning (used by multi_robot.py for CBS).'),
         DeclareLaunchArgument(

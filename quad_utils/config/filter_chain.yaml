@@ -143,14 +143,20 @@ mapping:
           params:
             input_layer: traversability_hole_mask
             output_layer: traversability_hole_mask_filtered
-            # 0.026, not 0.025: CircleIterator's <= radius^2 check is on the
+            # Single-cell (4-connected) erosion at the current 0.01 m pitch.
+            # 0.011, not 0.01: CircleIterator's <= radius^2 check is on the
             # floating-point edge when radius equals exactly the cell pitch,
-            # and floats round different directions on +y vs -y cell centers
-            # (`2.0 - (i+0.5)*0.025` doesn't round symmetrically). At 0.026
-            # the 4-neighbors are unambiguously inside the disk and diagonals
-            # (~0.0354) are unambiguously outside, so erosion is 4-connected
-            # and symmetric.
-            radius: 0.026
+            # and floats round different directions on +y vs -y cell centers,
+            # so an exact-pitch radius erodes asymmetrically. At 0.011 the
+            # 4-neighbors (0.01) are unambiguously inside the disk and the
+            # diagonals (~0.01414) are unambiguously outside, so erosion is
+            # 4-connected and symmetric, trimming one cell (~1 cm) per side.
+            #
+            # Less conservative than the previous 0.026 (tuned for the old
+            # 0.025 m pitch), which at 0.01 m reached two cells out (~2 cm
+            # per side). If footholds still land on the beam edge, bump back
+            # toward ~0.02 to restore the wider margin.
+            radius: 0.011
 
         filter11:
           # Set lower threshold on traversability hole mask.
