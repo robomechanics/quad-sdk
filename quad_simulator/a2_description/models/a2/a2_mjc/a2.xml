@@ -1,5 +1,5 @@
 <mujoco model="a2">
-  <compiler angle="radian" meshdir="assets/"/>
+  <!-- <compiler angle="radian" meshdir="assets/"/> -->
   <option gravity="0 0 -9.81"/>
 
   <default>
@@ -213,5 +213,10 @@
     <framepos name="frame_pos" objtype="site" objname="imu" />
     <framelinvel name="frame_vel" objtype="site" objname="imu" />
   </sensor>
+
+  <keyframe>
+    <key name="home" qpos="0 0 0.42 1 0 0 0 0 0.8 -1.6 0 0.8 -1.6 0 0.8 -1.6 0 0.8 -1.6"
+      ctrl="0 0.8 -1.6 0 0.8 -1.6 0 0.8 -1.6 0 0.8 -1.6"/>
+  </keyframe>
 
 </mujoco>

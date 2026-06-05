@@ -39,6 +39,7 @@ _ROBOT_FILES = {
     'spirit':        ('spirit_description', 'spirit.urdf.xacro',  'spirit.xml',  'spirit.yaml'),
     'spirit_rotors': ('spirit_description', 'spirit.urdf.xacro',  'spirit.xml',  'spirit.yaml'),
     'a1':            ('a1_description',     'a1.urdf.xacro',      'a1.xml',      'a1.yaml'),
+    'a2':            ('a2_description',     'a2.urdf.xacro',      'a2.xml',      'a2.yaml'),
     'go1':           ('go1_description',    'go1.urdf.xacro',     'go1.xml',     'go1.yaml'),
     'go2':           ('go2_description',    'go2.urdf.xacro',     'go2.xml',     'go2.yaml'),
     'go2w':          ('go2w_description',   'go2w.urdf.xacro',    'go2w.xml',    'go2w.yaml'),

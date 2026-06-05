@@ -48,6 +48,25 @@ _A1_PROFILE = {
     ],
 }
 
+_A2_PROFILE = {
+    'odom_free_joint_name': 'floating_base_joint',
+    'initial_keyframe': 'home',
+    'joint_map': [
+        ('FL_thigh_joint', 'FL_thigh_joint'),
+        ('FL_calf_joint',  'FL_calf_joint'),
+        ('RL_thigh_joint', 'RL_thigh_joint'),
+        ('RL_calf_joint',  'RL_calf_joint'),
+        ('FR_thigh_joint', 'FR_thigh_joint'),
+        ('FR_calf_joint',  'FR_calf_joint'),
+        ('RR_thigh_joint', 'RR_thigh_joint'),
+        ('RR_calf_joint',  'RR_calf_joint'),
+        ('FL_hip_joint',   'FL_hip_joint'),
+        ('RL_hip_joint',   'RL_hip_joint'),
+        ('FR_hip_joint',   'FR_hip_joint'),
+        ('RR_hip_joint',   'RR_hip_joint'),
+    ],
+}
+
 _GO1_PROFILE = {
     'odom_free_joint_name': 'floating_base',
     'initial_keyframe': 'home',
@@ -129,6 +148,7 @@ PROFILES = {
     'go2': _GO2_PROFILE,
     'go1': _GO1_PROFILE,
     'a1':  _A1_PROFILE,
+    'a2':  _A2_PROFILE,
     'b2':  _B2_PROFILE,
     'spot': _SPOT_PROFILE,
     'spirit': _SPIRIT_PROFILE,
