@@ -51,7 +51,9 @@ endif()
 
 # MBLink setup
 set(MBLINK_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../external/mblink/)
-include_directories(${MBLINK_DIR}/include)
+# Treat as SYSTEM so the vendored MAVLink headers don't flood the build with
+# -Waddress-of-packed-member warnings from generated message structs.
+include_directories(SYSTEM ${MBLINK_DIR}/include)
 link_directories(${MBLINK_DIR}/lib)
 
 message(STATUS "Using architecture ${CMAKE_SYSTEM_PROCESSOR}")

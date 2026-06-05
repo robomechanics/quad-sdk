@@ -325,7 +325,10 @@ controller_interface::return_type QuadController::update(
         double torque = hold_kp * (target - pos) + hold_kd * (0.0 - vel);
         double torque_lim = torque_lims_[ind.second];
         torque = std::min(std::max(torque, -torque_lim), torque_lim);
-        joint_cmd_handles_[i].set_value(torque);
+        if (!joint_cmd_handles_[i].set_value(torque)) {
+          RCLCPP_WARN(node_->get_logger(),
+                      "Failed to set Torque Command for Joint");
+        }
       }
       return controller_interface::return_type::OK;
     }

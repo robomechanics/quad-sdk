@@ -39,15 +39,18 @@ add_library(nmpc_controller
   src/nmpc_controller.cpp
 )
 
-# Cap generated CasADi files at -O1 to reduce compiler RAM usage.
-# These are straight-line math — -O1 is nearly as fast as -O2 at runtime
-# but uses far less memory during compilation (the hessian/jacobian files
-# are 20-40K lines each).
+# These are machine-emitted straight-line math, not hand-edited, so silence
+# their warnings (unused params, VLAs) to keep the build output readable.
+# In optimized builds also cap them at -O1 to reduce compiler RAM usage:
+# -O1 is nearly as fast as -O2 at runtime but uses far less memory during
+# compilation (the hessian/jacobian files are 20-40K lines each).
+set(NMPC_GEN_COMPILE_OPTIONS "-w")
 if(CMAKE_BUILD_TYPE MATCHES "Release|RelWithDebInfo")
-  set_source_files_properties(${NMPC_GEN_SOURCES}
-    PROPERTIES COMPILE_OPTIONS "-O1"
-  )
+  list(APPEND NMPC_GEN_COMPILE_OPTIONS "-O1")
 endif()
+set_source_files_properties(${NMPC_GEN_SOURCES}
+  PROPERTIES COMPILE_OPTIONS "${NMPC_GEN_COMPILE_OPTIONS}"
+)
 
 target_link_libraries(nmpc_controller
   Eigen3::Eigen

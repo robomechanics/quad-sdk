@@ -63,12 +63,12 @@ using namespace Ipopt;
 enum SystemID {
   SPIRIT,
   A1,
-  A2,
   GO2,
   B2,
   VISION60,
   SPOT,
   GO1,
+  A2,
   SIMPLE_TO_SIMPLE,
   SIMPLE_TO_COMPLEX,
   COMPLEX_TO_COMPLEX,

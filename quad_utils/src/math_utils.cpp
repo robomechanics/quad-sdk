@@ -11,7 +11,7 @@ std::vector<double> interpMat(const std::vector<double> input_vec,
   }
 
   // Declare variables for interpolating between, both for input and output data
-  double t1, t2;
+  double t1 = 0.0, t2 = 0.0;
   std::vector<double> y1, y2, interp_data;
 
   // Find the correct values to interp between
@@ -43,7 +43,7 @@ Eigen::Vector3d interpVector3d(const std::vector<double> input_vec,
   }
 
   // Declare variables for interpolating between, both for input and output data
-  double t1, t2;
+  double t1 = 0.0, t2 = 0.0;
   Eigen::Vector3d y1, y2, interp_data;
 
   // Find the correct values to interp between
@@ -74,7 +74,7 @@ std::vector<Eigen::Vector3d> interpMatVector3d(
   }
 
   // Declare variables for interpolating between, both for input and output data
-  double t1, t2;
+  double t1 = 0.0, t2 = 0.0;
   std::vector<Eigen::Vector3d> y1, y2, interp_data;
 
   // Find the correct values to interp between
@@ -106,12 +106,7 @@ int interpInt(const std::vector<double> input_vec, std::vector<int> output_vec,
     throw std::runtime_error("Tried to interp out of bounds");
   }
 
-  // Declare variables for interpolating between, both for input and output data
-  double t1, t2;
-  Eigen::Vector3d y1, y2, interp_data;
-
   // Find the correct values to interp between
-  int idx = 0;
   for (size_t i = 0; i < input_vec.size(); i++) {
     if (input_vec[i] <= query_point && query_point < input_vec[i + 1]) {
       return output_vec[i];

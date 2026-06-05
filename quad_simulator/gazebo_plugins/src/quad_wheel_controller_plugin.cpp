@@ -313,6 +313,15 @@ controller_interface::return_type QuadWheelController::update(
     const rclcpp::Time& /*time*/, const rclcpp::Duration& /*period*/) {
   BufferType& commands = *commands_buffer_.readFromRT();
 
+  // Write a torque command to a joint handle, warning if the (nodiscard)
+  // set_value fails so a dropped command doesn't pass silently.
+  auto set_cmd = [this](unsigned int i, double torque) {
+    if (!joint_cmd_handles_[i].set_value(torque)) {
+      RCLCPP_WARN(node_->get_logger(),
+                  "Failed to set Torque Command for Joint");
+    }
+  };
+
   // Before any command has been received, hold sitting pose with PD on
   // legs (matches QuadController's bootstrap behaviour) and zero wheel
   // effort so the robot doesn't roll away on activation.
@@ -326,7 +335,7 @@ controller_interface::return_type QuadWheelController::update(
         std::pair<int, int> ind = leg_map_[i];
         if (ind.second == 3) {
           // Wheel: zero torque while holding sit.
-          joint_cmd_handles_[i].set_value(0.0);
+          set_cmd(i, 0.0);
           continue;
         }
         double target = sit_angles[ind.second];
@@ -337,7 +346,7 @@ controller_interface::return_type QuadWheelController::update(
         double torque = hold_kp * (target - pos) + hold_kd * (0.0 - vel);
         double torque_lim = torque_lims_[ind.second];
         torque = std::min(std::max(torque, -torque_lim), torque_lim);
-        joint_cmd_handles_[i].set_value(torque);
+        set_cmd(i, torque);
       }
       return controller_interface::return_type::OK;
     }
@@ -355,7 +364,7 @@ controller_interface::return_type QuadWheelController::update(
     // Wheel slot is optional in the LegCommand. If a planner only fills
     // the 3 leg motors, the wheel coasts at zero effort.
     if (ind.second == 3 && leg_cmd.motor_commands.size() < 4) {
-      joint_cmd_handles_[i].set_value(0.0);
+      set_cmd(i, 0.0);
       continue;
     }
 
@@ -371,7 +380,7 @@ controller_interface::return_type QuadWheelController::update(
       double torque_lim = wheel_torque_lims_.front();
       torque_command =
           std::min(std::max(torque_command, -torque_lim), torque_lim);
-      joint_cmd_handles_[i].set_value(torque_command);
+      set_cmd(i, torque_command);
       continue;
     }
 
@@ -394,7 +403,7 @@ controller_interface::return_type QuadWheelController::update(
     double torque_lim = torque_lims_[ind.second];
     double torque_command = std::min(
         std::max(torque_feedback + torque_ff, -torque_lim), torque_lim);
-    joint_cmd_handles_[i].set_value(torque_command);
+    set_cmd(i, torque_command);
   }
   return controller_interface::return_type::OK;
 }

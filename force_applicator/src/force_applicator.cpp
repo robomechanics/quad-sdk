@@ -159,8 +159,9 @@ void ForceApplicator::updateMarker() {
 }
 
 void ForceApplicator::applyForce() {
-  // Determine force vector
-  double tx, ty, tz;
+  // Determine force vector (default to zero torque if force_mode_ matches
+  // neither branch below, so we never publish an uninitialized wrench)
+  double tx = 0.0, ty = 0.0, tz = 0.0;
   if (force_mode_ == "random") {
     std::uniform_real_distribution<double> f_mag_distribution(force_mag_min_,
                                                               force_mag_max_);
