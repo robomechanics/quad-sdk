@@ -39,8 +39,9 @@ def launch_robot_mapping(context, *args, **kwargs):
             IncludeLaunchDescription(
                 PythonLaunchDescriptionSource(mapping_launch_path),
                 launch_arguments={
-                    'input_type': 'mesh',
-                    'world': LaunchConfiguration('world'),
+                    # Virtual balance beam generated + anchored to the robot's
+                    # start pose (straight ahead, centered, at foot height).
+                    'input_type': 'beam',
                     'use_sim_time': LaunchConfiguration('use_sim_time')
                 }.items()
             )
@@ -122,7 +123,7 @@ def generate_launch_description():
         DeclareLaunchArgument('live_plot', default_value = 'false', description='Whether to enable live plotting of the simulation data'),
         DeclareLaunchArgument('dash', default_value = 'false', description='Whether to enable the dashboard for visualizing the simulation data'),
         DeclareLaunchArgument('use_sim_time', default_value = 'false', description='Whether to use simulation time'),
-        DeclareLaunchArgument('world', default_value = 'thin_beam.sdf', description='SDF world file name to load into simulation'),
+        DeclareLaunchArgument('world', default_value = 'b_beam.sdf', description='SDF world file name to load into simulation'),
         DeclareLaunchArgument('namespace', default_value = 'robot_1', description='Robot namespace'),
         DeclareLaunchArgument('robot_type', default_value = 'go2', description='Robot type'),
     ]
