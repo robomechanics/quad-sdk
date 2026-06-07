@@ -104,7 +104,7 @@ See the [Wiki](https://github.com/robomechanics/quad-sdk/wiki) for alternate con
 - **ROS2 Jazzy migration.** All packages now build with `ament_cmake` / `ament_python`. ROS1 `roslaunch`/`catkin` commands in older material no longer apply — use `ros2 launch` / `colcon`.
 - **Pinocchio replaces RBDL** for kinematics and dynamics (see `quad_utils::QuadKD2`). RBDL files are retained in-tree for reference but are not linked by the current build.
 - **Gazebo Harmonic** replaces Gazebo Classic; MuJoCo back-end added.
-- **Additional platforms:** Go1, Go2, Go2-W, B2, Spot, Vision60, and the Underbrush research platform.
+- **Additional platforms:** Go1, Go2, Go2-W, A2, B2, Spot, Vision60, and the Underbrush research platform.
 - **Performance/regression testing** (`quad_perf_tests`) provides a `cmd_vel` publisher plus a headless batch iteration runner for reproducible automated runs. (The former `quad_training` package was folded in here and repurposed for iteration testing.)
 
 ## Bugs & Feature Requests

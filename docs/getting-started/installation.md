@@ -14,7 +14,7 @@ Quad-SDK is developed and tested on **Ubuntu 24.04** with **ROS 2 Jazzy**. Three
 - Ubuntu 24.04 LTS (real or VM/container)
 - ROS 2 Jazzy ([install instructions](https://docs.ros.org/en/jazzy/Installation.html))
 - ~10 GB free disk space for the workspace, dependencies, and simulation assets
-- For hardware: a supported quadruped (Spirit, Go1, Go2, Go2-W, A1, B2, Spot, Vision60) and the manufacturer SDK installed and tested independently
+- For hardware: a supported quadruped (Spirit, Go1, Go2, Go2-W, A1, A2, B2, Spot, Vision60) and the manufacturer SDK installed and tested independently
 - **HSL solver for IPOPT** — the NMPC controller requires the HSL routines (free for academic use). Request access at <https://licences.stfc.ac.uk/product/coin-hsl>, then drop the source tarball next to the IPOPT submodule (see [HSL setup](#hsl-solver-setup) below).
 
 !!! tip "Don't have hardware?"

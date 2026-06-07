@@ -7,7 +7,7 @@ tags:
 
 # Hardware Bringup
 
-This page covers the **common path** to bring up Quad-SDK on a real quadruped. Per-platform notes (Ghost Robotics Spirit 40, Go1, Go2, A1, B2, Spot, Vision60) are linked at the bottom.
+This page covers the **common path** to bring up Quad-SDK on a real quadruped. Per-platform notes (Ghost Robotics Spirit 40, Go1, Go2, A1, A2, B2, Spot, Vision60) are linked at the bottom.
 
 !!! danger "Safety first"
     Real hardware is unforgiving. **Always use a safety harness or hoist for first-time bringup.** Validate every step in simulation with the same robot config before running on metal. Keep an e-stop within arm's reach.

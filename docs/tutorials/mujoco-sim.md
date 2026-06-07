@@ -57,7 +57,7 @@ ros2 launch quad_utils quad_plan.py
 
 ## Supported robots and terrains
 
-- **Robots** — `spirit`, `spirit_rotors`, `a1`, `go1`, `go2`, `go2w`, `b2`, `spot` (see the `_ROBOT_FILES` table in `quad_mujoco_bringup.py`).
+- **Robots** — `spirit`, `spirit_rotors`, `a1`, `a2`, `go1`, `go2`, `go2w`, `b2`, `spot` (see the `_ROBOT_FILES` table in `quad_mujoco_bringup.py`).
 - **Terrains** — any world with a matching `<world>.xml.xacro` template under `quad_sim_scripts/worlds/`. Heightmap-based worlds (`rough_*`, `slope_*`) consume an optional `<world>.{bin,png}` from the matching `models/<world>/meshes/` directory; flat-style worlds ignore it.
 
 ## Multi-robot

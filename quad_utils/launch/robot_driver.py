@@ -48,7 +48,7 @@ def load_robot_params(context, *args, **kwargs):
 
 def generate_launch_description():
 
-    robot_type = DeclareLaunchArgument('robot_type', default_value='a2')
+    robot_type = DeclareLaunchArgument('robot_type', default_value='go2')
     mocap = DeclareLaunchArgument('mocap', default_value='false')
     logging = DeclareLaunchArgument('logging', default_value='false')
     controller = DeclareLaunchArgument('controller', default_value='inverse_dynamics')

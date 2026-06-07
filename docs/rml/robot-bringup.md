@@ -91,7 +91,7 @@ Steps 1, 3, 4, 5 run on the **remote laptop**. Step 2 runs **on the robot via SS
     ```bash
     cd ros2_ws
     source src/quad-sdk/quad_utils/scripts/launch_remote_env.sh
-    ros2 launch mocap4r2_optitrack_driver mocap.py
+    ros2 launch quad_utils mocap.py
     ```
 
 === "2. Robot driver (on robot, via SSH)"
@@ -100,9 +100,8 @@ Steps 1, 3, 4, 5 run on the **remote laptop**. Step 2 runs **on the robot via SS
 
     ```bash
     ssh unitree@192.168.8.18
-    cd /root/ros2_ws/src/quad-sdk/quad_utils/scripts
-    source launch_robot_env.sh
     cd ros2_ws
+    source src/quad-sdk/quad_utils/scripts/launch_robot_env.sh
     ros2 launch quad_utils robot_driver.py
     ```
 
@@ -111,7 +110,7 @@ Steps 1, 3, 4, 5 run on the **remote laptop**. Step 2 runs **on the robot via SS
     ```bash
     cd ros2_ws
     source src/quad-sdk/quad_utils/scripts/launch_remote_env.sh
-    ros2 launch quad_utils remote_driver.launch
+    ros2 launch quad_utils remote_driver.py
     ```
 
 === "4. Stand (remote)"
@@ -153,7 +152,7 @@ ros2 topic pub /robot_1/control/restart_flag std_msgs/Bool "data: true"
 
 ```bash
 # PlotJuggler in a 6th terminal
-ros2 launch quad_utils remote_driver.launch live_plot:=true
+ros2 launch quad_utils remote_driver.py live_plot:=true
 ```
 
 !!! danger "Recovering from a hard fall"

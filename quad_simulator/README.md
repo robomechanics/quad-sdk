@@ -29,6 +29,7 @@ Tested under [ROS2] Jazzy on Ubuntu 24.04 with Gazebo Harmonic.
 | Package | Platform |
 |---|---|
 | `a1_description` | Unitree A1 |
+| `a2_description` | Unitree A2 |
 | `b2_description` | Unitree B2 |
 | `go1_description` | Unitree Go1 |
 | `go2_description` | Unitree Go2 |
@@ -76,7 +77,7 @@ rough_25cm           rough_40cm_huge      parkour_local_min
 ```bash
 colcon build --packages-select \
   gazebo_plugins gazebo_scripts quad_sim_scripts \
-  a1_description b2_description go1_description go2_description go2w_description \
+  a1_description a2_description b2_description go1_description go2_description go2w_description \
   spirit_description spot_description underbrush_description vision60_description
 ```
 

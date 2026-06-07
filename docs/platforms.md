@@ -17,6 +17,7 @@ Quad-SDK ships configs and hardware interfaces for the following quadrupeds. **H
 | **Go2** | Unitree | 15 kg | :material-check-bold: Tested on hardware |
 | **Go1** | Unitree | 12 kg | :material-check: Simulation / config-ready |
 | **A1** | Unitree | 12 kg | :material-check: Simulation / config-ready |
+| **A2** | Unitree | 40 kg | :material-check: Simulation / config-ready |
 | **B2** | Unitree | 60 kg | :material-check: Simulation / config-ready |
 | **Spot** | Boston Dynamics | 32.5 kg | :material-check: Simulation / config-ready |
 | **Vision60** | Ghost Robotics | 50 kg | :material-check: Simulation / config-ready |
@@ -31,14 +32,15 @@ Quad-SDK runs in three simulators: **Gazebo Harmonic**, **MuJoCo**, and **NVIDIA
 | **Spirit 40** | :material-check: | :material-check: | :material-check: |
 | **Go2** | :material-check: | :material-check: | :material-check: |
 | **Go1** | :material-check: | :material-check: | :material-close: |
-| **A1** | :material-check: | :material-close: | :material-close: |
+| **A1** | :material-check: | :material-check: | :material-close: |
+| **A2** | :material-check: | :material-check: | :material-close: |
 | **B2** | :material-check: | :material-check: | :material-close: |
 | **Spot** | :material-check: | :material-check: | :material-close: |
 | **Vision60** | :material-check: | :material-check: | :material-close: |
 | **Go2-W** | :material-check: | :material-check: | :material-close: |
 
 - **Gazebo Harmonic** — every platform.
-- **MuJoCo** — every platform except the A1.
+- **MuJoCo** — every platform.
 - **IsaacSim 5.1** *(beta)* — Spirit 40 and Go2 (the robots in the Isaac bridge `ROBOT_REGISTRY`). Requires a separate IsaacLab conda install ([install guide](https://isaac-sim.github.io/IsaacLab/main/source/setup/installation/index.html)). See [Running in IsaacSim](tutorials/isaac-sim.md) for setup and run instructions.
 
 ## Adding a new platform
