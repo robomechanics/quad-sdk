@@ -19,7 +19,7 @@ class PathFollowingNode(Node):
 
         # Parameters
         self.rate_hz = 100
-        self.speed = 0.5   # Forward velocity
+        self.speed = 0.3   # Forward velocity
         self.y_pt = 0.0    # Lateral shift
         self.yaw_pt = 0.0  # Yaw angle
         self.y_gain = 1.0  # Lateral P gain

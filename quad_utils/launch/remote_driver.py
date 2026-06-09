@@ -39,9 +39,11 @@ def launch_robot_mapping(context, *args, **kwargs):
             IncludeLaunchDescription(
                 PythonLaunchDescriptionSource(mapping_launch_path),
                 launch_arguments={
-                    # Virtual balance beam generated + anchored to the robot's
-                    # start pose (straight ahead, centered, at foot height).
-                    'input_type': 'beam',
+                    # b_beam MESH (custom: 11cm-wide x 5m narrow section,
+                    # centered y=0) via mesh_to_grid_map_node, loaded from
+                    # quad_sim_scripts/models/b_beam/meshes/b_beam.ply.
+                    'input_type': 'mesh',
+                    'world': 'b_beam.sdf',
                     'use_sim_time': LaunchConfiguration('use_sim_time')
                 }.items()
             )

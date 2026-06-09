@@ -18,15 +18,6 @@ def generate_launch_description():
         DeclareLaunchArgument('verbose', default_value='true'),
         DeclareLaunchArgument('world', default_value='step_20cm.sdf'),
         DeclareLaunchArgument('use_sim_time', default_value='true'),
-        # Virtual-beam (input_type == 'beam') params, handled by beam_terrain_node
-        DeclareLaunchArgument('anchor_pose_topic', default_value='/robot_1/state/ground_truth',
-            description='RobotState topic used to anchor the virtual beam to the robot start'),
-        DeclareLaunchArgument('beam_width', default_value='0.11',
-            description='Full lateral width of the virtual beam (m)'),
-        DeclareLaunchArgument('beam_length', default_value='5.0',
-            description='Forward extent of the virtual beam ahead of the robot (m)'),
-        DeclareLaunchArgument('beam_back', default_value='0.65',
-            description='Extent of the virtual beam behind the robot (m)')
     ]
 
     # Node for terrain_map_publisher if input_type == "grid"
@@ -65,31 +56,6 @@ def generate_launch_description():
             )
         ],
         condition=IfCondition(PythonExpression(["'", LaunchConfiguration('input_type'), "' == 'mesh'"]))
-    )
-
-    # Virtual balance beam (input_type == "beam"): generate the beam terrain
-    # analytically, anchored to the robot's start pose. No mesh/world needed.
-    beam_terrain_group = GroupAction(
-        actions=[
-            Node(
-                package='quad_utils',
-                executable='beam_terrain_node',
-                name='beam_terrain_node',
-                parameters=[{
-                    'frame_id': LaunchConfiguration('frame_id_mesh_loaded'),
-                    'grid_map_resolution': LaunchConfiguration('grid_map_resolution'),
-                    'layer_name': LaunchConfiguration('grid_map_layer_name'),
-                    'latch_grid_map_pub': LaunchConfiguration('latch_grid_map_pub'),
-                    'verbose': LaunchConfiguration('verbose'),
-                    'use_sim_time': LaunchConfiguration('use_sim_time'),
-                    'anchor_pose_topic': LaunchConfiguration('anchor_pose_topic'),
-                    'beam_width': LaunchConfiguration('beam_width'),
-                    'beam_length': LaunchConfiguration('beam_length'),
-                    'beam_back': LaunchConfiguration('beam_back')
-                }]
-            )
-        ],
-        condition=IfCondition(PythonExpression(["'", LaunchConfiguration('input_type'), "' == 'beam'"]))
     )
 
     # Launch the grid map visualizer
@@ -142,7 +108,6 @@ def generate_launch_description():
         declared_arguments + [
             # terrain_map_group,
             mesh_to_grid_group,
-            beam_terrain_group,
             grid_map_visualization,
             grid_map_filter_node,
             static_tf

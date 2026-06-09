@@ -66,27 +66,6 @@ add_executable(mesh_to_grid_map_node
   src/mesh_to_grid_map_node.cpp
   src/mesh_to_grid_map_converter.cpp)
 
-add_executable(beam_terrain_node
-  src/beam_terrain_node.cpp
-  src/beam_terrain_converter.cpp)
-
-target_include_directories(beam_terrain_node PUBLIC
-  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-  $<INSTALL_INTERFACE:include>
-)
-
-target_link_libraries(beam_terrain_node
-  Eigen3::Eigen
-)
-
-ament_target_dependencies(beam_terrain_node
-  rclcpp
-  grid_map_core
-  grid_map_ros
-  grid_map_msgs
-  quad_msgs
-)
-
 add_executable(mjcf_to_grid_map_node
   src/mjcf_to_grid_map_node.cpp
   src/mjcf_to_grid_map_converter.cpp)
@@ -304,7 +283,6 @@ install(TARGETS
 
 install(TARGETS
   mesh_to_grid_map_node
-  beam_terrain_node
   mjcf_to_grid_map_node
   rviz_interface_node
   remote_heartbeat_node
