@@ -74,7 +74,7 @@ Inside the container:
 sudo apt-get update && sudo apt-get upgrade -y
 chmod +x setup.sh && ./setup.sh
 cd ~/ros2_ws
-colcon build --symlink-install
+colcon build --symlink-install --executor sequential --cmake-args -DCMAKE_BUILD_TYPE=Release
 source install/setup.bash
 ```
 
@@ -118,7 +118,7 @@ cd quad-sdk && ./setup.sh
 
 # 5. Build
 cd ~/ros2_ws
-colcon build --symlink-install
+colcon build --symlink-install --executor sequential --cmake-args -DCMAKE_BUILD_TYPE=Release
 source install/setup.bash
 ```
 
@@ -144,7 +144,7 @@ colcon build --cmake-args -DCMAKE_BUILD_TYPE=Release \
 On the remote workstation (x86_64) you can build everything normally:
 
 ```bash
-colcon build --cmake-args -DCMAKE_BUILD_TYPE=Release
+colcon build --executor sequential --cmake-args -DCMAKE_BUILD_TYPE=Release
 ```
 
 ## Verify
