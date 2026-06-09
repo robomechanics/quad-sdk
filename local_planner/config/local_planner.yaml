@@ -10,6 +10,13 @@
       stand_vel_threshold: 0.1
       stand_cmd_vel_threshold: 0.1
       stand_pos_error_threshold: 0.05
+      # Lateral anchor: pull the body-y reference toward the beam centerline
+      # while stepping so the NMPC corrects lateral drift instead of accepting
+      # it. 0.0 = off (original behavior). Starting at 0.5; if the body
+      # oscillates laterally drop toward 0.3/0.0, if it still drifts raise
+      # toward 1.0. Watch body_y on a straight walk.
+      lateral_anchor_gain: 0.5
+      lateral_anchor_y: 0.0  # beam centerline y, world frame
     local_footstep_planner:
       grf_weight: 0.5
       standing_error_threshold: 0.03 # m

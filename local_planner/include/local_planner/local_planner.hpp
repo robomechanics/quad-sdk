@@ -304,6 +304,14 @@ class LocalPlanner {
 
   /// Position error threshold (from foot centroid) to enter stand mode
   double stand_pos_error_threshold_;
+
+  /// Lateral anchor gain: blends the body-y reference toward the beam
+  /// centerline while stepping. 0 = off (track current drifted y, original
+  /// behavior); 1 = fully anchor the reference to lateral_anchor_y_.
+  double lateral_anchor_gain_;
+
+  /// Lateral anchor target (beam centerline y, world frame)
+  double lateral_anchor_y_;
 };
 
 #endif  // LOCAL_PLANNER_H
