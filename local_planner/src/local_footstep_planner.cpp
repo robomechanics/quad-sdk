@@ -3,7 +3,13 @@
 #include <chrono>
 
 LocalFootstepPlanner::LocalFootstepPlanner(rclcpp::Node::SharedPtr node)
-    : node_(node) {}
+    : node_(node) {
+  // Optional symmetric lateral stance width (see header). Declared here so it
+  // picks up any value from the loaded param yaml; default 0.0 = off.
+  node_->declare_parameter("local_footstep_planner.symmetric_stance_width", 0.0);
+  node_->get_parameter("local_footstep_planner.symmetric_stance_width",
+                       symmetric_stance_width_);
+}
 
 void LocalFootstepPlanner::setTemporalParams(
     double dt, int period, int horizon_length,
@@ -290,6 +296,19 @@ void LocalFootstepPlanner::computeFootPlan(
             foot_positions.block<1, 3>(i, 3 * j);
         foot_position = getNearestValidFoothold(foot_position_nominal,
                                                 foot_position_previous);
+
+        // Symmetric lateral placement: when enabled, place this foot a fixed
+        // half-stance from the body's own lateral centerline rather than where
+        // it snapped to the world beam. Since foot_y - body_y = +/-width/2 for
+        // both sides, the tuck is symmetric and the body_y value cancels (in
+        // target and in the IK), making it robust to a biased body_y estimate
+        // (mocap solve error). x and z (forward + terrain height) are kept.
+        if (symmetric_stance_width_ > 0.0) {
+          double side =
+              (hip_position_midstance.y() - body_plan(i, 1) >= 0.0) ? 1.0 : -1.0;
+          foot_position.y() =
+              body_plan(i, 1) + side * 0.5 * symmetric_stance_width_;
+        }
 
         // Store foot position in the Eigen matrix
         foot_positions.block<1, 3>(i, 3 * j) = foot_position;

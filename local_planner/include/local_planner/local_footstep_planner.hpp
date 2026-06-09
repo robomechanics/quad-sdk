@@ -446,6 +446,13 @@ class LocalFootstepPlanner {
   /// Minimum objective function value for valid foothold
   double foothold_obj_threshold_;
 
+  /// Commanded symmetric lateral stance width (m). When > 0, the lateral (y)
+  /// foothold is forced to body_y +/- width/2 per side instead of snapping to
+  /// the world beam, so foot_y - body_y = +/-width/2 for both sides. This makes
+  /// the tuck symmetric and immune to a biased body_y estimate (e.g. a mocap
+  /// solve error), since the body_y value cancels. 0 = off (terrain snap).
+  double symmetric_stance_width_ = 0.0;
+
   /// Terrain layer for foothold search
   std::string obj_fun_layer_;
 
