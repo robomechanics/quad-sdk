@@ -53,48 +53,24 @@ bool CompFilterEstimator::updateOnce(
                          "No body pose (mocap) recieved");
     return false;
   }
-  // Body position from mocap (absolute map-frame body origin)
+  // Copy mocap readings
+  last_robot_state_msg_.body.pose.orientation =
+      last_mocap_msg_->pose.orientation;
   last_robot_state_msg_.body.pose.position = last_mocap_msg_->pose.position;
-
-  // Body attitude: roll/pitch from the IMU (gravity-referenced), yaw from mocap
-  // (absolute map-frame heading). comp_filter previously copied the full
-  // orientation from mocap, but a residual ~0.7-1.0 deg roll/pitch offset in the
-  // Motive rigid-body calibration biased the controller's COM/gravity projection
-  // -> consistent left-heavy load, asymmetric hip abduction, and lateral tipping
-  // while walking. The Go2 onboard IMU gives gravity-correct roll/pitch (already
-  // used directly as body attitude on the learned-controller path in
-  // robot_driver.cpp); mocap still supplies absolute yaw, which the IMU lacks.
-  double roll_imu, pitch_imu, yaw_imu, roll_m, pitch_m, yaw_mocap;
-  tf2::Quaternion q_imu(
-      last_imu_msg_.orientation.x, last_imu_msg_.orientation.y,
-      last_imu_msg_.orientation.z, last_imu_msg_.orientation.w);
-  q_imu.normalize();
-  tf2::Matrix3x3(q_imu).getRPY(roll_imu, pitch_imu, yaw_imu);
-
-  tf2::Quaternion q_mocap(
-      last_mocap_msg_->pose.orientation.x, last_mocap_msg_->pose.orientation.y,
-      last_mocap_msg_->pose.orientation.z, last_mocap_msg_->pose.orientation.w);
-  q_mocap.normalize();
-  tf2::Matrix3x3(q_mocap).getRPY(roll_m, pitch_m, yaw_mocap);
-
-  tf2::Quaternion q_fused;
-  q_fused.setRPY(roll_imu, pitch_imu, yaw_mocap);
-  q_fused.normalize();
-  last_robot_state_msg_.body.pose.orientation.x = q_fused.x();
-  last_robot_state_msg_.body.pose.orientation.y = q_fused.y();
-  last_robot_state_msg_.body.pose.orientation.z = q_fused.z();
-  last_robot_state_msg_.body.pose.orientation.w = q_fused.w();
 
   // IMU is in body frame
   Eigen::Vector3d acc;
   acc << last_imu_msg_.linear_acceleration.x,
       last_imu_msg_.linear_acceleration.y, last_imu_msg_.linear_acceleration.z;
 
-  // Rotate the body-frame acceleration into the world frame using the fused
-  // (gravity-correct) attitude for the velocity high-pass branch.
   Eigen::Matrix3d rot;
+  tf2::Quaternion q(
+      last_mocap_msg_->pose.orientation.x, last_mocap_msg_->pose.orientation.y,
+      last_mocap_msg_->pose.orientation.z, last_mocap_msg_->pose.orientation.w);
+  q.normalize();
+  tf2::Matrix3x3 m(q);
   Eigen::Vector3d rpy;
-  rpy << roll_imu, pitch_imu, yaw_mocap;
+  m.getRPY(rpy[0], rpy[1], rpy[2]);
   quadKD_->getRotationMatrix(rpy, rot);
   acc = rot * acc;
 
