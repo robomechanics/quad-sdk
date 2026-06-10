@@ -10,23 +10,8 @@
       stand_vel_threshold: 0.1
       stand_cmd_vel_threshold: 0.1
       stand_pos_error_threshold: 0.05
-      # Lateral anchor: pulls the body-y reference toward the beam centerline.
-      # SET TO 0: it was chasing the (false) mocap body_y drift, physically
-      # nudging the straight robot to satisfy a phantom. The
-      # symmetric_stance_width foot placement (below) replaces it -- it makes the
-      # tuck immune to the body_y error without moving the body. Only re-enable
-      # (e.g. 0.5) if you confirm the lateral drift is REAL, not mocap.
-      lateral_anchor_gain: 0.0
-      lateral_anchor_y: 0.0  # beam centerline y, world frame
     local_footstep_planner:
       grf_weight: 0.5
       standing_error_threshold: 0.03 # m
       foothold_obj_threshold: 0.6 # Note: For now must match /grid_map_filters/traversability_mask_lower_threshold/lower_threshold
       obj_fun_layer: traversability
-      # Symmetric lateral foot placement: when > 0, place each foot at
-      # body_y +/- width/2 (per side) instead of snapping to the world beam, so
-      # foot_y - body_y = +/-width/2 for both sides -> symmetric tuck, immune to
-      # a biased body_y (mocap solve error). This IS the lateral stance width
-      # now (it bypasses the beam for y). Feet must stay within the beam; tune
-      # toward your target (e.g. 0.09) once stable. 0 = off (terrain snap).
-      symmetric_stance_width: 0.12

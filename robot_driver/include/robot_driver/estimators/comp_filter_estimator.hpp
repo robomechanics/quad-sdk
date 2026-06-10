@@ -76,5 +76,19 @@ class CompFilterEstimator : public StateEstimator {
 
   /// Last mocap time
   rclcpp::Time last_mocap_time_;
+
+  /// Lateral (body-y) drift rejection. The mocap body_y carries a slow,
+  /// motion-induced solve error (trunk markers occluded by the swinging legs)
+  /// that the controller mistakes for real lateral drift. When the robot is
+  /// known to walk straight (y_true ~ const), reject that slow drift so it does
+  /// not reach the controller. OFF by default; see updateOnce.
+  bool lat_drift_reject_ = false;
+  /// Low-pass coefficient (0..1) for tracking the slow drift; larger = holds
+  /// body_y harder at the start, smaller = preserves more real lateral motion.
+  double lat_drift_tau_ = 0.01;
+  /// Captured lateral reference (start) and running slow-drift estimate.
+  double y_ref_ = 0.0;
+  double y_drift_lp_ = 0.0;
+  bool y_ref_init_ = false;
 };
 #endif  // COMP_FILTER_H

@@ -37,6 +37,13 @@ void CompFilterEstimator::init() {
       Eigen::Map<Eigen::Matrix<double, 1, 1>>(low_pass_d_.data()).transpose();
   low_pass_filter.x.resize(3);
   low_pass_filter.init = false;
+
+  // Optional lateral drift rejection (for straight-line / beam walking).
+  quad_utils::loadROSParamDefault(node_, "robot_driver.lateral_drift_reject",
+                                  lat_drift_reject_, false);
+  quad_utils::loadROSParamDefault(node_, "robot_driver.lateral_drift_tau",
+                                  lat_drift_tau_, 0.01);
+  y_ref_init_ = false;
 }
 
 bool CompFilterEstimator::updateOnce(
@@ -55,6 +62,25 @@ bool CompFilterEstimator::updateOnce(
   }
   // Body position from mocap (absolute map-frame body origin)
   last_robot_state_msg_.body.pose.position = last_mocap_msg_->pose.position;
+
+  // Optional lateral drift rejection (for straight-line / beam walking). The
+  // mocap body_y carries a slow, motion-induced solve error (trunk markers
+  // occluded by the swinging legs) that the controller mistakes for real
+  // lateral drift -> asymmetric footholds -> tipping. When the robot is known
+  // to walk straight (y_true ~ const), estimate that slow drift as a low-pass
+  // of (mocap_y - y_ref) and subtract it, so body_y holds near its start value
+  // while genuine fast lateral sway is preserved. OFF by default; only valid
+  // when the robot does not intentionally translate sideways.
+  if (lat_drift_reject_) {
+    double mocap_y = last_mocap_msg_->pose.position.y;
+    if (!y_ref_init_) {
+      y_ref_ = mocap_y;
+      y_drift_lp_ = 0.0;
+      y_ref_init_ = true;
+    }
+    y_drift_lp_ += lat_drift_tau_ * ((mocap_y - y_ref_) - y_drift_lp_);
+    last_robot_state_msg_.body.pose.position.y = mocap_y - y_drift_lp_;
+  }
 
   // Body attitude: roll/pitch from the IMU (gravity-referenced), yaw from mocap
   // (absolute map-frame heading). comp_filter previously copied the full
@@ -125,6 +151,14 @@ bool CompFilterEstimator::updateOnce(
   vel_estimate_ = imu_vel_estimate_ + mocap_vel_estimate_;
   quad_utils::Eigen3ToVector3Msg(vel_estimate_,
                                  last_robot_state_msg_.body.twist.linear);
+
+  // Keep the lateral velocity consistent with the held position when rejecting
+  // drift: drop the mocap low-pass (the slow drift) and keep only the IMU
+  // high-pass (real fast sway), so the capture-point step does not chase the
+  // phantom lateral velocity.
+  if (lat_drift_reject_) {
+    last_robot_state_msg_.body.twist.linear.y = imu_vel_estimate_(1);
+  }
 
   // Fill in the rest of the state message (foot state and headers)
   quad_utils::updateDynamics(*quadKD_, last_robot_state_msg_);
