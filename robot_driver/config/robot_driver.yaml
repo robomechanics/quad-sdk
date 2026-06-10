@@ -22,17 +22,6 @@
       high_pass_c: [0.031912805108981, -0.028979795079613]
       high_pass_d: [0.0009996017974875904]
 
-      # Lateral (body-y) drift rejection for straight-line / beam walking.
-      # The mocap body_y has a slow motion-induced solve error (legs occluding
-      # markers) the controller reacts to (asymmetric footholds -> tipping).
-      # The robot walks straight, so reject the slow drift: body_y holds near
-      # its start while real fast lateral sway is kept. ONLY valid when the
-      # robot does not intentionally move sideways -- set false for that.
-      # tau: larger holds harder (rejects more drift but tracks sway), smaller
-      # preserves more real motion. Verify body_y stays flat on a straight walk.
-      lateral_drift_reject: true
-      lateral_drift_tau: 0.01
-
       # EKF noise and bias parameters
       bias_x: -0.10
       bias_y: -0.17
