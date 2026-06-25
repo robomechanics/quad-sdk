@@ -1,5 +1,4 @@
 <mujoco model="spirit">
-  <!-- <compiler angle="radian" meshdir="assets" autolimits="true"/> -->
 
   <option cone="elliptic" impratio="100"/>
 

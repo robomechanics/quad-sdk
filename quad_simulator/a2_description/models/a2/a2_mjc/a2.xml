@@ -1,5 +1,4 @@
 <mujoco model="a2">
-  <!-- <compiler angle="radian" meshdir="assets/"/> -->
   <option gravity="0 0 -9.81"/>
 
   <default>

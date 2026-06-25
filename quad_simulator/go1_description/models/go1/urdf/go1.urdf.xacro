@@ -30,20 +30,7 @@
   </material>
   <material name="white">
     <color rgba="1.0 1.0 1.0 1.0"/>
-  </material>
-  <!-- <xacro:include filename="$(find go1_gazebo)/launch/stairs.urdf.xacro"/> -->
-  <!-- <xacro:stairs stairs="15" xpos="0" ypos="0" zpos="0" /> -->
-  <!-- Rotor related joint and link is only for demonstrate location. -->
-  <!-- Actually, the rotor will rotate and the joint is not fixed. Reduction ratio should be considered. -->
-  <!-- Debug mode will hung up the robot, use "true" or "false" to switch it. -->
-  <!-- <xacro:if value="$(arg DEBUG)">
-        <link name="world"/>
-        <joint name="base_static_joint" type="fixed">
-            <origin rpy="0 0 0" xyz="0 0 0"/>
-            <parent link="world"/>
-            <child link="trunk"/>
-        </joint>
-    </xacro:if>  -->
+  </material>S
   <link name="trunk">
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>

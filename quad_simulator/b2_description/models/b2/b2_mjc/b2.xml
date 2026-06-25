@@ -1,5 +1,4 @@
 <mujoco model="b2">
-  <!-- <compiler angle="radian" meshdir="assets" autolimits="true"/> -->
 
   <default>
     <default class="b2">

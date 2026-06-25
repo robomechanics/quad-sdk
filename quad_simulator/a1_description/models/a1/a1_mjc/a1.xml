@@ -1,5 +1,4 @@
 <mujoco model="a1">
-  <!-- <compiler angle="radian" meshdir="assets" texturedir="assets" autolimits="true"/> -->
 
   <option cone="elliptic" impratio="100"/>
 
@@ -68,13 +67,6 @@
     <mesh class="a1" file="thigh_mirror.obj"/>
     <mesh class="a1" file="trunk.obj"/>
   </asset>
-
-
-
-
-
-
-
 
   <worldbody>
     <light name="spotlight" mode="targetbodycom" target="trunk" pos="0 -1 2"/>
