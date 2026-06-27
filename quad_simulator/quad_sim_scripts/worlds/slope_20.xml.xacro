@@ -31,8 +31,8 @@
     <geom name="floor_visual" type="mesh" mesh="terrain" pos="-2 -2 -0.1"
           rgba="0.8 0.9 0.8 1" contype="0" conaffinity="0" group="1"/>
 
-    <!-- 20% slope (4 m run / 0.8 m rise; angle = atan(0.2) ~= 0.1974 rad)
-         in three pieces: flat lower pad, tilted ramp, flat upper pad. -->
+    <!-- 20 degree slope broken up into three pieces: flat lower pad, 
+         tilted ramp, flat upper pad. -->
     <geom
       name="slope_lower"
       type="box"

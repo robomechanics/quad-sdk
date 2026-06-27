@@ -3,7 +3,6 @@
 
   <xacro:arg name="meshdir" default=""/>
   <xacro:arg name="mjcf_path" default=""/>
-  <!-- Absolute path to the PNG heightmap rasterized from rough_25cm.stl. -->
   <xacro:arg name="terrain_heightmap" default=""/>
 
   <compiler
@@ -35,14 +34,9 @@
   <asset>
     <hfield name="terrain" file="$(arg terrain_heightmap)" size="5.0000 4.0000 0.2188 0.5000"/>
   </asset>
- <!-- hfield was generated 180 degrees flipped from ply, so rviz displayed the map incorrectly. Fixed with euler angle addition.  -->
   <worldbody>
     <light directional="true" diffuse=".8 .8 .8" specular=".2 .2 .2" pos="0 0 5" dir="0 0 -1"/>
     <geom name="floor" type="hfield" hfield="terrain" pos="3.0000 0.0000 0.0" conaffinity="1"
           priority="2" condim="6" euler="0 0 3.14159"/>
   </worldbody>
 </mujoco>
-
-<!--     o_solref="0.007 1"
-    o_solimp="0.95 0.99 0.002"
-    o_friction="1.0 1.0 0.05 0.05 0.05" -->

@@ -23,9 +23,7 @@
     <geom name="floor_visual" type="mesh" mesh="terrain" pos="-2 -2 -0.1"
           rgba="0.8 0.9 0.8 1" contype="0" conaffinity="0" group="1"/>
 
-    <!-- Lower platforms (top z=0 world; mesh top z=0.1, offset -0.1).
-         A 40 cm gap at mesh x in [4,4.4], y in [0,1.9] separates west/north
-         from south/east. -->
+    <!-- Lower platforms (top z=0 world; mesh top z=0.1, offset -0.1). -->
     <geom
       name="gap_west_block"
       type="box"
@@ -70,9 +68,7 @@
       solimp="0.95 0.99 0.002"
     />
 
-    <!-- L-shaped wall pillar 1 m tall (world z in [0, 1]) that blocks the
-         direct west->east route through the natural gap, creating the
-         local-minimum trap. -->
+    <!-- L-shaped wall pillar 1 m tall -->
     <geom
       name="wall_ew_bar"
       type="box"

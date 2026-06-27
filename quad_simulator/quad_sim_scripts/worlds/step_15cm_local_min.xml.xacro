@@ -23,14 +23,7 @@
     <geom name="floor_visual" type="mesh" mesh="terrain" pos="-2 -2 -0.1"
           rgba="0.8 0.9 0.8 1" contype="0" conaffinity="0" group="1"/>
 
-    <!-- Lower platform is split into 4 pieces by two notches (mesh frame
-         drawings; world frame = mesh - (2,2,0.1)):
-           A west_col   : x in [0  ,1.5], y in [0     ,4     ]
-           B east_hall  : x in [2.5,5  ], y in [0     ,1.5   ]
-           C east_arm   : x in [2.5,4  ], y in [1.5   ,4     ]
-           D bridge     : x in [1.5,2.5], y in [2.5066,4     ]
-         The gaps between them force the snake path A -> D -> C -> B
-         -> upper step. -->
+    <!-- Lower platform is broken up into 4 pieces -->
     <geom
       name="step_lower_A_west_col"
       type="box"

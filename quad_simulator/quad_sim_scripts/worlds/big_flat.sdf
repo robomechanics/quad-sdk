@@ -64,20 +64,6 @@
 
     <include>
       <uri>model://big_flat</uri>
-      <!-- Keep z=-0.0: this is the physics-correct setup. The mesh
-           is a 0.1 m thick slab (z=0..+0.1 in mesh-local) and Gazebo
-           uses the same mesh for collision, so the walking surface
-           ends up at world z=+0.1. The visual penetration you may see
-           in RViz is a *rendering* artifact, not a physics problem:
-           the mesh-to-grid-map publisher samples the STL in
-           mesh-local coordinates and does not apply this world pose,
-           so the GridMap displays terrain at z=+0.1 while RViz draws
-           the robot model anchored at the gazebo TF (also at z=+0.1).
-           Identical-Z surfaces clash with the robot's lower-body
-           URDF visuals that extend a couple cm below the foot frame.
-           Sinking the mesh to z=-0.1 like flat.sdf BREAKS PHYSICS —
-           the collision then has nothing under the robots' fall path
-           and they drop through the world. -->
       <pose>-11 -11 -0.0  0 0 0</pose>
     </include>
   </world>
