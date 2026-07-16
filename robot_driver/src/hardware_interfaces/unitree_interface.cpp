@@ -114,10 +114,18 @@ void UnitreeInterface::lowStateHandler(const void* message) {
   state_received_ = true;
 }
 
-std::array<int16_t, UnitreeInterface::kNumLegs>
-UnitreeInterface::getFootForcesRaw() const {
+bool UnitreeInterface::getFootContact(
+    int contact_threshold, quad_msgs::msg::FootContact& foot_contact_msg) {
   std::lock_guard<std::mutex> lock(state_mutex_);
-  return foot_force_quad_order_;
+  foot_contact_msg.header.frame_id = "map";
+  foot_contact_msg.foot_force_raw.resize(kNumLegs);
+  foot_contact_msg.contact_states.resize(kNumLegs);
+  for (int i = 0; i < kNumLegs; ++i) {
+    foot_contact_msg.foot_force_raw[i] = foot_force_quad_order_[i];
+    foot_contact_msg.contact_states[i] =
+        (foot_force_quad_order_[i] > contact_threshold);
+  }
+  return true;
 }
 
 uint32_t UnitreeInterface::crc32Core(uint32_t* ptr, uint32_t len) {

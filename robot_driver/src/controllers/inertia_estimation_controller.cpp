@@ -1,5 +1,11 @@
 #include "robot_driver/controllers/inertia_estimation_controller.hpp"
 
+// Which robot's knee envelope to emit. Flip manually when switching robots.
+//   false  → Spirit40 original amplitudes (center 1.3, amp 1.3 in ctrl space)
+//   true   → Go2-scaled (center 1.36, amp 0.8 in ctrl space; safe inside Go2
+//            calf range [-2.72, -0.84] after (sign=1, offset=-pi) conversion)
+static constexpr bool kUseGo2KneeEnvelope = true;
+
 InertiaEstimationController::InertiaEstimationController(
     rclcpp::Node::SharedPtr node, const std::string& robot_ns,
     std::shared_ptr<quad_utils::QuadKD2> quadKD)
@@ -9,6 +15,28 @@ bool InertiaEstimationController::computeLegCommandArray(
     const quad_msgs::msg::RobotState& robot_state_msg,
     quad_msgs::msg::LegCommandArray& leg_command_array_msg,
     quad_msgs::msg::GRFArray& grf_array_msg) {
+  // Lazy-load the per-leg per-joint URDF-vs-controller convention coefficients
+  // once. Same param paths (leg_<i>.joints.{abad|hip|knee}.{sign,offset}) as
+  // quad_kd2.cpp uses in IK. Defaults preserve identity for Spirit40 whose
+  // yaml doesn't populate them.
+  if (!conv_loaded_) {
+    joint_sign_.assign(num_feet_, std::vector<double>(3, 1.0));
+    joint_offset_.assign(num_feet_, std::vector<double>(3, 0.0));
+    const char* joint_key[3] = {"abad", "hip", "knee"};
+    for (int i = 0; i < num_feet_; ++i) {
+      const std::string p = "leg_" + std::to_string(i);
+      for (int j = 0; j < 3; ++j) {
+        quad_utils::loadROSParamDefault(
+            node_, p + ".joints." + joint_key[j] + ".sign",
+            joint_sign_[i][j], 1.0);
+        quad_utils::loadROSParamDefault(
+            node_, p + ".joints." + joint_key[j] + ".offset",
+            joint_offset_[i][j], 0.0);
+      }
+    }
+    conv_loaded_ = true;
+  }
+
   if ((last_local_plan_msg_ == NULL) ||
       ((node_->now() - rclcpp::Time(last_local_plan_msg_->header.stamp))
            .seconds() >= 0.1)) {
@@ -148,23 +176,47 @@ bool InertiaEstimationController::computeLegCommandArray(
     for (int i = 0; i < num_feet_; ++i) {
       leg_command_array_msg.leg_commands.at(i).motor_commands.resize(3);
 
+      // Abad envelope — same for Spirit40 and Go2 (both robots have abad
+      // range ~±1 rad, Spirit40's [-0.6, 0.6] envelope fits either).
       leg_command_array_msg.leg_commands.at(i)
           .motor_commands.at(0)
-          .pos_setpoint = (0.2 * sin(4 * t) + 0.4 * cos(15 * sin(2.6 * t))) *
+          .pos_setpoint = ((0.2 * sin(4 * t) + 0.4 * cos(15 * sin(2.6 * t))) *
                               (sin(5.4 * t) < 0.8) +
-                          (sin(5.4 * t) >= 0.8) * (0.5 * sin(0.7 * t));
+                          (sin(5.4 * t) >= 0.8) * (0.5 * sin(0.7 * t))) *
+                          joint_sign_[i][0] + joint_offset_[i][0];
+
+      // Hip pitch — same for both. Spirit40 ctrl range [-1.2, 1.8] maps to
+      // Go2 wire [-0.23, 2.77] via yaml (sign=-1, offset=pi/2), inside Go2's
+      // thigh limits [-1.57, 3.49].
       leg_command_array_msg.leg_commands.at(i)
           .motor_commands.at(1)
           .pos_setpoint =
-          (-1.0 * cos(6 * t) + 0.3 - 0.5 * cos(20 * sin(2.2 * t))) *
+          ((-1.0 * cos(6 * t) + 0.3 - 0.5 * cos(20 * sin(2.2 * t))) *
               (sin(6.5 * t) < 0.8) +
-          (sin(6.5 * t) >= 0.8) * (sin(0.9 * t) + 0.5);
+          (sin(6.5 * t) >= 0.8) * (sin(0.9 * t) + 0.5)) *
+          joint_sign_[i][1] + joint_offset_[i][1];
+
+      // Knee — differs by robot. Spirit40 original amplitude vs Go2-rescaled
+      // (0.615x amplitude, center shifted from ctrl=1.30 to ctrl=1.36 so that
+      // after conversion (sign=1, offset=-pi) the wire-side setpoint lands
+      // safely inside Go2's calf range [-2.72, -0.84]).
+      double q_ctrl_knee;
+      if (kUseGo2KneeEnvelope) {
+        q_ctrl_knee = ((-0.492 * cos(10 * t) + 1.36 -
+                        0.308 * cos(25 * sin(1.4 * t))) *
+                          (sin(7 * t) < 0.8) +
+                      (sin(7 * t) >= 0.8) *
+                          (0.406 * sin(1.1 * t) + 1.36));
+      } else {
+        q_ctrl_knee = ((-0.8 * cos(10 * t) + 1.3 -
+                        0.5 * cos(25 * sin(1.4 * t))) *
+                          (sin(7 * t) < 0.8) +
+                      (sin(7 * t) >= 0.8) *
+                          (0.7 * sin(1.1 * t) + 0.7));
+      }
       leg_command_array_msg.leg_commands.at(i)
           .motor_commands.at(2)
-          .pos_setpoint =
-          (-0.8 * cos(10 * t) + 1.3 - 0.5 * cos(25 * sin(1.4 * t))) *
-              (sin(7 * t) < 0.8) +
-          (sin(7 * t) >= 0.8) * (0.7 * sin(1.1 * t) + 0.7);
+          .pos_setpoint = q_ctrl_knee * joint_sign_[i][2] + joint_offset_[i][2];
 
       for (int j = 0; j < 3; ++j) {
         leg_command_array_msg.leg_commands.at(i)

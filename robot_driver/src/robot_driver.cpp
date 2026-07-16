@@ -304,10 +304,20 @@ void RobotDriver::initLegController() {
   } else if (controller_id_ == "learned") {
 #ifdef HAS_ONNXRUNTIME
     leg_controller_ =
-        std::make_shared<LearnedPolicy>(node_, robot_ns, quadKD2_);
+        std::make_shared<LearnedVelocityPolicy>(node_, robot_ns, quadKD2_);
 #else
     RCLCPP_FATAL(node_->get_logger(),
                  "Learned policy requested but built without ONNX Runtime");
+    leg_controller_ = nullptr;
+#endif
+  } else if (controller_id_ == "underbrush_learned") {
+#ifdef HAS_ONNXRUNTIME
+    leg_controller_ =
+        std::make_shared<UnderbrushPolicy>(node_, robot_ns, quadKD2_);
+#else
+    RCLCPP_FATAL(
+        node_->get_logger(),
+        "Underbrush Learned policy requested but built without ONNX Runtime");
     leg_controller_ = nullptr;
 #endif
   } else {
@@ -316,13 +326,20 @@ void RobotDriver::initLegController() {
                  controller_id_.c_str());
     leg_controller_ = nullptr;
   }
-  if (leg_controller_ != nullptr && controller_id_ != "learned") {
-    leg_controller_->init(stance_kp_, stance_kd_, swing_kp_, swing_kd_,
-                          swing_kp_cart_, swing_kd_cart_);
-  } else {
+  // Learned controllers need the extended init (model path, inference rate,
+  // stand angles); everything else uses the gains-only init.
+  const bool is_learned_policy =
+      (controller_id_ == "learned" || controller_id_ == "underbrush_learned");
+  if (leg_controller_ == nullptr) {
+    // Instantiation failed above (invalid id or built without ONNX Runtime);
+    // the relevant error was already logged, so skip init.
+  } else if (is_learned_policy) {
     leg_controller_->init(stance_kp_, stance_kd_, swing_kp_, swing_kd_,
                           swing_kp_cart_, swing_kd_cart_, model_path_,
                           policy_inference_rate_, stand_joint_angles_);
+  } else {
+    leg_controller_->init(stance_kp_, stance_kd_, swing_kp_, swing_kd_,
+                          swing_kp_cart_, swing_kd_cart_);
   }
 }
 
@@ -476,7 +493,9 @@ void RobotDriver::cmdVelCallback(
   last_cmd_vel_msg_ = *msg;
   // Record when this was last reached for safety
 #ifdef HAS_ONNXRUNTIME
-  if (auto c = std::dynamic_pointer_cast<LearnedPolicy>(leg_controller_)) {
+  // Catches both the base MLP policy and UnderbrushPolicy (derived).
+  if (auto c =
+          std::dynamic_pointer_cast<LearnedVelocityPolicy>(leg_controller_)) {
     last_cmd_vel_msg_time_ = node_->now();
     c->updateCmdVelMsg(cmd_vel_, last_cmd_vel_msg_time_);
   }
@@ -523,43 +542,46 @@ bool RobotDriver::updateState() {
       return false;
     }
 
-    // Publish raw + thresholded foot contact (Unitree foot force sensor).
-    // Only Unitree hardware exposes this; dynamic_cast is the cleanest way
-    // to avoid leaking it into the abstract HardwareInterface API.
-    if (auto* unitree =
-            dynamic_cast<UnitreeInterface*>(hardware_interface_.get())) {
-      quad_msgs::msg::FootContact fc_msg;
-      fc_msg.header.stamp = node_->now();
-      fc_msg.header.frame_id = "map";
-      const auto raw = unitree->getFootForcesRaw();
-      fc_msg.foot_force_raw.resize(num_feet_);
-      fc_msg.contact_states.resize(num_feet_);
-      for (int i = 0; i < num_feet_; ++i) {
-        fc_msg.foot_force_raw[i] = raw[i];
-        fc_msg.contact_states[i] = (raw[i] > foot_contact_threshold_);
-      }
-      foot_contact_pub_->publish(fc_msg);
+    // Foot contact from the hardware's foot-force sensor, if it has one. The
+    // interface builds the message (raw readings + thresholded contact_states).
+    // Cache it here — stamped to this tick's sample — so the in-process
+    // consumers below get it immediately; the ROS topic is emitted later in
+    // publishState(). Interfaces with no such sensor (e.g. Spirit) return
+    // false and this block is skipped.
+    if (hardware_interface_->getFootContact(foot_contact_threshold_,
+                                            last_foot_contact_msg_)) {
+      last_foot_contact_msg_.header.stamp = node_->now();
 
       // Push the measured foot contact into the estimator(s) so the EKF uses
       // the real foot-force contact instead of the planner's expected GRFs.
       // Pushed (not subscribed) since the data is already in-process and must
       // stay aligned with this tick's IMU/joint sample.
       if (state_estimator_ != nullptr) {
-        state_estimator_->loadFootContactMsg(fc_msg);
+        state_estimator_->loadFootContactMsg(last_foot_contact_msg_);
       }
       if (debug_state_estimator_ != nullptr) {
-        debug_state_estimator_->loadFootContactMsg(fc_msg);
+        debug_state_estimator_->loadFootContactMsg(last_foot_contact_msg_);
       }
+
+      // Feed the measured foot forces to the underbrush GRU policy, which
+      // consumes a per-leg foot_force observation.
+#ifdef HAS_ONNXRUNTIME
+      if (auto up =
+              std::dynamic_pointer_cast<UnderbrushPolicy>(leg_controller_)) {
+        up->updateFootContactMsg(last_foot_contact_msg_);
+      }
+#endif
     }
 
     // For learned controllers on hardware, populate state directly from
     // IMU + joint encoders without requiring mocap or a full state estimator.
     // The learned policy only needs orientation, angular velocity, joint
-    // positions, and joint velocities — all available from onboard sensors.
-    if (controller_id_ == "learned") {
+    // positions/velocities, and (for underbrush) joint effort — all available
+    // from onboard sensors. Foot contact is plumbed separately above.
+    if (controller_id_ == "learned" || controller_id_ == "underbrush_learned") {
       rclcpp::Time state_timestamp = node_->now();
 
-      // Joint state from encoders
+      // Joint state from encoders (position, velocity, and effort/torque)
       last_robot_state_msg_.joints = last_joint_state_msg_;
       last_robot_state_msg_.joints.header.stamp = state_timestamp;
 
@@ -570,12 +592,13 @@ bool RobotDriver::updateState() {
       last_robot_state_msg_.body.twist.angular = last_imu_msg_.angular_velocity;
 
       // Pass IMU to learned policy for acceleration access. Guarded
-      // because LearnedPolicy is only declared when the workspace was
-      // built with ONNX Runtime; without it, controller_id_ == "learned"
-      // would have been rejected earlier in initLegController() so this
-      // path is unreachable anyway.
+      // because LearnedVelocityPolicy is only declared when the workspace was
+      // built with ONNX Runtime; without it, these controller ids would have
+      // been rejected earlier in initLegController() so this path is
+      // unreachable anyway. The cast catches UnderbrushPolicy too (derived).
 #ifdef HAS_ONNXRUNTIME
-      if (auto c = std::dynamic_pointer_cast<LearnedPolicy>(leg_controller_)) {
+      if (auto c = std::dynamic_pointer_cast<LearnedVelocityPolicy>(
+              leg_controller_)) {
         c->updateImuMsg(last_imu_msg_);
       }
 #endif
@@ -740,6 +763,12 @@ void RobotDriver::publishState() {
     imu_pub_->publish(last_imu_msg_);
     joint_state_pub_->publish(last_joint_state_msg_);
     robot_state_pub_->publish(last_robot_state_msg_);
+
+    // Foot-contact topic: only Unitree (go2/go2w) has a foot-force sensor; the
+    // message was built + stamped in updateState().
+    if (robot_name == "go2" || robot_name == "go2w") {
+      foot_contact_pub_->publish(last_foot_contact_msg_);
+    }
 
     // Publish ride-along estimator output on topics.state.estimate for
     // side-by-side comparison with the active estimator (drives no control).

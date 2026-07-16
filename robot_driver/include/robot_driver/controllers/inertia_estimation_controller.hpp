@@ -44,6 +44,16 @@ class InertiaEstimationController : public LegController {
 
   /// GRF exponential filter constant
   const double grf_exp_filter_const_ = 1.0;  // 1.0 = no filtering
+
+  /// Per-leg per-joint (abad, hip, knee) URDF-vs-controller convention
+  /// coefficients loaded lazily from ROS params on first compute call.
+  /// Applied as `q_wire = q_ctrl * sign + offset` so the same Spirit40-tuned
+  /// excitation setpoint below works on any robot whose yaml (leg_<i>.joints.
+  /// {abad|hip|knee}.{sign,offset}) is populated. Defaults (1, 0) preserve
+  /// Spirit40 behavior for legacy configs that omit these fields.
+  bool conv_loaded_ = false;
+  std::vector<std::vector<double>> joint_sign_;
+  std::vector<std::vector<double>> joint_offset_;
 };
 
 #endif  // INERTIA_ESTIMATION_CONTROLLER

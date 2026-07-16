@@ -57,10 +57,11 @@ class UnitreeInterface : public HardwareInterface {
             sensor_msgs::msg::Imu& imu_msg,
             Eigen::VectorXd& user_rx_data) override;
 
-  //! Latest raw foot-force readings from rt/lowstate.
-  //! Returned in quad-sdk leg order (FL, RL, FR, RR), int16 units.
-  //! Used by robot_driver to publish a custom FootContact message.
-  std::array<int16_t, kNumLegs> getFootForcesRaw() const;
+  //! Build a FootContact message from the latest rt/lowstate foot-force
+  //! readings (quad-sdk leg order FL, RL, FR, RR, int16 units). Always returns
+  //! true — the Go2/Go2-W has foot-force sensors.
+  bool getFootContact(int contact_threshold,
+                      quad_msgs::msg::FootContact& foot_contact_msg) override;
 
  protected:
   void initLowCmd();

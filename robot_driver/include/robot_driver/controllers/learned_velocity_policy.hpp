@@ -1,5 +1,5 @@
-#ifndef LEARNED_POLICY_H
-#define LEARNED_POLICY_H
+#ifndef LEARNED_VELOCITY_POLICY_H
+#define LEARNED_VELOCITY_POLICY_H
 
 #include <tf2_eigen/tf2_eigen.hpp>
 #include <rclcpp/rclcpp.hpp>
@@ -21,21 +21,31 @@
 #include <vector>
 #include <filesystem>
 
-//! Implements an abstract class for learned policies.
+//! Base class for velocity-conditioned learned locomotion policies.
 /*!
-   LearnedPolicy provides an abstract learned policy class. It contains
-   pure virtual methods for running inference and computing motor commands for
-   each leg to be sent to the robot.
+   LearnedVelocityPolicy is the shared base for any velocity-command-driven
+   learned controller. It owns the pieces that are identical across such
+   policies — ONNX session management (loadONNXModel), the inference cadence
+   and PD-tracking loop (computeLegCommandArray), the raw-action
+   post-processing (postProcessActions), and the cmd_vel / IMU plumbing.
+
+   computeObservations() and runInference() are virtual so a derived policy
+   can change how observations are assembled and how the network is invoked
+   (e.g. a recurrent per-leg architecture), while still reusing everything
+   else. The default implementations here realize a single-tensor MLP policy.
 */
 
-class LearnedPolicy : public LegController {
+class LearnedVelocityPolicy : public LegController {
  public:
   /**
-   * @brief Constructor for LearnedPolicy
-   * @return Constructed object of type LearnedPolicy
+   * @brief Constructor for LearnedVelocityPolicy
+   * @return Constructed object of type LearnedVelocityPolicy
    */
-  LearnedPolicy(rclcpp::Node::SharedPtr node, const std::string& robot_ns,
-                std::shared_ptr<quad_utils::QuadKD2> quadKD);
+  LearnedVelocityPolicy(rclcpp::Node::SharedPtr node,
+                        const std::string& robot_ns,
+                        std::shared_ptr<quad_utils::QuadKD2> quadKD);
+
+  virtual ~LearnedVelocityPolicy() = default;
 
   /**
    * @brief Set the desired proportional and derivative gains for all legs
@@ -62,9 +72,10 @@ class LearnedPolicy : public LegController {
 
   void adjustObservationalTargets();
 
-  void computeObservations(const quad_msgs::msg::RobotState& robot_state_msg);
+  virtual void computeObservations(
+      const quad_msgs::msg::RobotState& robot_state_msg);
 
-  void runInference();
+  virtual void runInference();
 
   void updateCmdVelMsg(Eigen::VectorXd msg, rclcpp::Time& t_now);
 
@@ -76,6 +87,15 @@ class LearnedPolicy : public LegController {
       quad_msgs::msg::GRFArray& grf_array_msg);
 
  protected:
+  /**
+   * @brief Turn the network's raw action output into Quad-SDK joint targets:
+   *        scale by scale_factor_, add the nominal stance, and reorder from
+   *        Isaac-Lab action order to the Quad-SDK joint convention. Shared by
+   *        every LearnedVelocityPolicy since the action head convention is the
+   *        same regardless of the observation/inference architecture.
+   */
+  void postProcessActions();
+
   /// Onnx Runtime Env Object
   Ort::Env env_{ORT_LOGGING_LEVEL_WARNING, "ros2-onnx"};
 
@@ -124,4 +144,4 @@ class LearnedPolicy : public LegController {
 
   bool initialized_ = true;
 };
-#endif  // LEARNED_POLICY_H
+#endif  // LEARNED_VELOCITY_POLICY_H

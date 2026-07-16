@@ -2,6 +2,7 @@
 #define HARDWARE_INTERFACE_H
 
 #include <tf2_eigen/tf2_eigen.hpp>
+#include <quad_msgs/msg/foot_contact.hpp>
 #include <quad_msgs/msg/grf_array.hpp>
 #include <quad_msgs/msg/leg_command.hpp>
 #include <quad_msgs/msg/leg_command_array.hpp>
@@ -65,6 +66,24 @@ class HardwareInterface {
   virtual bool recv(sensor_msgs::msg::JointState& joint_state_msg,
                     sensor_msgs::msg::Imu& imu_msg,
                     Eigen::VectorXd& user_rx_data) = 0;
+
+  /**
+   * @brief Populate a FootContact message from the interface's foot-force
+   *        sensor, if it has one. The default reports no such sensor (returns
+   *        false, leaves the message untouched); interfaces with a foot-force
+   *        sensor override this and fill foot_force_raw + contact_states in
+   *        quad-sdk leg order (FL, RL, FR, RR).
+   * @param[in]  contact_threshold Raw reading above which a foot counts as in
+   *             contact (used to fill contact_states)
+   * @param[out] foot_contact_msg Populated foot_force_raw + contact_states
+   * @return true if this interface provides foot contact, false otherwise
+   */
+  virtual bool getFootContact(int contact_threshold,
+                              quad_msgs::msg::FootContact& foot_contact_msg) {
+    (void)contact_threshold;
+    (void)foot_contact_msg;
+    return false;
+  }
 
  protected:
 };

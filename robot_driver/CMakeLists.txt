@@ -82,8 +82,13 @@ set(ROBOT_DRIVER_SOURCES
   src/hardware_interfaces/unitree_interface.cpp
 )
 
+# Learned-policy controllers depend on ONNX Runtime; only build them when it
+# is available (UnderbrushPolicy derives from LearnedVelocityPolicy, so both
+# are gated together).
 if(ONNXRUNTIME_LIB)
-  list(APPEND ROBOT_DRIVER_SOURCES src/controllers/learned_policy.cpp)
+  list(APPEND ROBOT_DRIVER_SOURCES
+    src/controllers/learned_velocity_policy.cpp
+    src/controllers/underbrush_policy.cpp)
 endif()
 
 add_library(robot_driver SHARED ${ROBOT_DRIVER_SOURCES})

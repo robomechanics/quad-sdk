@@ -36,7 +36,12 @@ find_package(tf2_ros REQUIRED)
 find_package(mujoco_vendor QUIET)
 find_package(glfw3 QUIET)
 
-add_library(quad_utils
+# SHARED so libquad_utils.so encapsulates its pinocchio dependency in its own
+# DT_NEEDED. A static lib would leak pinocchio's unresolved symbols into every
+# consumer's final link (forcing them to link pinocchio); as a shared lib,
+# consumers resolve pinocchio transitively at load time and need no pinocchio
+# of their own.
+add_library(quad_utils SHARED
   src/rviz_interface.cpp
   src/fast_terrain_map.cpp
   src/mesh_to_grid_map_converter.cpp
@@ -172,6 +177,13 @@ ament_target_dependencies(quad_utils
   cv_bridge
   pinocchio
 )
+
+# Link the pinocchio imported target (not just the ament dep) so quad_kd2.cpp
+# compiles with pinocchio 4.0's required boost MPL defines
+# (BOOST_MPL_LIMIT_LIST_SIZE=30, ...), which ament_target_dependencies does not
+# propagate. quad_utils is now the ONLY package that compiles pinocchio (it is
+# hidden behind QuadKD2::Impl), so this link lives here and nowhere else.
+target_link_libraries(quad_utils pinocchio::pinocchio)
 
 ament_target_dependencies(mesh_to_grid_map_node rclcpp)
 

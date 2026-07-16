@@ -32,7 +32,8 @@
 #include "robot_driver/controllers/joint_controller.hpp"
 #include "robot_driver/controllers/leg_controller.hpp"
 #ifdef HAS_ONNXRUNTIME
-#include "robot_driver/controllers/learned_policy.hpp"
+#include "robot_driver/controllers/learned_velocity_policy.hpp"
+#include "robot_driver/controllers/underbrush_policy.hpp"
 #endif
 #include "robot_driver/estimators/comp_filter_estimator.hpp"
 #include "robot_driver/estimators/ekf_estimator.hpp"
@@ -235,6 +236,10 @@ class RobotDriver {
   /// ROS publisher for measured foot contact (Unitree foot-force sensor)
   rclcpp::Publisher<quad_msgs::msg::FootContact>::SharedPtr foot_contact_pub_;
 
+  /// Latest foot-contact message, built + stamped in updateState() and
+  /// published in publishState() (Unitree hardware only).
+  quad_msgs::msg::FootContact last_foot_contact_msg_;
+
   /// Threshold (raw int16 units) above which foot is considered in contact.
   int foot_contact_threshold_;
 
@@ -398,11 +403,6 @@ class RobotDriver {
 
   /// Leg Controller template class
   std::shared_ptr<LegController> leg_controller_;
-
-  /// Leg Controller template class
-#ifdef HAS_ONNXRUNTIME
-  std::shared_ptr<LearnedPolicy> leg_policy_;
-#endif
 
   /// State Estimator template class
   std::shared_ptr<StateEstimator> state_estimator_;

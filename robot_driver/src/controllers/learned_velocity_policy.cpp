@@ -1,19 +1,17 @@
-#include "robot_driver/controllers/learned_policy.hpp"
+#include "robot_driver/controllers/learned_velocity_policy.hpp"
 
-LearnedPolicy::LearnedPolicy(rclcpp::Node::SharedPtr node,
-                             const std::string& robot_ns,
-                             std::shared_ptr<quad_utils::QuadKD2> quadKD)
+LearnedVelocityPolicy::LearnedVelocityPolicy(
+    rclcpp::Node::SharedPtr node, const std::string& robot_ns,
+    std::shared_ptr<quad_utils::QuadKD2> quadKD)
     : LegController(node, robot_ns, quadKD) {}
 
-void LearnedPolicy::init(const std::vector<double>& stance_kp,
-                         const std::vector<double>& stance_kd,
-                         const std::vector<double>& swing_kp,
-                         const std::vector<double>& swing_kd,
-                         const std::vector<double>& swing_kp_cart,
-                         const std::vector<double>& swing_kd_cart,
-                         const std::string& model_path,
-                         double policy_inference_rate,
-                         const std::vector<double>& stand_joint_angles) {
+void LearnedVelocityPolicy::init(
+    const std::vector<double>& stance_kp, const std::vector<double>& stance_kd,
+    const std::vector<double>& swing_kp, const std::vector<double>& swing_kd,
+    const std::vector<double>& swing_kp_cart,
+    const std::vector<double>& swing_kd_cart, const std::string& model_path,
+    double policy_inference_rate,
+    const std::vector<double>& stand_joint_angles) {
   // Initalize the Path to the Model Onnx File
   stance_kp_ = stance_kp;
   stance_kd_ = stance_kd;
@@ -39,7 +37,7 @@ void LearnedPolicy::init(const std::vector<double>& stance_kp,
               model_path_.c_str(), policy_inference_rate_);
 }
 
-void LearnedPolicy::loadONNXModel() {
+void LearnedVelocityPolicy::loadONNXModel() {
   /// Try loading and Initalizing an Onnx Runtime Session
   try {
     so_.SetGraphOptimizationLevel(GraphOptimizationLevel::ORT_ENABLE_ALL);
@@ -99,7 +97,7 @@ void LearnedPolicy::loadONNXModel() {
   }
 }
 
-void LearnedPolicy::computeObservations(
+void LearnedVelocityPolicy::computeObservations(
     const quad_msgs::msg::RobotState& robot_state_msg) {
   // May Require Changes if your Policy has Different Inputs
 
@@ -183,7 +181,7 @@ void LearnedPolicy::computeObservations(
       joint_velocities, prev_action_;
 }
 
-void LearnedPolicy::runInference() {
+void LearnedVelocityPolicy::runInference() {
   // Run Inference and Update Previous Action
   if (!session_) {
     RCLCPP_INFO(node_->get_logger(), "ONNX Session Not Ready");
@@ -222,6 +220,10 @@ void LearnedPolicy::runInference() {
   for (int64_t i = 0; i < out_elems; ++i)
     raw_actions_(i) = static_cast<double>(y[i]);
 
+  postProcessActions();
+}
+
+void LearnedVelocityPolicy::postProcessActions() {
   // Apply Scaling to Raw Action Offsets and Add Them to Nominal Stance
   Eigen::VectorXd unordered_actions_ =
       raw_actions_ * scale_factor_ + nominal_stance_pose_;
@@ -245,7 +247,7 @@ void LearnedPolicy::runInference() {
   // nominal_stance_pose_ << std::endl;
 }
 
-bool LearnedPolicy::computeLegCommandArray(
+bool LearnedVelocityPolicy::computeLegCommandArray(
     const quad_msgs::msg::RobotState& robot_state_msg,
     quad_msgs::msg::LegCommandArray& leg_command_array_msg,
     quad_msgs::msg::GRFArray& grf_array_msg) {
@@ -286,11 +288,12 @@ bool LearnedPolicy::computeLegCommandArray(
   return true;
 }
 
-void LearnedPolicy::updateCmdVelMsg(Eigen::VectorXd msg, rclcpp::Time& t_now) {
+void LearnedVelocityPolicy::updateCmdVelMsg(Eigen::VectorXd msg,
+                                            rclcpp::Time& t_now) {
   cmd_vel_msg_ = msg;
   last_cmd_vel_msg_time_ = t_now;
 }
 
-void LearnedPolicy::updateImuMsg(const sensor_msgs::msg::Imu& imu_msg) {
+void LearnedVelocityPolicy::updateImuMsg(const sensor_msgs::msg::Imu& imu_msg) {
   last_imu_msg_ = imu_msg;
 }
