@@ -195,44 +195,52 @@ bool InertiaEstimationController::computeLegCommandArray(
         }
       } else {
 
-      // Abad envelope — same for Spirit40 and Go2 (both robots have abad
-      // range ~±1 rad, Spirit40's [-0.6, 0.6] envelope fits either).
+      // ---- Frequencies halved from Spirit40 original ----
+      // Motivation: original envelope had instantaneous frequencies up to
+      // ~25 rad/s (via cos(25*sin(1.4t)) etc). At Go2's reflected calf
+      // inertia (~3.4 kg m²) tracking those needed ~640 N m — 18× the
+      // 35.55 N m knee limit. Physical bandwidth limit, unfixable by kp.
+      // Halving every frequency puts peak instantaneous content near
+      // 2 Hz, which Go2 can track cleanly.
+
+      // Abad envelope — reduced amplitude (0.25x Spirit40 original).
+      // Stand hardware sits directly under the body, so abad swinging the
+      // leg inward can bump into it. Keep total abad excursion under
+      // ~0.15 rad from stand-nominal.
       leg_command_array_msg.leg_commands.at(i)
           .motor_commands.at(0)
-          .pos_setpoint = ((0.2 * sin(4 * t) + 0.4 * cos(15 * sin(2.6 * t))) *
-                              (sin(5.4 * t) < 0.8) +
-                          (sin(5.4 * t) >= 0.8) * (0.5 * sin(0.7 * t))) *
+          .pos_setpoint = ((0.05 * sin(2 * t) + 0.1 * cos(7.5 * sin(1.3 * t))) *
+                              (sin(2.7 * t) < 0.8) +
+                          (sin(2.7 * t) >= 0.8) * (0.12 * sin(0.35 * t))) *
                           joint_sign_[i][0] + joint_offset_[i][0];
 
-      // Hip pitch — amplitudes reduced ~30% from Spirit40 original (each
-      // sinusoid coefficient scaled 0.7x) so peak torque stays under Go2's
-      // 23.7 N·m limit when kp is bumped back up to nominal. Ctrl range
-      // [-0.75, 1.35] → Go2 wire [+0.22, +2.32] via (sign=-1, offset=pi/2).
+      // Hip pitch — 0.7x Spirit40 amplitude with halved frequencies.
+      // Ctrl range [-0.75, +1.35] → Go2 wire [+0.22, +2.32] via
+      // (sign=-1, offset=pi/2). Vertical plane is unobstructed by stand.
       leg_command_array_msg.leg_commands.at(i)
           .motor_commands.at(1)
           .pos_setpoint =
-          ((-0.7 * cos(6 * t) + 0.3 - 0.35 * cos(20 * sin(2.2 * t))) *
-              (sin(6.5 * t) < 0.8) +
-          (sin(6.5 * t) >= 0.8) * (0.7 * sin(0.9 * t) + 0.5)) *
+          ((-0.7 * cos(3 * t) + 0.3 - 0.35 * cos(10 * sin(1.1 * t))) *
+              (sin(3.25 * t) < 0.8) +
+          (sin(3.25 * t) >= 0.8) * (0.7 * sin(0.45 * t) + 0.5)) *
           joint_sign_[i][1] + joint_offset_[i][1];
 
-      // Knee — differs by robot. Spirit40 original amplitude vs Go2-rescaled
-      // (0.615x amplitude, center shifted from ctrl=1.30 to ctrl=1.36 so that
-      // after conversion (sign=1, offset=-pi) the wire-side setpoint lands
-      // safely inside Go2's calf range [-2.72, -0.84]).
+      // Knee — same amplitude structure as before, frequencies halved.
+      // Go2 branch: ctrl range [+0.56, +2.16] → wire [-2.58, -0.98], safely
+      // inside Go2 calf range [-2.72, -0.84].
       double q_ctrl_knee;
       if (kUseGo2KneeEnvelope) {
-        q_ctrl_knee = ((-0.492 * cos(10 * t) + 1.36 -
-                        0.308 * cos(25 * sin(1.4 * t))) *
-                          (sin(7 * t) < 0.8) +
-                      (sin(7 * t) >= 0.8) *
-                          (0.406 * sin(1.1 * t) + 1.36));
+        q_ctrl_knee = ((-0.492 * cos(5 * t) + 1.36 -
+                        0.308 * cos(12.5 * sin(0.7 * t))) *
+                          (sin(3.5 * t) < 0.8) +
+                      (sin(3.5 * t) >= 0.8) *
+                          (0.406 * sin(0.55 * t) + 1.36));
       } else {
-        q_ctrl_knee = ((-0.8 * cos(10 * t) + 1.3 -
-                        0.5 * cos(25 * sin(1.4 * t))) *
-                          (sin(7 * t) < 0.8) +
-                      (sin(7 * t) >= 0.8) *
-                          (0.7 * sin(1.1 * t) + 0.7));
+        q_ctrl_knee = ((-0.8 * cos(5 * t) + 1.3 -
+                        0.5 * cos(12.5 * sin(0.7 * t))) *
+                          (sin(3.5 * t) < 0.8) +
+                      (sin(3.5 * t) >= 0.8) *
+                          (0.7 * sin(0.55 * t) + 0.7));
       }
       leg_command_array_msg.leg_commands.at(i)
           .motor_commands.at(2)
