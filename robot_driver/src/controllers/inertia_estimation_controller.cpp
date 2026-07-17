@@ -6,6 +6,13 @@
 //            calf range [-2.72, -0.84] after (sign=1, offset=-pi) conversion)
 static constexpr bool kUseGo2KneeEnvelope = true;
 
+// Which single leg to excite. Set to 0..3 to flail only that leg (others
+// hold their current observed pose); set to -1 to flail all four legs
+// simultaneously (original Spirit40 behavior).
+//   Convention on Go2 (from readBag verification):
+//       0 = FR    1 = BR    2 = FL    3 = BL
+static constexpr int kTargetLeg = 0;
+
 InertiaEstimationController::InertiaEstimationController(
     rclcpp::Node::SharedPtr node, const std::string& robot_ns,
     std::shared_ptr<quad_utils::QuadKD2> quadKD)
@@ -176,6 +183,18 @@ bool InertiaEstimationController::computeLegCommandArray(
     for (int i = 0; i < num_feet_; ++i) {
       leg_command_array_msg.leg_commands.at(i).motor_commands.resize(3);
 
+      // Single-leg gating: if kTargetLeg is set (0..3) and this isn't it,
+      // hold this leg at its currently observed pose (wire convention — no
+      // sign/offset conversion needed since it's already in wire space).
+      // kTargetLeg = -1 flails all legs simultaneously.
+      if (kTargetLeg >= 0 && i != kTargetLeg) {
+        for (int j = 0; j < 3; ++j) {
+          leg_command_array_msg.leg_commands.at(i)
+              .motor_commands.at(j)
+              .pos_setpoint = robot_state_msg.joints.position.at(3 * i + j);
+        }
+      } else {
+
       // Abad envelope — same for Spirit40 and Go2 (both robots have abad
       // range ~±1 rad, Spirit40's [-0.6, 0.6] envelope fits either).
       leg_command_array_msg.leg_commands.at(i)
@@ -185,15 +204,16 @@ bool InertiaEstimationController::computeLegCommandArray(
                           (sin(5.4 * t) >= 0.8) * (0.5 * sin(0.7 * t))) *
                           joint_sign_[i][0] + joint_offset_[i][0];
 
-      // Hip pitch — same for both. Spirit40 ctrl range [-1.2, 1.8] maps to
-      // Go2 wire [-0.23, 2.77] via yaml (sign=-1, offset=pi/2), inside Go2's
-      // thigh limits [-1.57, 3.49].
+      // Hip pitch — amplitudes reduced ~30% from Spirit40 original (each
+      // sinusoid coefficient scaled 0.7x) so peak torque stays under Go2's
+      // 23.7 N·m limit when kp is bumped back up to nominal. Ctrl range
+      // [-0.75, 1.35] → Go2 wire [+0.22, +2.32] via (sign=-1, offset=pi/2).
       leg_command_array_msg.leg_commands.at(i)
           .motor_commands.at(1)
           .pos_setpoint =
-          ((-1.0 * cos(6 * t) + 0.3 - 0.5 * cos(20 * sin(2.2 * t))) *
+          ((-0.7 * cos(6 * t) + 0.3 - 0.35 * cos(20 * sin(2.2 * t))) *
               (sin(6.5 * t) < 0.8) +
-          (sin(6.5 * t) >= 0.8) * (sin(0.9 * t) + 0.5)) *
+          (sin(6.5 * t) >= 0.8) * (0.7 * sin(0.9 * t) + 0.5)) *
           joint_sign_[i][1] + joint_offset_[i][1];
 
       // Knee — differs by robot. Spirit40 original amplitude vs Go2-rescaled
@@ -217,6 +237,8 @@ bool InertiaEstimationController::computeLegCommandArray(
       leg_command_array_msg.leg_commands.at(i)
           .motor_commands.at(2)
           .pos_setpoint = q_ctrl_knee * joint_sign_[i][2] + joint_offset_[i][2];
+
+      }  // end excitation branch
 
       for (int j = 0; j < 3; ++j) {
         leg_command_array_msg.leg_commands.at(i)
