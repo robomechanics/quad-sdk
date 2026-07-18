@@ -121,7 +121,7 @@ def launch_visualization_plugins(context, *args, **kwargs):
 
 def generate_launch_description():
     declared_args = [
-        DeclareLaunchArgument('logging', default_value = 'false', description='Whether to enable logging of the simulation data'),
+        DeclareLaunchArgument('logging', default_value = 'true', description='Whether to enable logging of the simulation data'),
         DeclareLaunchArgument('live_plot', default_value = 'false', description='Whether to enable live plotting of the simulation data'),
         DeclareLaunchArgument('dash', default_value = 'false', description='Whether to enable the dashboard for visualizing the simulation data'),
         DeclareLaunchArgument('use_sim_time', default_value = 'false', description='Whether to use simulation time'),

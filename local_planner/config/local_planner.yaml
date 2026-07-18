@@ -10,8 +10,18 @@
       stand_vel_threshold: 0.1
       stand_cmd_vel_threshold: 0.1
       stand_pos_error_threshold: 0.05
+      # Lateral anchor: pulls the body-y reference toward lateral_anchor_y_
+      # (beam centerline) instead of just tracking wherever the body
+      # currently is, so the NMPC's y-position weight has a real error to
+      # correct against instead of chasing the drift itself.
+      lateral_anchor_gain: 0.5
+      lateral_anchor_y: 0.0  # beam centerline y, world frame
     local_footstep_planner:
       grf_weight: 0.5
       standing_error_threshold: 0.03 # m
-      foothold_obj_threshold: 0.6 # Note: For now must match /grid_map_filters/traversability_mask_lower_threshold/lower_threshold
+      # Matches /grid_map_filters/traversability_mask_lower_threshold/lower_threshold
+      # (filter_chain.yaml) -- was 0.6, stricter than the mask's 0.5, which
+      # rejected valid near-edge beam cells and forced footholds further
+      # inboard than the terrain actually required.
+      foothold_obj_threshold: 0.5
       obj_fun_layer: traversability

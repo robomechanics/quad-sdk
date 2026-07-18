@@ -98,7 +98,7 @@ Visualization Manager:
         Durability Policy: Volatile
         History Policy: Keep Last
         Reliability Policy: Reliable
-        Value: /robot_1/robot_description
+        Value: /robot_1/robot_description 
       Enabled: true
       Mass Properties:
         Inertia: false

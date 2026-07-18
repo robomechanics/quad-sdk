@@ -71,6 +71,10 @@ LocalPlanner::LocalPlanner(rclcpp::Node::SharedPtr node)
                            stand_cmd_vel_threshold_);
   quad_utils::loadROSParam(node_, "local_planner.stand_pos_error_threshold",
                            stand_pos_error_threshold_);
+  quad_utils::loadROSParamDefault(node_, "local_planner.lateral_anchor_gain",
+                                  lateral_anchor_gain_, 0.0);
+  quad_utils::loadROSParamDefault(node_, "local_planner.lateral_anchor_y",
+                                  lateral_anchor_y_, 0.0);
   double robot_mass;
   quad_utils::loadROSParamDefault(node_, "global_body_planner.mass", robot_mass,
                                   16.3);
@@ -333,7 +337,15 @@ void LocalPlanner::getReference() {
 
     if (is_stepping) {
       control_mode_ = STEP;
-      stand_pose_ << current_state_[0], current_state_[1], current_state_[5];
+      // Lateral anchor: instead of re-seeding the y reference to wherever
+      // the body has already drifted (which gives the NMPC zero lateral
+      // error to correct), blend it toward lateral_anchor_y_ so the
+      // position weight actively pulls the body back to the beam
+      // centerline. gain=0 reproduces the old behavior.
+      stand_pose_[0] = current_state_[0];
+      stand_pose_[1] = (1.0 - lateral_anchor_gain_) * current_state_[1] +
+                       lateral_anchor_gain_ * lateral_anchor_y_;
+      stand_pose_[2] = current_state_[5];
     } else {
       // If it's standing, try to stablized the waggling
       control_mode_ = STAND;
