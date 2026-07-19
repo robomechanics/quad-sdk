@@ -80,9 +80,6 @@ std::vector<int> PlannerClass::neighborhoodDist(State q, double dist) const {
 
 int PlannerClass::getNearestNeighbor(State q) const {
   std::vector<int> closest_q = neighborhoodN(q, 1);
-  // If every vertex has been invalidated by warm-start pruning, fall back to
-  // the raw graph so callers always get something to work with — the caller
-  // is responsible for re-checking validity before extending from it.
   if (closest_q.empty()) {
     std::priority_queue<Distance, std::vector<Distance>, std::greater<Distance>>
         closest;
@@ -106,8 +103,7 @@ int PlannerClass::pruneByConstraints(const PlannerConfig& planner_config) {
   if (planner_config.dynamic_constraints.empty()) {
     return 0;
   }
-  // Pass 1: find vertices whose own location+arrival-time violates a
-  // new constraint (time-windowed via getTime(idx)).
+
   std::queue<int> bfs;
   for (auto itr = vertices.begin(); itr != vertices.end(); ++itr) {
     if (invalid_vertices_.count(itr->first)) continue;
@@ -116,9 +112,7 @@ int PlannerClass::pruneByConstraints(const PlannerConfig& planner_config) {
       bfs.push(itr->first);
     }
   }
-  // Pass 2: propagate invalidation to every descendant. A vertex whose
-  // ancestor is invalid sits on a path that crosses the constraint, so the
-  // path-from-root for that vertex is also forbidden.
+
   int newly_invalid = 0;
   while (!bfs.empty()) {
     int v = bfs.front();

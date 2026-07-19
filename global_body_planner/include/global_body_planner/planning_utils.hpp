@@ -196,7 +196,7 @@ enum ExitFlag {
   INVALID_START_GOAL_EQUAL
 };
 
-/// Interpolation typ
+/// Interpolation type
 const grid_map::InterpolationMethods INTER_TYPE =
     grid_map::InterpolationMethods::INTER_NEAREST;  // NOLINT
 
@@ -253,7 +253,7 @@ struct Action {
 struct StateActionResult {
   State s_new;        // New State
   Action a_new;       // New Action
-  double t_new = 0;   // !!!
+  double t_new = 0;   // Duration of accepted action segment, s
   double length = 0;  // Distance between new State and previous State
 };
 

@@ -13,6 +13,7 @@
 #include "global_body_planner/gbpl.hpp"
 #include "global_body_planner/planner_class.hpp"
 #include "global_body_planner/planning_utils.hpp"
+#include "test_helpers.hpp"
 
 //! A test fixture for the global body planning class
 /*!
@@ -40,7 +41,9 @@ class GlobalBodyPlannerTestFixture : public ::testing::Test {
     updateTerrainSlope(slope);
 
     // Create planner and configuration
-    node_ = std::make_shared<rclcpp::Node>("global_body_planner_test");
+    node_ = std::make_shared<rclcpp::Node>("global_body_planner",
+                                           global_body_planner_test::
+                                               plannerNodeOptions());
     planner_config_.loadParamsFromServer(node_);
     planner_ = std::make_shared<PlannerClass>(FORWARD, planner_config_);
   }

@@ -103,8 +103,6 @@ int RRT::attemptConnect(const State& s_existing, const State& s, double t_s,
   if (t_s <= planner_config.trapped_buffer_factor * planner_config.dt)
     return TRAPPED;
 
-  // Initialize the start and goal states depending on the direction, as well as
-  // the stance and flight times
   State s_start = (direction == FORWARD) ? s_existing : s;
   State s_goal = (direction == FORWARD) ? s : s_existing;
   double t_f = 0;
@@ -161,7 +159,7 @@ int RRT::attemptConnect(const State& s_existing, const State& s,
                         StateActionResult& result,
                         const PlannerConfig& planner_config, int direction,
                         double t_action_start) {
-  // select desired stance time to enforce a nominal stance velocity
+  // Select desired stance time to enforce a nominal stance velocity
   double t_s = 6.0 * poseDistance(s, s_existing) /
                ((s_existing.vel + s.vel).norm() + 4.0 * planner_config.v_nom);
 

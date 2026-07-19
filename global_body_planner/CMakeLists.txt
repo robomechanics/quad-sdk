@@ -96,6 +96,7 @@ ament_export_dependencies(
 
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)
+  find_package(ament_cmake_gtest REQUIRED)
   # the following line skips the linter which checks for copyrights
   # comment the line when a copyright and license is added to all source files
   # set(ament_cmake_copyright_FOUND TRUE)
@@ -105,6 +106,39 @@ if(BUILD_TESTING)
   set(ament_cmake_cpplint_FOUND TRUE)
   set(ament_cmake_uncrustify_FOUND TRUE)
   # ament_lint_auto_find_test_dependencies()
+
+  ament_add_gtest(${PROJECT_NAME}_test
+    test/test_constraints.cpp
+    test/test_global_body_plan.cpp
+    test/test_global_body_planner.cpp
+    test/test_graph_and_planner.cpp
+    test/test_kinematics.cpp
+    test/test_main.cpp
+    ENV
+      GLOBAL_BODY_PLANNER_TEST_PARAMS=${CMAKE_CURRENT_SOURCE_DIR}/config/global_body_planner.yaml
+      GLOBAL_BODY_PLANNER_TOPIC_PARAMS=${CMAKE_CURRENT_SOURCE_DIR}/config/global_body_planner_topics.yaml
+      GLOBAL_BODY_PLANNER_ROBOT_PARAMS=${CMAKE_CURRENT_SOURCE_DIR}/../quad_utils/config/spirit.yaml
+  )
+
+  if(TARGET ${PROJECT_NAME}_test)
+    target_link_libraries(${PROJECT_NAME}_test
+      ${PROJECT_NAME}
+    )
+
+    ament_target_dependencies(${PROJECT_NAME}_test
+      rclcpp
+      std_msgs
+      grid_map_core
+      grid_map_ros
+      quad_msgs
+      quad_utils
+    )
+
+    target_include_directories(${PROJECT_NAME}_test PUBLIC
+      $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+      $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/test>
+    )
+  endif()
 endif()
 
 ament_package()

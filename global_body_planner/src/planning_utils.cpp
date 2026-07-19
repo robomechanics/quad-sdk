@@ -2,10 +2,7 @@
 namespace planning_utils {
 
 namespace {
-// Thread-local counters audited by the service callback to spot
-// over-conservative constraint sets. Only the OBB-constraint path
-// increments constraint_rejects; every other failure path increments
-// kinematic_rejects.
+// Thread-local validity counters for service-call constraint diagnostics.
 thread_local ValidityStats g_validity_stats;
 }  // namespace
 
@@ -1236,19 +1233,13 @@ bool obbIntersect(const Eigen::Vector3d& pos_a, double yaw_a,
                   const Eigen::Vector3d& half_extents_a,
                   const Eigen::Vector3d& pos_b, double yaw_b,
                   const Eigen::Vector3d& half_extents_b) {
-  // Cheap 1D Z-axis interval reject before the planar SAT. Quadrupeds spend
-  // almost all of their time at similar heights, so this rarely separates,
-  // but it makes the constraint cheap when robots are at very different
-  // elevations (eg. one in flight phase).
+  // Early reject if the boxes do not overlap in height.
   if (std::abs(pos_a.z() - pos_b.z()) >
       half_extents_a.z() + half_extents_b.z()) {
     return false;
   }
 
-  // Planar OBB SAT. With both boxes axis-aligned to their own yaw frame the
-  // four candidate separating axes are the four box edges' normals (two per
-  // box). Project every corner of both boxes onto each axis and look for a
-  // gap; if any axis separates the projections the boxes are disjoint.
+  // Use planar SAT to reject boxes with a separating yaw-frame axis.
   const double cos_a = std::cos(yaw_a);
   const double sin_a = std::sin(yaw_a);
   const double cos_b = std::cos(yaw_b);
@@ -1309,28 +1300,13 @@ bool failsRobotConstraint(const State& s, double t,
     return false;
   }
 
-  // Approximate the candidate state's body yaw from its planar velocity
-  // direction. This matches the convention used in isValidState() for
-  // computing the body rotation matrix.
   const double yaw = std::atan2(s.vel[1], s.vel[0]);
-  // Use the constraint's own half-extents for the candidate state too.
-  // planner_config.robot_l / robot_w / robot_h is the leg-base spacing
-  // (~0.3 m for both go2 and spirit), NOT the body bounding box —
-  // using those values here would under-detect collisions when the
-  // chassis extends beyond the hip cluster. CBS currently runs a
-  // homogeneous fleet so all constraint poses share the same body
-  // extents; this makes the OBB-OBB check symmetric and matches the
-  // collision geometry CBS itself uses for conflict detection.
+
+  // Use constraint body extents rather than leg-base spacing.
   const Eigen::Vector3d half_extents_self =
       planner_config.dynamic_constraints.front().half_extents;
 
-  // When t is NaN ("no time available, treat constraints as static") the
-  // window check below is skipped and every constraint is evaluated. When
-  // t is a real value, only constraints whose [t_start, t_end] window
-  // brackets t are evaluated — fixing the "every constraint behaves like
-  // a permanent obstacle" overconstraint bug that produced looping /
-  // off-to-corner plans in the multi-robot demo. Window-skip is also a
-  // performance win: most constraints short-circuit before the OBB math.
+  // NaN time means static constraints; otherwise honor each time window.
   const bool time_aware = !std::isnan(t);
   for (const auto& c : planner_config.dynamic_constraints) {
     if (time_aware && (t < c.t_start || t > c.t_end)) continue;

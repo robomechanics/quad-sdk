@@ -167,10 +167,7 @@ int GBPL::findPlan(
     std::vector<State>& state_sequence, std::vector<Action>& action_sequence,
     rclcpp::Publisher<visualization_msgs::msg::MarkerArray>::SharedPtr&
         tree_pub) {
-  // Perform validity checking on start and goal states. Constraints are
-  // intentionally skipped here so that even if a body is currently inside
-  // another robot's plan envelope we still attempt to plan around it (the
-  // RRT itself will avoid it via the modified isValidState).
+  // Check start and goal without dynamic constraints; RRT enforces them later.
   PlannerConfig pc_no_constraints = planner_config;
   pc_no_constraints.dynamic_constraints.clear();
   if (!isValidState(s_start, pc_no_constraints, LEAP_STANCE)) {
@@ -245,9 +242,7 @@ int GBPL::findPlan(
     if (current_elapsed.count() >= anytime_horizon) {
       t_start_current_solve = std::chrono::steady_clock::now();
       anytime_horizon = anytime_horizon * horizon_expansion_factor;
-      // Keep the cached trees alive when warm-starting: the whole point of
-      // this mode is to reuse the work that has already been done. In cold
-      // starts we still allow the original anytime restart behaviour.
+      // Warm starts keep cached trees; cold starts use anytime restarts.
       if (!warm_start_) {
         *Ta_cache_ = PlannerClass(FORWARD, planner_config);
         *Tb_cache_ = PlannerClass(REVERSE, planner_config);
