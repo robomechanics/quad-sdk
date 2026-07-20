@@ -23,11 +23,10 @@
 #include <grid_map_ros/GridMapRosConverter.hpp>
 #include <grid_map_ros/grid_map_ros.hpp>
 
-//! A local footstep planning class for quad
+//! Local footstep planner for quadruped body plans
 /*!
-   FootstepPlanner is a container for all of the logic utilized in the local
-   footstep planning node. The implementation must provide a clean and high
-   level interface to the core algorithm
+   LocalFootstepPlanner converts a body plan and contact schedule into
+   discrete footholds and continuous swing-foot trajectories.
 */
 class LocalFootstepPlanner {
  public:
@@ -43,6 +42,8 @@ class LocalFootstepPlanner {
    * @param[in] period The period of a gait cycle in number of timesteps
    * @param[in] horizon_length The length of the planning horizon in number of
    * timesteps
+   * @param[in] duty_cycles Fraction of gait period each foot stays in contact
+   * @param[in] phase_offsets Phase offset for each foot touchdown
    */
   void setTemporalParams(double dt, int period, int horizon_length,
                          const std::vector<double>& duty_cycles,
@@ -52,9 +53,9 @@ class LocalFootstepPlanner {
    * @brief Set the spatial parameters of this object
    * @param[in] ground_clearance The foot clearance over adjacent footholds in m
    * @param[in] hip_clearance The foot clearance under hip in m
+   * @param[in] grf_weight Weight on GRF projection (0 to 1)
    * @param[in] standing_error_threshold Threshold of body error from desired
    * goal to start stepping
-   * @param[in] grf_weight Weight on GRF projection (0 to 1)
    * @param[in] kinematics Kinematics class for computations
    * @param[in] foothold_search_radius Radius to locally search for valid
    * footholds (m)
@@ -92,22 +93,22 @@ class LocalFootstepPlanner {
                                  Eigen::MatrixXd& foot_positions_body);
 
   /**
-   * @brief Update the map of this object
-   * @param[in] terrain The map of the terrain
+   * @brief Update the fast terrain map used for surface normal queries
+   * @param[in] terrain Terrain map wrapper
    */
   void updateMap(const FastTerrainMap& terrain);
 
   /**
-   * @brief Update the map of this object
-   * @param[in] terrain The map of the terrain
+   * @brief Update the grid map used for height and traversability queries
+   * @param[in] terrain Terrain grid map
    */
   void updateMap(const grid_map::GridMap& terrain);
 
   /**
    * @brief Compute the contact schedule based on the current phase
-   * @param[in] current_plan_index_ Current index in the plan
+   * @param[in] current_plan_index Current index in the plan
    * @param[in] body_plan Current body plan
-   * @param[in] ref_primitive_plan_ Reference primitive plan
+   * @param[in] ref_primitive_plan Reference primitive plan
    * @param[in] control_mode Control mode
    * @param[out] contact_schedule 2D array of contact states
    */
@@ -125,7 +126,7 @@ class LocalFootstepPlanner {
    * @param[in] grf_plan Current grf plan
    * @param[in] ref_body_plan Reference body plan
    * @param[in] foot_positions_current Current foot position in the world frame
-   * @param[in] foot_velocities_current Current foot position in the world frame
+   * @param[in] foot_velocities_current Current foot velocity in the world frame
    * @param[in] first_element_duration Duration of first element of horizon (may
    * not be dt)
    * @param[in] past_footholds_msg Message of past footholds, used for
@@ -236,14 +237,11 @@ class LocalFootstepPlanner {
     terrain_grid_ = grid_map;
   }
 
-  // Compute future states by integrating linear states (hold orientation
-  // states)
+  // Extrapolate body translation while holding orientation fixed.
   inline Eigen::VectorXd computeFutureBodyPlan(
       double step, const Eigen::VectorXd& body_plan) {
-    // Initialize vector
     Eigen::VectorXd future_body_plan = body_plan;
 
-    // Integrate the linear state
     future_body_plan.segment(0, 3) =
         future_body_plan.segment(0, 3) + body_plan.segment(6, 3) * step * dt_;
 
@@ -252,7 +250,7 @@ class LocalFootstepPlanner {
 
  private:
   /**
-   * @brief Update the continuous foot plan to match the discrete
+   * @brief Update the continuous foot plan to match the discrete footholds
    */
   void updateContinuousPlan();
 
@@ -262,18 +260,18 @@ class LocalFootstepPlanner {
    * @param[in] vel_prev Previous velocity
    * @param[in] pos_next Next position
    * @param[in] vel_next Next velocity
-   * @param[in] phase Interplation phase
-   * @param[in] duration Interplation duration
-   * @param[out] pos Interplated position
-   * @param[out] vel Interplated velocity
-   * @param[out] acc Interplated accleration
+   * @param[in] phase Interpolation phase
+   * @param[in] duration Interpolation duration
+   * @param[out] pos Interpolated position
+   * @param[out] vel Interpolated velocity
+   * @param[out] acc Interpolated acceleration
    */
   void cubicHermiteSpline(double pos_prev, double vel_prev, double pos_next,
                           double vel_next, double phase, double duration,
                           double& pos, double& vel, double& acc);
 
   /**
-   * @brief Search locally around foothold for optimal location
+   * @brief Search locally around a nominal foothold for valid terrain
    * @param[in] foot_position Foothold to optimize around
    * @param[in] foot_position_prev_solve Foothold in prior solve
    * @return Optimized foothold
@@ -283,16 +281,16 @@ class LocalFootstepPlanner {
       const Eigen::Vector3d& foot_position_prev_solve) const;
 
   /**
-   * @brief Compute minimum covering circle problem using Welzl's algorithm
+   * @brief Compute the minimum enclosing circle using Welzl's algorithm
    * @param[in] P Hip position in the plan
-   * @param[in] R Vertex storeage for the circle
+   * @param[in] R Boundary points for the circle
    * @return Center and radius of the circle
    */
   Eigen::Vector3d welzlMinimumCircle(std::vector<Eigen::Vector2d> P,
                                      std::vector<Eigen::Vector2d> R);
 
   /**
-   * @brief Compute swing apex height
+   * @brief Compute swing apex height from terrain clearance and hip clearance
    * @param[in] leg_idx Leg index
    * @param[in] body_plan Body plan in the mid air index
    * @param[in] foot_position_prev Position of the previous foothold
@@ -350,8 +348,6 @@ class LocalFootstepPlanner {
   inline int getNextContactIndex(
       const std::vector<std::vector<bool>>& contact_schedule, int horizon_index,
       int foot_index) {
-    // Loop through the rest of this contact schedule, if a new contact is found
-    // return its index
     for (int i_touchdown = horizon_index; i_touchdown < horizon_length_;
          i_touchdown++) {
       if (isNewContact(contact_schedule, i_touchdown, foot_index)) {
@@ -359,7 +355,6 @@ class LocalFootstepPlanner {
       }
     }
 
-    // If no contact is found, return the last index in the horizon
     return (horizon_length_ - 1);
   }
 
@@ -370,8 +365,6 @@ class LocalFootstepPlanner {
   inline int getNextLiftoffIndex(
       const std::vector<std::vector<bool>>& contact_schedule, int horizon_index,
       int foot_index) {
-    // Loop through the rest of this contact schedule, if a new liftoff is found
-    // return its index
     for (int i_liftoff = horizon_index; i_liftoff < horizon_length_;
          i_liftoff++) {
       if (isNewLiftoff(contact_schedule, i_liftoff, foot_index)) {
@@ -379,7 +372,6 @@ class LocalFootstepPlanner {
       }
     }
 
-    // If no contact is found, return the last index in the horizon
     return (horizon_length_ - 1);
   }
 
@@ -419,19 +411,19 @@ class LocalFootstepPlanner {
   /// Hip clearance
   double hip_clearance_;
 
-  /// Weighting on the projection of the grf
+  /// Weighting on GRF-based foothold adjustment
   double grf_weight_;
 
-  /// Primitive ids - CONNECT_STANCE TODO(yanhaoy, astutt) make these enums
+  /// Primitive id for connect stance
   const int CONNECT_STANCE = 0;
 
-  /// Primitive ids - LEAP_STANCE
+  /// Primitive id for leap stance
   const int LEAP_STANCE = 1;
 
-  /// Primitive ids - FLIGHT
+  /// Primitive id for flight phase
   const int FLIGHT = 2;
 
-  /// Primitive ids - LAND_STANCE
+  /// Primitive id for landing stance
   const int LAND_STANCE = 3;
 
   /// QuadKD class

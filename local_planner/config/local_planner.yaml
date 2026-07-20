@@ -1,17 +1,17 @@
 /**/local_planner:
   ros__parameters:
     local_planner: 
-      update_rate: 333.0 # Hz
-      timestep: 0.03 # s
-      horizon_length: 26 # timesteps
-      cmd_vel_filter_const: 0.10
-      cmd_vel_scale: 1.0
-      last_cmd_vel_msg_time_max: 2.0
-      stand_vel_threshold: 0.1
-      stand_cmd_vel_threshold: 0.1
-      stand_pos_error_threshold: 0.05
+      update_rate: 333.0                  # Local planning loop rate, Hz
+      timestep: 0.03                      # Horizon discretization timestep, s
+      horizon_length: 26                  # Number of states in local horizon
+      cmd_vel_filter_const: 0.10          # Low-pass filter constant for twist commands
+      cmd_vel_scale: 1.0                  # Scale factor applied to twist commands
+      last_cmd_vel_msg_time_max: 2.0      # Max age before cmd_vel is ignored, s
+      stand_vel_threshold: 0.1            # Body speed below which stand mode is allowed, m/s
+      stand_cmd_vel_threshold: 0.1        # Command speed below which stand mode is allowed, m/s
+      stand_pos_error_threshold: 0.05     # Position error tolerated while standing, m
     local_footstep_planner:
-      grf_weight: 0.45
-      standing_error_threshold: 0.03 # m
-      foothold_obj_threshold: 0.6 # Note: For now must match /grid_map_filters/traversability_mask_lower_threshold/lower_threshold
-      obj_fun_layer: traversability
+      grf_weight: 0.45                   # Blend weight between GRF and terrain foothold costs
+      standing_error_threshold: 0.03     # Foot position error tolerated while standing, m
+      foothold_obj_threshold: 0.6        # Minimum terrain score for candidate footholds
+      obj_fun_layer: traversability      # Grid map layer used for foothold scoring
