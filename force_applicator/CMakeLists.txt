@@ -23,7 +23,6 @@ find_package(Eigen3 REQUIRED)
 # find_package(<dependency> REQUIRED)
 
 add_library(${PROJECT_NAME}
-  src/force_applicator_node.cpp
   src/force_applicator.cpp
 )
 
@@ -91,7 +90,39 @@ ament_export_dependencies(rclcpp
 
 
 if(BUILD_TESTING)
+  find_package(ament_cmake_gtest REQUIRED)
   find_package(ament_lint_auto REQUIRED)
+
+  ament_add_gtest(${PROJECT_NAME}_test
+    test/test_force_applicator.cpp
+  )
+  if(TARGET ${PROJECT_NAME}_test)
+    target_compile_definitions(${PROJECT_NAME}_test PRIVATE
+      FORCE_APPLICATOR_TESTING
+    )
+    target_link_libraries(${PROJECT_NAME}_test ${PROJECT_NAME})
+    target_include_directories(${PROJECT_NAME}_test PRIVATE
+      include
+      ${EIGEN3_INCLUDE_DIRS}
+    )
+    ament_target_dependencies(${PROJECT_NAME}_test
+      rclcpp
+      geometry_msgs
+      visualization_msgs
+      tf2
+      tf2_ros
+      tf2_geometry_msgs
+      ros_gz_interfaces
+      quad_msgs
+      quad_utils
+      Eigen3
+    )
+    set_tests_properties(${PROJECT_NAME}_test PROPERTIES
+      ENVIRONMENT
+        "FORCE_APPLICATOR_TEST_PARAMS=${CMAKE_CURRENT_SOURCE_DIR}/config/force_applicator.yaml;FORCE_APPLICATOR_TOPIC_PARAMS=${CMAKE_CURRENT_SOURCE_DIR}/config/force_applicator_topics.yaml"
+    )
+  endif()
+
   # the following line skips the linter which checks for copyrights
   # comment the line when a copyright and license is added to all source files
   # set(ament_cmake_copyright_FOUND TRUE)

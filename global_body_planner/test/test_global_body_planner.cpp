@@ -13,3 +13,11 @@ TEST(GlobalBodyPlannerNodeTest, ConstructsWithYamlConfiguration) {
     GlobalBodyPlanner global_body_planner(node);
   });
 }
+
+int main(int argc, char** argv) {
+  testing::InitGoogleTest(&argc, argv);
+  rclcpp::init(argc, argv);
+  const int result = RUN_ALL_TESTS();
+  rclcpp::shutdown();
+  return result;
+}

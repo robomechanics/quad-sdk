@@ -22,7 +22,7 @@ class ForceApplicator {
  public:
   /**
    * @brief Constructor for ForceApplicator
-   * @param[in] nh ROS NodeHandle to publish and subscribe from
+   * @param[in] node ROS node used for parameters, publishers, and subscribers
    * @return Constructed object of type ForceApplicator
    */
 
@@ -41,7 +41,11 @@ class ForceApplicator {
    */
   void spin();
 
+#ifdef FORCE_APPLICATOR_TESTING
+ public:
+#else
  private:
+#endif
   /**
    * @brief Callback function to handle current robot state
    * @param[in] msg input message contining current robot state
@@ -85,13 +89,16 @@ class ForceApplicator {
   /// ros Subscriber for last robot state
   rclcpp::Subscription<quad_msgs::msg::RobotState>::SharedPtr robot_state_sub_;
 
+  /// Timer that clears the persistent wrench after dt_
   rclcpp::TimerBase::SharedPtr clear_timer_;
 
+  /// Gazebo transport topic names for applying and clearing wrenches
   std::string wrench_topic_persist_, wrench_topic_clear_;
 
-  // timing + rng
+  /// Random generator used by random force mode
   std::mt19937 rng_;
 
+  /// Last time a periodic disturbance was applied
   rclcpp::Time last_fire_time_;
 
   /// Most recent state estimate
@@ -100,38 +107,52 @@ class ForceApplicator {
   /// Most Recent Visualization of Applied Force
   visualization_msgs::msg::Marker last_robot_marker_msg_;
 
+  /// Last robot body position used by distance trigger mode
   Eigen::Vector3d last_robot_pose_;
 
-  // Yaml File Force Magnitudes
+  /// Fixed force components loaded from YAML
   double force_x_, force_y_, force_z_;
 
-  // Applied Force Components
+  /// Most recently applied force components
   double fx, fy, fz;
 
+  /// Magnitude of the most recently applied force
   double force_magnitude_;
 
+  /// Fixed torque components loaded from YAML
   double torque_x_, torque_y_, torque_z_;
 
+  /// Time to hold each applied wrench
   double dt_;
 
+  /// World, robot type, and robot namespace parameters
   std::string world_name_, robot_type_, robot_ns_;
 
+  /// Trigger mode, force source mode, and target link name
   std::string mode_, force_mode_, link_;
 
+  /// Random force magnitude bounds
   double force_mag_min_, force_mag_max_;
 
+  /// Random torque magnitude bounds
   double torque_mag_min_, torque_mag_max_;
 
+  /// Time between disturbances in periodic mode
   double period_;
 
+  /// Travel distance needed to trigger in distance mode
   double distance_threshold_;
 
+  /// Whether a robot state has been received
   bool have_pose_ = false;
 
+  /// Whether single mode has already fired
   bool single_ = false;
 
+  /// Main loop update rate
   double update_rate_;
 
+  /// Random generator seed
   int seed_;
 };
 

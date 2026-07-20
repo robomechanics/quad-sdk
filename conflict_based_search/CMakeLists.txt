@@ -102,7 +102,6 @@ if(BUILD_TESTING)
     test/test_cbs_structures.cpp
     test/test_conflicts.cpp
     test/test_geometry.cpp
-    test/test_main.cpp
     test/test_services_and_publish.cpp
     ENV
       CONFLICT_BASED_SEARCH_TEST_PARAMS=${CMAKE_CURRENT_SOURCE_DIR}/config/conflict_based_search.yaml

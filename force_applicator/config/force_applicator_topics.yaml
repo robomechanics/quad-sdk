@@ -3,9 +3,9 @@
     force_applicator:
       topics:
         state:
-          ground_truth: state/ground_truth
+          ground_truth: state/ground_truth              # Robot state input
         visualization:
-          force_torque_markers: visualization/force_torque_markers
+          force_torque_markers: visualization/force_torque_markers  # RViz wrench marker output
         wrench:
-          wrench_persist: wrench/persistent
-          wrench_clear: wrench/clear
+          wrench_persist: wrench/persistent             # Gazebo persistent wrench command
+          wrench_clear: wrench/clear                    # Gazebo wrench clear command

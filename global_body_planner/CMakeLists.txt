@@ -113,7 +113,6 @@ if(BUILD_TESTING)
     test/test_global_body_planner.cpp
     test/test_graph_and_planner.cpp
     test/test_kinematics.cpp
-    test/test_main.cpp
     ENV
       GLOBAL_BODY_PLANNER_TEST_PARAMS=${CMAKE_CURRENT_SOURCE_DIR}/config/global_body_planner.yaml
       GLOBAL_BODY_PLANNER_TOPIC_PARAMS=${CMAKE_CURRENT_SOURCE_DIR}/config/global_body_planner_topics.yaml

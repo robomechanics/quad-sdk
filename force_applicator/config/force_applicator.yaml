@@ -3,24 +3,23 @@
     force_applicator:
       fixed:
         force:
-          x: 15.0  # Applied force in x direction (N)
-          y: 0.0 # Applied force in y direction (N)
-          z: 0.0  # Applied force in z direction (N)
+          x: 15.0                         # Fixed force x component, N
+          y: 0.0                          # Fixed force y component, N
+          z: 0.0                          # Fixed force z component, N
         torque:
-          x: 0.0 # Applied torque in the x direction (Nm)
-          y: 0.0 # Applied torque in the y direction (Nm)
-          z: 0.0 # Applied torque in the z direction (Nm)
+          x: 0.0                          # Fixed torque x component, Nm
+          y: 0.0                          # Fixed torque y component, Nm
+          z: 0.0                          # Fixed torque z component, Nm
       duration:
-        dt: 0.5 # Duration of Applied Wrench (s)
-        update_rate: 100.0
+        dt: 0.5                           # Time to hold each wrench, s
+        update_rate: 100.0                # Trigger check loop rate, Hz
       random:
-        force_mag_min: 60.0  #Per Axis Force Manitude
-        force_mag_max: 80.0
-        torque_mag_min: 0.0 
-        torque_mag_max: 0.0 
+        force_mag_min: 60.0               # Minimum random force magnitude, N
+        force_mag_max: 80.0               # Maximum random force magnitude, N
+        torque_mag_min: 0.0               # Minimum random torque magnitude, Nm
+        torque_mag_max: 0.0               # Maximum random torque magnitude, Nm
       periodic:
-        period: 5.0
+        period: 5.0                       # Time between periodic pushes, s
       distance:
-        distance_threshold: 1.0
-      seed: 1
-
+        distance_threshold: 1.0           # Travel distance between pushes, m
+      seed: 1                             # Random generator seed

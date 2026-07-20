@@ -1,4 +1,5 @@
 #include <gtest/gtest.h>
+#include <rclcpp/rclcpp.hpp>
 
 #include <memory>
 #include <queue>
@@ -31,4 +32,12 @@ TEST(ConflictBasedSearchStructuresTest, CBSNodeCompareCreatesMinHeap) {
   open.push(low);
 
   EXPECT_EQ(open.top(), low);
+}
+
+int main(int argc, char** argv) {
+  testing::InitGoogleTest(&argc, argv);
+  rclcpp::init(argc, argv);
+  const int result = RUN_ALL_TESTS();
+  rclcpp::shutdown();
+  return result;
 }

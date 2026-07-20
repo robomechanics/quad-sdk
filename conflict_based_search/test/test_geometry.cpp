@@ -24,17 +24,6 @@ rclcpp::NodeOptions cbsNodeOptions() {
 
   rclcpp::NodeOptions options;
   options.arguments({"--ros-args", "--params-file", params});
-  options.parameter_overrides({
-      rclcpp::Parameter("robot_names", std::vector<std::string>{"robot_1",
-                                                                "robot_2"}),
-      rclcpp::Parameter("update_rate", 5.0),
-      rclcpp::Parameter("service_timeout_s", 30.0),
-      rclcpp::Parameter("warm_start", true),
-      rclcpp::Parameter("max_iterations", 500),
-      rclcpp::Parameter("body_length", 0.70),
-      rclcpp::Parameter("body_width", 0.35),
-      rclcpp::Parameter("body_height", 0.35),
-  });
   return options;
 }
 
@@ -77,7 +66,7 @@ quad_msgs::msg::RobotPlan makePlan(
 
 std::shared_ptr<conflict_based_search::ConflictBasedSearch> makeCbs() {
   auto node = std::make_shared<rclcpp::Node>(
-      "conflict_based_search_geometry_test", cbsNodeOptions());
+      "conflict_based_search", cbsNodeOptions());
   return std::make_shared<conflict_based_search::ConflictBasedSearch>(node);
 }
 

@@ -34,7 +34,7 @@ ForceApplicator::ForceApplicator(rclcpp::Node::SharedPtr node) : node_(node) {
                            distance_threshold_);
   quad_utils::loadROSParam(node_, "force_applicator.seed", seed_);
 
-  // Load in ROS topics
+  // Load ROS topics used by the state input, RViz marker, and Gazebo bridge.
   quad_utils::loadROSParam(node_, "force_applicator.topics.state.ground_truth",
                            robot_state_topic);
   quad_utils::loadROSParam(
@@ -46,7 +46,7 @@ ForceApplicator::ForceApplicator(rclcpp::Node::SharedPtr node) : node_(node) {
   quad_utils::loadROSParam(node_, "force_applicator.topics.wrench.wrench_clear",
                            wrench_clear_topic);
 
-  // Define Subscribers and Publishers
+  // Wire ROS interfaces after topic names have been resolved from YAML.
   robot_state_sub_ = node_->create_subscription<quad_msgs::msg::RobotState>(
       robot_state_topic, 10,
       std::bind(&ForceApplicator::robotStateCallback, this,
@@ -59,7 +59,7 @@ ForceApplicator::ForceApplicator(rclcpp::Node::SharedPtr node) : node_(node) {
   wrench_clear_pub_ = node_->create_publisher<ros_gz_interfaces::msg::Entity>(
       wrench_clear_topic, 10);
 
-  // Build GZ transport topics, Remove .sdf tag
+  // Gazebo world names omit the .sdf suffix in wrench transport paths.
   if (world_name_.size() >= 4 &&
       world_name_.compare(world_name_.size() - 4, 4, ".sdf") == 0) {
     world_name_.erase(world_name_.size() - 4);
@@ -71,7 +71,7 @@ ForceApplicator::ForceApplicator(rclcpp::Node::SharedPtr node) : node_(node) {
               "ApplyLinkWrench using [%s] (start), clear [%s]",
               wrench_topic_persist_.c_str(), wrench_topic_clear_.c_str());
 
-  // Seed the random number generator
+  // Seed once so random-mode disturbances are repeatable for a given YAML.
   rng_.seed(seed_);
 }
 
@@ -88,6 +88,7 @@ double ForceApplicator::computeEuclideanDistance(
 
 bool ForceApplicator::shouldTrigger() {
   if (mode_ == "periodic") {
+    // Start the period timer on the first loop without firing immediately.
     const auto now = node_->now();
     if (last_fire_time_.nanoseconds() == 0) {
       last_fire_time_ = now;
@@ -99,6 +100,7 @@ bool ForceApplicator::shouldTrigger() {
     }
     return false;
   } else if (mode_ == "distance" && have_pose_) {
+    // Fire after the body has moved far enough from the last trigger point.
     Eigen::Vector3d curr_robot_pose = Eigen::Vector3d::Zero();
     curr_robot_pose << last_robot_state_msg_.body.pose.position.x,
         last_robot_state_msg_.body.pose.position.y,
@@ -121,7 +123,7 @@ bool ForceApplicator::shouldTrigger() {
 }
 
 void ForceApplicator::updateMarker() {
-  // Add Marker Construction Code Here
+  // Publish a short-lived arrow in the body frame showing force direction.
   last_robot_marker_msg_.header.frame_id = "robot_1_ground_truth/body";
   last_robot_marker_msg_.header.stamp = node_->now();
   last_robot_marker_msg_.ns = "apply_force";
@@ -144,7 +146,7 @@ void ForceApplicator::updateMarker() {
   last_robot_marker_msg_.color.a = 1.0;
   last_robot_marker_msg_.lifetime = rclcpp::Duration::from_seconds(2);
 
-  // Modify this to compute the Orientation of the Force Applied
+  // Yaw the marker toward the horizontal force direction.
   if (force_magnitude_ > 0.0) {
     tf2::Quaternion q;
     q.setRPY(0, 0, std::atan2(fy, fx));
@@ -159,8 +161,10 @@ void ForceApplicator::updateMarker() {
 }
 
 void ForceApplicator::applyForce() {
-  // Determine force vector (default to zero torque if force_mode_ matches
-  // neither branch below, so we never publish an uninitialized wrench)
+  // Default wrench stays zero if the configured force mode is not recognized.
+  fx = 0.0;
+  fy = 0.0;
+  fz = 0.0;
   double tx = 0.0, ty = 0.0, tz = 0.0;
   if (force_mode_ == "random") {
     std::uniform_real_distribution<double> f_mag_distribution(force_mag_min_,
@@ -177,7 +181,7 @@ void ForceApplicator::applyForce() {
     dir.y() = std::sin(phi) * std::sin(theta);
     dir.z() = std::cos(phi);
 
-    // Scale to magnitude
+    // Force direction is random, with vertical force biased downward.
     Eigen::Vector3d f = mag * dir;
     fx = f.x();
     fy = f.y();
@@ -189,7 +193,7 @@ void ForceApplicator::applyForce() {
     ty = t_mag_distribution(rng_);
     tz = t_mag_distribution(rng_);
   } else if (force_mode_ == "yaml") {
-    // fixed magnitude along provided direction
+    // Use the fixed wrench vector from force_applicator.yaml.
     fx = force_x_;
     fy = force_y_;
     fz = force_z_;
@@ -203,7 +207,7 @@ void ForceApplicator::applyForce() {
   std::cout << "Applying Force of Magnitude" << fx << ',' << fy << ',' << fz
             << std::endl;
 
-  // Build and Publish ROS Entity Wrench
+  // Publish a persistent wrench on the target Gazebo link.
   ros_gz_interfaces::msg::EntityWrench ew;
   ew.header.stamp = node_->now();
 
@@ -220,7 +224,7 @@ void ForceApplicator::applyForce() {
 
   wrench_persist_pub_->publish(ew);
 
-  // Arm
+  // Replace any previous clear timer so the latest wrench lasts dt_ seconds.
   if (clear_timer_) {
     clear_timer_->cancel();
     clear_timer_->reset();
@@ -240,16 +244,13 @@ void ForceApplicator::applyForce() {
 }
 
 void ForceApplicator::spin() {
-  // Initialize Timing Params
   rclcpp::Rate r(update_rate_, node_->get_clock());
   while (rclcpp::ok()) {
     rclcpp::spin_some(node_);
     if (shouldTrigger()) {
-      // Get the Newest Force Information
       applyForce();
       updateMarker();
     }
-    // Enforce Update Rate
     r.sleep();
   }
 }
