@@ -10,10 +10,46 @@
 #include <grid_map_ros/GridMapRosConverter.hpp>
 #include <grid_map_ros/grid_map_ros.hpp>
 
+#include <cstdlib>
+#include <stdexcept>
+#include <string>
+#include <vector>
+
 #include "global_body_planner/gbpl.hpp"
 #include "global_body_planner/planner_class.hpp"
 #include "global_body_planner/planning_utils.hpp"
-#include "test_helpers.hpp"
+
+namespace global_body_planner_test {
+
+inline rclcpp::NodeOptions plannerNodeOptions(bool include_topics = false) {
+  const char* planner_params =
+      std::getenv("GLOBAL_BODY_PLANNER_TEST_PARAMS");
+  const char* robot_params = std::getenv("GLOBAL_BODY_PLANNER_ROBOT_PARAMS");
+  if (planner_params == nullptr || robot_params == nullptr) {
+    throw std::runtime_error(
+        "Missing global_body_planner test parameter file environment");
+  }
+
+  std::vector<std::string> args = {"--ros-args", "--params-file",
+                                   planner_params, "--params-file",
+                                   robot_params};
+  if (include_topics) {
+    const char* topic_params =
+        std::getenv("GLOBAL_BODY_PLANNER_TOPIC_PARAMS");
+    if (topic_params == nullptr) {
+      throw std::runtime_error(
+          "Missing global_body_planner topic parameter file environment");
+    }
+    args.push_back("--params-file");
+    args.push_back(topic_params);
+  }
+
+  rclcpp::NodeOptions options;
+  options.arguments(args);
+  return options;
+}
+
+}  // namespace global_body_planner_test
 
 //! A test fixture for the global body planning class
 /*!

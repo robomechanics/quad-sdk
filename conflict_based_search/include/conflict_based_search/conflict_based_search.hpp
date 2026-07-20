@@ -78,6 +78,10 @@ struct CBSNodeCompare {
  */
 class ConflictBasedSearch {
  public:
+  /**
+   * @brief Constructor for ConflictBasedSearch Class.
+   * @param[in] node Shared pointer to the ROS node used for pubs/subs/services.
+   */
   explicit ConflictBasedSearch(rclcpp::Node::SharedPtr node);
 
   /**
@@ -90,18 +94,29 @@ class ConflictBasedSearch {
 
   /**
    * @brief Block until every robot's plan_with_constraints service is up.
-   * Useful for testing and for guarding against startup races.
+   * @param[in] timeout Maximum wait time per service.
+   * @return True if every service is available before timeout.
    */
   bool waitForServices(std::chrono::seconds timeout);
 
+#ifdef CONFLICT_BASED_SEARCH_TESTING
+ public:
+#else
  private:
+#endif
   // -------- Service plumbing --------
+  /**
+   * @brief Create one plan_with_constraints service client per robot.
+   */
   void createServiceClients();
 
   /**
    * @brief Synchronous call into one robot's plan_with_constraints service.
-   * Spins the node while waiting for the response so the executor can
-   * service incoming subscriptions in the meantime.
+   * @param[in] robot Robot namespace whose planner should be called.
+   * @param[in] constraints Constraint set to pass to that robot's planner.
+   * @param[in] warm_start Whether the planner should reuse cached RRT trees.
+   * @param[out] out_plan Plan returned by the robot planner.
+   * @param[out] out_path_length Path length returned by the robot planner.
    * @return True iff the service returned a successful plan.
    */
   bool callPlanWithConstraints(
@@ -109,27 +124,46 @@ class ConflictBasedSearch {
       const quad_msgs::msg::RobotPlanConstraints& constraints, bool warm_start,
       quad_msgs::msg::RobotPlan& out_plan, double& out_path_length);
 
-  /// Populate every robot's plan in a fresh root node.
+  /**
+   * @brief Populate every robot's plan in a fresh CBS root node.
+   * @param[in,out] node CBS node receiving initial plans, costs, and constraints.
+   * @return True if every robot returned an initial plan.
+   */
   bool requestInitialPlans(CBSNode& node);
 
-  /// Replan only the conflicting robot in a child node, given its updated
-  /// constraint set.
+  /**
+   * @brief Replan one robot in a CBS child node.
+   * @param[in,out] node CBS node containing the updated constraint set.
+   * @param[in] robot Robot namespace to replan.
+   * @return True if the robot returned a valid constrained plan.
+   */
   bool requestReplan(CBSNode& node, const std::string& robot);
 
   // -------- Conflict detection --------
-  /// Detect the first inter-robot conflict in `node`. Returns true and
-  /// populates `out` if at least one is found. The "first" conflict is the
-  /// one with the earliest start time, mirroring textbook CBS.
+  /**
+   * @brief Detect the earliest inter-robot conflict in a CBS node.
+   * @param[in] node CBS node containing the candidate per-robot plans.
+   * @param[out] out First conflict found, if any.
+   * @return True if at least one conflict is found.
+   */
   bool findFirstConflict(const CBSNode& node, Conflict& out) const;
 
-  /// Build the constraint message that, when added to `robot_to_constrain`'s
-  /// constraint list, forces the planner to avoid the other robot during
-  /// the conflict window.
+  /**
+   * @brief Build the constraint message for one branch of a CBS conflict.
+   * @param[in] node CBS node containing plans and inherited constraints.
+   * @param[in] conflict Conflict to resolve.
+   * @param[in] robot_to_constrain Robot that should avoid the other robot.
+   * @return Constraint message for the constrained robot.
+   */
   quad_msgs::msg::RobotPlanConstraints buildConstraintFromConflict(
       const CBSNode& node, const Conflict& conflict,
       const std::string& robot_to_constrain) const;
 
   // -------- Output --------
+  /**
+   * @brief Publish the selected per-robot plans.
+   * @param[in] node CBS node whose plans should be published.
+   */
   void publishPlans(const CBSNode& node);
 
   // -------- Geometry helpers --------
@@ -139,42 +173,65 @@ class ConflictBasedSearch {
     double t;
   };
 
-  /// Pull (x,y,z,yaw) and plan time out of a RobotState message.
+  /**
+   * @brief Extract body position, yaw, and timestamp from a RobotState.
+   * @param[in] state Robot state message to read.
+   * @return Body pose used for collision checking.
+   */
   static BodyPose poseFromState(const quad_msgs::msg::RobotState& state);
 
-  /// Sample plan B at the same plan-time as `state_a`, interpolating between
-  /// the two surrounding states. Clamps to plan endpoints.
+  /**
+   * @brief Sample a robot plan at a requested plan time.
+   * @param[in] plan Robot plan to sample.
+   * @param[in] t Requested timestamp, s.
+   * @return Interpolated body pose, clamped to plan endpoints.
+   */
   static BodyPose samplePoseAtTime(const quad_msgs::msg::RobotPlan& plan,
                                    double t);
 
   /**
    * @brief OBB-OBB SAT collision test between two body poses with the
    * supplied half-extents.
+   * @param[in] a First body pose.
+   * @param[in] half_a Half-extents of the first body OBB.
+   * @param[in] b Second body pose.
+   * @param[in] half_b Half-extents of the second body OBB.
+   * @return True if the two OBBs overlap.
    */
   static bool obbsOverlap(const BodyPose& a, const Eigen::Vector3d& half_a,
                           const BodyPose& b, const Eigen::Vector3d& half_b);
 
   // -------- ROS handles --------
+  /// ROS node used for parameters, service clients, and plan publishers.
   rclcpp::Node::SharedPtr node_;
+
+  /// Namespaces of the robots coordinated by CBS.
   std::vector<std::string> robot_names_;
+
+  /// Service clients for each robot's plan_with_constraints service.
   std::map<std::string,
            rclcpp::Client<quad_msgs::srv::PlanWithConstraints>::SharedPtr>
       robot_clients_;
+
+  /// Publishers for the selected global plan for each robot.
   std::map<std::string,
            rclcpp::Publisher<quad_msgs::msg::RobotPlan>::SharedPtr>
       robot_plan_pubs_;
 
   // -------- Parameters --------
+  /// Rate used while polling asynchronous planner service calls, Hz.
   double update_rate_;
+
+  /// Maximum wait time for each plan_with_constraints service call, s.
   double service_timeout_s_;
-  /// Half-extents of every robot's body. CBS does not currently support
-  /// heterogeneous robot sizes — we use one set of extents shared across
-  /// all robots, which matches the existing single-robot Quad-SDK config.
+
+  /// Shared body OBB half-extents used for homogeneous-fleet collision checks.
   Eigen::Vector3d half_extents_;
-  /// Maximum number of CBS expansions before giving up.
+
+  /// Maximum number of CBS expansions before fallback publication.
   int max_iterations_;
-  /// Whether to ask each robot's planner to warm-start from its previous
-  /// solve when replanning under a new constraint.
+
+  /// Whether replans should reuse each robot planner's cached RRT trees.
   bool warm_start_;
 };
 

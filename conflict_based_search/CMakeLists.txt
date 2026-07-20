@@ -94,8 +94,45 @@ ament_export_dependencies(
 
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)
+  find_package(ament_cmake_gtest REQUIRED)
   set(ament_cmake_cpplint_FOUND TRUE)
   set(ament_cmake_uncrustify_FOUND TRUE)
+
+  ament_add_gtest(${PROJECT_NAME}_test
+    test/test_cbs_structures.cpp
+    test/test_conflicts.cpp
+    test/test_geometry.cpp
+    test/test_main.cpp
+    test/test_services_and_publish.cpp
+    ENV
+      CONFLICT_BASED_SEARCH_TEST_PARAMS=${CMAKE_CURRENT_SOURCE_DIR}/config/conflict_based_search.yaml
+  )
+
+  if(TARGET ${PROJECT_NAME}_test)
+    target_compile_definitions(${PROJECT_NAME}_test PRIVATE
+      CONFLICT_BASED_SEARCH_TESTING
+    )
+
+    target_link_libraries(${PROJECT_NAME}_test
+      ${PROJECT_NAME}
+    )
+
+    ament_target_dependencies(${PROJECT_NAME}_test
+      rclcpp
+      std_msgs
+      geometry_msgs
+      visualization_msgs
+      quad_msgs
+      quad_utils
+      global_body_planner
+    )
+
+    target_include_directories(${PROJECT_NAME}_test PUBLIC
+      $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+      $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/test>
+      ${EIGEN3_INCLUDE_DIRS}
+    )
+  endif()
 endif()
 
 ament_package()

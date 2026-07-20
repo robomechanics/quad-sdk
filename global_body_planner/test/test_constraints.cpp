@@ -4,10 +4,30 @@
 #include <limits>
 
 #include "global_body_planner/global_body_planner_test_fixture.hpp"
-#include "test_helpers.hpp"
 
-using global_body_planner_test::makeConstraint;
-using global_body_planner_test::makeState;
+namespace {
+
+planning_utils::State makeState(double x, double y, double z, double vx,
+                                double vy, double vz) {
+  planning_utils::State s;
+  s.pos << x, y, z;
+  s.vel << vx, vy, vz;
+  return s;
+}
+
+planning_utils::TimedPoseConstraint makeConstraint(
+    const Eigen::Vector3d& pos, double yaw,
+    const Eigen::Vector3d& half_extents, double t_start, double t_end) {
+  planning_utils::TimedPoseConstraint c;
+  c.pos = pos;
+  c.yaw = yaw;
+  c.half_extents = half_extents;
+  c.t_start = t_start;
+  c.t_end = t_end;
+  return c;
+}
+
+}  // namespace
 
 TEST(GlobalBodyPlannerConstraintTest, ObbIntersectHandlesOverlapAndGaps) {
   const Eigen::Vector3d half_extents(0.5, 0.25, 0.2);

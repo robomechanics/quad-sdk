@@ -8,8 +8,7 @@ namespace conflict_based_search {
 
 ConflictBasedSearch::ConflictBasedSearch(rclcpp::Node::SharedPtr node)
     : node_(node) {
-  // Declare and load parameters. The robot_names list mirrors the ROS1
-  // version's yaml; the OBB extents and warm-start flag are new.
+
   robot_names_ = node_->declare_parameter<std::vector<std::string>>(
       "robot_names", std::vector<std::string>{"robot_1", "robot_2"});
   update_rate_ = node_->declare_parameter<double>("update_rate", 5.0);
@@ -23,6 +22,7 @@ ConflictBasedSearch::ConflictBasedSearch(rclcpp::Node::SharedPtr node)
   const double body_width = node_->declare_parameter<double>("body_width", 0.3);
   const double body_height =
       node_->declare_parameter<double>("body_height", 0.2);
+  // Convert configured body dimensions to OBB half-extents.
   half_extents_ << 0.5 * body_length, 0.5 * body_width, 0.5 * body_height;
 
   for (const auto& robot : robot_names_) {
@@ -63,9 +63,6 @@ bool ConflictBasedSearch::callPlanWithConstraints(
 
   auto future = robot_clients_[robot]->async_send_request(request);
 
-  // Spin while waiting so other callbacks (subscriptions, parameter
-  // services, etc.) keep running. The future is bound to this node's
-  // executor through async_send_request.
   const auto deadline = std::chrono::steady_clock::now() +
                         std::chrono::duration<double>(service_timeout_s_);
   while (rclcpp::ok() && future.wait_for(std::chrono::milliseconds(0)) !=
@@ -93,12 +90,7 @@ bool ConflictBasedSearch::callPlanWithConstraints(
 }
 
 bool ConflictBasedSearch::requestInitialPlans(CBSNode& node) {
-  // The very first request after launch can race with each robot's
-  // global_body_planner finishing waitForData() — even with the deferred
-  // service advertisement, a planner whose state estimator hasn't yet
-  // settled (eg. mid-stand) will return INVALID_START_STATE. Retry a
-  // bounded number of times before giving up so a transient hiccup
-  // doesn't kill the whole CBS run.
+
   constexpr int kMaxAttempts = 5;
   constexpr auto kRetryDelay = std::chrono::milliseconds(500);
 
@@ -130,8 +122,7 @@ bool ConflictBasedSearch::requestInitialPlans(CBSNode& node) {
     }
     node.robot_plan_map[robot] = plan;
     node.cost_map[robot] = length;
-    // Seed the per-robot constraint message with the body extents so future
-    // appended rows use the right OBB size.
+    // Seed constraint messages with the shared body dimensions.
     node.constraints[robot] = quad_msgs::msg::RobotPlanConstraints();
     node.constraints[robot].length = 2.0 * half_extents_[0];
     node.constraints[robot].width = 2.0 * half_extents_[1];
@@ -161,8 +152,7 @@ ConflictBasedSearch::BodyPose ConflictBasedSearch::poseFromState(
   p.pos =
       Eigen::Vector3d(state.body.pose.position.x, state.body.pose.position.y,
                       state.body.pose.position.z);
-  // Convert quaternion to yaw. The plan's body messages use orientation in
-  // standard ROS convention (x,y,z,w).
+  // RobotPlan body orientation follows the standard ROS quaternion convention.
   const auto& q = state.body.pose.orientation;
   const double siny_cosp = 2.0 * (q.w * q.z + q.x * q.y);
   const double cosy_cosp = 1.0 - 2.0 * (q.y * q.y + q.z * q.z);
@@ -187,8 +177,7 @@ ConflictBasedSearch::BodyPose ConflictBasedSearch::samplePoseAtTime(
   if (t <= t_first) return poseFromState(plan.states.front());
   if (t >= t_last) return poseFromState(plan.states.back());
 
-  // Linear search would be O(N) per call but plans are short (< few hundred
-  // states). For larger plans this should become a binary search.
+  // Plans are short enough that linear search is acceptable here.
   for (size_t i = 0; i + 1 < plan.states.size(); ++i) {
     const double t_a = rclcpp::Time(plan.states[i].header.stamp).seconds();
     const double t_b = rclcpp::Time(plan.states[i + 1].header.stamp).seconds();
@@ -214,14 +203,12 @@ bool ConflictBasedSearch::obbsOverlap(const BodyPose& a,
                                       const Eigen::Vector3d& half_a,
                                       const BodyPose& b,
                                       const Eigen::Vector3d& half_b) {
-  // Cheap height interval check first (most quadrupeds operate at similar
-  // body heights, but if one is mid-flight this filters quickly).
+  // Early reject if the boxes do not overlap in height.
   if (std::abs(a.pos.z() - b.pos.z()) > half_a.z() + half_b.z()) {
     return false;
   }
 
-  // Planar OBB SAT — same algorithm as planning_utils::obbIntersect, kept
-  // local so CBS doesn't have to depend on the GBPL planning_utils symbol.
+  // Use planar SAT to reject boxes with a separating yaw-frame axis.
   const double cos_a = std::cos(a.yaw), sin_a = std::sin(a.yaw);
   const double cos_b = std::cos(b.yaw), sin_b = std::sin(b.yaw);
 
@@ -269,8 +256,7 @@ bool ConflictBasedSearch::obbsOverlap(const BodyPose& a,
 
 bool ConflictBasedSearch::findFirstConflict(const CBSNode& node,
                                             Conflict& out) const {
-  // Track the earliest-starting conflict over every (a,b) pair so the
-  // returned conflict is deterministic regardless of map iteration order.
+  // Choose the earliest conflict for deterministic CBS expansion order.
   bool found = false;
   Conflict best;
   double best_t_start = std::numeric_limits<double>::infinity();
@@ -282,11 +268,7 @@ bool ConflictBasedSearch::findFirstConflict(const CBSNode& node,
       const auto& plan_a = node.robot_plan_map.at(ra);
       const auto& plan_b = node.robot_plan_map.at(rb);
 
-      // Iterate plan_a, sample plan_b at matching time, OBB-OBB test. We
-      // also do a lightweight swept check by additionally testing the
-      // midpoint between consecutive a-states, which catches conflicts
-      // where each individual sample is just outside the other body but
-      // the segment between them slices through.
+      // Compare time-aligned OBBs, including midpoints for swept conflicts.
       int collision_run_start = -1;
       auto check_pair = [&](const BodyPose& pa, const BodyPose& pb, int idx) {
         const bool overlap = obbsOverlap(pa, half_extents_, pb, half_extents_);
@@ -313,9 +295,7 @@ bool ConflictBasedSearch::findFirstConflict(const CBSNode& node,
         const BodyPose pb = samplePoseAtTime(plan_b, pa.t);
         check_pair(pa, pb, static_cast<int>(k));
 
-        // Mid-segment swept check (only when there is a next state and we
-        // are still inside or just outside a collision run, so we never
-        // do double work in the conflict-free common case).
+        // Mid-segment check catches swept conflicts between samples.
         if (k + 1 < plan_a.states.size()) {
           const BodyPose pa_next = poseFromState(plan_a.states[k + 1]);
           BodyPose pa_mid;
@@ -327,10 +307,8 @@ bool ConflictBasedSearch::findFirstConflict(const CBSNode& node,
           const BodyPose pb_mid = samplePoseAtTime(plan_b, pa_mid.t);
           if (obbsOverlap(pa_mid, half_extents_, pb_mid, half_extents_) &&
               collision_run_start < 0) {
-            // The endpoints did not collide but the mid-point does.
+            // Attribute a midpoint-only collision to segment k -> k + 1.
             collision_run_start = static_cast<int>(k);
-            // Close the run on the next iteration when endpoints are again
-            // outside; the recorded window will straddle this segment.
           }
         }
       }
@@ -357,18 +335,14 @@ quad_msgs::msg::RobotPlanConstraints
 ConflictBasedSearch::buildConstraintFromConflict(
     const CBSNode& node, const Conflict& conflict,
     const std::string& robot_to_constrain) const {
-  // The constraining poses come from whichever robot is *not* the one we
-  // are about to replan. The time window is taken from the conflict's
-  // span in robot_a's plan; we sample the other robot's plan at the
-  // matching times so the resulting constraint is time-aligned.
+  // Constrain this robot against the other robot's time-aligned poses.
   const std::string& other = (robot_to_constrain == conflict.robot_a)
                                  ? conflict.robot_b
                                  : conflict.robot_a;
   const auto& plan_a = node.robot_plan_map.at(conflict.robot_a);
   const auto& plan_other = node.robot_plan_map.at(other);
 
-  // Start from the inherited constraint set so we accumulate down the CBS
-  // tree (matching textbook CBS).
+  // Start from inherited constraints so they accumulate down the CBS tree.
   quad_msgs::msg::RobotPlanConstraints out =
       node.constraints.at(robot_to_constrain);
 
@@ -392,9 +366,7 @@ void ConflictBasedSearch::publishPlans(const CBSNode& node) {
     auto plan = node.robot_plan_map.at(robot);
     if (plan.states.empty()) continue;
 
-    // Re-base every state stamp so states[0] = now while preserving
-    // inter-state intervals. Frame-agnostic (works whether GBP returned
-    // absolute or relative stamps) and idempotent.
+    // Rebase state stamps to now while preserving inter-state intervals.
     const rclcpp::Time origin(plan.states.front().header.stamp);
     for (auto& state : plan.states) {
       const rclcpp::Duration offset = rclcpp::Time(state.header.stamp) - origin;
@@ -426,8 +398,7 @@ void ConflictBasedSearch::run() {
   }
   open.push(root);
 
-  // Per-expansion conflict-resolution logs are at DEBUG; one summary
-  // line at termination. Enable with --log-level conflict_based_search:=DEBUG.
+  // Keep per-expansion logs at DEBUG; INFO/WARN reports termination.
   const auto t_solve_start = std::chrono::steady_clock::now();
   int iters = 0;
   int total_replans = 0;
@@ -458,9 +429,7 @@ void ConflictBasedSearch::run() {
         conflict.robot_a.c_str(), conflict.robot_b.c_str(),
         conflict.t_start_idx, conflict.t_end_idx, current->cost);
 
-    // Spawn one child per involved robot. Each child constrains the
-    // corresponding robot to avoid the other robot's path during the
-    // conflict window, then replans only that robot's plan.
+    // Branch once per involved robot and replan only that child robot.
     for (const std::string& replan_robot :
          {conflict.robot_a, conflict.robot_b}) {
       auto child = std::make_shared<CBSNode>(*current);

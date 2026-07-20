@@ -5,10 +5,20 @@
 
 #include "global_body_planner/gbpl.hpp"
 #include "global_body_planner/global_body_planner_test_fixture.hpp"
-#include "test_helpers.hpp"
 
-using global_body_planner_test::kTol;
-using global_body_planner_test::makeState;
+namespace {
+
+constexpr double kTol = 1e-6;
+
+planning_utils::State makeState(double x, double y, double z, double vx,
+                                double vy, double vz) {
+  planning_utils::State s;
+  s.pos << x, y, z;
+  s.vel << vx, vy, vz;
+  return s;
+}
+
+}  // namespace
 
 TEST(GlobalBodyPlannerKinematicsTest, RotateGrfAlignsWithSurfaceNormal) {
   Eigen::Vector3d f;
