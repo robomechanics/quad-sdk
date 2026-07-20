@@ -1,41 +1,12 @@
 /**/conflict_based_search:
   ros__parameters:
-    # Robot names — must match the namespaces under which each per-robot
-    # global_body_planner advertises its plan_with_constraints service.
-    robot_names: ["robot_1", "robot_2"]
+    robot_names: ["robot_1", "robot_2"]       # Robot namespaces to coordinate
+    update_rate: 5.0                          # Service polling rate, Hz
+    service_timeout_s: 30.0                   # Per-planner service timeout, s
+    warm_start: true                          # Reuse planner trees during constrained replans
+    max_iterations: 500                       # Maximum CBS expansions before fallback publish
 
-    # Spin rate (Hz) used between async service polls inside the algorithm.
-    update_rate: 5.0
-
-    # Maximum time to wait for any single plan_with_constraints call before
-    # treating it as failed.
-    service_timeout_s: 30.0
-
-    # Whether to ask each per-robot planner to warm-start (lazy-prune its
-    # cached RRT trees) when replanning under a fresh constraint. Turning
-    # this off recovers the original ROS1 behavior of replanning from scratch.
-    warm_start: true
-
-    # Hard cap on CBS expansions. Hit this and we fall back to publishing
-    # the best-known plan rather than looping indefinitely. 500 is sized
-    # for the six-robot hexagon-swap default (15 pairwise conflicts, can
-    # produce 30-40+ expansions). Drop back to 200 for two- or four-robot
-    # scenarios if you want a tighter timeout.
-    max_iterations: 500
-
-    # Body extents used for the OBB-OBB collision check.
-    #
-    # IMPORTANT: do NOT just copy the planner's robot_l/robot_w/robot_h
-    # here. Those parameters are the leg-base spacing (front-to-back
-    # hip distance, ~0.3 m), NOT the body bounding box. The real go2
-    # chassis is ~0.70 m long and ~0.31 m wide, so OBBs sized at
-    # 0.3 × 0.3 m miss real inter-body overlaps and the robots collide.
-    #
-    # Defaults below are tuned for go2 with a small safety margin.
-    # The planner-side failsRobotConstraint uses the constraint
-    # message's length/width/height for both bodies (assumes
-    # homogeneous fleet), so updating these values is sufficient — no
-    # change needed in the per-robot yaml.
-    body_length: 0.70    # m, real go2 chassis ~0.65 m + margin
-    body_width: 0.35     # m, real go2 chassis ~0.31 m + margin
-    body_height: 0.35    # m, standing-mode chassis depth + margin
+    # Body bounding-box dimensions for OBB collision checks, m
+    body_length: 0.70                         # Go2 chassis length with margin
+    body_width: 0.35                          # Go2 chassis width with margin
+    body_height: 0.35                         # Go2 chassis height with margin

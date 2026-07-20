@@ -1,10 +1,10 @@
 /**/global_body_planner:
   ros__parameters:
     topics:
-      start_state: start_state
-      goal_state: goal_state
-      terrain_map: terrain_map
+      start_state: start_state                      # Start robot state input
+      goal_state: goal_state                        # Goal point input
+      terrain_map: terrain_map                      # Grid map input
       global_plan: global_plan                      # Continuous body plan output
-      global_plan_discrete: global_plan_discrete
+      global_plan_discrete: global_plan_discrete    # Discrete body plan output
       global_plan_tree: global_plan_tree            # RViz search tree output
-    map_frame: map
+    map_frame: map                                  # Frame for map and plans

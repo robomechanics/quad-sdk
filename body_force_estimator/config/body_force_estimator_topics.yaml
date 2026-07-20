@@ -2,9 +2,8 @@
   ros__parameters:
     topics:
       state:
-        ground_truth: state/ground_truth
-      local_plan: local_plan
+        ground_truth: state/ground_truth              # Measured robot state input
+      local_plan: local_plan                          # Local RobotPlan input
       body_force:
-        joint_torques: body_force/joint_torques
-        toe_forces: body_force/toe_forces
-
+        joint_torques: body_force/joint_torques       # External joint torque estimate output
+        toe_forces: body_force/toe_forces             # Toe GRF estimate output
