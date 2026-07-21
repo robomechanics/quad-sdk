@@ -85,7 +85,41 @@ install(
 
 
 if(BUILD_TESTING)
+  find_package(ament_cmake_gtest REQUIRED)
   find_package(ament_lint_auto REQUIRED)
+
+  ament_add_gtest(${PROJECT_NAME}_test
+    test/test_footstep_planner.cpp
+    test/test_local_planner.cpp
+  )
+  if(TARGET ${PROJECT_NAME}_test)
+    target_compile_definitions(${PROJECT_NAME}_test PRIVATE
+      LOCAL_PLANNER_TESTING
+    )
+    target_link_libraries(${PROJECT_NAME}_test local_planner)
+    target_include_directories(${PROJECT_NAME}_test PRIVATE
+      include
+      ${EIGEN3_INCLUDE_DIRS}
+    )
+    ament_target_dependencies(${PROJECT_NAME}_test
+      rclcpp
+      std_msgs
+      quad_msgs
+      quad_utils
+      grid_map_core
+      grid_map_ros
+      geometry_msgs
+      tf2_eigen
+      nmpc_controller
+      tf2_geometry_msgs
+      tf2
+    )
+    set_tests_properties(${PROJECT_NAME}_test PROPERTIES
+      ENVIRONMENT
+        "LOCAL_PLANNER_TEST_PARAMS=${CMAKE_CURRENT_SOURCE_DIR}/config/local_planner.yaml;LOCAL_PLANNER_TOPIC_PARAMS=${CMAKE_CURRENT_SOURCE_DIR}/config/local_planner_topics.yaml;LOCAL_PLANNER_ROBOT_PARAMS=${CMAKE_CURRENT_SOURCE_DIR}/../quad_utils/config/spirit.yaml;LOCAL_PLANNER_NMPC_PARAMS=${CMAKE_CURRENT_SOURCE_DIR}/../nmpc_controller/config/nmpc_controller.yaml;LOCAL_PLANNER_SOURCE_DIR=${CMAKE_CURRENT_SOURCE_DIR}/.."
+      )
+    endif()
+
   # the following line skips the linter which checks for copyrights
   # comment the line when a copyright and license is added to all source files
   # set(ament_cmake_copyright_FOUND TRUE)

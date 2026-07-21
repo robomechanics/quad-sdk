@@ -35,7 +35,11 @@ class LocalPlanner {
    */
   void spin();
 
+#ifdef LOCAL_PLANNER_TESTING
+ public:
+#else
  private:
+#endif
   FRIEND_TEST(LocalPlannerTest, noInputCase);
 
   /**

@@ -248,7 +248,11 @@ class LocalFootstepPlanner {
     return future_body_plan;
   }
 
+#ifdef LOCAL_PLANNER_TESTING
+ public:
+#else
  private:
+#endif
   /**
    * @brief Update the continuous foot plan to match the discrete footholds
    */
