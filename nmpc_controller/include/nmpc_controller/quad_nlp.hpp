@@ -60,6 +60,7 @@
 
 using namespace Ipopt;
 
+// Generated dynamics model variants available to the NMPC solver
 enum SystemID {
   SPIRIT,
   A1,
@@ -75,6 +76,7 @@ enum SystemID {
   COMPLEX_TO_SIMPLE
 };
 
+// Generated function type to evaluate: constraint, Jacobian, or Hessian
 enum FunctionID { FUNC, JAC, HESS };
 
 // Struct for storing parameter information
@@ -111,6 +113,10 @@ struct NLPDiagnostics {
   Eigen::VectorXi complexity_schedule;
   Eigen::VectorXd element_times;
 
+  /**
+   * @brief Copy stored solve metadata into a diagnostics message
+   * @param[out] msg Diagnostics message to populate
+   */
   void loadDiagnosticsMsg(quad_msgs::msg::RobotPlanDiagnostics &msg) {
     msg.compute_time = compute_time;
     msg.cost = cost;
@@ -225,6 +231,7 @@ class quadNLP : public TNLP {
   /// Terrain map
   grid_map::GridMap terrain_;
 
+  // Soft bounds for relaxed complex-model constraints
   Eigen::VectorXd g_min_complex_soft_, g_max_complex_soft_;
 
   // Ground height structure for the height bounds
@@ -318,7 +325,22 @@ class quadNLP : public TNLP {
   std::vector<std::vector<decltype(eval_g_spirit_sparsity_out) *>>
       eval_sparsity_vec_;
 
-  /** Default constructor */
+  /**
+   * @brief Constructor for the IPOPT NLP wrapper
+   * @param[in] default_system Dynamics model used when mixed complexity is off
+   * @param[in] N Horizon length
+   * @param[in] dt Timestep between finite elements
+   * @param[in] mu Friction coefficient
+   * @param[in] panic_weights State slack penalty
+   * @param[in] constraint_panic_weights Constraint slack penalty
+   * @param[in] Q_temporal_factor State-cost temporal scaling
+   * @param[in] R_temporal_factor Control-cost temporal scaling
+   * @param[in] fixed_complexity_schedule Fixed complex-model element schedule
+   * @param[in] config NLP dimensions, bounds, and weights
+   * @param[in] mass Robot mass
+   * @param[in] node ROS node used for logging and robot parameters
+   * @param[in] robot_ns Robot model namespace
+   */
   quadNLP(SystemID default_system, int N, double dt, double mu,
           double panic_weights, double constraint_panic_weights,
           double Q_temporal_factor, double R_temporal_factor,
@@ -332,7 +354,9 @@ class quadNLP : public TNLP {
    */
   quadNLP(const quadNLP &nlp);
 
-  /** Default destructor */
+  /**
+   * @brief Destructor for the IPOPT NLP wrapper
+   */
   virtual ~quadNLP();
 
   /**@name Overloaded from TNLP */
@@ -381,6 +405,9 @@ class quadNLP : public TNLP {
                           Index nele_jac, Index *iRow, Index *jCol,
                           Number *values);
 
+  /**
+   * @brief Compute sparsity sizes and indices for the constraint Jacobian
+   */
   virtual void compute_nnz_jac_g();
 
   /** Method to return:
@@ -392,6 +419,9 @@ class quadNLP : public TNLP {
                       Index nele_hess, Index *iRow, Index *jCol,
                       Number *values);
 
+  /**
+   * @brief Compute sparsity sizes and indices for the Lagrangian Hessian
+   */
   virtual void compute_nnz_h();
 
   /** This method is called when the algorithm is complete so the TNLP can
@@ -402,8 +432,25 @@ class quadNLP : public TNLP {
                                  Number obj_value, const IpoptData *ip_data,
                                  IpoptCalculatedQuantities *ip_cq);
 
+  /**
+   * @brief Warm-start this solve from a previous NLP solution
+   * @param[in] nlp_prev Previous NLP instance with cached primal and dual values
+   * @param[in] shift_idx Number of finite elements to shift forward
+   */
   virtual void update_initial_guess(const quadNLP &nlp_prev, int shift_idx);
 
+  /**
+   * @brief Update references, contact schedule, terrain, and model schedule
+   * @param[in] initial_state Current robot body state
+   * @param[in] ref_traj Body reference trajectory
+   * @param[in] foot_positions Foot positions in body frame
+   * @param[in] contact_schedule Planned contact state for each foot
+   * @param[in] adaptive_complexity_schedule Adaptive complex-model schedule
+   * @param[in] ground_height Terrain height samples over the horizon
+   * @param[in] first_element_duration_ Duration of the first finite element
+   * @param[in] plan_index_diff Shift between current and previous plan indices
+   * @param[in] init Whether to reset the solver state
+   */
   virtual void update_solver(
       const Eigen::VectorXd &initial_state, const Eigen::MatrixXd &ref_traj,
       const Eigen::MatrixXd &foot_positions,
@@ -413,11 +460,24 @@ class quadNLP : public TNLP {
       const double &first_element_duration_, int plan_index_diff,
       const bool &init);
 
+  /**
+   * @brief Rebuild NLP dimensions, indices, and sparsity after schedule changes
+   */
   void update_structure();
 
+  /**
+   * @brief Return the latest optimized state and control trajectories
+   * @param[out] state_traj_lifted Optimized state trajectory
+   * @param[out] control_traj_lifted Optimized control trajectory
+   */
   void get_lifted_trajectory(Eigen::MatrixXd &state_traj_lifted,
                              Eigen::MatrixXd &control_traj_lifted);
 
+  /**
+   * @brief Return the heuristic initial state and control trajectories
+   * @param[out] state_traj_heuristic Initial state trajectory
+   * @param[out] control_traj_heuristic Initial control trajectory
+   */
   void get_heuristic_trajectory(Eigen::MatrixXd &state_traj_heuristic,
                                 Eigen::MatrixXd &control_traj_heuristic);
 

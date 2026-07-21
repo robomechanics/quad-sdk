@@ -97,7 +97,11 @@ class NMPCController {
    */
   inline NLPDiagnostics getNLPDiagnostics() const { return diagnostics_; }
 
+#ifdef NMPC_CONTROLLER_TESTING
+ public:
+#else
  private:
+#endif
   /// ROS node handler
   rclcpp::Node::SharedPtr node_;
 

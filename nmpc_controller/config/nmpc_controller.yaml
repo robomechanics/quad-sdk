@@ -1,15 +1,18 @@
 /**/local_planner:
   ros__parameters:
     nmpc_controller: 
-      panic_weights: 200.0
-      constraint_panic_weights: 20.0
-      Q_temporal_factor: 100.0
-      R_temporal_factor: 1.0
-      friction_coefficient: 0.3
-      enable_variable_horizon: false
-      min_horizon_length: 10
+      panic_weights: 200.0                    # Penalty on state-bound slack variables
+      constraint_panic_weights: 20.0          # Penalty on constraint slack variables
+      Q_temporal_factor: 100.0                # End-of-horizon scaling for state tracking cost
+      R_temporal_factor: 1.0                  # End-of-horizon scaling for control effort cost
+      friction_coefficient: 0.3               # Friction cone coefficient for GRF constraints
+
+      enable_variable_horizon: false          # Allow NMPC horizon to shrink near the goal
+      min_horizon_length: 10                  # Minimum horizon length when variable horizon is enabled
+
+      # Mixed-complexity mode is Spirit-only; false keeps one model over the horizon.
       enable_mixed_complexity: false
-      enable_adaptive_complexity: false
-      fixed_complex_idxs: [0] # set to [] for none
-      fixed_complex_head: 0 # set to 0 for none
-      fixed_complex_tail: 0 # set to 0 for none
+      enable_adaptive_complexity: false       # Promote elements to complex dynamics when needed
+      fixed_complex_idxs: [0]                 # Fixed complex element indices; [] for none
+      fixed_complex_head: 0                   # Number of complex elements at horizon start; 0 for none
+      fixed_complex_tail: 0                   # Number of complex elements at horizon end; 0 for none

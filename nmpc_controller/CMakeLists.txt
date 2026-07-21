@@ -100,7 +100,39 @@ ament_export_dependencies(Eigen3 tf2_eigen)
 ament_export_targets(export_${PROJECT_NAME})
 
 if(BUILD_TESTING)
+  find_package(ament_cmake_gtest REQUIRED)
   find_package(ament_lint_auto REQUIRED)
+
+  ament_add_gtest(${PROJECT_NAME}_test
+    test/test_nmpc_controller.cpp
+    test/test_quad_nlp.cpp
+  )
+  if(TARGET ${PROJECT_NAME}_test)
+    target_compile_definitions(${PROJECT_NAME}_test PRIVATE
+      NMPC_CONTROLLER_TESTING
+    )
+    target_link_libraries(${PROJECT_NAME}_test nmpc_controller)
+    target_include_directories(${PROJECT_NAME}_test PRIVATE
+      include
+      ${EIGEN3_INCLUDE_DIRS}
+    )
+    ament_target_dependencies(${PROJECT_NAME}_test
+      rclcpp
+      std_msgs
+      quad_msgs
+      quad_utils
+      grid_map_core
+      grid_map_ros
+      grid_map_msgs
+      tf2_eigen
+      tf2_geometry_msgs
+    )
+    set_tests_properties(${PROJECT_NAME}_test PROPERTIES
+      ENVIRONMENT
+        "NMPC_TEST_PARAMS=${CMAKE_CURRENT_SOURCE_DIR}/config/nmpc_controller.yaml;NMPC_LOCAL_PLANNER_PARAMS=${CMAKE_CURRENT_SOURCE_DIR}/../local_planner/config/local_planner.yaml;NMPC_ROBOT_PARAMS=${CMAKE_CURRENT_SOURCE_DIR}/../quad_utils/config/spirit.yaml;NMPC_SOURCE_DIR=${CMAKE_CURRENT_SOURCE_DIR}/.."
+    )
+  endif()
+
   # the following line skips the linter which checks for copyrights
   # comment the line when a copyright and license is added to all source files
   # the following line skips cpplint (only works in a git repo)
