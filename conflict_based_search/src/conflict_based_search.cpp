@@ -278,12 +278,16 @@ bool ConflictBasedSearch::findFirstConflict(const CBSNode& node,
           }
         } else if (collision_run_start >= 0) {
           // Run just ended at idx; record the conflict.
-          if (pa.t < best_t_start || (!found && pa.t == best_t_start)) {
+          const double t_start =
+              rclcpp::Time(plan_a.states[collision_run_start].header.stamp)
+                  .seconds();
+          if (t_start < best_t_start ||
+              (!found && t_start == best_t_start)) {
             best.robot_a = ra;
             best.robot_b = rb;
             best.t_start_idx = collision_run_start;
             best.t_end_idx = idx - 1;
-            best_t_start = pa.t;
+            best_t_start = t_start;
             found = true;
           }
           collision_run_start = -1;
@@ -315,7 +319,8 @@ bool ConflictBasedSearch::findFirstConflict(const CBSNode& node,
       // Trailing run that runs to plan end.
       if (collision_run_start >= 0) {
         const double t_a =
-            rclcpp::Time(plan_a.states.front().header.stamp).seconds();
+            rclcpp::Time(plan_a.states[collision_run_start].header.stamp)
+                .seconds();
         if (t_a < best_t_start || !found) {
           best.robot_a = ra;
           best.robot_b = rb;

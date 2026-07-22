@@ -2,12 +2,16 @@
 #include <rclcpp/rclcpp.hpp>
 
 #include <array>
+#include <chrono>
 #include <cstdio>
 #include <cstdlib>
 #include <memory>
 #include <stdexcept>
 #include <string>
+#include <thread>
 #include <vector>
+
+#include <grid_map_ros/grid_map_ros.hpp>
 
 #include "local_planner/local_planner.hpp"
 
@@ -94,6 +98,69 @@ quad_msgs::msg::RobotState makePopulatedState() {
   return state;
 }
 
+grid_map::GridMap makeTerrain(double height = 0.0) {
+  grid_map::GridMap map({"z_inpainted", "z_smooth", "normal_vectors_x",
+                         "normal_vectors_y", "normal_vectors_z",
+                         "smooth_normal_vectors_x", "smooth_normal_vectors_y",
+                         "smooth_normal_vectors_z", "traversability"});
+  map.setGeometry(grid_map::Length(4.0, 4.0), 0.1);
+  for (grid_map::GridMapIterator it(map); !it.isPastEnd(); ++it) {
+    map.at("z_inpainted", *it) = height;
+    map.at("z_smooth", *it) = height;
+    map.at("normal_vectors_x", *it) = 0.0;
+    map.at("normal_vectors_y", *it) = 0.0;
+    map.at("normal_vectors_z", *it) = 1.0;
+    map.at("smooth_normal_vectors_x", *it) = 0.0;
+    map.at("smooth_normal_vectors_y", *it) = 0.0;
+    map.at("smooth_normal_vectors_z", *it) = 1.0;
+    map.at("traversability", *it) = 1.0;
+  }
+  return map;
+}
+
+quad_msgs::msg::RobotPlan makeRobotPlan(rclcpp::Time start_time,
+                                        int num_states = 8) {
+  quad_msgs::msg::RobotPlan plan;
+  plan.header.frame_id = "map";
+  plan.header.stamp = start_time;
+  plan.global_plan_timestamp = start_time;
+  for (int i = 0; i < num_states; ++i) {
+    Eigen::VectorXd body = Eigen::VectorXd::Zero(12);
+    body[0] = 0.1 * i;
+    body[1] = -0.05 * i;
+    body[2] = 0.30;
+    body[5] = 0.02 * i;
+    body[6] = 0.1;
+
+    quad_msgs::msg::RobotState state;
+    state.header.stamp = start_time + rclcpp::Duration::from_seconds(0.03 * i);
+    state.body = quad_utils::eigenToBodyStateMsg(body);
+    plan.states.push_back(state);
+    plan.plan_indices.push_back(i);
+    plan.primitive_ids.push_back(i % 4);
+  }
+  return plan;
+}
+
+grid_map_msgs::msg::GridMap::SharedPtr makeTerrainMsg(
+    const grid_map::GridMap& terrain) {
+  return grid_map_msgs::msg::GridMap::SharedPtr(
+      grid_map::GridMapRosConverter::toMessage(terrain).release());
+}
+
+template <typename MsgT>
+bool spinUntilMessage(const std::shared_ptr<rclcpp::Node>& node,
+                      std::shared_ptr<MsgT>& msg,
+                      std::chrono::milliseconds timeout =
+                          std::chrono::milliseconds(1000)) {
+  const auto start = std::chrono::steady_clock::now();
+  while (!msg && std::chrono::steady_clock::now() - start < timeout) {
+    rclcpp::spin_some(node);
+    std::this_thread::sleep_for(std::chrono::milliseconds(5));
+  }
+  return static_cast<bool>(msg);
+}
+
 }  // namespace
 
 TEST(LocalPlannerTest, ConstructorLoadsYamlConfigurationAndInterfaces) {
@@ -115,6 +182,37 @@ TEST(LocalPlannerTest, ConstructorLoadsYamlConfigurationAndInterfaces) {
   EXPECT_NE(planner.foot_plan_continuous_pub_, nullptr);
   EXPECT_NE(planner.local_body_planner_nonlinear_, nullptr);
   EXPECT_NE(planner.local_footstep_planner_, nullptr);
+}
+
+TEST(LocalPlannerTest, InitFootstepPlannerClampsInvalidGrfWeight) {
+  auto high_node = makeNode(
+      {rclcpp::Parameter("local_footstep_planner.grf_weight", 4.0)});
+  LocalPlanner high_planner(high_node);
+  EXPECT_DOUBLE_EQ(high_planner.local_footstep_planner_->grf_weight_, 1.0);
+
+  auto low_node = makeNode(
+      {rclcpp::Parameter("local_footstep_planner.grf_weight", -2.0)});
+  LocalPlanner low_planner(low_node);
+  EXPECT_DOUBLE_EQ(low_planner.local_footstep_planner_->grf_weight_, 0.0);
+}
+
+TEST(LocalPlannerTest, TerrainMapCallbackUpdatesPlannerAndFootstepMaps) {
+  auto node = makeNode();
+  LocalPlanner planner(node);
+  const auto terrain = makeTerrain(0.23);
+  auto msg = makeTerrainMsg(terrain);
+
+  planner.terrainMapCallback(msg);
+
+  EXPECT_FALSE(planner.terrain_.isEmpty());
+  EXPECT_NEAR(planner.terrain_grid_.atPosition("z_smooth", {0.0, 0.0}), 0.23,
+              kTol);
+  EXPECT_NEAR(
+      planner.local_footstep_planner_->terrain_grid_.atPosition("z_smooth",
+                                                                {0.0, 0.0}),
+      0.23, kTol);
+  EXPECT_NEAR(planner.local_footstep_planner_->getTerrainHeight(0.0, 0.0),
+              0.23, kTol);
 }
 
 TEST(LocalPlannerTest, RobotStateCallbackIgnoresEmptyAndAcceptsPopulatedState) {
@@ -175,6 +273,148 @@ TEST(LocalPlannerTest, ComputeLocalPlanRejectsMissingInputs) {
   LocalPlanner planner(node);
 
   EXPECT_FALSE(planner.computeLocalPlan());
+}
+
+TEST(LocalPlannerTest, GetReferenceFromGlobalPlanTracksIndexAndHoldsEnd) {
+  auto node = makeNode();
+  LocalPlanner planner(node);
+  const auto terrain = makeTerrain();
+  auto terrain_msg = makeTerrainMsg(terrain);
+  planner.terrainMapCallback(terrain_msg);
+
+  auto state = std::make_shared<quad_msgs::msg::RobotState>(makePopulatedState());
+  state->body.pose.position.x = 0.20;
+  state->body.pose.position.y = -0.10;
+  planner.robotStateCallback(state);
+
+  const rclcpp::Time start =
+      node->now() - rclcpp::Duration::from_seconds(2.0 * planner.dt_ + 1e-4);
+  auto plan = std::make_shared<quad_msgs::msg::RobotPlan>(makeRobotPlan(start, 4));
+  planner.robotPlanCallback(plan);
+
+  planner.getReference();
+
+  EXPECT_EQ(planner.current_plan_index_, 2);
+  EXPECT_EQ(planner.plan_index_diff_, 2);
+  EXPECT_NEAR(planner.body_plan_(0, 0), 0.20, kTol);
+  EXPECT_NEAR(planner.ref_body_plan_(0, 0), 0.20, kTol);
+  EXPECT_NEAR(planner.ref_body_plan_(1, 0), 0.30, kTol);
+  EXPECT_NEAR(planner.ref_body_plan_(2, 0), 0.30, kTol);
+  EXPECT_EQ(planner.ref_primitive_plan_(0), 2);
+  EXPECT_EQ(planner.ref_primitive_plan_(1), 3);
+  EXPECT_EQ(planner.ref_primitive_plan_(2), 3);
+}
+
+TEST(LocalPlannerTest, GetReferenceFromTwistHandlesStepStandAndStaleCommand) {
+  auto node = makeNode({rclcpp::Parameter("local_planner.use_twist_input", true)});
+  LocalPlanner planner(node);
+  const auto terrain = makeTerrain(0.12);
+  auto terrain_msg = makeTerrainMsg(terrain);
+  planner.terrainMapCallback(terrain_msg);
+
+  auto state = std::make_shared<quad_msgs::msg::RobotState>(makePopulatedState());
+  state->body.pose.position.x = 0.0;
+  state->body.pose.position.y = 0.0;
+  state->body.pose.position.z = 0.39;
+  planner.robotStateCallback(state);
+
+  auto twist = std::make_shared<geometry_msgs::msg::Twist>();
+  twist->linear.x = 2.0;
+  planner.cmdVelCallback(twist);
+  planner.getReference();
+
+  EXPECT_EQ(planner.control_mode_, STEP);
+  EXPECT_GT(planner.ref_body_plan_(1, 0), planner.ref_body_plan_(0, 0));
+  EXPECT_NEAR(planner.ref_body_plan_(0, 2), planner.z_des_ + 0.12, kTol);
+
+  planner.cmd_vel_[0] = 0.4;
+  planner.last_cmd_vel_msg_time_ =
+      node->now() - rclcpp::Duration::from_seconds(
+                        planner.last_cmd_vel_msg_time_max_ + 1.0);
+  for (auto& foot : state->feet.feet) {
+    foot.position.x = state->body.pose.position.x;
+    foot.position.y = state->body.pose.position.y;
+  }
+  planner.robotStateCallback(state);
+  planner.getReference();
+
+  EXPECT_EQ(planner.control_mode_, STAND);
+  EXPECT_NEAR(planner.cmd_vel_.norm(), 0.0, kTol);
+}
+
+TEST(LocalPlannerTest, PublishLocalPlanPublishesBodyFeetAndGrfs) {
+  auto node = makeNode();
+  LocalPlanner planner(node);
+  std::shared_ptr<quad_msgs::msg::RobotPlan> local_plan_msg;
+  std::shared_ptr<quad_msgs::msg::MultiFootPlanDiscrete> discrete_msg;
+  std::shared_ptr<quad_msgs::msg::MultiFootPlanContinuous> continuous_msg;
+  auto local_sub = node->create_subscription<quad_msgs::msg::RobotPlan>(
+      "local_plan", 10,
+      [&](quad_msgs::msg::RobotPlan::SharedPtr msg) { local_plan_msg = msg; });
+  auto discrete_sub =
+      node->create_subscription<quad_msgs::msg::MultiFootPlanDiscrete>(
+          "foot_plan_discrete", 10,
+          [&](quad_msgs::msg::MultiFootPlanDiscrete::SharedPtr msg) {
+            discrete_msg = msg;
+          });
+  auto continuous_sub =
+      node->create_subscription<quad_msgs::msg::MultiFootPlanContinuous>(
+          "foot_plan_continuous", 10,
+          [&](quad_msgs::msg::MultiFootPlanContinuous::SharedPtr msg) {
+            continuous_msg = msg;
+          });
+
+  planner.map_frame_ = "map";
+  planner.current_state_timestamp_ = node->now();
+  planner.initial_timestamp_ = planner.current_state_timestamp_;
+  planner.current_plan_index_ = 5;
+  planner.first_element_duration_ = 0.02;
+  planner.compute_time_ = 3.5;
+  planner.N_current_ = 3;
+  planner.body_plan_ = Eigen::MatrixXd::Zero(3, 12);
+  planner.body_plan_.col(2).setConstant(0.35);
+  planner.foot_positions_world_ = Eigen::MatrixXd::Zero(3, 12);
+  planner.foot_velocities_world_ = Eigen::MatrixXd::Zero(3, 12);
+  planner.foot_accelerations_world_ = Eigen::MatrixXd::Zero(3, 12);
+  planner.grf_plan_ = Eigen::MatrixXd::Zero(2, 12);
+  planner.grf_plan_(0, 2) = 10.0;
+  planner.grf_plan_(1, 5) = 11.0;
+  planner.ref_primitive_plan_ = Eigen::VectorXi::Zero(3);
+  planner.ref_primitive_plan_(0) = 7;
+  planner.ref_primitive_plan_(1) = 8;
+  planner.contact_schedule_ = {
+      {true, false, true, false},
+      {true, true, false, false},
+      {true, true, true, true},
+  };
+  for (int i = 0; i < 3; ++i) {
+    for (int foot = 0; foot < 4; ++foot) {
+      planner.foot_positions_world_(i, 3 * foot + 0) = 0.1 * foot;
+      planner.foot_positions_world_(i, 3 * foot + 1) = -0.1 * foot;
+      planner.foot_positions_world_(i, 3 * foot + 2) = 0.02;
+    }
+  }
+
+  planner.publishLocalPlan();
+
+  ASSERT_TRUE(spinUntilMessage(node, local_plan_msg));
+  ASSERT_TRUE(spinUntilMessage(node, discrete_msg));
+  ASSERT_TRUE(spinUntilMessage(node, continuous_msg));
+  ASSERT_EQ(local_plan_msg->states.size(), 2u);
+  ASSERT_EQ(local_plan_msg->grfs.size(), 2u);
+  EXPECT_EQ(local_plan_msg->header.frame_id, "map");
+  EXPECT_EQ(local_plan_msg->plan_indices[0], 5u);
+  EXPECT_EQ(local_plan_msg->plan_indices[1], 6u);
+  EXPECT_EQ(local_plan_msg->primitive_ids[0], 7u);
+  EXPECT_EQ(local_plan_msg->primitive_ids[1], 8u);
+  ASSERT_EQ(local_plan_msg->grfs[0].contact_states.size(), 4u);
+  EXPECT_TRUE(local_plan_msg->grfs[0].contact_states[0]);
+  EXPECT_FALSE(local_plan_msg->grfs[0].contact_states[1]);
+  ASSERT_EQ(continuous_msg->states.size(), 3u);
+  EXPECT_EQ(continuous_msg->states[0].traj_index, 5u);
+  EXPECT_EQ(continuous_msg->states[1].traj_index, 6u);
+  ASSERT_EQ(discrete_msg->feet.size(), 4u);
+  ASSERT_EQ(discrete_msg->feet[1].footholds.size(), 1u);
 }
 
 TEST(LocalPlannerTest, UnwrapYawReferenceRemovesPiDiscontinuity) {

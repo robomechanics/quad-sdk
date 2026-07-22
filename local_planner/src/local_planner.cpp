@@ -198,7 +198,7 @@ void LocalPlanner::initLocalFootstepPlanner() {
   local_footstep_planner_->setTemporalParams(dt_, period, N_, duty_cycles,
                                              phase_offsets);
   local_footstep_planner_->setSpatialParams(
-      ground_clearance, hip_clearance, standing_error_threshold, grf_weight,
+      ground_clearance, hip_clearance, grf_weight, standing_error_threshold,
       quadKD_, foothold_search_radius, foothold_obj_threshold, obj_fun_layer,
       toe_radius_);
 

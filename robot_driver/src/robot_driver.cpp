@@ -316,6 +316,9 @@ void RobotDriver::initLegController() {
                  controller_id_.c_str());
     leg_controller_ = nullptr;
   }
+  if (leg_controller_ == nullptr) {
+    return;
+  }
   if (leg_controller_ != nullptr && controller_id_ != "learned") {
     leg_controller_->init(stance_kp_, stance_kd_, swing_kp_, swing_kd_,
                           swing_kp_cart_, swing_kd_cart_);

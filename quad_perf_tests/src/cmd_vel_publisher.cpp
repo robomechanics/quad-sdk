@@ -1,6 +1,7 @@
 #include "quad_perf_tests/cmd_vel_publisher.hpp"
 
-CmdVelPublisher::CmdVelPublisher(rclcpp::Node::SharedPtr node) : node_(node) {
+CmdVelPublisher::CmdVelPublisher(rclcpp::Node::SharedPtr node)
+    : node_(node), has_sample_(false) {
   std::string cmd_vel_topic;
 
   // quad_utils::loadROSParam(node_, "namespace", robot_ns_);
@@ -38,6 +39,7 @@ CmdVelPublisher::CmdVelPublisher(rclcpp::Node::SharedPtr node) : node_(node) {
   last_cmd_vel_msg_.angular.x = 0.0;
   last_cmd_vel_msg_.angular.y = 0.0;
   last_cmd_vel_msg_.angular.z = 0.0;
+  last_cmd_vel_msg_time_ = node_->now();
 }
 
 void CmdVelPublisher::sampleNewCmd() {

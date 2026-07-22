@@ -2,6 +2,8 @@
 
 #include <cmath>
 #include <limits>
+#include <stdexcept>
+#include <vector>
 
 #include "global_body_planner/global_body_planner_test_fixture.hpp"
 
@@ -81,4 +83,140 @@ TEST_F(GlobalBodyPlannerTestFixture, ValidityStatsCountConstraintRejections) {
 
   EXPECT_EQ(stats.total, 1);
   EXPECT_EQ(stats.constraint_rejects, 1);
+}
+
+TEST_F(GlobalBodyPlannerTestFixture, ValidStateRejectsMapVelocityAndHeight) {
+  double max_valid_z = 0.0;
+
+  EXPECT_FALSE(planning_utils::isValidState(
+      makeState(20.0, 0.0, 0.3, 0.0, 0.0, 0.0), planner_config_,
+      LEAP_STANCE, max_valid_z));
+
+  EXPECT_FALSE(planning_utils::isValidState(
+      makeState(0.0, 0.0, 0.3, planner_config_.v_max + 1.0, 0.0, 0.0),
+      planner_config_, LEAP_STANCE, max_valid_z));
+
+  EXPECT_FALSE(planning_utils::isValidState(
+      makeState(0.0, 0.0, planner_config_.h_min * 0.5, 0.0, 0.0, 0.0),
+      planner_config_, LEAP_STANCE, max_valid_z));
+
+  EXPECT_FALSE(planning_utils::isValidState(
+      makeState(0.0, 0.0, planner_config_.h_max + 1.0, 0.0, 0.0, 0.0),
+      planner_config_, CONNECT, max_valid_z));
+}
+
+TEST_F(GlobalBodyPlannerTestFixture, ValidStateRejectsLowTraversability) {
+  for (grid_map::GridMapIterator it(terrain_grid_map_); !it.isPastEnd();
+       ++it) {
+    terrain_grid_map_.at("traversability", *it) = 0.0;
+  }
+  terrain_.loadDataFromGridMap(terrain_grid_map_);
+  planner_config_.terrain = terrain_;
+  planner_config_.terrain_grid_map = terrain_grid_map_;
+
+  const planning_utils::State s = makeState(0.0, 0.0, 0.3, 0.0, 0.0, 0.0);
+
+  EXPECT_FALSE(planning_utils::isValidState(s, planner_config_, LEAP_STANCE));
+  EXPECT_TRUE(planning_utils::isValidState(s, planner_config_, FLIGHT));
+}
+
+TEST_F(GlobalBodyPlannerTestFixture,
+       StateActionPairUsesDynamicConstraintTimeWindows) {
+  planning_utils::State s0 = makeState(0.0, 0.0, 0.3, 0.0, 0.0, 0.0);
+  planning_utils::State s1 = makeState(1.0, 0.0, 0.3, 0.0, 0.0, 0.0);
+
+  planning_utils::StateActionResult connect_result;
+  GBPL gbpl;
+  ASSERT_EQ(gbpl.attemptConnect(s0, s1, 2.0, connect_result, planner_config_,
+                                FORWARD),
+            REACHED);
+
+  planner_config_.dynamic_constraints.push_back(makeConstraint(
+      Eigen::Vector3d(0.5, 0.0, 0.3), 0.0, Eigen::Vector3d(0.5, 0.25, 0.2),
+      0.8, 1.2));
+
+  planning_utils::StateActionResult result;
+  EXPECT_TRUE(planning_utils::isValidStateActionPair(
+      s0, connect_result.a_new, result, planner_config_, 10.0));
+  EXPECT_FALSE(planning_utils::isValidStateActionPair(
+      s0, connect_result.a_new, result, planner_config_, 0.0));
+  EXPECT_GT(result.t_new, 0.0);
+  EXPECT_LT(result.t_new, connect_result.a_new.t_s_leap);
+}
+
+TEST_F(GlobalBodyPlannerTestFixture, ActionValidityRejectsBadForcesAndTimes) {
+  planning_utils::Action a;
+  a.grf_0 << 0.0, 0.0, 1.0;
+  a.grf_f << 0.0, 0.0, 1.0;
+  a.t_s_leap = 0.2;
+  a.t_f = 0.0;
+  a.t_s_land = 0.0;
+  a.dz_0 = 0.0;
+  a.dz_f = 0.0;
+
+  EXPECT_TRUE(planning_utils::isValidAction(a, planner_config_));
+
+  a.t_s_leap = 0.0;
+  EXPECT_FALSE(planning_utils::isValidAction(a, planner_config_));
+  a.t_s_leap = 0.2;
+
+  a.grf_0 << planner_config_.grf_max, 0.0, planner_config_.grf_max;
+  EXPECT_FALSE(planning_utils::isValidAction(a, planner_config_));
+  a.grf_0 << 1.0, 0.0, 1.0;
+  EXPECT_FALSE(planning_utils::isValidAction(a, planner_config_));
+}
+
+TEST(GlobalBodyPlannerUtilsTest, StateConversionsDistancesAndDirectionFlip) {
+  planning_utils::State s = makeState(1.0, 2.0, 3.0, 0.4, -0.5, 0.6);
+  planning_utils::FullState full =
+      planning_utils::stateToFullState(s, 0.1, 0.2, 0.3, 0.0, 0.0, 0.0);
+  EXPECT_TRUE(planning_utils::fullStateToState(full).isApprox(s));
+
+  Eigen::VectorXd eig = planning_utils::fullStateToEigen(full);
+  planning_utils::FullState round_trip;
+  planning_utils::eigenToFullState(eig, round_trip);
+  EXPECT_TRUE(round_trip.pos.isApprox(full.pos));
+  EXPECT_TRUE(round_trip.vel.isApprox(full.vel));
+
+  std::vector<double> values{1.0, 2.0, 3.0, 0.1, 0.2, 0.3,
+                             0.4, 0.5, 0.6, 0.7, 0.8, 0.9};
+  planning_utils::FullState from_vector;
+  planning_utils::vectorToFullState(values, from_vector);
+  EXPECT_NEAR(from_vector.pos.x(), 1.0, 1e-9);
+  EXPECT_NEAR(from_vector.ang_vel.z(), 0.9, 1e-9);
+
+  planning_utils::State s2 = makeState(4.0, 6.0, 3.0, 1.4, -0.5, 0.6);
+  EXPECT_NEAR(planning_utils::poseDistance(s, s2), 5.0, 1e-9);
+  EXPECT_GT(planning_utils::stateDistance(s, s2),
+            planning_utils::poseDistance(s, s2));
+
+  planning_utils::flipDirection(s);
+  EXPECT_NEAR(s.vel.x(), -0.4, 1e-9);
+  EXPECT_NEAR(s.vel.y(), 0.5, 1e-9);
+}
+
+TEST(GlobalBodyPlannerUtilsTest, ActionDirectionFlipSwapsLeapAndLanding) {
+  planning_utils::Action a;
+  a.grf_0 << 1.0, 2.0, 3.0;
+  a.grf_f << 4.0, 5.0, 6.0;
+  a.t_s_leap = 0.1;
+  a.t_f = 0.2;
+  a.t_s_land = 0.3;
+  a.dz_0 = -1.0;
+  a.dz_f = 2.0;
+
+  planning_utils::flipDirection(a);
+
+  EXPECT_TRUE(a.grf_0.isApprox(Eigen::Vector3d(4.0, 5.0, 6.0)));
+  EXPECT_TRUE(a.grf_f.isApprox(Eigen::Vector3d(1.0, 2.0, 3.0)));
+  EXPECT_NEAR(a.t_s_leap, 0.3, 1e-9);
+  EXPECT_NEAR(a.t_s_land, 0.1, 1e-9);
+  EXPECT_NEAR(a.dz_0, -2.0, 1e-9);
+  EXPECT_NEAR(a.dz_f, 1.0, 1e-9);
+}
+
+TEST(GlobalBodyPlannerUtilsTest, VectorPoseDistanceRejectsShortInputs) {
+  EXPECT_THROW(planning_utils::poseDistance(std::vector<double>{1.0},
+                                            std::vector<double>{1.0, 2.0}),
+               std::runtime_error);
 }

@@ -18,6 +18,7 @@
 
 #include <pcl/io/vtk_lib_io.h>
 #include <pcl_conversions/pcl_conversions.h>
+#include <ament_index_cpp/get_package_prefix.hpp>
 #include <ament_index_cpp/get_package_share_directory.hpp>
 
 #include "quad_utils/mesh_to_grid_map_converter.hpp"
@@ -38,8 +39,15 @@ MeshToGridMapConverter::MeshToGridMapConverter(rclcpp::Node::SharedPtr node)
   advertiseTopics();
   advertiseServices();
 
-  std::string package_path =
-      ament_index_cpp::get_package_share_directory("quad_sim_scripts");
+  std::string package_path;
+  try {
+    package_path =
+        ament_index_cpp::get_package_share_directory("quad_sim_scripts");
+  } catch (const ament_index_cpp::PackageNotFoundError& ex) {
+    RCLCPP_WARN(node_->get_logger(),
+                "quad_sim_scripts package not found; waiting for mesh input.");
+    return;
+  }
   // std::string package_path = ros::package::getPath("quad_sim_scripts");
   std::string base_name = world_name_;
   std::string extension = ".sdf";
@@ -54,7 +62,7 @@ MeshToGridMapConverter::MeshToGridMapConverter(rclcpp::Node::SharedPtr node)
       package_path + "/models/" + base_name + "/meshes/" + base_name + ".ply";
 
   RCLCPP_INFO(node_->get_logger(), "Loading mesh from: %s", full_path.c_str());
-  bool success = loadMeshFromFile(full_path);
+  loadMeshFromFile(full_path);
 }
 
 void MeshToGridMapConverter::subscribeToTopics() {  // UPDATED

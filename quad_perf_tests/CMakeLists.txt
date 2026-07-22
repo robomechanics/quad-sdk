@@ -16,9 +16,19 @@ find_package(quad_utils REQUIRED)
 
 include_directories(include)
 
+add_library(cmd_vel_publisher
+  src/cmd_vel_publisher.cpp
+)
+
+ament_target_dependencies(cmd_vel_publisher
+  rclcpp
+  geometry_msgs
+  quad_utils
+)
+
 add_executable(cmd_vel_publisher_node
-                src/cmd_vel_publisher_node.cpp
-                src/cmd_vel_publisher.cpp)
+                src/cmd_vel_publisher_node.cpp)
+target_link_libraries(cmd_vel_publisher_node cmd_vel_publisher)
 
 ament_target_dependencies(cmd_vel_publisher_node
   rclcpp
@@ -26,8 +36,12 @@ ament_target_dependencies(cmd_vel_publisher_node
   quad_utils
 )
 
-install(TARGETS cmd_vel_publisher_node
+install(TARGETS
+  cmd_vel_publisher
+  cmd_vel_publisher_node
   RUNTIME DESTINATION lib/${PROJECT_NAME}
+  LIBRARY DESTINATION lib
+  ARCHIVE DESTINATION lib
 )
 
 install(DIRECTORY include/
@@ -55,7 +69,40 @@ install(DIRECTORY launch
   DESTINATION share/${PROJECT_NAME})
 
 if(BUILD_TESTING)
+  find_package(ament_cmake_gtest REQUIRED)
+  find_package(ament_cmake_pytest REQUIRED)
   find_package(ament_lint_auto REQUIRED)
+
+  ament_add_gtest(${PROJECT_NAME}_cmd_vel_publisher_test
+    test/test_cmd_vel_publisher.cpp
+  )
+  if(TARGET ${PROJECT_NAME}_cmd_vel_publisher_test)
+    target_compile_definitions(${PROJECT_NAME}_cmd_vel_publisher_test PRIVATE
+      QUAD_PERF_TESTING
+    )
+    target_link_libraries(${PROJECT_NAME}_cmd_vel_publisher_test
+      cmd_vel_publisher
+    )
+    target_include_directories(${PROJECT_NAME}_cmd_vel_publisher_test PRIVATE
+      include
+    )
+    ament_target_dependencies(${PROJECT_NAME}_cmd_vel_publisher_test
+      rclcpp
+      geometry_msgs
+      quad_utils
+    )
+    set_tests_properties(${PROJECT_NAME}_cmd_vel_publisher_test PROPERTIES
+      ENVIRONMENT
+        "QUAD_PERF_TEST_PARAMS=${CMAKE_CURRENT_SOURCE_DIR}/config/cmd_vel_publisher.yaml;QUAD_PERF_TEST_TOPIC_PARAMS=${CMAKE_CURRENT_SOURCE_DIR}/config/cmd_vel_publisher_topics.yaml"
+    )
+  endif()
+
+  ament_add_pytest_test(${PROJECT_NAME}_python_tests
+    test/test_quad_perf_scripts.py
+    APPEND_ENV PYTHONPATH=${CMAKE_CURRENT_SOURCE_DIR}/scripts:${CMAKE_CURRENT_SOURCE_DIR}/launch
+    TIMEOUT 30
+  )
+
   # the following line skips the linter which checks for copyrights
   # comment the line when a copyright and license is added to all source files
   set(ament_cmake_copyright_FOUND TRUE)

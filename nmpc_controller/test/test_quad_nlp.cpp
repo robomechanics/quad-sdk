@@ -185,8 +185,27 @@ TEST(QuadNLPTest, ConstructorBuildsStructureAndGeneratedFunctionTables) {
   }
 }
 
+TEST(QuadNLPTest, ConstraintNamesMatchGeneratedConstraintRows) {
+  auto controller = makeController();
+  auto nlp = controller->mynlp_;
+
+  ASSERT_EQ(nlp->constr_names_.size(), static_cast<size_t>(nlp->num_sys_id_));
+  for (int sys = 0; sys < nlp->num_sys_id_; ++sys) {
+    ASSERT_EQ(nlp->constr_names_[sys].size(),
+              static_cast<size_t>(nlp->nrow_mat_(sys, FUNC)));
+    if (!nlp->constr_names_[sys].empty()) {
+      EXPECT_EQ(nlp->constr_names_[sys].front(), "eom_state_0");
+    }
+  }
+  EXPECT_EQ(nlp->constr_names_[COMPLEX_TO_COMPLEX][52],
+            "foot_height_leg_0");
+  EXPECT_EQ(nlp->constr_names_[COMPLEX_TO_COMPLEX][84],
+            "motor_model_pos_joint_0");
+}
+
 TEST(QuadNLPTest, BoundsAndStartingPointMatchCachedState) {
   auto controller = makeController();
+  updateSolverOnce(*controller);
   auto nlp = controller->mynlp_;
 
   Ipopt::Index n = 0;
@@ -203,9 +222,12 @@ TEST(QuadNLPTest, BoundsAndStartingPointMatchCachedState) {
   Eigen::Map<Eigen::VectorXd> x_u_vec(x_u.data(), n);
   EXPECT_TRUE(nlp->get_primal_state_var(x_l_vec, 0).isApprox(nlp->x_current_));
   EXPECT_TRUE(nlp->get_primal_state_var(x_u_vec, 0).isApprox(nlp->x_current_));
-  EXPECT_NEAR(nlp->get_primal_body_control_var(x_l_vec, 0)(2, 0), 10.0, kTol);
-  EXPECT_NEAR(nlp->get_primal_body_control_var(x_u_vec, 0)(2, 0), 150.0,
-              kTol);
+  const Eigen::VectorXd u_l0 = nlp->get_primal_body_control_var(x_l_vec, 0);
+  const Eigen::VectorXd u_u0 = nlp->get_primal_body_control_var(x_u_vec, 0);
+  ASSERT_GT(u_l0.size(), 2);
+  ASSERT_GT(u_u0.size(), 2);
+  EXPECT_NEAR(u_l0(2), 10.0, kTol);
+  EXPECT_NEAR(u_u0(2), 150.0, kTol);
 
   std::vector<Ipopt::Number> x(n), z_l(n), z_u(n), lambda(m);
   EXPECT_TRUE(nlp->get_starting_point(n, true, x.data(), true, z_l.data(),
@@ -243,6 +265,67 @@ TEST(QuadNLPTest, ObjectiveGradientAndConstraintsEvaluateFiniteValues) {
   EXPECT_TRUE(constraints.allFinite());
 }
 
+TEST(QuadNLPTest, JacobianStructureAndValuesAreFinite) {
+  auto controller = makeController();
+  auto nlp = controller->mynlp_;
+  updateSolverOnce(*controller);
+
+  Ipopt::Index n = 0;
+  Ipopt::Index m = 0;
+  Ipopt::Index nnz_jac_g = 0;
+  Ipopt::Index nnz_h_lag = 0;
+  Ipopt::TNLP::IndexStyleEnum index_style;
+  ASSERT_TRUE(nlp->get_nlp_info(n, m, nnz_jac_g, nnz_h_lag, index_style));
+
+  std::vector<Ipopt::Index> rows(nnz_jac_g), cols(nnz_jac_g);
+  ASSERT_TRUE(nlp->eval_jac_g(n, nullptr, false, m, nnz_jac_g, rows.data(),
+                              cols.data(), nullptr));
+  for (Ipopt::Index i = 0; i < nnz_jac_g; ++i) {
+    EXPECT_GE(rows[i], 0);
+    EXPECT_LT(rows[i], m);
+    EXPECT_GE(cols[i], 0);
+    EXPECT_LT(cols[i], n);
+  }
+
+  std::vector<Ipopt::Number> values(nnz_jac_g);
+  ASSERT_TRUE(nlp->eval_jac_g(n, nlp->w0_.data(), true, m, nnz_jac_g, nullptr,
+                              nullptr, values.data()));
+  Eigen::Map<Eigen::VectorXd> value_vec(values.data(), nnz_jac_g);
+  EXPECT_TRUE(value_vec.allFinite());
+  EXPECT_GT(value_vec.cwiseAbs().maxCoeff(), 0.0);
+}
+
+TEST(QuadNLPTest, HessianStructureAndValuesAreFinite) {
+  auto controller = makeController();
+  auto nlp = controller->mynlp_;
+  updateSolverOnce(*controller);
+
+  Ipopt::Index n = 0;
+  Ipopt::Index m = 0;
+  Ipopt::Index nnz_jac_g = 0;
+  Ipopt::Index nnz_h_lag = 0;
+  Ipopt::TNLP::IndexStyleEnum index_style;
+  ASSERT_TRUE(nlp->get_nlp_info(n, m, nnz_jac_g, nnz_h_lag, index_style));
+
+  std::vector<Ipopt::Index> rows(nnz_h_lag), cols(nnz_h_lag);
+  ASSERT_TRUE(nlp->eval_h(n, nullptr, false, 1.0, m, nullptr, false,
+                          nnz_h_lag, rows.data(), cols.data(), nullptr));
+  for (Ipopt::Index i = 0; i < nnz_h_lag; ++i) {
+    EXPECT_GE(rows[i], 0);
+    EXPECT_LT(rows[i], n);
+    EXPECT_GE(cols[i], 0);
+    EXPECT_LT(cols[i], n);
+  }
+
+  std::vector<Ipopt::Number> lambda(m, 0.0);
+  std::vector<Ipopt::Number> values(nnz_h_lag);
+  ASSERT_TRUE(nlp->eval_h(n, nlp->w0_.data(), true, 1.0, m, lambda.data(),
+                          true, nnz_h_lag, nullptr, nullptr, values.data()));
+  Eigen::Map<Eigen::VectorXd> value_vec(values.data(), nnz_h_lag);
+  EXPECT_TRUE(value_vec.allFinite());
+  EXPECT_GT(value_vec.cwiseAbs().maxCoeff(), 0.0);
+}
+
 TEST(QuadNLPTest, UpdateSolverAppliesContactScheduleAndGroundHeight) {
   auto controller = makeController();
   auto nlp = controller->mynlp_;
@@ -267,6 +350,32 @@ TEST(QuadNLPTest, UpdateSolverAppliesContactScheduleAndGroundHeight) {
   EXPECT_NEAR(u_lb[2], 0.0, kTol);
   EXPECT_NEAR(u_ub[2], 0.0, kTol);
   EXPECT_NEAR(u_lb[5], 10.0, kTol);
+  EXPECT_GT(g_ub[84], 1e18);
+  EXPECT_GT(g_ub[96], 1e18);
+}
+
+TEST(QuadNLPTest, UpdateSolverWarmStartShiftsPreviousTrajectory) {
+  auto controller = makeController();
+  auto nlp = controller->mynlp_;
+  updateSolverOnce(*controller);
+
+  nlp->get_primal_state_var(nlp->w0_, 3)(0, 0) = 42.0;
+  nlp->get_primal_control_var(nlp->w0_, 2)(0, 0) = 24.0;
+  nlp->get_primal_constraint_vals(nlp->lambda0_, 2)(0, 0) = 12.0;
+
+  Eigen::MatrixXd feet =
+      Eigen::MatrixXd::Zero(controller->N_, nlp->n_foot_ / 2);
+  Eigen::VectorXd ground = Eigen::VectorXd::Zero(controller->N_);
+  Eigen::VectorXi complexity = Eigen::VectorXi::Zero(controller->N_);
+
+  nlp->update_solver(initialState(*controller), referenceTrajectory(*controller),
+                     feet, stanceSchedule(controller->N_), complexity, ground,
+                     controller->dt_, 2, false);
+
+  EXPECT_NEAR(nlp->get_primal_state_var(nlp->w0_, 1)(0, 0), 42.0, kTol);
+  EXPECT_NEAR(nlp->get_primal_control_var(nlp->w0_, 0)(0, 0), 24.0, kTol);
+  EXPECT_NEAR(nlp->get_primal_constraint_vals(nlp->lambda0_, 0)(0, 0), 12.0,
+              kTol);
 }
 
 TEST(QuadNLPTest, TrajectoryHelpersReturnComplexModelTrajectories) {

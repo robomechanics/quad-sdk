@@ -120,6 +120,10 @@ if(BUILD_TESTING)
   )
 
   if(TARGET ${PROJECT_NAME}_test)
+    target_compile_definitions(${PROJECT_NAME}_test PRIVATE
+      GLOBAL_BODY_PLANNER_TESTING
+    )
+
     target_link_libraries(${PROJECT_NAME}_test
       ${PROJECT_NAME}
     )

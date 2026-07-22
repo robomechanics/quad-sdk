@@ -26,7 +26,11 @@ class CmdVelPublisher {
    */
   void spin();
 
+#ifdef QUAD_PERF_TESTING
+ public:
+#else
  private:
+#endif
   /**
    * @brief Update and publish cmd vel command based on the mode
    *

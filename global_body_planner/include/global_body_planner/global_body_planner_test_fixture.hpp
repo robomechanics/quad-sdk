@@ -120,7 +120,7 @@ class GlobalBodyPlannerTestFixture : public ::testing::Test {
    */
   void updateTerrainHeight(double height) {
     Eigen::Vector3d normal_vec;
-    normal_vec << 0, 0, 0;
+    normal_vec << 0, 0, 1;
 
     for (grid_map::GridMapIterator it(terrain_grid_map_); !it.isPastEnd();
          ++it) {

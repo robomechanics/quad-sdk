@@ -5,6 +5,7 @@
 #include <array>
 #include <cstdio>
 #include <cstdlib>
+#include <grid_map_core/grid_map_core.hpp>
 #include <memory>
 #include <stdexcept>
 #include <string>
@@ -103,6 +104,38 @@ std::shared_ptr<rclcpp::Node> makeNode(
   return node;
 }
 
+std::vector<std::vector<bool>> stanceSchedule(int horizon) {
+  return std::vector<std::vector<bool>>(
+      horizon, std::vector<bool>{true, true, true, true});
+}
+
+Eigen::VectorXd initialState(const NMPCController& controller) {
+  Eigen::VectorXd state =
+      Eigen::VectorXd::Zero(controller.config_.x_dim_complex);
+  state[2] = 0.27;
+  return state;
+}
+
+Eigen::MatrixXd referenceTrajectory(const NMPCController& controller) {
+  Eigen::MatrixXd ref =
+      Eigen::MatrixXd::Zero(controller.N_, controller.config_.x_dim_simple);
+  ref.col(2).setConstant(0.27);
+  return ref;
+}
+
+grid_map::GridMap flatTerrain() {
+  grid_map::GridMap terrain({"z_inpainted", "normal_vectors_x",
+                             "normal_vectors_y", "normal_vectors_z"});
+  terrain.setGeometry(grid_map::Length(4.0, 4.0), 0.1);
+  for (grid_map::GridMapIterator it(terrain); !it.isPastEnd(); ++it) {
+    terrain.at("z_inpainted", *it) = 0.0;
+    terrain.at("normal_vectors_x", *it) = 0.0;
+    terrain.at("normal_vectors_y", *it) = 0.0;
+    terrain.at("normal_vectors_z", *it) = 1.0;
+  }
+  return terrain;
+}
+
 }  // namespace
 
 TEST(NMPCControllerTest, ConstructorLoadsYamlConfigurationAndSolverState) {
@@ -139,6 +172,27 @@ TEST(NMPCControllerTest, RobotIdSelectsGo2ForGo2Id) {
   EXPECT_EQ(controller.robot_ns_, "go2");
   EXPECT_EQ(controller.robot_id_, 2);
   EXPECT_EQ(controller.mynlp_->default_system_, GO2);
+}
+
+TEST(NMPCControllerTest, Go2ForcesMixedComplexityOff) {
+  auto node = makeNode({
+      rclcpp::Parameter("nmpc_controller.enable_mixed_complexity", true),
+      rclcpp::Parameter("nmpc_controller.enable_adaptive_complexity", true),
+  });
+  NMPCController controller(node, 2, "go2");
+
+  EXPECT_FALSE(controller.enable_mixed_complexity_);
+  EXPECT_FALSE(controller.enable_adaptive_complexity_);
+  EXPECT_EQ(controller.mynlp_->default_system_, GO2);
+}
+
+TEST(NMPCControllerTest, ConstructorRejectsMalformedConfigVectors) {
+  auto node = makeNode({
+      rclcpp::Parameter("nmpc_controller.body.x_lb",
+                        std::vector<double>{-1.0, -1.0}),
+  });
+
+  EXPECT_THROW(NMPCController controller(node, 2, "go2"), std::runtime_error);
 }
 
 TEST(NMPCControllerTest, HorizonLengthShrinksOnSlowSolveAndRecovers) {
@@ -178,6 +232,45 @@ TEST(NMPCControllerTest, AdaptiveComplexityPromotesViolatingElements) {
   EXPECT_EQ(schedule[0], 1);
   EXPECT_EQ(schedule[1], 1);
   EXPECT_GT(schedule.sum(), 0);
+}
+
+TEST(NMPCControllerTest, ComputeLegPlanUpdatesSolverInputsAndTrajectories) {
+  auto node = makeNode({
+      rclcpp::Parameter("nmpc_controller.enable_variable_horizon", true),
+  });
+  NMPCController controller(node, 2, "go2");
+  controller.app_->Options()->SetIntegerValue("max_iter", 1);
+
+  Eigen::MatrixXd foot_body =
+      Eigen::MatrixXd::Constant(controller.N_, controller.mynlp_->n_foot_ / 2,
+                                0.05);
+  Eigen::MatrixXd foot_world =
+      Eigen::MatrixXd::Constant(controller.N_, controller.mynlp_->n_foot_ / 2,
+                                0.10);
+  Eigen::MatrixXd foot_velocity =
+      Eigen::MatrixXd::Constant(controller.N_, controller.mynlp_->n_foot_ / 2,
+                                0.01);
+  Eigen::VectorXd ground = Eigen::VectorXd::Zero(controller.N_);
+  Eigen::MatrixXd state_traj;
+  Eigen::MatrixXd control_traj;
+
+  const bool success = controller.computeLegPlan(
+      initialState(controller), referenceTrajectory(controller), foot_body,
+      foot_world, foot_velocity, stanceSchedule(controller.N_), ground, 0.01, 0,
+      flatTerrain(), state_traj, control_traj);
+
+  EXPECT_FALSE(success);
+  EXPECT_EQ(state_traj.rows(), controller.N_);
+  EXPECT_EQ(state_traj.cols(), controller.config_.x_dim_simple);
+  EXPECT_EQ(control_traj.rows(), controller.N_ - 1);
+  EXPECT_EQ(control_traj.cols(), controller.config_.u_dim_simple);
+  EXPECT_TRUE(state_traj.allFinite());
+  EXPECT_TRUE(control_traj.allFinite());
+  EXPECT_TRUE(controller.mynlp_->foot_pos_body_.isApprox(-foot_body));
+  EXPECT_TRUE(controller.mynlp_->foot_pos_world_.isApprox(foot_world));
+  EXPECT_TRUE(controller.mynlp_->foot_vel_world_.isApprox(foot_velocity));
+  EXPECT_NEAR(controller.mynlp_->first_element_duration_, 0.01, kTol);
+  EXPECT_EQ(controller.diagnostics_.horizon_length, controller.N_);
 }
 
 int main(int argc, char** argv) {

@@ -9,6 +9,9 @@ std::vector<double> interpMat(const std::vector<double> input_vec,
   if ((query_point < input_vec.front()) || (query_point > input_vec.back())) {
     throw std::runtime_error("Tried to interp out of bounds");
   }
+  if (query_point == input_vec.back()) {
+    return input_mat.back();
+  }
 
   // Declare variables for interpolating between, both for input and output data
   double t1 = 0.0, t2 = 0.0;
@@ -41,6 +44,9 @@ Eigen::Vector3d interpVector3d(const std::vector<double> input_vec,
   if ((query_point < input_vec.front()) || (query_point > input_vec.back())) {
     throw std::runtime_error("Tried to interp out of bounds");
   }
+  if (query_point == input_vec.back()) {
+    return input_mat.back();
+  }
 
   // Declare variables for interpolating between, both for input and output data
   double t1 = 0.0, t2 = 0.0;
@@ -71,6 +77,9 @@ std::vector<Eigen::Vector3d> interpMatVector3d(
   // Check bounds, throw an error if invalid since this shouldn't ever happen
   if ((query_point < input_vec.front()) || (query_point > input_vec.back())) {
     throw std::runtime_error("Tried to interp out of bounds");
+  }
+  if (query_point == input_vec.back()) {
+    return output_mat.back();
   }
 
   // Declare variables for interpolating between, both for input and output data
@@ -104,6 +113,9 @@ int interpInt(const std::vector<double> input_vec, std::vector<int> output_vec,
   // Check bounds, throw an error if invalid since this shouldn't ever happen
   if ((query_point < input_vec.front()) || (query_point > input_vec.back())) {
     throw std::runtime_error("Tried to interp out of bounds");
+  }
+  if (query_point == input_vec.back()) {
+    return output_vec.back();
   }
 
   // Find the correct values to interp between

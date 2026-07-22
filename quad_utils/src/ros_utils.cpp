@@ -190,23 +190,30 @@ void interpRobotPlan(quad_msgs::msg::RobotPlan msg, double t,
                      quad_msgs::msg::GRFArray& interp_grf) {
   // Define some useful timing parameters
   rclcpp::Time t0_ros(msg.states.front().header.stamp);
+  rclcpp::Time tf_ros(msg.states.back().header.stamp);
+  double t_query =
+      std::max(0.0, std::min(t, (tf_ros - t0_ros).seconds()));
   rclcpp::Time t_ros = t0_ros + rclcpp::Duration::from_nanoseconds(
-                                    static_cast<int64_t>(t * 1e9));
+                                    static_cast<int64_t>(t_query * 1e9));
 
   // Declare variables for interpolating between, both for input and output data
   quad_msgs::msg::RobotState state_1, state_2;
-  int primitive_id_1, primitive_id_2;
+  int primitive_id_1;
   quad_msgs::msg::GRFArray grf_1, grf_2;
 
   // Find the correct index for interp (return the first index if t < 0)
   int index = 0;
   if (t >= 0) {
-    for (int i = 0; i < msg.states.size() - 1; i++) {
-      index = i;
-      rclcpp::Time stamp_i(msg.states[i].header.stamp);
-      rclcpp::Time stamp_i_1(msg.states[i + 1].header.stamp);
-      if (stamp_i <= t_ros && t_ros < stamp_i_1) {
-        break;
+    if (t_ros >= rclcpp::Time(msg.states.back().header.stamp)) {
+      index = msg.states.size() - 2;
+    } else {
+      for (int i = 0; i < msg.states.size() - 1; i++) {
+        index = i;
+        rclcpp::Time stamp_i(msg.states[i].header.stamp);
+        rclcpp::Time stamp_i_1(msg.states[i + 1].header.stamp);
+        if (stamp_i <= t_ros && t_ros < stamp_i_1) {
+          break;
+        }
       }
     }
   }
@@ -225,7 +232,7 @@ void interpRobotPlan(quad_msgs::msg::RobotPlan msg, double t,
   rclcpp::Duration t2_ros = state_2_stamp - t0_ros;
   double t1 = t1_ros.seconds();
   double t2 = t2_ros.seconds();
-  double t_interp = (t - t1) / (t2 - t1);
+  double t_interp = (t_query - t1) / (t2 - t1);
 
   // Compute interpolation
   interpRobotState(state_1, state_2, t_interp, interp_state);
@@ -238,8 +245,11 @@ quad_msgs::msg::MultiFootState interpMultiFootPlanContinuous(
   // Define some useful timing parameters
 
   rclcpp::Time t0_ros(msg.states.front().header.stamp);
+  rclcpp::Time tf_ros(msg.states.back().header.stamp);
+  double t_query =
+      std::max(0.0, std::min(t, (tf_ros - t0_ros).seconds()));
   rclcpp::Time t_ros = t0_ros + rclcpp::Duration::from_nanoseconds(
-                                    static_cast<int64_t>(t * 1e9));
+                                    static_cast<int64_t>(t_query * 1e9));
 
   // Declare variables for interpolating between, both for input and output data
   quad_msgs::msg::MultiFootState state_1, state_2, interp_state;
@@ -247,12 +257,16 @@ quad_msgs::msg::MultiFootState interpMultiFootPlanContinuous(
   // Find the correct index for interp (return the first index if t < 0)
   int index = 0;
   if (t >= 0) {
-    for (int i = 0; i < msg.states.size() - 1; i++) {
-      index = i;
-      rclcpp::Time stamp_i(msg.states[i].header.stamp);
-      rclcpp::Time stamp_i_1(msg.states[i + 1].header.stamp);
-      if (stamp_i <= t_ros && t_ros < stamp_i_1) {
-        break;
+    if (t_ros >= rclcpp::Time(msg.states.back().header.stamp)) {
+      index = msg.states.size() - 2;
+    } else {
+      for (int i = 0; i < msg.states.size() - 1; i++) {
+        index = i;
+        rclcpp::Time stamp_i(msg.states[i].header.stamp);
+        rclcpp::Time stamp_i_1(msg.states[i + 1].header.stamp);
+        if (stamp_i <= t_ros && t_ros < stamp_i_1) {
+          break;
+        }
       }
     }
   }
@@ -268,7 +282,7 @@ quad_msgs::msg::MultiFootState interpMultiFootPlanContinuous(
   rclcpp::Duration t2_ros = state_2_stamp - t0_ros;
   double t1 = t1_ros.seconds();
   double t2 = t2_ros.seconds();
-  double t_interp = (t - t1) / (t2 - t1);
+  double t_interp = (t_query - t1) / (t2 - t1);
 
   // Compute interpolation
   interpMultiFootState(state_1, state_2, t_interp, interp_state);

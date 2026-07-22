@@ -106,6 +106,26 @@ TEST(ConflictBasedSearchGeometryTest, SamplePoseAtTimeInterpolatesAndClamps) {
   EXPECT_NEAR(after.pos.x(), 2.0, kTol);
 }
 
+TEST(ConflictBasedSearchGeometryTest, SamplePoseHandlesEmptyPlanAndYawWrap) {
+  const auto empty =
+      conflict_based_search::ConflictBasedSearch::samplePoseAtTime(
+          quad_msgs::msg::RobotPlan(), 4.5);
+
+  EXPECT_TRUE(empty.pos.isZero(kTol));
+  EXPECT_NEAR(empty.yaw, 0.0, kTol);
+  EXPECT_NEAR(empty.t, 4.5, kTol);
+
+  const auto wrapped = makePlan({
+      makeState(0.0, 0.0, 0.0, 0.3, 3.0 * M_PI / 4.0),
+      makeState(2.0, 0.0, 0.0, 0.3, -3.0 * M_PI / 4.0),
+  });
+  const auto middle =
+      conflict_based_search::ConflictBasedSearch::samplePoseAtTime(wrapped,
+                                                                   1.0);
+
+  EXPECT_NEAR(std::abs(middle.yaw), M_PI, kTol);
+}
+
 TEST(ConflictBasedSearchGeometryTest, ObbsOverlapHandlesPlanarAndHeightGaps) {
   const auto cbs = makeCbs();
   const Eigen::Vector3d he(0.5, 0.25, 0.2);
@@ -139,4 +159,23 @@ TEST(ConflictBasedSearchGeometryTest, ObbsOverlapTreatsTouchingAsOverlap) {
   b.pos = Eigen::Vector3d(1.0, 0.0, 0.3);
 
   EXPECT_TRUE(cbs->obbsOverlap(a, he, b, he));
+}
+
+TEST(ConflictBasedSearchGeometryTest, ObbsOverlapHandlesRotatedBoxes) {
+  const auto cbs = makeCbs();
+  const Eigen::Vector3d long_box(1.0, 0.2, 0.2);
+  const Eigen::Vector3d short_box(0.35, 0.15, 0.2);
+
+  conflict_based_search::ConflictBasedSearch::BodyPose a;
+  a.pos = Eigen::Vector3d(0.0, 0.0, 0.3);
+  a.yaw = M_PI / 4.0;
+  a.t = 0.0;
+
+  auto b = a;
+  b.pos = Eigen::Vector3d(0.5, 0.0, 0.3);
+  b.yaw = -M_PI / 4.0;
+  EXPECT_TRUE(cbs->obbsOverlap(a, long_box, b, short_box));
+
+  b.pos = Eigen::Vector3d(1.8, 0.0, 0.3);
+  EXPECT_FALSE(cbs->obbsOverlap(a, long_box, b, short_box));
 }

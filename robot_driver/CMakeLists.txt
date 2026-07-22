@@ -191,6 +191,10 @@ if(BUILD_TESTING)
     quad_utils
     ament_index_cpp
   )
+
+  set_tests_properties(robot_driver_test PROPERTIES
+    ENVIRONMENT "ROBOT_DRIVER_SOURCE_DIR=${CMAKE_CURRENT_SOURCE_DIR}/.."
+  )
 endif()
 
 ament_package()

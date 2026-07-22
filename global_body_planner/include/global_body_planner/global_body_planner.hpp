@@ -63,7 +63,11 @@ class GlobalBodyPlanner {
           request,
       std::shared_ptr<quad_msgs::srv::PlanWithConstraints::Response> response);
 
+#ifdef GLOBAL_BODY_PLANNER_TESTING
+ public:
+#else
  private:
+#endif
   /**
    * @brief Callback function to handle new terrain map data
    * @param[in] msg the message contining map data
@@ -85,7 +89,7 @@ class GlobalBodyPlanner {
   /**
    * @brief Trigger a reset event
    */
-  void triggerReset();
+  void triggerReset(bool invalidate_cache = true);
 
   /**
    * @brief Initialize the planner by clearing out old plan data and setting the

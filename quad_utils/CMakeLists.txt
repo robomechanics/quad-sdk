@@ -26,6 +26,7 @@ find_package(cv_bridge REQUIRED)
 find_package(Eigen3 REQUIRED)
 find_package(tf2 REQUIRED)
 find_package(tf2_geometry_msgs REQUIRED)
+find_package(ament_index_cpp REQUIRED)
 find_package(Python3 REQUIRED)
 find_package(pinocchio REQUIRED)
 
@@ -334,27 +335,50 @@ if(BUILD_TESTING)
   set(ament_cmake_uncrustify_FOUND TRUE)
 
   ament_add_gtest(quad_utils_test
+    test/test_fast_terrain_map.cpp
+    test/test_grid_map_converters.cpp
     test/test_quad_kd.cpp
+    test/test_remote_heartbeat.cpp
+    test/test_ros_utils.cpp
     test/test_rviz_interface.cpp
     test/test_main.cpp
     test/test_math_utils.cpp
+    src/mjcf_to_grid_map_converter.cpp
+    src/remote_heartbeat.cpp
   )
 
   if(TARGET quad_utils_test)
     target_link_libraries(quad_utils_test
       quad_utils
+      ${PCL_LIBRARIES}
     )
 
     ament_target_dependencies(quad_utils_test
       rclcpp
       std_msgs
+      nav_msgs
+      sensor_msgs
+      geometry_msgs
+      visualization_msgs
       grid_map_core
+      grid_map_ros
+      grid_map_pcl
+      grid_map_msgs
+      pcl_msgs
+      pcl_conversions
       tf2
+      tf2_ros
+      tf2_geometry_msgs
+      ament_index_cpp
       quad_msgs
     )
 
     target_include_directories(quad_utils_test PUBLIC
       $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+    )
+
+    set_tests_properties(quad_utils_test PROPERTIES
+      ENVIRONMENT "QUAD_UTILS_SOURCE_DIR=${CMAKE_CURRENT_SOURCE_DIR}/.."
     )
   endif()
 endif()

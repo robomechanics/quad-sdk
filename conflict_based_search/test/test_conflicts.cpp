@@ -141,6 +141,61 @@ TEST(ConflictBasedSearchConflictTest, FindFirstConflictUsesMidSegmentCheck) {
   EXPECT_EQ(conflict.t_start_idx, 0);
 }
 
+TEST(ConflictBasedSearchConflictTest, FindFirstConflictChoosesEarliestOfThree) {
+  const auto cbs = makeCbs();
+  auto node = makeSearchNode({"robot_1", "robot_2", "robot_3"});
+  node->robot_plan_map["robot_1"] = makePlan({
+      makeState(0.0, 0.0, 5.0, 0.3, 0.0),
+      makeState(1.0, 0.0, 5.0, 0.3, 0.0),
+      makeState(2.0, 0.0, 0.0, 0.3, 0.0),
+  });
+  node->robot_plan_map["robot_2"] = makePlan({
+      makeState(0.0, 0.0, -5.0, 0.3, 0.0),
+      makeState(1.0, 0.0, -5.0, 0.3, 0.0),
+      makeState(2.0, 0.0, 0.0, 0.3, 0.0),
+  });
+  node->robot_plan_map["robot_3"] = makePlan({
+      makeState(0.0, 0.0, 5.0, 0.3, 0.0),
+      makeState(1.0, 0.0, 5.0, 0.3, 0.0),
+      makeState(2.0, 5.0, 5.0, 0.3, 0.0),
+  });
+
+  conflict_based_search::Conflict conflict;
+
+  ASSERT_TRUE(cbs->findFirstConflict(*node, conflict));
+  EXPECT_EQ(conflict.robot_a, "robot_1");
+  EXPECT_EQ(conflict.robot_b, "robot_3");
+  EXPECT_EQ(conflict.t_start_idx, 0);
+}
+
+TEST(ConflictBasedSearchConflictTest, TrailingConflictUsesCollisionStartTime) {
+  const auto cbs = makeCbs();
+  auto node = makeSearchNode({"robot_1", "robot_2", "robot_3"});
+  node->robot_plan_map["robot_1"] = makePlan({
+      makeState(0.0, 0.0, 0.0, 0.3, 0.0),
+      makeState(1.0, 10.0, 0.0, 0.3, 0.0),
+      makeState(2.0, 10.0, 0.0, 0.3, 0.0),
+  });
+  node->robot_plan_map["robot_2"] = makePlan({
+      makeState(0.0, 5.0, 5.0, 0.3, 0.0),
+      makeState(1.0, 10.0, 0.0, 0.3, 0.0),
+      makeState(2.0, 10.0, 0.0, 0.3, 0.0),
+  });
+  node->robot_plan_map["robot_3"] = makePlan({
+      makeState(0.0, 0.0, 5.0, 0.3, 0.0),
+      makeState(1.0, 0.0, 5.0, 0.3, 0.0),
+      makeState(2.0, 0.0, 5.0, 0.3, 0.0),
+  });
+
+  conflict_based_search::Conflict conflict;
+
+  ASSERT_TRUE(cbs->findFirstConflict(*node, conflict));
+  EXPECT_EQ(conflict.robot_a, "robot_1");
+  EXPECT_EQ(conflict.robot_b, "robot_2");
+  EXPECT_EQ(conflict.t_start_idx, 1);
+  EXPECT_EQ(conflict.t_end_idx, 2);
+}
+
 TEST(ConflictBasedSearchConflictTest,
      BuildConstraintFromConflictAccumulatesInheritedConstraints) {
   const auto cbs = makeCbs();
@@ -183,4 +238,42 @@ TEST(ConflictBasedSearchConflictTest,
   EXPECT_DOUBLE_EQ(constraints.length, 0.7);
   EXPECT_DOUBLE_EQ(constraints.width, 0.35);
   EXPECT_DOUBLE_EQ(constraints.height, 0.35);
+}
+
+TEST(ConflictBasedSearchConflictTest,
+     BuildConstraintFromConflictCanConstrainRobotBAndSkipBadIndices) {
+  const auto cbs = makeCbs();
+  auto node = makeSearchNode({"robot_1", "robot_2"});
+  node->robot_plan_map["robot_1"] = makePlan({
+      makeState(0.0, 1.0, 0.0, 0.3, 0.0),
+      makeState(1.0, 2.0, 0.0, 0.3, 0.0),
+  });
+  node->robot_plan_map["robot_2"] = makePlan({
+      makeState(0.0, 5.0, 0.0, 0.3, 0.0),
+      makeState(1.0, 6.0, 0.0, 0.3, 0.0),
+  });
+  node->constraints["robot_2"].length = 0.7;
+  node->constraints["robot_2"].pos_x.push_back(-5.0);
+  node->constraints["robot_2"].pos_y.push_back(-5.0);
+  node->constraints["robot_2"].pos_z.push_back(0.0);
+  node->constraints["robot_2"].yaw.push_back(0.0);
+  node->constraints["robot_2"].t_start.push_back(0.0);
+  node->constraints["robot_2"].t_end.push_back(0.0);
+
+  conflict_based_search::Conflict conflict;
+  conflict.robot_a = "robot_1";
+  conflict.robot_b = "robot_2";
+  conflict.t_start_idx = -1;
+  conflict.t_end_idx = 3;
+
+  const auto constraints =
+      cbs->buildConstraintFromConflict(*node, conflict, "robot_2");
+
+  ASSERT_EQ(constraints.pos_x.size(), 3u);
+  EXPECT_DOUBLE_EQ(constraints.pos_x[0], -5.0);
+  EXPECT_NEAR(constraints.pos_x[1], 1.0, kTol);
+  EXPECT_NEAR(constraints.pos_x[2], 2.0, kTol);
+  EXPECT_NEAR(constraints.t_start[1], 0.0, kTol);
+  EXPECT_NEAR(constraints.t_start[2], 1.0, kTol);
+  EXPECT_DOUBLE_EQ(constraints.length, 0.7);
 }

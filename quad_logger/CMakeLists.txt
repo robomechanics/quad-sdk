@@ -19,7 +19,15 @@ install(
 )
 
 if(BUILD_TESTING)
+  find_package(ament_cmake_pytest REQUIRED)
   find_package(ament_lint_auto REQUIRED)
+
+  ament_add_pytest_test(${PROJECT_NAME}_python_tests
+    test/test_quad_logger_scripts.py
+    APPEND_ENV PYTHONPATH=${CMAKE_CURRENT_SOURCE_DIR}/scripts
+    TIMEOUT 30
+  )
+
   # the following line skips the linter which checks for copyrights
   # comment the line when a copyright and license is added to all source files
   # set(ament_cmake_copyright_FOUND TRUE)

@@ -112,14 +112,15 @@ void GlobalBodyPlanner::robotStateCallback(
   eigenToFullState(quad_utils::bodyStateMsgToEigen(msg->body), robot_state_);
 }
 
-void GlobalBodyPlanner::triggerReset() {
+void GlobalBodyPlanner::triggerReset(bool invalidate_cache) {
   planner_status_ = RESET;
   current_plan_.clear();
   reset_time_ = node_->now();
-  // The cached RRT trees are tied to a specific start/goal pair; any reset
-  // invalidates that assumption, so drop them.
-  gbpl_.invalidateCache();
-  gbpl_.setWarmStart(false);
+  if (invalidate_cache) {
+    // Cached trees are only reusable when the caller keeps the same start/goal.
+    gbpl_.invalidateCache();
+    gbpl_.setWarmStart(false);
+  }
 }
 
 void GlobalBodyPlanner::goalStateCallback(
@@ -147,7 +148,8 @@ void GlobalBodyPlanner::goalStateCallback(
 
   // If the old plan has been executed, allow full replanning, otherwise
   // immediately update plan
-  if (current_plan_.getDuration() <=
+  if (current_plan_.isEmpty() ||
+      current_plan_.getDuration() <=
       (node_->now() - current_plan_.getPublishedTimestamp()).seconds()) {
     triggerReset();
   }
@@ -229,10 +231,16 @@ bool GlobalBodyPlanner::callPlanner() {
   State goal_state = fullStateToState(goal_state_);
 
   // Initialize statistics variables
-  double plan_time, path_length, path_duration, total_solve_time,
-      total_vertices_generated, total_path_length, total_path_duration,
-      dist_to_goal;
+  double plan_time = 0.0;
+  double path_length = 0.0;
+  double path_duration = 0.0;
+  double total_solve_time = 0.0;
+  double total_vertices_generated = 0.0;
+  double total_path_length = 0.0;
+  double total_path_duration = 0.0;
+  double dist_to_goal = 0.0;
   int vertices_generated;
+  bool updated_plan = false;
 
   // RRT-Connect planner kept as a class member so that warm-started CBS
   // service calls reuse the trees from the previous solve.
@@ -330,9 +338,8 @@ bool GlobalBodyPlanner::callPlanner() {
       std::cout << std::endl;
 
       current_plan_ = newest_plan_;
+      updated_plan = true;
     }
-
-    return is_updated;
   }
 
   // Report averaged statistics if num_calls_ > 1
@@ -347,6 +354,8 @@ bool GlobalBodyPlanner::callPlanner() {
               << " s" << std::endl;
     std::cout << std::endl;
   }
+
+  return updated_plan;
 }
 
 void GlobalBodyPlanner::waitForData() {
@@ -372,13 +381,11 @@ void GlobalBodyPlanner::getInitialPlan() {
   // Keep track of when the planner started
   rclcpp::Time start_time = node_->now();
 
-  bool success = false;
-
   // Repeatedly call the planner until the startup delay has elapsed
   while (rclcpp::ok() &&
          ((node_->now() - start_time) <
           rclcpp::Duration::from_seconds(reset_publish_delay_))) {
-    success = callPlanner();
+    callPlanner();
   }
 }
 
@@ -499,9 +506,8 @@ void GlobalBodyPlanner::planWithConstraintsCallback(
 
   gbpl_.setWarmStart(request->warm_start);
 
-  triggerReset();
+  triggerReset(!request->warm_start);
 
-  // triggerReset clears warm-start state.
   gbpl_.setWarmStart(request->warm_start);
   setStartState();
   setGoalState();
