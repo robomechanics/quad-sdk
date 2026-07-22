@@ -38,22 +38,26 @@ class EKFEstimator : public StateEstimator {
   bool updateOnce(quad_msgs::msg::RobotState& last_robot_state_msg) override;
 
   /**
-   * @brief set X as Xin
+   * @brief Set the EKF state vector
+   * @param[in] Xin State vector
    */
   void setX(Eigen::VectorXd Xin);
 
   /**
-   * @brief set P as Pin
+   * @brief Set the EKF covariance matrix
+   * @param[in] Pin Covariance matrix
    */
   void setP(Eigen::MatrixXd Pin);
 
   /**
-   * @brief return the value of X
+   * @brief Return the current EKF state vector
+   * @return State vector
    */
   Eigen::VectorXd getX();
 
   /**
-   * @brief return the value of X_pre
+   * @brief Return the predicted EKF state vector
+   * @return Predicted state vector
    */
   Eigen::VectorXd getX_pre();
 
@@ -87,10 +91,17 @@ class EKFEstimator : public StateEstimator {
               const Eigen::Quaterniond& qk, const Eigen::Matrix3d& R_w_imu);
 
   /**
-   * @brief Function to set initial robot state for ekf state estimator
+   * @brief Set the initial robot state for the EKF
+   * @param[in] last_robot_state_msg Seed robot state
    */
   void setInitialState(quad_msgs::msg::RobotState& last_robot_state_msg);
 
+  /**
+   * @brief Compute quaternion derivative from angular velocity
+   * @param[in] w Angular velocity vector
+   * @param[in] q Quaternion vector
+   * @return Quaternion derivative
+   */
   Eigen::VectorXd quaternionDynamics(const Eigen::VectorXd& w,
                                      const Eigen::VectorXd& q);
 
@@ -111,17 +122,16 @@ class EKFEstimator : public StateEstimator {
   Eigen::MatrixXd calcRodrigues(const double& dt, const Eigen::VectorXd& w,
                                 const int& sub);
 
-
-  // number of states: position (3) + velocity (3) + feet position (12)
+  /// Number of states: position, velocity, and foot positions.
   static const int num_state = 18;
 
-  // number of covariances equals number of states
+  /// Number of covariance states.
   static const int num_cov = 18;
 
-  // measurement number: feet positions (12) + feet velocities (12) + feet
-  // heights (4)
+  /// Number of measurements: foot positions, velocities, and heights.
   static const int num_measure = 28;
 
+  /// Number of feet.
   const int num_feet = 4;
 
  private:

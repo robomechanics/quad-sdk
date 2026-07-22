@@ -73,6 +73,7 @@
 /**/robot_driver:
   ros__parameters:
     robot_driver:
+      # Joint gain and pose vectors are [abad, hip, knee].
       sit_kp: [150.0, 100.0, 100.0]
       sit_kd: [6.0, 6.0, 6.0]
       stand_kp: [120.0, 220.0, 450.0]
@@ -81,8 +82,8 @@
       stance_kd: [10.0, 30.0, 30.0]
       swing_kp: [60.0, 200.0, 200.0]
       swing_kd: [10.0, 30.0, 30.0]
-      swing_kp_cart: [0.0, 0.0, 0.0] # N/m
-      swing_kd_cart: [0.0, 0.0, 0.0] # N/m
+      swing_kp_cart: [0.0, 0.0, 0.0]     # Cartesian swing Kp [x, y, z]
+      swing_kd_cart: [0.0, 0.0, 0.0]     # Cartesian swing Kd [x, y, z]
       safety_kp: [0.0, 0.0, 0.0]
       safety_kd: [8.0, 8.0, 8.0]
       stand_joint_angles: [0.0, 1.0, 1.7]

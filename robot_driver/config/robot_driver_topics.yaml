@@ -2,23 +2,23 @@
   ros__parameters:
     topics:
       state:
-        imu: state/imu
-        joints: state/joints
-        ground_truth: state/ground_truth
-        estimate: state/estimate
-        trajectory: state/trajectory
-      local_plan: local_plan
+        imu: state/imu                         # IMU input
+        joints: state/joints                   # Joint-state input
+        ground_truth: state/ground_truth       # Simulator/mocap ground-truth state
+        estimate: state/estimate               # Estimated robot state output
+        trajectory: state/trajectory           # Optional reference trajectory output
+      local_plan: local_plan                   # Local body/foot plan input
       heartbeat:
-        remote: heartbeat/remote
-        robot: heartbeat/robot
+        remote: heartbeat/remote              # Remote-command heartbeat input
+        robot: heartbeat/robot                # Robot heartbeat output
       body_force:
         joint_torques: body_force/joint_torques
       control:
-        grfs: control/grfs
-        joint_command: control/joint_command
-        mode: control/mode
+        grfs: control/grfs                    # Ground reaction force output
+        joint_command: control/joint_command  # Motor command output
+        mode: control/mode                    # Control mode command input
         single_joint_command: control/single_joint_command
-        restart_flag: control/restart_flag
-      mocap: /mocap_node/quad/pose
-      cmd_vel: cmd_vel
-      cmd_vel_stamped: cmd_vel_stamped
+        restart_flag: control/restart_flag    # Controller restart flag output
+      mocap: /mocap_node/quad/pose            # Mocap pose input
+      cmd_vel: cmd_vel                        # Twist command input
+      cmd_vel_stamped: cmd_vel_stamped        # Timestamped twist command input

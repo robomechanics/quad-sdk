@@ -3,11 +3,10 @@
 
 #include <robot_driver/controllers/leg_controller.hpp>
 
-//! Implements inverse dynamics as a controller within the ROS framework.
+//! Body pose PID controller that outputs desired ground reaction forces.
 /*!
-   GrfPidController implements inverse dynamics logic. It should expose a
-   constructor that does any initialization required and an update method called
-   at some frequency.
+   GrfPidController tracks the local body reference and writes GRF commands for
+   downstream joint-level control.
 */
 class GrfPidController : public LegController {
  public:
@@ -21,9 +20,11 @@ class GrfPidController : public LegController {
   /**
    * @brief Compute the leg command array message for a given current state and
    * reference plan
+   * @param[in] robot_state_msg Message of the current robot state
    * @param[out] leg_command_array_msg Command message after solving inverse
    * dynamics and including reference setpoints for each joint
    * @param[out] grf_array_msg GRF command message
+   * @return true if a valid command was produced
    */
   bool computeLegCommandArray(
       const quad_msgs::msg::RobotState& robot_state_msg,

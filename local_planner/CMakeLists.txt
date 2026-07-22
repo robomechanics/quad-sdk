@@ -116,7 +116,7 @@ if(BUILD_TESTING)
     )
     set_tests_properties(${PROJECT_NAME}_test PROPERTIES
       ENVIRONMENT
-        "LOCAL_PLANNER_TEST_PARAMS=${CMAKE_CURRENT_SOURCE_DIR}/config/local_planner.yaml;LOCAL_PLANNER_TOPIC_PARAMS=${CMAKE_CURRENT_SOURCE_DIR}/config/local_planner_topics.yaml;LOCAL_PLANNER_ROBOT_PARAMS=${CMAKE_CURRENT_SOURCE_DIR}/../quad_utils/config/spirit.yaml;LOCAL_PLANNER_NMPC_PARAMS=${CMAKE_CURRENT_SOURCE_DIR}/../nmpc_controller/config/nmpc_controller.yaml;LOCAL_PLANNER_SOURCE_DIR=${CMAKE_CURRENT_SOURCE_DIR}/.."
+        "LOCAL_PLANNER_TEST_PARAMS=${CMAKE_CURRENT_SOURCE_DIR}/config/local_planner.yaml;LOCAL_PLANNER_TOPIC_PARAMS=${CMAKE_CURRENT_SOURCE_DIR}/config/local_planner_topics.yaml;LOCAL_PLANNER_ROBOT_PARAMS=${CMAKE_CURRENT_SOURCE_DIR}/../quad_utils/config/go2.yaml;LOCAL_PLANNER_NMPC_PARAMS=${CMAKE_CURRENT_SOURCE_DIR}/../nmpc_controller/config/nmpc_controller.yaml;LOCAL_PLANNER_SOURCE_DIR=${CMAKE_CURRENT_SOURCE_DIR}/.."
       )
     endif()
 

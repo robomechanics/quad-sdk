@@ -15,24 +15,26 @@ class CompFilterEstimator : public StateEstimator {
 
   /**
    * @brief Initialize Complementary Filter
-   * @param[in] nh ROS Node Handler used to load parameters from yaml file
    */
   void init() override;
 
   /**
    * @brief Helper function to filter mocap data
+   * @param[in] msg Mocap pose message
+   * @param[in] pos Current mocap position
    */
   void mocapCallBackHelper(const geometry_msgs::msg::PoseStamped::SharedPtr msg,
                            const Eigen::Vector3d& pos);
 
   /**
    * @brief Perform CF update once
-   * @param[out] last_robot_state_msg
+   * @param[out] last_robot_state_msg Robot state message to update
+   * @return true if the filter produced a valid state
    */
   bool updateOnce(quad_msgs::msg::RobotState& last_robot_state_msg) override;
 
  private:
-  /// Struct of second-order low/high pass filter with derivative/intergral
+  /// Second-order low/high pass filter state.
   struct Filter {
     // State-space model
     Eigen::Matrix<double, 2, 2> A;

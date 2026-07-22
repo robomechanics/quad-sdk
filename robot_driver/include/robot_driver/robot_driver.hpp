@@ -57,7 +57,8 @@ class RobotDriver {
   /**
    * @brief Constructor for RobotDriver
    * @param[in] node Shared pointer to rclcpp::Node
-   * @return Constructed object of type RobotDriver
+   * @param[in] argc Argument count passed to the hardware interface
+   * @param[in] argv Argument vector passed to the hardware interface
    */
   RobotDriver(std::shared_ptr<rclcpp::Node>, int argc, char** argv);
 
@@ -90,25 +91,25 @@ class RobotDriver {
 
   /**
    * @brief Callback function to handle new local plan (states and GRFs)
-   * @param[in] msg input message contining the local plan
+   * @param[in] msg Input message containing the local plan
    */
   void localPlanCallback(const quad_msgs::msg::RobotPlan::SharedPtr msg);
 
   /**
    * @brief Callback function to handle current robot state
-   * @param[in] msg input message contining current robot state
+   * @param[in] msg Input message containing current robot state
    */
   void robotStateCallback(const quad_msgs::msg::RobotState::SharedPtr msg);
 
   /**
    * @brief Callback function to handle current robot pose
-   * @param[in] msg input message contining current robot pose
+   * @param[in] msg Input message containing current robot pose
    */
   void mocapCallback(const geometry_msgs::msg::PoseStamped::SharedPtr msg);
 
   /**
    * @brief Callback function to handle reference trajectory state
-   * @param[in] msg input message contining reference trajectory state
+   * @param[in] msg Input message containing reference trajectory state
    */
   void trajectoryStateCallback(const quad_msgs::msg::RobotState::SharedPtr msg);
 
@@ -137,7 +138,12 @@ class RobotDriver {
    */
   void remoteHeartbeatCallback(const std_msgs::msg::Header::SharedPtr msg);
 
+  /**
+   * @brief Callback to handle new twist velocity commands
+   * @param[in] msg Twist velocity command
+   */
   void cmdVelCallback(const geometry_msgs::msg::Twist::SharedPtr msg);
+
   /**
    * @brief Check to make sure required messages are fresh
    */
@@ -170,6 +176,9 @@ class RobotDriver {
    */
   void publishHeartbeat();
 
+  /**
+   * @brief Run the internal dynamics sanity check
+   */
   void testDynamics();
 
   /// Subscriber for control mode

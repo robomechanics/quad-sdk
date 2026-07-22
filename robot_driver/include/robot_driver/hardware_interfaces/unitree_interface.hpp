@@ -14,26 +14,13 @@
 #include <string>
 #include <vector>
 
-//! Unified hardware interface for Unitree quadrupeds (Go2 and Go2-W).
+//! Unified hardware interface for Unitree quadrupeds.
 /*!
    UnitreeInterface converts quad-sdk LegCommandArray messages to
    Unitree SDK2 LowCmd messages (rt/lowcmd) and reads LowState
    (rt/lowstate) for joint state and IMU feedback.
 
-   The DDS contract is identical for Go2 (12 motors) and Go2-W
-   (16 motors, with wheels at LowCmd indices 12-15). Pick the variant
-   by passing 12 or 16 to the constructor.
-
-   On Go2-W, wheel commands are sourced in this priority order:
-     1. A 4th MotorCommand on each leg's motor_commands[] (vel_setpoint
-        is forwarded as wheel velocity; kp / kd / torque_ff pass through).
-        This is the natural path once controllers emit wheel commands.
-     2. user_tx_data laid out as
-          [restart_flag,
-           vel_0, kd_0, tau_ff_0, ...,
-           vel_3, kd_3, tau_ff_3]   // size 13
-        (preserved from the legacy Go2WInterface convention).
-     3. Zero velocity with kDefaultWheelKd damping.
+   Go2 uses 12 motors; Go2-W adds four wheel motors at LowCmd indices 12-15.
 */
 class UnitreeInterface : public HardwareInterface {
  public:
@@ -42,29 +29,58 @@ class UnitreeInterface : public HardwareInterface {
   static constexpr int kNumJoints = kNumLegs * kJointsPerLeg;
   static constexpr int kNumWheels = 4;
 
-  //! Construct from a quad-sdk robot_name string.
-  //! Recognized values: "go2" (12 motors), "go2w" (16 motors).
-  //! Anything else falls back to "go2".
+  /**
+   * @brief Construct from a quad-sdk robot_name string
+   * @param[in] robot_name Recognized values are "go2" and "go2w"
+   */
   explicit UnitreeInterface(const std::string& robot_name = "go2");
 
+  /**
+   * @brief Initialize Unitree SDK2 channels
+   * @param[in] argc Argument count
+   * @param[in] argv Argument vector
+   */
   void loadInterface(int argc, char** argv) override;
+
+  /**
+   * @brief Stop the Unitree SDK2 transport
+   */
   void unloadInterface() override;
 
+  /**
+   * @brief Send LowCmd motor commands
+   * @param[in] leg_command_array_msg Leg motor commands
+   * @param[in] user_tx_data Extra wheel/restart command data
+   * @return true if command transmission succeeded
+   */
   bool send(const quad_msgs::msg::LegCommandArray& leg_command_array_msg,
             const Eigen::VectorXd& user_tx_data) override;
 
+  /**
+   * @brief Receive LowState feedback
+   * @param[out] joint_state_msg Joint state feedback
+   * @param[out] imu_msg IMU feedback
+   * @param[out] user_rx_data Extra wheel feedback data
+   * @return true if fresh feedback was available
+   */
   bool recv(sensor_msgs::msg::JointState& joint_state_msg,
             sensor_msgs::msg::Imu& imu_msg,
             Eigen::VectorXd& user_rx_data) override;
 
-  //! Latest raw foot-force readings from rt/lowstate.
-  //! Returned in quad-sdk leg order (FL, RL, FR, RR), int16 units.
-  //! Used by robot_driver to publish a custom FootContact message.
+  /**
+   * @brief Return latest raw foot-force readings in quad-sdk leg order
+   * @return Foot forces ordered as FL, RL, FR, RR
+   */
   std::array<int16_t, kNumLegs> getFootForcesRaw() const;
 
  protected:
+  /// Initialize LowCmd command buffers.
   void initLowCmd();
+
+  /// Copy incoming LowState DDS messages into the cached feedback state.
   void lowStateHandler(const void* message);
+
+  /// Compute Unitree LowCmd CRC.
   static uint32_t crc32Core(uint32_t* ptr, uint32_t len);
 
   std::string robot_name_;

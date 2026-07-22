@@ -21,6 +21,7 @@ class InertiaEstimationController : public LegController {
    * @param[out] leg_command_array_msg Command message after solving inverse
    * dynamics and including reference setpoints for each joint
    * @param[out] grf_array_msg GRF command message
+   * @return true if a valid command was produced
    */
   bool computeLegCommandArray(
       const quad_msgs::msg::RobotState& robot_state_msg,
@@ -36,7 +37,7 @@ class InertiaEstimationController : public LegController {
   }
 
  private:
-  /// Prior grf_array
+  /// Previous GRF command array
   Eigen::VectorXd last_grf_array_;
 
   /// Reference state for tracking

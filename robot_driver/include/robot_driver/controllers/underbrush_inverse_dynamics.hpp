@@ -4,17 +4,16 @@
 #include <quad_msgs/msg/body_force_estimate.hpp>
 #include <robot_driver/controllers/leg_controller.hpp>
 
-//! Implements inverse dynamics as a controller within the ROS framework.
+//! Inverse dynamics controller with underbrush contact handling.
 /*!
-   InverseDynamicsController implements inverse dynamics logic. It should expose
-   a constructor that does any initialization required and an update method
-   called at some frequency.
+   UnderbrushInverseDynamicsController uses body force estimates to alter swing
+   behavior when legs contact vegetation or brush.
 */
 class UnderbrushInverseDynamicsController : public LegController {
  public:
   /**
-   * @brief Constructor for InverseDynamicsController
-   * @return Constructed object of type InverseDynamicsController
+   * @brief Constructor for UnderbrushInverseDynamicsController
+   * @return Constructed object of type UnderbrushInverseDynamicsController
    */
   UnderbrushInverseDynamicsController(
       rclcpp::Node::SharedPtr node, const std::string& robot_ns,
@@ -22,7 +21,7 @@ class UnderbrushInverseDynamicsController : public LegController {
 
   /**
    * @brief Update body force estimate
-   * @param[in] msg current force estimates
+   * @param[in] msg Current force estimates
    */
   void updateBodyForceEstimate(
       const quad_msgs::msg::BodyForceEstimate::SharedPtr msg);
@@ -30,11 +29,12 @@ class UnderbrushInverseDynamicsController : public LegController {
   /**
    * @brief Set underbrush-specific gains and parameters
    * @param[in] retract_vel Retraction speed in rad/s when in contact
-   * @param[in] tau_push Contact orwards push torque for distal link in N m
+   * @param[in] tau_push Forward push torque for distal link in N m
    * @param[in] tau_contact_start Threshold for contact initiation in N m
    * @param[in] tau_contact_end Threshold for contact ending in N m
    * @param[in] min_switch Minimum time between transitions in s
    * @param[in] t_down Time for foot to come down in s
+   * @param[in] t_up Time before contact-start detection in s
    */
   void setUnderbrushParams(double retract_vel, double tau_push,
                            double tau_contact_start, double tau_contact_end,
@@ -47,6 +47,7 @@ class UnderbrushInverseDynamicsController : public LegController {
    * @param[out] leg_command_array_msg Command message after solving inverse
    * dynamics and including reference setpoints for each joint
    * @param[out] grf_array_msg GRF command message
+   * @return true if a valid command was produced
    */
   bool computeLegCommandArray(
       const quad_msgs::msg::RobotState& robot_state_msg,
@@ -62,7 +63,7 @@ class UnderbrushInverseDynamicsController : public LegController {
   }
 
  private:
-  /// Prior grf_array
+  /// Previous GRF command array
   Eigen::VectorXd last_grf_array_;
 
   /// Reference state for tracking

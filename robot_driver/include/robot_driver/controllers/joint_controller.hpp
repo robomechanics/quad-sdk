@@ -4,11 +4,10 @@
 #include <geometry_msgs/msg/vector3.hpp>
 #include <robot_driver/controllers/leg_controller.hpp>
 
-//! Implements inverse dynamics as a controller within the ROS framework.
+//! Single-joint torque override controller.
 /*!
-   JointController implements inverse dynamics logic. It should expose a
-   constructor that does any initialization required and an update method called
-   at some frequency.
+   JointController is used for direct leg/joint command testing while keeping
+   the same LegController interface as the full controllers.
 */
 class JointController : public LegController {
  public:
@@ -19,15 +18,21 @@ class JointController : public LegController {
   JointController(rclcpp::Node::SharedPtr node, const std::string& robot_ns,
                   std::shared_ptr<quad_utils::QuadKD2> quadKD);
 
+  /**
+   * @brief Update the selected leg, joint, and torque override
+   * @param[in] msg Vector encoded as [leg_idx, joint_idx, torque]
+   */
   void updateSingleJointCommand(
       const geometry_msgs::msg::Vector3::SharedPtr& msg);
 
   /**
    * @brief Compute the leg command array message for a given current state and
    * reference plan
+   * @param[in] robot_state_msg Message of the current robot state
    * @param[out] leg_command_array_msg Command message after solving inverse
    * dynamics and including reference setpoints for each joint
    * @param[out] grf_array_msg GRF command message
+   * @return true if a valid command was produced
    */
   bool computeLegCommandArray(
       const quad_msgs::msg::RobotState& robot_state_msg,

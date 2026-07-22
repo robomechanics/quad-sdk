@@ -11,10 +11,10 @@
 #include <sensor_msgs/msg/joint_state.hpp>
 #include <std_msgs/msg/string.hpp>
 
-//! Implements an abstract class for state estimator.
-//! This class provides an interface for different types of estimators
+//! Base interface for robot state estimators.
 /*!
-   StateEstimator provides an abstract state estimator class
+   StateEstimator stores the latest sensor inputs and exposes a common update
+   API for complementary-filter and EKF estimators.
 */
 class StateEstimator {
  public:
@@ -26,16 +26,14 @@ class StateEstimator {
                  std::shared_ptr<quad_utils::QuadKD2> quadKD);
 
   /**
-   * @brief Virtual function for initialize filters, should be defined in
-   * derived class
-   * @param[in] nh_ ROS Node Ha
+   * @brief Initialize estimator state and parameters
    */
   virtual void init() = 0;
 
   /**
-   * @brief Virtual update function for update robot state, should be defined in
-   * derived class
-   * @param[out] last_robot_state_msg robot state
+   * @brief Update robot state once
+   * @param[out] last_robot_state_msg Robot state message to update
+   * @return true if the estimator produced a valid state
    */
   virtual bool updateOnce(quad_msgs::msg::RobotState& last_robot_state_msg) = 0;
 

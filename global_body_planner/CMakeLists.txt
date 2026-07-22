@@ -116,7 +116,7 @@ if(BUILD_TESTING)
     ENV
       GLOBAL_BODY_PLANNER_TEST_PARAMS=${CMAKE_CURRENT_SOURCE_DIR}/config/global_body_planner.yaml
       GLOBAL_BODY_PLANNER_TOPIC_PARAMS=${CMAKE_CURRENT_SOURCE_DIR}/config/global_body_planner_topics.yaml
-      GLOBAL_BODY_PLANNER_ROBOT_PARAMS=${CMAKE_CURRENT_SOURCE_DIR}/../quad_utils/config/spirit.yaml
+      GLOBAL_BODY_PLANNER_ROBOT_PARAMS=${CMAKE_CURRENT_SOURCE_DIR}/../quad_utils/config/go2.yaml
   )
 
   if(TARGET ${PROJECT_NAME}_test)

@@ -13,6 +13,7 @@
 
 using gr::MBLink;
 
+/// Per-limb command packet sent through the Spirit mblink transport.
 struct LimbCmd_t {
   Eigen::Vector3f pos, vel, tau;
   short kp[3];
@@ -20,6 +21,7 @@ struct LimbCmd_t {
   bool restart_flag;
 };
 
+/// Named mainboard data vectors returned by mblink.
 typedef std::unordered_map<std::string, Eigen::VectorXf> MBData_t;
 
 //! Hardware interface for the Spirit40 quadruped from Ghost Robotics.
@@ -50,19 +52,19 @@ class SpiritInterface : public HardwareInterface {
   /**
    * @brief Send commands to the robot via the mblink protocol
    * @param[in] leg_command_array_msg Message containing leg commands
-   * @param[in] user_data Vector containing user data
-   * @return boolean indicating success of transmission
+   * @param[in] user_tx_data Extra command data sent to the mainboard
+   * @return true if command transmission succeeded
    */
   virtual bool send(
       const quad_msgs::msg::LegCommandArray& leg_command_array_msg,
       const Eigen::VectorXd& user_tx_data);
 
   /**
-   * @brief Recieve data from the robot via the mblink protocol
+   * @brief Receive data from the robot via the mblink protocol
    * @param[out] joint_state_msg Message containing joint state information
-   * @param[out] imu_msg Message containing imu information
-   * @param[out] user_data Vector containing user data
-   * @return Boolean for whether data was successfully received
+   * @param[out] imu_msg Message containing IMU information
+   * @param[out] user_rx_data Extra feedback data from the mainboard
+   * @return true if data was successfully received
    */
   virtual bool recv(sensor_msgs::msg::JointState& joint_state_msg,
                     sensor_msgs::msg::Imu& imu_msg,

@@ -21,11 +21,10 @@
 #include <vector>
 #include <filesystem>
 
-//! Implements an abstract class for learned policies.
+//! ONNX Runtime leg controller for learned policies.
 /*!
-   LearnedPolicy provides an abstract learned policy class. It contains
-   pure virtual methods for running inference and computing motor commands for
-   each leg to be sent to the robot.
+   LearnedPolicy builds policy observations from robot state, velocity command,
+   and IMU data, then maps ONNX actions into motor commands.
 */
 
 class LearnedPolicy : public LegController {
@@ -38,9 +37,16 @@ class LearnedPolicy : public LegController {
                 std::shared_ptr<quad_utils::QuadKD2> quadKD);
 
   /**
-   * @brief Set the desired proportional and derivative gains for all legs
-   * @param[in] kp Proportional gains
-   * @param[in] kd Derivative Gains
+   * @brief Configure gains, policy model, and nominal stance
+   * @param[in] stance_kp Stance phase proportional gains
+   * @param[in] stance_kd Stance phase derivative gains
+   * @param[in] swing_kp Swing phase proportional gains
+   * @param[in] swing_kd Swing phase derivative gains
+   * @param[in] swing_kp_cart Cartesian swing proportional gains
+   * @param[in] swing_kd_cart Cartesian swing derivative gains
+   * @param[in] model_path Absolute path to ONNX model weights
+   * @param[in] policy_inference_rate Policy inference rate in Hz
+   * @param[in] stand_joint_angles Nominal standing joint angles
    */
   void init(const std::vector<double>& stance_kp,
             const std::vector<double>& stance_kd,
@@ -52,41 +58,69 @@ class LearnedPolicy : public LegController {
             double policy_inference_rate = 50.0,
             const std::vector<double>& stand_joint_angles = {0.0, 0.8, -1.5});
 
-  void loadONNXModel();
   /**
-   * @brief Adjust Positional Targets to Work with Differences between Isaac and
-   * Quad-SDK URDF
-   *
+   * @brief Load the configured ONNX model
+   */
+  void loadONNXModel();
+
+  /**
+   * @brief Remap policy joint targets to Quad-SDK joint conventions
    */
   void adjustPositionalTargets();
 
+  /**
+   * @brief Remap observations to the policy's expected convention
+   */
   void adjustObservationalTargets();
 
+  /**
+   * @brief Build the current policy observation vector
+   * @param[in] robot_state_msg Current robot state
+   */
   void computeObservations(const quad_msgs::msg::RobotState& robot_state_msg);
 
+  /**
+   * @brief Run one ONNX inference pass
+   */
   void runInference();
 
+  /**
+   * @brief Update the cached velocity command
+   * @param[in] msg Command velocity vector [vx, vy, yaw_rate]
+   * @param[in] t_now Timestamp of the command
+   */
   void updateCmdVelMsg(Eigen::VectorXd msg, rclcpp::Time& t_now);
 
+  /**
+   * @brief Update the cached IMU message
+   * @param[in] imu_msg IMU message
+   */
   void updateImuMsg(const sensor_msgs::msg::Imu& imu_msg);
 
+  /**
+   * @brief Compute motor commands from the learned policy
+   * @param[in] robot_state_msg Current robot state
+   * @param[out] leg_command_array_msg Motor command output
+   * @param[out] grf_array_msg GRF output message
+   * @return true if a valid command was produced
+   */
   bool computeLegCommandArray(
       const quad_msgs::msg::RobotState& robot_state_msg,
       quad_msgs::msg::LegCommandArray& leg_command_array_msg,
       quad_msgs::msg::GRFArray& grf_array_msg);
 
  protected:
-  /// Onnx Runtime Env Object
+  /// ONNX Runtime environment
   Ort::Env env_{ORT_LOGGING_LEVEL_WARNING, "ros2-onnx"};
 
-  /// Onnx Runtime Session Options
+  /// ONNX Runtime session options
   Ort::SessionOptions so_{};
 
   /// ONNX Tensor Buffer Memory Info
   Ort::MemoryInfo mem_info_{
       Ort::MemoryInfo::CreateCpu(OrtDeviceAllocator, OrtMemTypeDefault)};
 
-  /// Unique Pointer to Onnx Runtime Session
+  /// ONNX Runtime session
   std::unique_ptr<Ort::Session> session_;
 
   /// Cached IMU message (for acceleration access)
@@ -116,12 +150,16 @@ class LearnedPolicy : public LegController {
   /// Whether first inference has been run yet
   bool first_inference_ = true;
 
-  double scale_factor_ = 0.25;  // Grabbed Directly From IsaacLab Repo
+  /// Action scale factor from the policy training environment
+  double scale_factor_ = 0.25;
 
+  /// Nominal joint pose used as the policy action offset
   Eigen::VectorXd nominal_stance_pose_{Eigen::VectorXd::Zero(12)};
 
+  /// Temporary action buffer used while remapping policy output
   Eigen::VectorXd temp_actions_{Eigen::VectorXd::Zero(12)};
 
+  /// Whether the policy state has been initialized
   bool initialized_ = true;
 };
 #endif  // LEARNED_POLICY_H

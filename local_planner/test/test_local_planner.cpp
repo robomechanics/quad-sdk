@@ -33,15 +33,15 @@ std::string runXacro(const std::string& xacro_path) {
   return result;
 }
 
-std::string spiritRobotDescription() {
+std::string go2RobotDescription() {
   static const std::string urdf = []() {
     const char* source_dir = std::getenv("LOCAL_PLANNER_SOURCE_DIR");
     if (source_dir == nullptr) {
       throw std::runtime_error("Missing local_planner source env");
     }
     return runXacro(std::string(source_dir) +
-                    "/quad_simulator/spirit_description/models/spirit/urdf/"
-                    "spirit.urdf.xacro");
+                    "/quad_simulator/go2_description/models/go2/urdf/"
+                    "go2.urdf.xacro");
   }();
   return urdf;
 }
@@ -59,8 +59,8 @@ rclcpp::NodeOptions plannerNodeOptions(
 
   std::vector<rclcpp::Parameter> overrides = {
       rclcpp::Parameter("namespace", "robot_1"),
-      rclcpp::Parameter("robot_type", "spirit"),
-      rclcpp::Parameter("robot_description", spiritRobotDescription()),
+      rclcpp::Parameter("robot_type", "go2"),
+      rclcpp::Parameter("robot_description", go2RobotDescription()),
   };
   overrides.insert(overrides.end(), extra.begin(), extra.end());
 
@@ -100,7 +100,7 @@ TEST(LocalPlannerTest, ConstructorLoadsYamlConfigurationAndInterfaces) {
   auto node = makeNode();
   LocalPlanner planner(node);
 
-  EXPECT_EQ(planner.robot_name_, "spirit");
+  EXPECT_EQ(planner.robot_name_, "go2");
   EXPECT_EQ(planner.robot_ns_, "robot_1");
   EXPECT_EQ(planner.map_frame_, "map");
   EXPECT_DOUBLE_EQ(planner.update_rate_, 333.0);

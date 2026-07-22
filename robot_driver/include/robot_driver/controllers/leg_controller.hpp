@@ -113,7 +113,8 @@ class LegController {
   /**
    * @brief Compute the leg command array message for a given current state and
    * reference plan
-   * @param[in] local_plan_msg Message of the local referance plan
+   * @param[in] msg Local reference plan message
+   * @param[in] t_msg Timestamp associated with the plan
    */
   void updateLocalPlanMsg(quad_msgs::msg::RobotPlan::SharedPtr msg,
                           const rclcpp::Time& t_msg);
@@ -162,7 +163,7 @@ class LegController {
   /// Bool for whether to override the state machine
   bool override_state_machine_;
 
-  // Absolute Path to ONNX Policy Weights
+  /// Absolute path to ONNX policy weights
   std::string model_path_;
 };
 

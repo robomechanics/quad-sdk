@@ -34,20 +34,20 @@ std::string runXacro(const std::string& xacro_path) {
   return result;
 }
 
-std::string spiritRobotDescription() {
+std::string go2RobotDescription() {
   static const std::string urdf = []() {
     const char* source_dir = std::getenv("NMPC_SOURCE_DIR");
     if (source_dir == nullptr) {
       throw std::runtime_error("Missing NMPC source env");
     }
     return runXacro(std::string(source_dir) +
-                    "/quad_simulator/spirit_description/models/spirit/urdf/"
-                    "spirit.urdf.xacro");
+                    "/quad_simulator/go2_description/models/go2/urdf/"
+                    "go2.urdf.xacro");
   }();
   return urdf;
 }
 
-double spiritMass() {
+double go2Mass() {
   static const double mass = []() {
     const char* robot_params = std::getenv("NMPC_ROBOT_PARAMS");
     if (robot_params == nullptr) {
@@ -83,8 +83,8 @@ rclcpp::NodeOptions nodeOptions() {
                      "--params-file", local_params, "--params-file",
                      robot_params});
   options.parameter_overrides({
-      rclcpp::Parameter("robot_description", spiritRobotDescription()),
-      rclcpp::Parameter("global_body_planner.mass", spiritMass()),
+      rclcpp::Parameter("robot_description", go2RobotDescription()),
+      rclcpp::Parameter("global_body_planner.mass", go2Mass()),
   });
   return options;
 }
@@ -93,13 +93,13 @@ std::shared_ptr<rclcpp::Node> makeNode() {
   auto node = std::make_shared<rclcpp::Node>("local_planner", nodeOptions());
   if (!node->has_parameter("robot_description")) {
     node->declare_parameter<std::string>("robot_description",
-                                         spiritRobotDescription());
+                                         go2RobotDescription());
   }
   return node;
 }
 
 std::unique_ptr<NMPCController> makeController() {
-  return std::make_unique<NMPCController>(makeNode(), 0, "spirit");
+  return std::make_unique<NMPCController>(makeNode(), 2, "go2");
 }
 
 std::vector<std::vector<bool>> stanceSchedule(int horizon) {

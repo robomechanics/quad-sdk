@@ -34,20 +34,20 @@ std::string runXacro(const std::string& xacro_path) {
   return result;
 }
 
-std::string spiritRobotDescription() {
+std::string go2RobotDescription() {
   static const std::string urdf = []() {
     const char* source_dir = std::getenv("NMPC_SOURCE_DIR");
     if (source_dir == nullptr) {
       throw std::runtime_error("Missing NMPC source env");
     }
     return runXacro(std::string(source_dir) +
-                    "/quad_simulator/spirit_description/models/spirit/urdf/"
-                    "spirit.urdf.xacro");
+                    "/quad_simulator/go2_description/models/go2/urdf/"
+                    "go2.urdf.xacro");
   }();
   return urdf;
 }
 
-double spiritMass() {
+double go2Mass() {
   static const double mass = []() {
     const char* robot_params = std::getenv("NMPC_ROBOT_PARAMS");
     if (robot_params == nullptr) {
@@ -80,8 +80,8 @@ rclcpp::NodeOptions nodeOptions(
   }
 
   std::vector<rclcpp::Parameter> overrides = {
-      rclcpp::Parameter("robot_description", spiritRobotDescription()),
-      rclcpp::Parameter("global_body_planner.mass", spiritMass()),
+      rclcpp::Parameter("robot_description", go2RobotDescription()),
+      rclcpp::Parameter("global_body_planner.mass", go2Mass()),
   };
   overrides.insert(overrides.end(), extra.begin(), extra.end());
 
@@ -98,7 +98,7 @@ std::shared_ptr<rclcpp::Node> makeNode(
   auto node = std::make_shared<rclcpp::Node>("local_planner", nodeOptions(extra));
   if (!node->has_parameter("robot_description")) {
     node->declare_parameter<std::string>("robot_description",
-                                         spiritRobotDescription());
+                                         go2RobotDescription());
   }
   return node;
 }
@@ -107,10 +107,10 @@ std::shared_ptr<rclcpp::Node> makeNode(
 
 TEST(NMPCControllerTest, ConstructorLoadsYamlConfigurationAndSolverState) {
   auto node = makeNode();
-  NMPCController controller(node, 0, "spirit");
+  NMPCController controller(node, 2, "go2");
 
-  EXPECT_EQ(controller.robot_ns_, "spirit");
-  EXPECT_EQ(controller.robot_id_, 0);
+  EXPECT_EQ(controller.robot_ns_, "go2");
+  EXPECT_EQ(controller.robot_id_, 2);
   EXPECT_EQ(controller.N_, 26);
   EXPECT_EQ(controller.N_max_, 26);
   EXPECT_EQ(controller.N_min_, 10);
@@ -132,20 +132,20 @@ TEST(NMPCControllerTest, ConstructorLoadsYamlConfigurationAndSolverState) {
   EXPECT_EQ(controller.config_.u_dim_null, 24);
 }
 
-TEST(NMPCControllerTest, RobotIdDefaultsToSpiritForUnknownId) {
+TEST(NMPCControllerTest, RobotIdSelectsGo2ForGo2Id) {
   auto node = makeNode();
-  NMPCController controller(node, 99, "unknown");
+  NMPCController controller(node, 2, "go2");
 
-  EXPECT_EQ(controller.robot_ns_, "spirit");
-  EXPECT_EQ(controller.robot_id_, 99);
-  EXPECT_EQ(controller.mynlp_->default_system_, SPIRIT);
+  EXPECT_EQ(controller.robot_ns_, "go2");
+  EXPECT_EQ(controller.robot_id_, 2);
+  EXPECT_EQ(controller.mynlp_->default_system_, GO2);
 }
 
 TEST(NMPCControllerTest, HorizonLengthShrinksOnSlowSolveAndRecovers) {
   auto node = makeNode({
       rclcpp::Parameter("nmpc_controller.enable_variable_horizon", true),
   });
-  NMPCController controller(node, 0, "spirit");
+  NMPCController controller(node, 2, "go2");
 
   controller.diagnostics_.compute_time = 0.08;
   controller.updateHorizonLength();
@@ -162,7 +162,7 @@ TEST(NMPCControllerTest, HorizonLengthShrinksOnSlowSolveAndRecovers) {
 
 TEST(NMPCControllerTest, AdaptiveComplexityPromotesViolatingElements) {
   auto node = makeNode();
-  NMPCController controller(node, 0, "spirit");
+  NMPCController controller(node, 2, "go2");
   controller.is_adaptive_complexity_sparse_ = false;
 
   Eigen::MatrixXd state_traj =

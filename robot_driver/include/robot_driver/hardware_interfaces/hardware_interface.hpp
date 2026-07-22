@@ -22,8 +22,8 @@
 
 //! Implements an abstract class for robot hardware interfaces.
 /*!
-   HardwareInterface provides an abstract robot hardware interface class. The
-   virtual functions declared here must be implemented by the derived class.
+   HardwareInterface provides the transport boundary between robot_driver and
+   robot-specific low-level APIs.
 */
 class HardwareInterface {
  public:
@@ -48,19 +48,19 @@ class HardwareInterface {
   /**
    * @brief Send commands to the robot
    * @param[in] leg_command_array_msg Message containing leg commands
-   * @param[in] user_data Vector containing user data
-   * @return boolean indicating success of transmission
+   * @param[in] user_tx_data Extra transport-specific command data
+   * @return true if command transmission succeeded
    */
   virtual bool send(
       const quad_msgs::msg::LegCommandArray& leg_command_array_msg,
       const Eigen::VectorXd& user_tx_data) = 0;
 
   /**
-   * @brief Recieve data from the robot
+   * @brief Receive data from the robot
    * @param[out] joint_state_msg Message containing joint state information
-   * @param[out] imu_msg Message containing imu information
-   * @param[out] user_data Vector containing user data
-   * @return Boolean for whether data was successfully received
+   * @param[out] imu_msg Message containing IMU information
+   * @param[out] user_rx_data Extra transport-specific feedback data
+   * @return true if data was successfully received
    */
   virtual bool recv(sensor_msgs::msg::JointState& joint_state_msg,
                     sensor_msgs::msg::Imu& imu_msg,

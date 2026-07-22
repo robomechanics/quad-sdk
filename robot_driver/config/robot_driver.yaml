@@ -1,18 +1,16 @@
 /**/robot_driver:
   ros__parameters:
     robot_driver:
-      update_rate: 500.0 
-      publish_rate: 500.0
-      mocap_rate: 360.0 # This must match the mocap frame rate or velocity estimates will be mis-scaled
-      mocap_dropout_threshold: 0.035 # s
-      filter_time_constant: 0.01 # s
-      input_timeout: 0.2
-      state_timeout: 0.1
-      heartbeat_timeout: 0.2
+      update_rate: 500.0                       # Control loop rate, Hz
+      publish_rate: 500.0                      # State and command publish rate, Hz
+      mocap_rate: 360.0                        # Mocap frame rate used for velocity estimates, Hz
+      mocap_dropout_threshold: 0.035           # Max mocap gap before dropout, s
+      filter_time_constant: 0.01               # Command/filter time constant, s
+      input_timeout: 0.2                       # Max command age before timeout, s
+      state_timeout: 0.1                       # Max state age before timeout, s
+      heartbeat_timeout: 0.2                   # Max heartbeat age before timeout, s
 
-      # Complementary filter coefficients in state-space form,
-      # which can be computed by c2d(1/s*(1-G(s))) and c2d(s*G(s)),
-      # where G(s) is a second-order low-pass filter
+      # Complementary filter state-space coefficients.
       low_pass_a: [1.863081589528582, -0.871860350323577, 1.0, 0.0]
       low_pass_b: [2.0, 0.0]
       low_pass_c: [1.469526956982712, -1.476621472298373]
@@ -22,39 +20,38 @@
       high_pass_c: [0.031912805108981, -0.028979795079613]
       high_pass_d: [0.0009996017974875904]
 
-      # EKF noise and bias parameters
-      bias_x: -0.10
-      bias_y: -0.17
-      bias_z: -0.35
-      bias_r: -0.0047
-      bias_p: -0.0079
-      bias_w: -0.0082
-      na: 0.001      # accelerometer noise (position process)
-      nv: 0.005      # velocity process noise
-      ng: 0.01       # gyro noise
-      ba: 0.001      # accelerometer bias
-      bg: 0.001      # gyro bias
-      nf: 0.1        # foot position process noise (high - feet move during swing)
-      nfk: 0.005     # forward kinematics measurement noise
-      ne: 0.005      # encoder velocity measurement noise
-      nfh: 0.01      # foot height measurement noise
-      P0: 3.0      # initial covariance (low - GT init is accurate)
-      contact_w: 100.0  # weight on foot contact
-      thresh_out: 10.0  # innovation outlier rejection threshold
-      foot_radius: 0.022 # toe radius
+      # EKF biases and noise terms.
+      bias_x: -0.10                          # Position bias in x, m
+      bias_y: -0.17                          # Position bias in y, m
+      bias_z: -0.35                          # Position bias in z, m
+      bias_r: -0.0047                        # Roll bias, rad
+      bias_p: -0.0079                        # Pitch bias, rad
+      bias_w: -0.0082                        # Yaw-rate bias, rad/s
+      na: 0.001                              # Accelerometer process noise
+      nv: 0.005                              # Velocity process noise
+      ng: 0.01                               # Gyro process noise
+      ba: 0.001                              # Accelerometer bias noise
+      bg: 0.001                              # Gyro bias noise
+      nf: 0.1                                # Foot position process noise
+      nfk: 0.005                             # Forward-kinematics measurement noise
+      ne: 0.005                              # Encoder velocity measurement noise
+      nfh: 0.01                              # Foot height measurement noise
+      P0: 3.0                                # Initial covariance
+      contact_w: 100.0                       # Foot-contact measurement weight
+      thresh_out: 10.0                       # Innovation outlier threshold
+      foot_radius: 0.022                     # Toe radius, m
 
-      model_path: /root/ros2_ws/src/quad-sdk/robot_driver/include/robot_driver/models/go2/policy.onnx # Path to Policy Onnx File
-      policy_inference_rate: 50.0  # Hz, rate at which learned policy runs inference (PD tracking runs at update_rate)
-      cmd_vel_filter_const: 0.10
-      cmd_vel_scale: 1.0
+      model_path: /root/ros2_ws/src/quad-sdk/robot_driver/include/robot_driver/models/go2/policy.onnx  # Learned-policy ONNX path
+      policy_inference_rate: 50.0             # Learned-policy inference rate, Hz
+      cmd_vel_filter_const: 0.10              # Low-pass filter constant for twist commands
+      cmd_vel_scale: 1.0                      # Scale factor applied to twist commands
 
     underbrush_swing:
-      retract_vel: 15.0 # 15 # rad/s retraction speed at proximal link
-      tau_push: 2.0 # N m forward torque at distal link
-      tau_contact_start: 3.0 # N m contact initiation detection threshold (between original 2.0 and over-corrected 8.0; tune from echoed BFE values)
-      tau_contact_end: 3.0   # N m contact break detection threshold
-      min_switch: 0.1 # s minimum time between switching
-      t_down: 0.135 # s time before requiring leg extension
-      t_up: 0.04 # s time before allowing contact initiation detection
-    ## Note these quantities are tuned for a gait period of 0.54
+      retract_vel: 15.0                       # Proximal-link retraction speed, rad/s
+      tau_push: 2.0                           # Distal-link forward torque, N m
+      tau_contact_start: 3.0                  # Contact start torque threshold, N m
+      tau_contact_end: 3.0                    # Contact end torque threshold, N m
+      min_switch: 0.1                         # Minimum time between contact switches, s
+      t_down: 0.135                           # Time before requiring leg extension, s
+      t_up: 0.04                              # Time before contact-start detection, s
     
