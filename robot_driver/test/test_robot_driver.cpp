@@ -139,74 +139,6 @@ class TestStateEstimator : public StateEstimator {
   }
 };
 
-struct RobotKinematicsConfig {
-  std::string xacro_path;
-  std::array<std::array<std::string, 3>, 4> leg_joint_names;
-  std::array<std::array<std::string, 4>, 4> leg_frame_names;
-  double abad_sign, abad_offset;
-  double hip_sign, hip_offset;
-  double knee_sign, knee_offset;
-};
-
-static RobotKinematicsConfig go2Cfg() {
-  RobotKinematicsConfig c;
-  c.xacro_path =
-      "quad_simulator/go2_description/models/go2/urdf/go2.urdf.xacro";
-  c.leg_joint_names = {{{{"8", "0", "1"}},
-                        {{"9", "2", "3"}},
-                        {{"10", "4", "5"}},
-                        {{"11", "6", "7"}}}};
-  c.leg_frame_names = {{{{"hip0", "upper0", "lower0", "toe0"}},
-                        {{"hip1", "upper1", "lower1", "toe1"}},
-                        {{"hip2", "upper2", "lower2", "toe2"}},
-                        {{"hip3", "upper3", "lower3", "toe3"}}}};
-  c.abad_sign = 1.0;
-  c.abad_offset = 0.0;
-  c.hip_sign = -1.0;
-  c.hip_offset = M_PI / 2.0;
-  c.knee_sign = 1.0;
-  c.knee_offset = -M_PI;
-  return c;
-}
-
-template <typename T>
-static void declareOrSet(const rclcpp::Node::SharedPtr& node,
-                         const std::string& name, const T& value) {
-  if (node->has_parameter(name)) {
-    node->set_parameter(rclcpp::Parameter(name, value));
-  } else {
-    node->declare_parameter<T>(name, value);
-  }
-}
-
-static void loadRobotParams(const rclcpp::Node::SharedPtr& node,
-                            const RobotKinematicsConfig& cfg) {
-  const char* source_dir = std::getenv("ROBOT_DRIVER_SOURCE_DIR");
-  if (source_dir == nullptr) {
-    throw std::runtime_error("Missing ROBOT_DRIVER_SOURCE_DIR");
-  }
-  const std::string xacro_path =
-      std::string(source_dir) + "/" + cfg.xacro_path;
-  declareOrSet(node, "robot_description", runXacro(xacro_path));
-
-  for (int i = 0; i < 4; i++) {
-    const std::string p = "leg_" + std::to_string(i);
-    declareOrSet(node, p + ".joints.abad.name", cfg.leg_joint_names[i][0]);
-    declareOrSet(node, p + ".joints.hip.name", cfg.leg_joint_names[i][1]);
-    declareOrSet(node, p + ".joints.knee.name", cfg.leg_joint_names[i][2]);
-    declareOrSet(node, p + ".joints.abad.sign", cfg.abad_sign);
-    declareOrSet(node, p + ".joints.abad.offset", cfg.abad_offset);
-    declareOrSet(node, p + ".joints.hip.sign", cfg.hip_sign);
-    declareOrSet(node, p + ".joints.hip.offset", cfg.hip_offset);
-    declareOrSet(node, p + ".joints.knee.sign", cfg.knee_sign);
-    declareOrSet(node, p + ".joints.knee.offset", cfg.knee_offset);
-    declareOrSet(node, p + ".frames.hip", cfg.leg_frame_names[i][0]);
-    declareOrSet(node, p + ".frames.upper", cfg.leg_frame_names[i][1]);
-    declareOrSet(node, p + ".frames.lower", cfg.leg_frame_names[i][2]);
-    declareOrSet(node, p + ".frames.toe", cfg.leg_frame_names[i][3]);
-  }
-}
-
 class TestUnitreeInterface : public UnitreeInterface {
  public:
   explicit TestUnitreeInterface(const std::string& robot_name = "go2")
@@ -223,8 +155,6 @@ class TestUnitreeInterface : public UnitreeInterface {
 
 static std::shared_ptr<quad_utils::QuadKD2> makeGo2Kinematics(
     const rclcpp::Node::SharedPtr& node) {
-  RobotKinematicsConfig cfg = go2Cfg();
-  loadRobotParams(node, cfg);
   return std::make_shared<quad_utils::QuadKD2>(node);
 }
 
