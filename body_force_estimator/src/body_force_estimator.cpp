@@ -30,6 +30,47 @@ BodyForceEstimator::BodyForceEstimator(rclcpp::Node::SharedPtr node)
   quad_utils::loadROSParamDefault(node_, "body_force_estimator.cancel_friction",
                                   cancel_friction_, 1);
 
+  // Select which robot's dynamics implementation the runtime pointers point at.
+  // Recognized values: "spirit" (default) and "go2". Anything else falls back
+  // to spirit. See body_force_estimator_dynamics.hpp for the dispatch details.
+  std::string robot_type;
+  quad_utils::loadROSParamDefault(node_, "robot_type", robot_type,
+                                  std::string("spirit"));
+  force_estimation_dynamics::loadRobot(robot_type);
+  RCLCPP_INFO(node_->get_logger(),
+              "body_force_estimator: robot_type='%s' → using %s dynamics",
+              robot_type.c_str(),
+              (robot_type == "go2") ? "Go2" : "Spirit40");
+
+  // Optional per-launch override of effort_sign[] — needed to switch between
+  // Gazebo (whose estimator_plugin.cpp hardcodes -torque_msg.y() on the hip
+  // channel, so Go2 needs effort_sign={1,-1,1} to undo) and real Unitree
+  // hardware (unitree_interface passes tau_est() through directly, so
+  // Go2 needs effort_sign={1,1,1}). If the yaml array size != 3, the impl
+  // default (Gazebo-safe {1,-1,1} for Go2, {1,1,1} for Spirit) stays.
+  std::vector<double> effort_sign_default = {
+      force_estimation_dynamics::effort_sign[0],
+      force_estimation_dynamics::effort_sign[1],
+      force_estimation_dynamics::effort_sign[2]};
+  std::vector<double> effort_sign_override;
+  quad_utils::loadROSParamDefault(node_, "body_force_estimator.effort_sign",
+                                  effort_sign_override, effort_sign_default);
+  if (effort_sign_override.size() == 3) {
+    force_estimation_dynamics::effort_sign[0] = effort_sign_override[0];
+    force_estimation_dynamics::effort_sign[1] = effort_sign_override[1];
+    force_estimation_dynamics::effort_sign[2] = effort_sign_override[2];
+  } else {
+    RCLCPP_WARN(node_->get_logger(),
+                "body_force_estimator.effort_sign has %zu elements, expected "
+                "3 (abad,hip,knee). Falling back to impl default.",
+                effort_sign_override.size());
+  }
+  RCLCPP_INFO(node_->get_logger(),
+              "body_force_estimator: active effort_sign = [%+.1f, %+.1f, %+.1f]",
+              force_estimation_dynamics::effort_sign[0],
+              force_estimation_dynamics::effort_sign[1],
+              force_estimation_dynamics::effort_sign[2]);
+
   // Setup pubs and subs
   robot_state_sub_ = node_->create_subscription<quad_msgs::msg::RobotState>(
       robot_state_topic, rclcpp::QoS(1).best_effort().durability_volatile(),
@@ -71,8 +112,11 @@ void BodyForceEstimator::update() {
   Eigen::Matrix3d K_O;
   K_O << K_O_, 0, 0, 0, K_O_, 0, 0, 0, K_O_;
 
-  // Joint directions (todo: make this a parameter or read the URDF)
-  int joint_dirs[3] = {1, -1, 1};
+  // Wire→URDF preprocessing pulled from the loaded robot dynamics
+  // (joint_scale / joint_offset). See body_force_estimator_dynamics.hpp.
+  // Spirit40 uses {1,-1,1}/{0,0,0} — matches the previous hardcoded
+  // joint_dirs exactly. Go2 uses {1,-1,1}/{0,pi/2,pi} to add the origin
+  // offsets that the wire encoders carry (see quad_utils/config/go2.yaml).
 
   if (last_state_msg_ == NULL || last_local_plan_msg_ == NULL) {
     return;
@@ -161,12 +205,13 @@ void BodyForceEstimator::update() {
       // Compute joint torque estimates with momentum observer
 
       for (int j = 0; j < 3; j++) {
-        // read joint data from message
+        // read joint data from message and convert wire→URDF frame
         int ind = 3 * i + j;
-        q[j] = joint_dirs[j] * last_state_msg_->joints.position[ind];
-        qd[j] = joint_dirs[j] * last_state_msg_->joints.velocity[ind];
-        tau[j] =
-            MO_ktau[j] * joint_dirs[j] * last_state_msg_->joints.effort[ind];
+        q[j]  = joint_scale[j] * last_state_msg_->joints.position[ind]
+              + joint_offset[j];
+        qd[j] = joint_scale[j] * last_state_msg_->joints.velocity[ind];
+        tau[j] = MO_ktau[j] * joint_scale[j] * effort_sign[j]
+               * last_state_msg_->joints.effort[ind];
 
         if (cancel_friction_) {
           // Compensate for friction with estimated dry and viscous parameters

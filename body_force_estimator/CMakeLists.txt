@@ -15,9 +15,14 @@ find_package(quad_utils REQUIRED)
 # further dependencies manually.
 # find_package(<dependency> REQUIRED)
 
+# Both robot dynamics variants + the runtime dispatcher.
+# Selection between them is done at RUNTIME via the `robot_type` ROS parameter
+# ("spirit" default / "go2"); see body_force_estimator_dynamics.hpp.
 add_library(${PROJECT_NAME}
   src/body_force_estimator.cpp
-  src/body_force_estimator_dynamics.cpp
+  src/body_force_estimator_dynamics.cpp           # dispatcher / pointers
+  src/spirit_body_force_estimator_dynamics.cpp    # spirit_impl namespace
+  src/go2_body_force_estimator_dynamics.cpp       # go2_impl namespace
 )
 ament_target_dependencies(${PROJECT_NAME}
   rclcpp

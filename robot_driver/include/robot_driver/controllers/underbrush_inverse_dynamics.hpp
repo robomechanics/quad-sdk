@@ -29,16 +29,21 @@ class UnderbrushInverseDynamicsController : public LegController {
 
   /**
    * @brief Set underbrush-specific gains and parameters
-   * @param[in] retract_vel Retraction speed in rad/s when in contact
+   * @param[in] retract_vel Retraction speed in rad/s (magnitude) when in contact
    * @param[in] tau_push Contact orwards push torque for distal link in N m
    * @param[in] tau_contact_start Threshold for contact initiation in N m
    * @param[in] tau_contact_end Threshold for contact ending in N m
    * @param[in] min_switch Minimum time between transitions in s
    * @param[in] t_down Time for foot to come down in s
+   * @param[in] hip_retract_sign +1 for Spirit-convention URDFs where -retract_vel
+   *            on the hip produces a lift-and-back motion; -1 for URDFs whose
+   *            hip axis is flipped relative to Spirit (Go2). Defaults to +1 so
+   *            legacy behavior is unchanged when the yaml doesn't set it.
    */
   void setUnderbrushParams(double retract_vel, double tau_push,
                            double tau_contact_start, double tau_contact_end,
-                           double min_switch, double t_down, double t_up);
+                           double min_switch, double t_down, double t_up,
+                           double hip_retract_sign = 1.0);
 
   /**
    * @brief Compute the leg command array message for a given current state and
@@ -89,6 +94,11 @@ class UnderbrushInverseDynamicsController : public LegController {
   double min_switch_;
   double t_down_;
   double t_up_;
+  /// Sign of the retract-velocity command on the hip. +1 for Spirit
+  /// (URDF hip axis = -y), -1 for Go2 (URDF hip axis = +y). Multiplied
+  /// against -retract_vel_ at the hip vel_setpoint so Go2's flipped
+  /// axis produces the same physical lift-and-back motion as Spirit.
+  double hip_retract_sign_ = 1.0;
 };
 
 #endif  // UNDERBRUSH_INVERSE_DYNAMICS_H

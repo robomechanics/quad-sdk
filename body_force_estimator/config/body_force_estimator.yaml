@@ -1,6 +1,21 @@
 /**/body_force_estimator:
   ros__parameters:
+    # Runtime dynamics selection — must match the robot being simulated/run.
+    # Valid values: "spirit" (default) or "go2". Recognized by
+    # body_force_estimator.cpp constructor; picks either spirit_impl or
+    # go2_impl symbol set (both compiled into the library).
+    robot_type: "go2"
     body_force_estimator:
       update_rate: 250.0
       K_O: 25.0 # 50
       cancel_friction: 1
+      # Per-launch override of effort_sign [abad, hip, knee] applied inside
+      # the BFE observer. Purpose: switch between Gazebo (whose
+      # estimator_plugin.cpp:361 hardcodes -torque_msg.y() on the hip,
+      # so Go2 needs -1.0 on hip to undo) and real Unitree hardware
+      # (unitree_interface.cpp:239 passes tau_est() through directly, so
+      # Go2 needs +1.0 on hip). Comment out to fall back to the impl
+      # default (Gazebo-safe {1,-1,1} for Go2, {1,1,1} for Spirit).
+      # SIM:      effort_sign: [1.0, -1.0, 1.0]
+      # HARDWARE: effort_sign: [1.0,  1.0, 1.0]
+      effort_sign: [1.0, -1.0, 1.0]   # currently SIM

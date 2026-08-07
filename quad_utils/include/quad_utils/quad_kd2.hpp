@@ -431,6 +431,27 @@ class QuadKD2 {
     return (point.z() - terrain.atPosition("z", pos));
   }
 
+  /**
+   * @brief Get the wire↔URDF sign for a single joint (1.0 or -1.0)
+   * @param[in] leg_index Leg (0..num_feet_-1)
+   * @param[in] joint_index 0=abad, 1=hip, 2=knee
+   *
+   * Conversion is q_wire = q_urdf * sign + origin_offset.
+   * For Spirit40 this returns 1.0 for every joint; for Go2 the hip
+   * returns -1.0. Callers that only knew the wire-frame value can
+   * combine this with getJointOriginOffset() to recover q_urdf.
+   */
+  double getJointSign(int leg_index, int joint_index) const;
+
+  /**
+   * @brief Get the wire↔URDF origin offset for a single joint
+   * @param[in] leg_index Leg (0..num_feet_-1)
+   * @param[in] joint_index 0=abad, 1=hip, 2=knee
+   *
+   * Returns 0 for Spirit40. Go2 uses +pi/2 (hip) and -pi (knee).
+   */
+  double getJointOriginOffset(int leg_index, int joint_index) const;
+
  private:
   /// Number of feet
   const int num_feet_ = 4;

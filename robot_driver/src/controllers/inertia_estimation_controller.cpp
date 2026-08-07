@@ -202,45 +202,59 @@ bool InertiaEstimationController::computeLegCommandArray(
       // 35.55 N m knee limit. Physical bandwidth limit, unfixable by kp.
       // Halving every frequency puts peak instantaneous content near
       // 2 Hz, which Go2 can track cleanly.
+      //
+      // ---- Smooth gate blending (replaces Spirit40's hard step) ----
+      // Original used `(sin(gate) < 0.8)` as a 1.0/0.0 step, causing
+      // 0.1-0.3 rad discontinuous jumps in pos_setpoint every ~0.4 s at
+      // each gate crossing → instantaneous ~12 N m torque demand → jerk.
+      // Replace with a tanh sigmoid so w_main+w_rest is C^inf-continuous.
+      // Sharpness = 6 gives a ~0.05 s transition window.
+      auto w_main = [](double s) {
+        return 0.5 + 0.5 * std::tanh(6.0 * (0.8 - s));
+      };
 
       // Abad envelope — reduced amplitude (0.25x Spirit40 original).
       // Stand hardware sits directly under the body, so abad swinging the
       // leg inward can bump into it. Keep total abad excursion under
       // ~0.15 rad from stand-nominal.
-      leg_command_array_msg.leg_commands.at(i)
-          .motor_commands.at(0)
-          .pos_setpoint = ((0.05 * sin(2 * t) + 0.1 * cos(7.5 * sin(1.3 * t))) *
-                              (sin(2.7 * t) < 0.8) +
-                          (sin(2.7 * t) >= 0.8) * (0.12 * sin(0.35 * t))) *
-                          joint_sign_[i][0] + joint_offset_[i][0];
+      {
+        const double wa = w_main(sin(2.7 * t));
+        leg_command_array_msg.leg_commands.at(i)
+            .motor_commands.at(0)
+            .pos_setpoint =
+            (wa * (0.05 * sin(2 * t) + 0.1 * cos(7.5 * sin(1.3 * t))) +
+             (1.0 - wa) * (0.12 * sin(0.35 * t))) *
+            joint_sign_[i][0] + joint_offset_[i][0];
+      }
 
       // Hip pitch — 0.7x Spirit40 amplitude with halved frequencies.
       // Ctrl range [-0.75, +1.35] → Go2 wire [+0.22, +2.32] via
       // (sign=-1, offset=pi/2). Vertical plane is unobstructed by stand.
-      leg_command_array_msg.leg_commands.at(i)
-          .motor_commands.at(1)
-          .pos_setpoint =
-          ((-0.7 * cos(3 * t) + 0.3 - 0.35 * cos(10 * sin(1.1 * t))) *
-              (sin(3.25 * t) < 0.8) +
-          (sin(3.25 * t) >= 0.8) * (0.7 * sin(0.45 * t) + 0.5)) *
-          joint_sign_[i][1] + joint_offset_[i][1];
+      {
+        const double wh = w_main(sin(3.25 * t));
+        leg_command_array_msg.leg_commands.at(i)
+            .motor_commands.at(1)
+            .pos_setpoint =
+            (wh * (-0.7 * cos(3 * t) + 0.3 - 0.35 * cos(10 * sin(1.1 * t))) +
+             (1.0 - wh) * (0.7 * sin(0.45 * t) + 0.5)) *
+            joint_sign_[i][1] + joint_offset_[i][1];
+      }
 
       // Knee — same amplitude structure as before, frequencies halved.
       // Go2 branch: ctrl range [+0.56, +2.16] → wire [-2.58, -0.98], safely
       // inside Go2 calf range [-2.72, -0.84].
       double q_ctrl_knee;
+      const double wk = w_main(sin(3.5 * t));
       if (kUseGo2KneeEnvelope) {
-        q_ctrl_knee = ((-0.492 * cos(5 * t) + 1.36 -
-                        0.308 * cos(12.5 * sin(0.7 * t))) *
-                          (sin(3.5 * t) < 0.8) +
-                      (sin(3.5 * t) >= 0.8) *
-                          (0.406 * sin(0.55 * t) + 1.36));
+        q_ctrl_knee =
+            wk * (-0.492 * cos(5 * t) + 1.36 -
+                  0.308 * cos(12.5 * sin(0.7 * t))) +
+            (1.0 - wk) * (0.406 * sin(0.55 * t) + 1.36);
       } else {
-        q_ctrl_knee = ((-0.8 * cos(5 * t) + 1.3 -
-                        0.5 * cos(12.5 * sin(0.7 * t))) *
-                          (sin(3.5 * t) < 0.8) +
-                      (sin(3.5 * t) >= 0.8) *
-                          (0.7 * sin(0.55 * t) + 0.7));
+        q_ctrl_knee =
+            wk * (-0.8 * cos(5 * t) + 1.3 -
+                  0.5 * cos(12.5 * sin(0.7 * t))) +
+            (1.0 - wk) * (0.7 * sin(0.55 * t) + 0.7);
       }
       leg_command_array_msg.leg_commands.at(i)
           .motor_commands.at(2)
@@ -248,6 +262,18 @@ bool InertiaEstimationController::computeLegCommandArray(
 
       }  // end excitation branch
 
+      // Dedicated flail PD gains — INDEPENDENT of swing_kp_/swing_kd_ used
+      // for underbrush walking (which are ~10/1, too soft to track ±1 rad
+      // pos_setpoint references against gravity + leg inertia). Chosen so
+      // max restoring torque (kp × max_ref_amplitude) stays within motor
+      // limits: hip/abad limit 23.7 Nm, knee 45.4 Nm. Bump these if
+      // tracking is still lagging in the recorded bags.
+      //   abad: kp*amp ≈ 20*0.15 = 3 Nm  (well within limit; amp small
+      //         because of stand collision constraint)
+      //   hip:  kp*amp ≈ 20*1.05 = 21 Nm (near hip motor limit 23.7)
+      //   knee: kp*amp ≈ 30*0.80 = 24 Nm (well within knee limit 45.4)
+      constexpr double flail_kp[3] = {20.0, 20.0, 30.0};  // abad, hip, knee
+      constexpr double flail_kd[3] = {2.0,  2.0,  3.0};
       for (int j = 0; j < 3; ++j) {
         leg_command_array_msg.leg_commands.at(i)
             .motor_commands.at(j)
@@ -255,10 +281,14 @@ bool InertiaEstimationController::computeLegCommandArray(
         leg_command_array_msg.leg_commands.at(i)
             .motor_commands.at(j)
             .torque_ff = 0;
+        // For the non-flailed legs (kTargetLeg gating), use SOFT gains
+        // (swing_kp_/kd_) so they hold their observed pose gently; for the
+        // flailed leg, use the stiff flail gains above.
+        const bool is_flail_leg = (kTargetLeg < 0) || (i == kTargetLeg);
         leg_command_array_msg.leg_commands.at(i).motor_commands.at(j).kp =
-            swing_kp_.at(j);
+            is_flail_leg ? flail_kp[j] : swing_kp_.at(j);
         leg_command_array_msg.leg_commands.at(i).motor_commands.at(j).kd =
-            swing_kd_.at(j);
+            is_flail_leg ? flail_kd[j] : swing_kd_.at(j);
       }
     }
 

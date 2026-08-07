@@ -189,7 +189,7 @@ def launch_local_planner(context, *args, **kwargs):
     config_robot_type = LaunchConfiguration('robot_type').perform(context)
     robot_specific_param_file = os.path.join(quad_utils_pkg.perform(context), 'config', config_robot_type + '.yaml')
 
-    if LaunchConfiguration('controller_mode').perform(context) == 'learned':
+    if LaunchConfiguration('controller_mode').perform(context) == 'learned' or LaunchConfiguration('controller_mode').perform(context) == 'underbrush_learned':
         return []
 
     return [
@@ -227,6 +227,7 @@ def launch_body_force_estimator(context, *args, **kwargs):
             parameters=[body_force_estimator_param_file, 
                     body_force_estimator_topics_file,
             {
+            'robot_type': LaunchConfiguration('robot_type'),
             'use_sim_time' : LaunchConfiguration('use_sim_time')
             }]
         )

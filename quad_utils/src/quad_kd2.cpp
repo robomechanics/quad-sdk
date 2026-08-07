@@ -234,6 +234,28 @@ double QuadKD2::getJointUpperLimit(int leg_index, int joint_index) const {
   return joint_max_[leg_index][joint_index];
 }
 
+double QuadKD2::getJointSign(int leg_index, int joint_index) const {
+  const auto& L = limbs_.at(leg_index);
+  switch (joint_index) {
+    case 0: return L.abad_conv.sign;
+    case 1: return L.hip_conv.sign;
+    case 2: return L.knee_conv.sign;
+    default:
+      throw std::runtime_error("Invalid joint index");
+  }
+}
+
+double QuadKD2::getJointOriginOffset(int leg_index, int joint_index) const {
+  const auto& L = limbs_.at(leg_index);
+  switch (joint_index) {
+    case 0: return L.abad_conv.origin_offset;
+    case 1: return L.hip_conv.origin_offset;
+    case 2: return L.knee_conv.origin_offset;
+    default:
+      throw std::runtime_error("Invalid joint index");
+  }
+}
+
 double QuadKD2::getLinkLength(int leg_index, int link_index) const {
   switch (link_index) {
     case 0:

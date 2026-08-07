@@ -49,12 +49,20 @@
       cmd_vel_scale: 1.0
 
     underbrush_swing:
-      retract_vel: 15.0 # 15 # rad/s retraction speed at proximal link
+      retract_vel: 20.0 # rad/s retraction speed at proximal link (magnitude)
       tau_push: 2.0 # N m forward torque at distal link
-      tau_contact_start: 3.0 # N m contact initiation detection threshold (between original 2.0 and over-corrected 8.0; tune from echoed BFE values)
-      tau_contact_end: 3.0   # N m contact break detection threshold
+      # DIAGNOSTIC: force force_mode always active during swing so retract
+      # direction can be visually inspected on empty ground. Restore normal
+      # tuning (tau_contact_start=2, tau_contact_end=5) once retract
+      # behavior is verified.
+      tau_contact_start: 2.0    # near-zero: any swing residual triggers
+      tau_contact_end: 5.0   # never met: force_mode holds through swing
       min_switch: 0.1 # s minimum time between switching
       t_down: 0.135 # s time before requiring leg extension
       t_up: 0.04 # s time before allowing contact initiation detection
+      # Sign of the hip retract direction. +1 for Spirit-convention URDFs
+      # (hip axis -y), -1 for URDFs whose hip axis is +y (Go2). Applied
+      # as: vel_setpoint = -retract_vel * hip_retract_sign.
+      hip_retract_sign: -1.0  # Go2: hip axis is +y in the URDF, needs fli, might need to be flipped back on hardware
     ## Note these quantities are tuned for a gait period of 0.54
     

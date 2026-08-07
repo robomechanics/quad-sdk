@@ -53,6 +53,7 @@ def generate_launch_description():
     logging = DeclareLaunchArgument('logging', default_value='false')
     controller = DeclareLaunchArgument('controller', default_value='inverse_dynamics')
     model_path = DeclareLaunchArgument('model_path', default_value='./policies/models/***')
+    gru_path = DeclareLaunchArgument('gru_path', default_value='./policies/gru/***')
     provider = DeclareLaunchArgument('provider', default_value = "tensorrt")
     estimator = DeclareLaunchArgument('estimator', default_value="comp_filter")
     debug_estimator = DeclareLaunchArgument('debug_estimator', default_value="none",
@@ -106,6 +107,7 @@ def generate_launch_description():
                     'estimator_id': LaunchConfiguration('estimator'),
                     'debug_estimator_id': LaunchConfiguration('debug_estimator'),
                     'model_path': LaunchConfiguration('model_path'),
+                    'gru_path' : LaunchConfiguration('gru_path'),
                     'provider': LaunchConfiguration('provider'),
                     'robot_description': ParameterValue(
                         LaunchConfiguration('robot_description'),

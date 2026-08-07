@@ -20,7 +20,8 @@ void UnderbrushInverseDynamicsController::updateBodyForceEstimate(
 
 void UnderbrushInverseDynamicsController::setUnderbrushParams(
     double retract_vel, double tau_push, double tau_contact_start,
-    double tau_contact_end, double min_switch, double t_down, double t_up) {
+    double tau_contact_end, double min_switch, double t_down, double t_up,
+    double hip_retract_sign) {
   retract_vel_ = retract_vel;
   tau_push_ = tau_push;
   tau_contact_start_ = tau_contact_start;
@@ -28,6 +29,7 @@ void UnderbrushInverseDynamicsController::setUnderbrushParams(
   min_switch_ = min_switch;
   t_down_ = t_down;
   t_up_ = t_up;
+  hip_retract_sign_ = hip_retract_sign;
 }
 
 bool UnderbrushInverseDynamicsController::computeLegCommandArray(
@@ -267,14 +269,33 @@ bool UnderbrushInverseDynamicsController::computeLegCommandArray(
         }
       }
 
-      // Push the joints out of bad configurations
-      if (robot_state_msg.joints.position.at(3 * i + 2) < 0.3) {
-        ref_underbrush_msg.joints.velocity.at(3 * i + 2) +=
-            -20 * (robot_state_msg.joints.position.at(3 * i + 2) - 0.3);
-      }
-      if (robot_state_msg.joints.position.at(3 * i + 1) < -0.5) {
-        ref_underbrush_msg.joints.velocity.at(3 * i + 1) +=
-            -20 * (robot_state_msg.joints.position.at(3 * i + 1) + 0.5);
+      // Push the joints out of bad configurations. Thresholds (-0.5 for hip,
+      // 0.3 for knee) were written for Spirit40, whose wire frame matches its
+      // URDF frame (sign=1, offset=0). Go2 wires hip with sign=-1, offset=pi/2
+      // and knee with sign=1, offset=-pi, so at stand the wire-frame knee is
+      // -1.5 rad -- which incorrectly trips the Spirit "knee too low" clamp
+      // every tick and drives the knee against retract_vel. Do the check in
+      // URDF frame instead and map the push velocity back to wire frame; this
+      // is a no-op for Spirit and correct for Go2.
+      {
+        const double hip_sign = quadKD_->getJointSign(i, 1);
+        const double hip_off  = quadKD_->getJointOriginOffset(i, 1);
+        const double knee_sign = quadKD_->getJointSign(i, 2);
+        const double knee_off  = quadKD_->getJointOriginOffset(i, 2);
+
+        const double q_hip_wire  = robot_state_msg.joints.position.at(3 * i + 1);
+        const double q_knee_wire = robot_state_msg.joints.position.at(3 * i + 2);
+        const double q_hip_urdf  = (q_hip_wire  - hip_off)  / hip_sign;
+        const double q_knee_urdf = (q_knee_wire - knee_off) / knee_sign;
+
+        if (q_knee_urdf < 0.3) {
+          const double v_push_urdf = -20 * (q_knee_urdf - 0.3);
+          ref_underbrush_msg.joints.velocity.at(3 * i + 2) += v_push_urdf * knee_sign;
+        }
+        if (q_hip_urdf < -0.5) {
+          const double v_push_urdf = -20 * (q_hip_urdf + 0.5);
+          ref_underbrush_msg.joints.velocity.at(3 * i + 1) += v_push_urdf * hip_sign;
+        }
       }
 
       // Limit the joint velocities again
@@ -423,9 +444,13 @@ bool UnderbrushInverseDynamicsController::computeLegCommandArray(
           leg_command_array_msg.leg_commands.at(i).motor_commands.at(0).kp =
               swing_kp_.at(0);
 
+          // Retract direction: Spirit's URDF hip axis is -y so -retract_vel
+          // produces the physical "lift-and-back" motion; Go2's URDF hip
+          // axis is +y so the opposite sign is required for the same
+          // physical direction. hip_retract_sign_ carries this per-robot.
           leg_command_array_msg.leg_commands.at(i)
               .motor_commands.at(1)
-              .vel_setpoint = -retract_vel_;
+              .vel_setpoint = -retract_vel_ * hip_retract_sign_;
 
           leg_command_array_msg.leg_commands.at(i)
               .motor_commands.at(2)

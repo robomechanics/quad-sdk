@@ -102,8 +102,8 @@ void UnderbrushPolicy::computeObservations(
   // Loop iterates legs in Isaac order (FL,FR,RL,RR); each leg's joints are
   // pulled from their Quad-SDK slot (3*quad_leg + joint).
   // ------------------------------------------------------------------
-  const bool joints_ok = q_raw.size() >= 12 && qd_raw.size() >= 12 &&
-                         tau_raw.size() >= 12;
+  const bool joints_ok =
+      q_raw.size() >= 12 && qd_raw.size() >= 12 && tau_raw.size() >= 12;
   for (int leg = 0; leg < 4; ++leg) {
     auto& obs = obs_per_leg_[leg];
     const int quad_leg = kQuadLegOfIsaac[leg];
@@ -125,18 +125,16 @@ void UnderbrushPolicy::computeObservations(
     }
     // foot_force — raw Unitree count → Newtons (calibration) → sim obs scale.
     // foot_force_raw is Quad-SDK ordered, so index by quad_leg.
-    const float ff =
-        (static_cast<int>(foot_force_raw.size()) > quad_leg)
-            ? static_cast<float>(foot_force_raw[quad_leg])
-            : 0.0f;
+    const float ff = (static_cast<int>(foot_force_raw.size()) > quad_leg)
+                         ? static_cast<float>(foot_force_raw[quad_leg])
+                         : 0.0f;
     obs[k++] = ff * kFootForceCountsToNewtons * kFootForceObsScale;
 
     // tau_meas_leg — measured joint torque (Unitree tau_est, already N·m)
     for (int j = 0; j < 3; ++j) {
       const int raw_idx = 3 * quad_leg + j;
-      obs[k++] = joints_ok
-                     ? kTauScale * static_cast<float>(tau_raw.at(raw_idx))
-                     : 0.0f;
+      obs[k++] = joints_ok ? kTauScale * static_cast<float>(tau_raw.at(raw_idx))
+                           : 0.0f;
     }
   }
 }

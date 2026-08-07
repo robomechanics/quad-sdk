@@ -282,7 +282,7 @@ void RobotDriver::initLegController() {
     leg_controller_ = std::make_shared<UnderbrushInverseDynamicsController>(
         node_, robot_ns, quadKD2_);
     double retract_vel, tau_push, tau_contact_start, tau_contact_end,
-        min_switch, t_down, t_up;
+        min_switch, t_down, t_up, hip_retract_sign;
     quad_utils::loadROSParam(node_, "underbrush_swing.retract_vel",
                              retract_vel);
     quad_utils::loadROSParam(node_, "underbrush_swing.tau_push", tau_push);
@@ -293,11 +293,18 @@ void RobotDriver::initLegController() {
     quad_utils::loadROSParam(node_, "underbrush_swing.min_switch", min_switch);
     quad_utils::loadROSParam(node_, "underbrush_swing.t_down", t_down);
     quad_utils::loadROSParam(node_, "underbrush_swing.t_up", t_up);
+    // Optional per-robot sign flip for the hip retract direction. Spirit's
+    // URDF has hip axis -y so -retract_vel produces the desired physical
+    // lift-and-back motion; Go2's URDF has hip axis +y so the opposite sign
+    // is required. Defaults to +1 so Spirit yaml can omit this key.
+    quad_utils::loadROSParamDefault(node_, "underbrush_swing.hip_retract_sign",
+                                    hip_retract_sign, 1.0);
     UnderbrushInverseDynamicsController* c =
         dynamic_cast<UnderbrushInverseDynamicsController*>(
             leg_controller_.get());
     c->setUnderbrushParams(retract_vel, tau_push, tau_contact_start,
-                           tau_contact_end, min_switch, t_down, t_up);
+                           tau_contact_end, min_switch, t_down, t_up,
+                           hip_retract_sign);
   } else if (controller_id_ == "inertia_estimation") {
     leg_controller_ = std::make_shared<InertiaEstimationController>(
         node_, robot_ns, quadKD2_);

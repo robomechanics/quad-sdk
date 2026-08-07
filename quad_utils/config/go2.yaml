@@ -16,12 +16,12 @@
 /**/local_planner:
   ros__parameters:
     local_planner:
-        desired_height: 0.3 # m
+        desired_height: 0.33 # m
         toe_radius: 0.022 # m
     local_footstep_planner:
         hip_clearance: 0.1
         foothold_search_radius: 0.25
-        period: 0.36 # s
+        period: 0.54 # s
         ground_clearance: 0.07 # tune
         duty_cycles: [0.5, 0.5, 0.5, 0.5]
         phase_offsets: [0.0, 0.5, 0.5, 0.0] 
@@ -95,8 +95,8 @@
       stand_kd: [4.0, 4.0, 4.0]
       stance_kp: [60.0, 60.0, 60.0] # 40 Learned, 30 MPC
       stance_kd: [4.0, 4.0, 4.0]
-      swing_kp: [60.0, 60.0, 60.0] #[10.0, 10.0, 10.0]
-      swing_kd: [4.0, 4.0, 4.0]
+      swing_kp: [10.0, 10.0, 10.0] #[60.0, 60.0, 60.0] #[10.0, 10.0, 10.0]
+      swing_kd: [1.0, 1.0, 1.0]  #[4.0, 4.0, 4.0]
       swing_kp_cart: [0.0, 0.0, 0.0] # N/m
       swing_kd_cart: [0.0, 0.0, 0.0] # N/m
       safety_kp: [0.0, 0.0, 0.0]

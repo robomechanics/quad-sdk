@@ -106,8 +106,7 @@ class LegController {
                     const std::vector<double>& swing_kd,
                     const std::vector<double>& swing_kp_cart,
                     const std::vector<double>& swing_kd_cart,
-                    const std::string& model_path,
-                    double policy_inference_rate,
+                    const std::string& model_path, double policy_inference_rate,
                     const std::vector<double>& stand_joint_angles);
 
   /**

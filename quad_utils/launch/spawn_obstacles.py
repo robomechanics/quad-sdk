@@ -49,7 +49,7 @@ def parse_obstacles(context):
         nodes.extend([
             spawn_obstacle('underbrush',  "-x 0.60 -y -0.50 -z 0.20", compliant_cord_sdf, context),
             spawn_obstacle('underbrush1', "-x 1.03 -y -0.50 -z 0.12", compliant_cord_sdf, context),
-            spawn_obstacle('underbrush2', "-x 1.03 -y -0.50 -z 0.23", compliant_cord_sdf, context),
+            spawn_obstacle('underbrush2', "-x 1.03 -y -0.50 -z 0.20", compliant_cord_sdf, context),
             spawn_obstacle('underbrush3', "-x 1.36 -y -0.50 -z 0.15", compliant_cord_sdf, context),
         ])
     # Add Custom Scenario Configurations Here
