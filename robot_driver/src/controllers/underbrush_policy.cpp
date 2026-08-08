@@ -38,7 +38,7 @@ void UnderbrushPolicy::computeObservations(
   const auto& q_raw = robot_state_msg.joints.position;
   const auto& qd_raw = robot_state_msg.joints.velocity;
   const auto& tau_raw = robot_state_msg.joints.effort;
-  const auto& foot_force_raw = last_foot_contact_msg_.foot_force_raw;
+  const auto& contact = last_foot_contact_msg_.contact_states;
 
   // last_action for the body obs is the previous inference's raw action (Isaac
   // order). raw_actions_ starts at zero, so the first step sees zeros — the
@@ -97,8 +97,8 @@ void UnderbrushPolicy::computeObservations(
   // ------------------------------------------------------------------
   // Per-leg observations (10 dims each)
   //
-  // Layout must match VineWalkV28GRUObservationsCfg._make_leg_obs_cfg:
-  //   q_leg(3) + qd_leg(3) + foot_force(1) + tau_meas_leg(3)
+  // Layout must match v51's _make_leg_obs_cfg term order (concatenate_terms):
+  //   joint_pos_rel(3) + joint_vel_rel(3) + joint_effort(3) + foot_force(1)
   // Loop iterates legs in Isaac order (FL,FR,RL,RR); each leg's joints are
   // pulled from their Quad-SDK slot (3*quad_leg + joint).
   // ------------------------------------------------------------------
@@ -109,33 +109,36 @@ void UnderbrushPolicy::computeObservations(
     const int quad_leg = kQuadLegOfIsaac[leg];
     int k = 0;
 
-    // q_leg (hip, thigh, calf) — absolute joint positions
+    // q_leg — joint_pos_rel: (q - default), scale 1.0. Same nominal
+    // subtraction as the hardware-tested LearnedVelocityPolicy.
+    // nominal_stance_pose_ is grouped by joint type ([abd×4, hip×4, knee×4]),
+    // so joint j's default value is entry 4*j.
     for (int j = 0; j < 3; ++j) {
       const int raw_idx = 3 * quad_leg + j;
-      obs[k++] = joints_ok
-                     ? kJointPosScale * static_cast<float>(q_raw.at(raw_idx))
-                     : 0.0f;
+      obs[k++] = joints_ok ? kJointPosScale *
+                                 static_cast<float>(q_raw.at(raw_idx) -
+                                                    nominal_stance_pose_(4 * j))
+                           : 0.0f;
     }
-    // qd_leg
+    // qd_leg — joint_vel_rel (default vel = 0 → absolute), scale 0.05
     for (int j = 0; j < 3; ++j) {
       const int raw_idx = 3 * quad_leg + j;
       obs[k++] = joints_ok
                      ? kJointVelScale * static_cast<float>(qd_raw.at(raw_idx))
                      : 0.0f;
     }
-    // foot_force — raw Unitree count → Newtons (calibration) → sim obs scale.
-    // foot_force_raw is Quad-SDK ordered, so index by quad_leg.
-    const float ff = (static_cast<int>(foot_force_raw.size()) > quad_leg)
-                         ? static_cast<float>(foot_force_raw[quad_leg])
-                         : 0.0f;
-    obs[k++] = ff * kFootForceCountsToNewtons * kFootForceObsScale;
-
     // tau_meas_leg — measured joint torque (Unitree tau_est, already N·m)
     for (int j = 0; j < 3; ++j) {
       const int raw_idx = 3 * quad_leg + j;
       obs[k++] = joints_ok ? kTauScale * static_cast<float>(tau_raw.at(raw_idx))
                            : 0.0f;
     }
+    // foot_force — BINARY contact (v51 binarizes at 5 N, scale 1.0). The
+    // Unitree interface already thresholds raw force into contact_states
+    // (Quad-SDK leg order, so index by quad_leg).
+    obs[k++] = (static_cast<int>(contact.size()) > quad_leg && contact[quad_leg])
+                   ? 1.0f
+                   : 0.0f;
   }
 }
 

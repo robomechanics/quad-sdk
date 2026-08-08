@@ -44,8 +44,8 @@ class UnderbrushPolicy : public LearnedVelocityPolicy {
 
   /**
    * @brief Cache the latest per-foot contact reading (Unitree foot-force
-   *        sensor). foot_force_raw is in Quad-SDK leg order (FL, RL, FR, RR)
-   *        and feeds the per-leg foot_force observation.
+   *        sensor). The binary contact_states (Quad-SDK leg order FL, RL, FR,
+   *        RR) feed the per-leg foot_force observation.
    */
   void updateFootContactMsg(const quad_msgs::msg::FootContact& msg);
 
@@ -64,35 +64,26 @@ class UnderbrushPolicy : public LearnedVelocityPolicy {
   void runInference() override;
 
  protected:
-  // --- GRU shape constants (must match RslRlPerLegGRUModelCfg training) ---
-  static constexpr int kGRUHidden = 32;
+  // --- GRU shape constants (must match v51's RslRlPerLegGRUModelCfg) ---
+  static constexpr int kGRUHidden = 256;  // gru_hidden_dim (v51 default is 256)
   static constexpr int kGRUNumLayers = 1;
   static constexpr int kBatch = 1;
   static constexpr int kPerLegObsDim = 10;
   static constexpr int kBodyObsDim = 21;
   static constexpr int kActionDim = 12;
 
-  // --- Observation scales (must match VineWalkV28GRUObservationsCfg) ---
+  // --- Observation scales (must match v51's vinewalk_gru obs config) ---
   /// base_ang_vel ObsTerm scale.
   static constexpr float kAngVelScale = 0.2f;
-  /// q_leg scale. Sim uses absolute joint position (no scale). CONFIRM against
-  /// the training config if the GRU used joint_pos_rel / a nonunity scale.
+  /// q_leg is joint_pos_rel (q - default). Scale 1.0; the nominal subtraction
+  /// is done in computeObservations, mirroring LearnedVelocityPolicy.
   static constexpr float kJointPosScale = 1.0f;
-  /// qd_leg scale. Matches the base MLP policy's joint-velocity scale (0.05).
-  /// CONFIRM against the training config.
+  /// qd_leg (joint_vel_rel; default vel is 0 so ≈ absolute) ObsTerm scale.
   static constexpr float kJointVelScale = 0.05f;
-  /// tau_meas ObsTerm scale. Unitree tau_est is already in N·m, so this is the
-  /// only factor applied.
+  /// tau_meas (joint_effort_measured) ObsTerm scale. Unitree tau_est is N·m.
   static constexpr float kTauScale = 0.01f;
-  /// foot_force ObsTerm scale, applied to a value in Newtons.
-  static constexpr float kFootForceObsScale = 0.05f;
-  /// CALIBRATION: converts the raw Unitree foot_force count into Newtons.
-  /// The sim trained foot_force on PhysX contact-force magnitude (Newtons),
-  /// but Unitree's LowState.foot_force is an uncalibrated int16 (~0–1000).
-  /// Leaving this at 1.0 feeds raw counts × kFootForceObsScale, which is
-  /// ~20–50× out of the trained distribution. Set to (Newtons per count) for
-  /// your robot after a static-load calibration.
-  static constexpr float kFootForceCountsToNewtons = 1.0f;
+  // foot_force is a BINARY contact flag in v51 (sim force > 5 N, scale 1.0);
+  // it is fed straight from the interface's contact_states — no scale constant.
 
   /// Isaac leg index (0=FL,1=FR,2=RL,3=RR) → Quad-SDK leg index
   /// (0=FL,1=RL,2=FR,3=RR). Used to pull the right joints / foot force out of

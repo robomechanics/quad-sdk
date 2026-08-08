@@ -213,17 +213,26 @@ bool InertiaEstimationController::computeLegCommandArray(
         return 0.5 + 0.5 * std::tanh(6.0 * (0.8 - s));
       };
 
-      // Abad envelope — reduced amplitude (0.25x Spirit40 original).
-      // Stand hardware sits directly under the body, so abad swinging the
-      // leg inward can bump into it. Keep total abad excursion under
-      // ~0.15 rad from stand-nominal.
+      // Abad envelope — asymmetric outward-only swing. The stand hardware
+      // sits directly under the body, so abad swinging the leg INWARD
+      // (toward body midline) collides with the stand; swinging OUTWARD
+      // is free. Center the excitation at +kAbadCenter so all motion
+      // stays on the outward side. Amplitude bumped 2× so total abad
+      // excursion is ~0.30 rad (vs the previous ~0.15) — better M[0,0]
+      // identifiability without the stand collision risk.
+      //
+      // Sign of "out" depends on leg + URDF axis convention. If your
+      // physical setup has "out" as NEGATIVE abad angle, flip the
+      // sign of kAbadCenter (per leg if needed).
+      constexpr double kAbadCenter = 0.20;   // radians, positive = outward on Go2
       {
         const double wa = w_main(sin(2.7 * t));
         leg_command_array_msg.leg_commands.at(i)
             .motor_commands.at(0)
             .pos_setpoint =
-            (wa * (0.05 * sin(2 * t) + 0.1 * cos(7.5 * sin(1.3 * t))) +
-             (1.0 - wa) * (0.12 * sin(0.35 * t))) *
+            (kAbadCenter +
+             wa * (0.10 * sin(2 * t) + 0.15 * cos(7.5 * sin(1.3 * t))) +
+             (1.0 - wa) * (0.15 * sin(0.35 * t))) *
             joint_sign_[i][0] + joint_offset_[i][0];
       }
 
