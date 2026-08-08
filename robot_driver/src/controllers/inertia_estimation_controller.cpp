@@ -44,11 +44,18 @@ bool InertiaEstimationController::computeLegCommandArray(
     conv_loaded_ = true;
   }
 
-  if ((last_local_plan_msg_ == NULL) ||
+  // Flail sinusoids only need node_->now() and joint state — NOT the
+  // local_plan. Historically we returned false when the plan was stale,
+  // which caused robot_driver.cpp:843 to fall back to stand pose with
+  // stand_kp=60 → jarring snap every time NMPC hiccuped during sys-ID
+  // collection. Instead: skip the plan-processing block below when the
+  // plan is stale, and let the flail loop run regardless. Guard tracked
+  // by have_plan_ boolean.
+  const bool have_plan =
+      (last_local_plan_msg_ != NULL) &&
       ((node_->now() - rclcpp::Time(last_local_plan_msg_->header.stamp))
-           .seconds() >= 0.1)) {
-    return false;
-  } else {
+           .seconds() < 0.1);
+  {
     leg_command_array_msg.leg_commands.resize(num_feet_);
 
     // Define vectors for joint positions and velocities
@@ -72,6 +79,11 @@ bool InertiaEstimationController::computeLegCommandArray(
     Eigen::VectorXd tau_array(3 * num_feet_),
         tau_swing_leg_array(3 * num_feet_);
 
+    // Plan-processing block below is UNUSED by the flail sinusoid loop
+    // (which overrides pos_setpoint per-joint and sets torque_ff=0). Skip
+    // it entirely when the plan is stale so NMPC hiccups don't drop us
+    // into the stand-pose fallback in robot_driver.cpp:843.
+    if (have_plan) {
     // Get reference state and grf from local plan or traj + grf messages
     rclcpp::Time t_first_state(
         last_local_plan_msg_->states.front().header.stamp);
@@ -96,9 +108,11 @@ bool InertiaEstimationController::computeLegCommandArray(
       // segfault.
       RCLCPP_ERROR_THROTTLE(
           node_->get_logger(), *node_->get_clock(), 1000,
-          "ID node couldn't find the correct ref state!");
-      return false;
-    }
+          "ID node couldn't find the correct ref state — skipping plan "
+          "processing but continuing to flail (no fallback to stand).");
+      // Fall through to the flail loop instead of returning false — the
+      // flail command doesn't depend on the plan.
+    } else {
 
     // Interpolate the local plan to get the reference state and ff GRF
     for (size_t i = 0; i < last_local_plan_msg_->states.size() - 1; i++) {
@@ -177,6 +191,8 @@ bool InertiaEstimationController::computeLegCommandArray(
     swing_cart_fb =
         jacobian.block(0, 0, 3 * num_feet_, 3 * num_feet_).transpose() *
         swing_cart_fb;
+    }  // end t_now-in-range check
+    }  // end if (have_plan)
 
     double t = node_->now().seconds();
 
@@ -224,7 +240,8 @@ bool InertiaEstimationController::computeLegCommandArray(
       // Sign of "out" depends on leg + URDF axis convention. If your
       // physical setup has "out" as NEGATIVE abad angle, flip the
       // sign of kAbadCenter (per leg if needed).
-      constexpr double kAbadCenter = 0.20;   // radians, positive = outward on Go2
+      constexpr double kAbadCenter = -0.20;  // radians, NEGATIVE = outward on Go2
+                                             // (verified by hardware test 8/7: +0.20 swung leg INWARD)
       {
         const double wa = w_main(sin(2.7 * t));
         leg_command_array_msg.leg_commands.at(i)
