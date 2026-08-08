@@ -182,7 +182,7 @@ def generate_launch_description():
             'robot_configs', default_value=('[{"name": "robot_1", "type": "go2", "controller": "underbrush", "init_pose": "-x 0.0 -y 0.0 -z 3.0"}]'),
             description='A JSON List of robot configurations: MUST specify name, type, controller, and spawn pose. init_pose accepts -x/-y/-z and optionally -R/-P/-Y for orientation.'
         ),
-        DeclareLaunchArgument('scenario', default_value="underbrush_learned", description='Custom Obstacle Scenario to Spawn e.g. Underbrush, Procedural Underbrush)'),
+        DeclareLaunchArgument('scenario', default_value="underbrush", description='Custom Obstacle Scenario to Spawn e.g. Underbrush, Procedural Underbrush)'),
         DeclareLaunchArgument('obstacles', default_value='[]',
             description= 'A JSON List of obstacles to spawn (e.g {"name": "box", "init_pose" : "-x 3.0 -y 0.0 -z 2"})')
     ]

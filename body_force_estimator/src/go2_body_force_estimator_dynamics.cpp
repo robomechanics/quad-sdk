@@ -5,8 +5,11 @@ namespace go2_impl {
 
 // Friction / damping identified by Task 5 sys-ID (Pullback regularizer via MOSEK).
 // MO_ktau = 1 because Quad-SDK EffortJointInterface publishes N·m directly.
-double MO_fric[3] = {-0.185374, -0.168225, -0.74839};
-double MO_damp[3] = {0.109508, -0.0908955, -0.056343};
+// Friction/damping from hardware sys-ID (8/8/26). Damping near-zero
+// (constraint boundary — flail data doesn't identify viscous damping;
+// physically reasonable for well-lubricated joints).
+double MO_fric[3] = {-0.160188, -0.216206, -0.815152};
+double MO_damp[3] = {5.17834e-08, 7.58461e-09, 3.25384e-09};
 double MO_ktau[3] = {1.0, 1.0, 1.0};
 
 // wire→(MATLAB-URDF) for Go2. Justin's Go2LegRotorsSpatialV2.m imports
@@ -38,16 +41,18 @@ double l[15] = {
 // Go2 gear ratios (planetary only, no belt drive).
 double G[3] = {6.22, 6.22, 6.22};
 
-// Go2 inertial parameters — URDF priors (sys-ID skipped for phi because
-// the unmodeled knee four-bar linkage contaminates identification; only
-// friction/damping below are Pullback-identified).
+// Go2 inertial parameters — from hardware sys-ID (8/8/26). Bodies 1 (hip
+// link) and 4-6 (rotors) had their mass PINNED to URDF priors (below-noise
+// gravity torque contribution → unidentifiable from static-base flail).
+// Bodies 2 (thigh) and 3 (calf) masses + all CoMs + all inertias were
+// identified. Fit reduced regressor residual by 58% vs URDF priors alone.
 double phi[60] = {
-    0.589, -0.0031806, -0.00114266, -6.1845e-05, 0.000484782, 0.00092096, 0.000637714, -4.88847e-06, 6.05595e-07, -4.42669e-06,
-    1.063, -0.00397562, 0.0237049, -0.0347601, 0.00930997, 0.00819946, 0.00216248, 0.000120706, 0.000345263, -0.000121124,
-    0.154, 0.00084392, -0.00015015, -0.01771, 0.00515359, 0.00518255, 4.24422e-05, 9.81007e-06, 9.69836e-05, 9.5888e-05,
-    0.089, 0, 0, 0, 0.000111842, 5.9647e-05, 5.9647e-05, 0, 0, 0,
-    0.089, 0, 0, 0, 5.9647e-05, 0.000111842, 5.9647e-05, 0, 0, 0,
-    0.089, 0, 0, 0, 5.9647e-05, 0.000111842, 5.9647e-05, 0, 0, 0,
+    0.589,    -0.00302397, -0.0111372, -0.00263859, 0.000222413, 0.000547001, 0.000745769, -5.71793e-05, -4.98921e-05, -1.35467e-05,
+    0.996706, -0.00248898,  0.0230979, -0.036318,   0.006076,    0.00591886,  0.00144243,   0.000467975,  0.00186418,  -0.00167679,
+    0.220294,  0.00577657, -0.00167277, -0.0200713, 0.00190623,  0.00204504,  0.000164304,  4.38024e-05, -0.000150686,  0.000528612,
+    0.089,     0,          -0.000450055, -0.000126455, 4.5517e-06, 6.00147e-06, 6.00147e-06, 0,           -6.3663e-07,   0,
+    0.089,     0.000447221, -0.000120241, 4.45624e-06, 5.94365e-06, 4.5517e-06, 5.94365e-06, 2.89181e-07,  7.48274e-07, 6.57128e-08,
+    0.089,    -0.000273722, -3.22136e-05, 0.000638375, 0.000129157, 0.00025099, 0.000129157, 1.95025e-06, -1.93704e-06, -4.37261e-07,
 };
 
 void f_M(Eigen::Vector3d q, int RL, Eigen::Matrix3d& F) {

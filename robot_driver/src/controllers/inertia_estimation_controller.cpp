@@ -9,9 +9,11 @@ static constexpr bool kUseGo2KneeEnvelope = true;
 // Which single leg to excite. Set to 0..3 to flail only that leg (others
 // hold their current observed pose); set to -1 to flail all four legs
 // simultaneously (original Spirit40 behavior).
-//   Convention on Go2 (from readBag verification):
-//       0 = FR    1 = BR    2 = FL    3 = BL
-static constexpr int kTargetLeg = 1;
+//   Quad-SDK convention (used everywhere including unitree_interface.hpp
+//   kLegMap): 0 = FL   1 = BL   2 = FR   3 = BR
+//   Bag verification 8/7/26 confirmed each kTargetLeg value moves the
+//   physically-correct leg per this convention.
+static constexpr int kTargetLeg = 0;
 
 InertiaEstimationController::InertiaEstimationController(
     rclcpp::Node::SharedPtr node, const std::string& robot_ns,
