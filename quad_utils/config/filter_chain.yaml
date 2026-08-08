@@ -152,11 +152,12 @@ mapping:
             # diagonals (~0.01414) are unambiguously outside, so erosion is
             # 4-connected and symmetric, trimming one cell (~1 cm) per side.
             #
-            # Less conservative than the previous 0.026 (tuned for the old
-            # 0.025 m pitch), which at 0.01 m reached two cells out (~2 cm
-            # per side). If footholds still land on the beam edge, bump back
-            # toward ~0.02 to restore the wider margin.
-            radius: 0.011
+            # 3-cell erosion (~3 cm per side) -> ~10 cm corridor on the 15 cm
+            # b_beam. 12cm (2-cell) still ran too wide; 11cm isn't reachable
+            # at this 1cm map resolution (erosion only steps in ~2cm
+            # increments: 10/12/14), so landed on 10cm, the nearest tighter
+            # option.
+            radius: 0.031
 
         filter11:
           # Set lower threshold on traversability hole mask.

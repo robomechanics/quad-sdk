@@ -16,12 +16,12 @@
 /**/local_planner:
   ros__parameters:
     local_planner:
-        desired_height: 0.27 # m
+        desired_height: 0.3 # m
         toe_radius: 0.02 # m
     local_footstep_planner:
         hip_clearance: 0.1
         foothold_search_radius: 0.35
-        period: 0.54 # s
+        period: 0.36 # s
         ground_clearance: 0.07 # tune
         duty_cycles: [0.75, 0.75, 0.75, 0.75]
         phase_offsets: [0.0, 0.50, 0.50, 0.0]
