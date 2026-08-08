@@ -191,6 +191,7 @@ bool InertiaEstimationController::computeLegCommandArray(
     swing_cart_fb =
         jacobian.block(0, 0, 3 * num_feet_, 3 * num_feet_).transpose() *
         swing_cart_fb;
+    last_grf_array_ = grf_array;   // keep filter state fresh
     }  // end t_now-in-range check
     }  // end if (have_plan)
 
@@ -318,7 +319,6 @@ bool InertiaEstimationController::computeLegCommandArray(
       }
     }
 
-    last_grf_array_ = grf_array;
     return true;
   }
 }
