@@ -11,7 +11,7 @@ static constexpr bool kUseGo2KneeEnvelope = true;
 // simultaneously (original Spirit40 behavior).
 //   Convention on Go2 (from readBag verification):
 //       0 = FR    1 = BR    2 = FL    3 = BL
-static constexpr int kTargetLeg = 0;
+static constexpr int kTargetLeg = 1;
 
 InertiaEstimationController::InertiaEstimationController(
     rclcpp::Node::SharedPtr node, const std::string& robot_ns,
@@ -241,7 +241,7 @@ bool InertiaEstimationController::computeLegCommandArray(
       // Sign of "out" depends on leg + URDF axis convention. If your
       // physical setup has "out" as NEGATIVE abad angle, flip the
       // sign of kAbadCenter (per leg if needed).
-      constexpr double kAbadCenter = -0.20;  // radians, NEGATIVE = outward on Go2
+      constexpr double kAbadCenter = 0.20;  // radians, NEGATIVE = outward on Go2
                                              // (verified by hardware test 8/7: +0.20 swung leg INWARD)
       {
         const double wa = w_main(sin(2.7 * t));
