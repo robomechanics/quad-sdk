@@ -103,7 +103,7 @@ RUN echo "source /opt/ros/jazzy/setup.bash" >> /etc/bash.bashrc
 RUN which cmake && cmake --version
 RUN apt-get install -y cmake
 WORKDIR /root/
-RUN git clone https://github.com/liyufan/Livox-SDK2.git
+RUN git clone https://github.com/Livox-SDK/Livox-SDK2.git
 WORKDIR /root/Livox-SDK2
 RUN mkdir build
 WORKDIR /root/Livox-SDK2/build

@@ -17,6 +17,12 @@ find_package(rclcpp REQUIRED)
 find_package(sensor_msgs REQUIRED)
 find_package(std_msgs REQUIRED)
 find_package(builtin_interfaces REQUIRED)
+find_package(grid_map_core REQUIRED)
+find_package(grid_map_msgs REQUIRED)
+find_package(grid_map_ros REQUIRED)
+find_package(tf2_ros REQUIRED)
+find_package(tf2_sensor_msgs REQUIRED)
+find_package(geometry_msgs REQUIRED)
 
 # Unitree SDK2 setup (mirrors robot_driver/CMakeLists.txt)
 set(UNITREE_SDK2_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../external/unitree_sdk2)
@@ -77,6 +83,30 @@ add_executable(unitree_pointcloud_bridge_node src/unitree_pointcloud_bridge_node
 target_link_libraries(unitree_pointcloud_bridge_node unitree_pointcloud_bridge)
 ament_target_dependencies(unitree_pointcloud_bridge_node rclcpp)
 
+# Point cloud -> grid_map elevation layer. Source agnostic: takes any
+# PointCloud2, so it serves the Livox and the Unitree bridge alike.
+add_library(pointcloud_to_gridmap SHARED
+  src/pointcloud_to_gridmap.cpp
+)
+target_include_directories(pointcloud_to_gridmap PUBLIC
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+  $<INSTALL_INTERFACE:include>
+)
+ament_target_dependencies(pointcloud_to_gridmap
+  rclcpp
+  sensor_msgs
+  geometry_msgs
+  grid_map_core
+  grid_map_msgs
+  grid_map_ros
+  tf2_ros
+  tf2_sensor_msgs
+)
+
+add_executable(pointcloud_to_gridmap_node src/pointcloud_to_gridmap_node.cpp)
+target_link_libraries(pointcloud_to_gridmap_node pointcloud_to_gridmap)
+ament_target_dependencies(pointcloud_to_gridmap_node rclcpp)
+
 install(
   DIRECTORY include/
   DESTINATION include
@@ -86,6 +116,8 @@ install(TARGETS
   unitree_pointcloud_conversion
   unitree_pointcloud_bridge
   unitree_pointcloud_bridge_node
+  pointcloud_to_gridmap
+  pointcloud_to_gridmap_node
   ARCHIVE DESTINATION lib
   LIBRARY DESTINATION lib
   RUNTIME DESTINATION lib/${PROJECT_NAME}

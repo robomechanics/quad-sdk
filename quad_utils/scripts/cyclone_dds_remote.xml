@@ -5,6 +5,17 @@
                 <NetworkInterface address="192.168.8.103"/>
             </Interfaces>
         </General>
+        <Internal>
+            <!-- Mirrors the robot side. Without this Cyclone falls back to a
+                 ~1MB receive buffer, and large samples (a 10x10m grid_map is
+                 ~160kB, a Mid-360 cloud ~360kB) lose fragments and are dropped
+                 whole, so RViz shows nothing or stutters badly. -->
+            <SocketReceiveBufferSize min="128MB"/>
+            <SocketSendBufferSize min="128MB"/>
+            <Watermarks>
+                <WhcHigh>500kB</WhcHigh>
+            </Watermarks>
+        </Internal>
         <Discovery>
             <Peers>
                 <Peer address="${REMOTE_ROBOT_IP}"/>

@@ -6,6 +6,16 @@ source ~/ros2_ws/install/setup.bash
 export QUAD_LOGGER_SRC=/home/rml_admin/ros2_ws/src/quad-sdk/quad_logger
 mkdir -p "$QUAD_LOGGER_SRC/bags/archive"
 
+DDS_BUF=134217728  # 128 MiB, matches <SocketReceiveBufferSize min="128MB"/>
+if [[ $(cat /proc/sys/net/core/rmem_max 2>/dev/null) -lt $DDS_BUF ]]; then
+    echo "Raising net.core.rmem_max / wmem_max to 128MB for CycloneDDS"
+    sudo sysctl -w net.core.rmem_max=$DDS_BUF >/dev/null \
+        || echo "WARNING: failed to set net.core.rmem_max; large messages"\
+                "(point clouds, grid maps) may be dropped."
+    sudo sysctl -w net.core.wmem_max=$DDS_BUF >/dev/null \
+        || echo "WARNING: failed to set net.core.wmem_max"
+fi
+
 echo "Which robot? (t)heodore / (a)lvin / (s)imon"
 read robot
 echo "Connected to robot with wifi or ethernet? (w/e)"

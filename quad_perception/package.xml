@@ -13,6 +13,14 @@
   <depend>sensor_msgs</depend>
   <depend>std_msgs</depend>
   <depend>builtin_interfaces</depend>
+  <depend>geometry_msgs</depend>
+  <depend>grid_map_core</depend>
+  <depend>grid_map_msgs</depend>
+  <depend>grid_map_ros</depend>
+  <depend>tf2_ros</depend>
+  <depend>tf2_sensor_msgs</depend>
+  <exec_depend>grid_map_visualization</exec_depend>
+  <exec_depend>grid_map_rviz_plugin</exec_depend>
 
   <test_depend>ament_lint_auto</test_depend>
   <test_depend>ament_lint_common</test_depend>

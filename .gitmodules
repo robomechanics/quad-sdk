@@ -7,3 +7,6 @@
 [submodule "external/mocap4ros2_optitrack"]
 	path = external/mocap4ros2_optitrack
 	url = https://github.com/robomechanics/mocap4ros2_optitrack.git
+[submodule "external/livox_ros_driver2"]
+	path = external/livox_ros_driver2
+	url = https://github.com/Livox-SDK/livox_ros_driver2.git

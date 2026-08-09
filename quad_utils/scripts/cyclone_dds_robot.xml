@@ -22,6 +22,12 @@
         <Discovery>
             <Peers>
                 <Peer address="192.168.8.103"/>
+                <!-- The robot's own address, so nodes running on the robot
+                     discover each other. With AllowMulticast=false, SPDP is
+                     unicast-only and a participant that isn't listed here is
+                     invisible -- including to `ros2 topic list` run on the
+                     robot itself. -->
+                <Peer address="${ROBOT_ROS_IP}"/>
             </Peers>
             <ParticipantIndex>auto</ParticipantIndex>
         </Discovery>

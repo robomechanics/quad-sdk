@@ -1,0 +1,31 @@
+grid_map_visualization:
+  ros__parameters:
+    # Raw rasterized LiDAR elevation, before the terrain filter chain runs.
+    grid_map_topic: /mapping/terrain_map_raw
+
+    grid_map_visualizations:
+      - z_points
+      - elevation_grid
+      - map_region
+
+    # Coloured point cloud of the elevation layer; plain RViz PointCloud2, so
+    # this works without the grid_map rviz plugin installed.
+    z_points:
+      type: point_cloud
+      params:
+        layer: z
+
+    # Top-down occupancy view. Bounds are in metres in the map frame; widen
+    # them if the LiDAR sits high above the surface it is mapping.
+    elevation_grid:
+      type: occupancy_grid
+      params:
+        layer: z
+        data_min: -1.0
+        data_max: 1.0
+
+    map_region:
+      type: map_region
+      params:
+        color: 3289650
+        line_width: 0.01

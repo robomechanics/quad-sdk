@@ -34,6 +34,19 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 RUN printf "server 192.168.8.103 iburst\nmakestep 0.1 3\nrtcsync\n" > /etc/chrony/chrony.conf
 
+# Livox Mid-360 support, mirroring the Livox block in Dockerfile.x86.
+# Unlike x86 we do not apt-get install cmake: this base image already ships
+# cmake 3.31 in /opt/venv, and an apt cmake would shadow the toolchain the
+# ONNX Runtime in this image was built against.
+RUN git clone https://github.com/Livox-SDK/Livox-SDK2.git /root/Livox-SDK2 && \
+    cmake -S /root/Livox-SDK2 -B /root/Livox-SDK2/build \
+          -DCMAKE_POLICY_VERSION_MINIMUM=3.5 && \
+    cmake --build /root/Livox-SDK2/build -j2 && \
+    cmake --install /root/Livox-SDK2/build
+# The matching ROS 2 driver lives in external/livox_ros_driver2 and is prepared
+# by external/setup_deps.sh -- it cannot be cloned here, as the bind mount over
+# src/quad-sdk would hide anything this image writes there.
+
 RUN rosdep init || true && rosdep update
 
 RUN echo "source /opt/ros/jazzy/setup.bash" >> /etc/bash.bashrc

@@ -50,6 +50,22 @@ cmake .. -DCMAKE_INSTALL_PREFIX=/opt/unitree_robotics
 sudo make install
 cd ../..
 
+# Setup for Livox Mid-360 ROS 2 driver
+# Upstream ships the ROS1 and ROS2 manifests side by side and picks between them
+# in build.sh, so colcon cannot see the package until one is in place as
+# package.xml. Both cmake args are required: DISTRO_ROS gates the branch that
+# exports the generated custom-message include dirs, and without it the build
+# fails on LIVOX_INTERFACES_INCLUDE_DIRECTORIES-NOTFOUND. Building it here
+# seeds the CMake cache so later plain colcon builds of the workspace work.
+# Livox-SDK2 itself comes from the devcontainer image, not from here.
+cd livox_ros_driver2
+cp -f package_ROS2.xml package.xml
+cp -rf launch_ROS2 launch
+cd ../..
+colcon build --packages-select livox_ros_driver2 \
+    --cmake-args -DROS_EDITION=ROS2 -DDISTRO_ROS=jazzy
+cd external
+
 # Setup and Build for Pinocchio
 sudo apt install -y ros-jazzy-pinocchio
 
