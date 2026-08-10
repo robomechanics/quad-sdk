@@ -53,18 +53,22 @@ cd ../..
 # Setup for Livox Mid-360 ROS 2 driver
 # Upstream ships the ROS1 and ROS2 manifests side by side and picks between them
 # in build.sh, so colcon cannot see the package until one is in place as
-# package.xml. Both cmake args are required: DISTRO_ROS gates the branch that
+# package.xml. Both cmake args are required too: DISTRO_ROS gates the branch that
 # exports the generated custom-message include dirs, and without it the build
-# fails on LIVOX_INTERFACES_INCLUDE_DIRECTORIES-NOTFOUND. Building it here
-# seeds the CMake cache so later plain colcon builds of the workspace work.
+# fails on LIVOX_INTERFACES_INCLUDE_DIRECTORIES-NOTFOUND. Writing them into a
+# colcon.pkg applies them to this package only, so a plain `colcon build` from
+# the workspace root needs no extra flags and no build is done here.
 # Livox-SDK2 itself comes from the devcontainer image, not from here.
+sudo apt install -y libpcl-dev
 cd livox_ros_driver2
 cp -f package_ROS2.xml package.xml
 cp -rf launch_ROS2 launch
-cd ../..
-colcon build --packages-select livox_ros_driver2 \
-    --cmake-args -DROS_EDITION=ROS2 -DDISTRO_ROS=jazzy
-cd external
+cat > colcon.pkg <<EOF
+{
+  "cmake-args": ["-DROS_EDITION=ROS2", "-DDISTRO_ROS=${ROS_DISTRO:-jazzy}"]
+}
+EOF
+cd ..
 
 # Setup and Build for Pinocchio
 sudo apt install -y ros-jazzy-pinocchio

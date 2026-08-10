@@ -9,8 +9,11 @@ Two sources are selectable via the 'lidar' argument:
 Both publish the same relative topic ('output_topic'), so downstream consumers
 do not care which one is running.
 
-Note: the livox option needs livox_ros_driver2 on the workspace; it is not a
-build dependency of quad-sdk. Use lidar:=unitree if it is not installed.
+Note: the livox option needs livox_ros_driver2, which ships as a submodule under
+external/ and is prepared by external/setup_deps.sh (it writes the ROS 2
+package.xml and the colcon.pkg carrying its required cmake args). It then builds
+with the rest of the workspace. Use lidar:=unitree if the submodule is not
+checked out.
 """
 from launch import LaunchDescription
 from launch.actions import DeclareLaunchArgument, GroupAction

@@ -28,24 +28,71 @@ def launch_remote_heartbeat(context, *args, **kwargs):
 
 
 def launch_robot_mapping(context, *args, **kwargs):
+    """Bring up the terrain map from either a static mesh or the LiDAR.
+
+    Both sources publish a raw elevation grid on /mapping/terrain_map_raw and
+    let mapping.py's filter chain turn it into /mapping/terrain_map, which is
+    what access_terrain_map relays to the planners and what the GridMap display
+    in rviz/quad_viewer.rviz already subscribes to. Only the producer differs,
+    so nothing downstream changes between the two.
+    """
+    source = LaunchConfiguration('source').perform(context)
+
+    quad_utils_share = FindPackageShare('quad_utils')
     mapping_launch_path = PathJoinSubstitution([
-        FindPackageShare('quad_utils'),
+        quad_utils_share,
         'launch',
         'mapping.py'
     ])
-    return [
+    actions = [
         GroupAction([
             PushRosNamespace('mapping'),
             IncludeLaunchDescription(
                 PythonLaunchDescriptionSource(mapping_launch_path),
                 launch_arguments={
-                    'input_type': 'mesh',
+                    # mapping.py gates mesh_to_grid_map_node on input_type ==
+                    # 'mesh'; any other value leaves the filter chain and the
+                    # grid map visualization running with the LiDAR feeding
+                    # them in the mesh node's place.
+                    'input_type': 'mesh' if source == 'mesh' else 'lidar',
                     'world': LaunchConfiguration('world'),
                     'use_sim_time': LaunchConfiguration('use_sim_time')
                 }.items()
             )
         ])
     ]
+
+    if source == 'livox':
+        perception_launch_path = PathJoinSubstitution([
+            quad_utils_share,
+            'launch',
+            'unitree_pointcloud_bridge.py'
+        ])
+        # Deliberately not inside the 'mapping' namespace push: this launch
+        # pushes <namespace>/perception of its own, and stacking the two would
+        # bury the driver under /mapping/<namespace>/perception.
+        actions.append(
+            IncludeLaunchDescription(
+                PythonLaunchDescriptionSource(perception_launch_path),
+                launch_arguments={
+                    'lidar': 'livox',
+                    'namespace': LaunchConfiguration('namespace'),
+                    # Accumulate in the estimator's fixed frame rather than the
+                    # sensor's: rviz_interface_node broadcasts map -> body and
+                    # the perception launch adds body -> livox_frame, so the
+                    # terrain stays put as the robot walks instead of sliding
+                    # along with the LiDAR. This also matches the Fixed Frame
+                    # the rviz config expects.
+                    'map_frame': LaunchConfiguration('map_frame'),
+                    'gridmap_topic': '/mapping/terrain_map_raw',
+                    'gridmap_resolution': LaunchConfiguration('gridmap_resolution'),
+                    'gridmap_length': LaunchConfiguration('gridmap_length'),
+                    'use_sim_time': LaunchConfiguration('use_sim_time'),
+                }.items()
+            )
+        )
+
+    return actions
 
 def launch_visualization(context, *args, **kwargs):
     visualization_launch_path = PathJoinSubstitution([
@@ -125,6 +172,17 @@ def generate_launch_description():
         DeclareLaunchArgument('world', default_value = 'flat.sdf', description='SDF world file name to load into simulation'),
         DeclareLaunchArgument('namespace', default_value = 'robot_1', description='Robot namespace'),
         DeclareLaunchArgument('robot_type', default_value = 'go2', description='Robot type'),
+        DeclareLaunchArgument('source', default_value = 'mesh', choices=['mesh', 'livox'],
+            description='Where the terrain map comes from: a static mesh of the world, '
+                        'or a live Livox Mid-360 point cloud rasterized into a heightmap'),
+        DeclareLaunchArgument('map_frame', default_value = 'map',
+            description='source:=livox only. Fixed frame the heightmap accumulates in. '
+                        'Needs map -> body TF (from rviz_interface_node); set empty to '
+                        'build in the sensor frame instead, which needs no TF.'),
+        DeclareLaunchArgument('gridmap_resolution', default_value = '0.05',
+            description='source:=livox only. Heightmap cell size in metres.'),
+        DeclareLaunchArgument('gridmap_length', default_value = '10.0',
+            description='source:=livox only. Side length of the square heightmap in metres.'),
     ]
 
     return LaunchDescription(declared_args + [

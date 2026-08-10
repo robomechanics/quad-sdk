@@ -51,7 +51,7 @@ def generate_launch_description():
     robot_type = DeclareLaunchArgument('robot_type', default_value='go2')
     mocap = DeclareLaunchArgument('mocap', default_value='true')
     logging = DeclareLaunchArgument('logging', default_value='false')
-    controller = DeclareLaunchArgument('controller', default_value='inertia_estimation')
+    controller = DeclareLaunchArgument('controller', default_value='inverse_dynamics')
     model_path = DeclareLaunchArgument('model_path', default_value='./policies/models/***')
     provider = DeclareLaunchArgument('provider', default_value = "tensorrt")
     estimator = DeclareLaunchArgument('estimator', default_value="comp_filter")
