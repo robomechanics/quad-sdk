@@ -19,6 +19,11 @@
   <depend>grid_map_ros</depend>
   <depend>tf2_ros</depend>
   <depend>tf2_sensor_msgs</depend>
+  <depend>pcl_conversions</depend>
+  <depend>octomap</depend>
+  <depend>octomap_msgs</depend>
+  <depend>grid_map_octomap</depend>
+  <exec_depend>octomap_server</exec_depend>
   <exec_depend>grid_map_visualization</exec_depend>
   <exec_depend>grid_map_rviz_plugin</exec_depend>
 

@@ -5,7 +5,12 @@
 #include <cmath>
 
 #include <grid_map_ros/GridMapRosConverter.hpp>
-#include <sensor_msgs/point_cloud2_iterator.hpp>
+#include <pcl/filters/extract_indices.h>
+#include <pcl/filters/statistical_outlier_removal.h>
+#include <pcl/point_cloud.h>
+#include <pcl/point_types.h>
+#include <pcl/segmentation/progressive_morphological_filter.h>
+#include <pcl_conversions/pcl_conversions.h>
 #include <tf2_sensor_msgs/tf2_sensor_msgs.hpp>
 
 namespace quad_perception {
@@ -31,6 +36,18 @@ PointCloudToGridMap::PointCloudToGridMap()
   accumulate_ = this->declare_parameter<bool>("accumulate", true);
   follow_sensor_ = this->declare_parameter<bool>("follow_sensor", true);
   const double publish_rate = this->declare_parameter<double>("publish_rate", 5.0);
+
+  ground_segmentation_ = this->declare_parameter<bool>("ground_segmentation", true);
+  outlier_mean_k_ = this->declare_parameter<int>("outlier_mean_k", 10);
+  outlier_stddev_ = this->declare_parameter<double>("outlier_stddev", 1.0);
+  ground_cell_size_ = this->declare_parameter<double>("ground_cell_size", 0.3);
+  ground_max_window_size_ =
+      this->declare_parameter<int>("ground_max_window_size", 8);
+  ground_slope_ = this->declare_parameter<double>("ground_slope", 0.5);
+  ground_initial_distance_ =
+      this->declare_parameter<double>("ground_initial_distance", 0.15);
+  ground_max_distance_ =
+      this->declare_parameter<double>("ground_max_distance", 1.0);
 
   map_ = grid_map::GridMap({layer_});
   map_.setGeometry(grid_map::Length(length_x, length_y), resolution,
@@ -106,26 +123,59 @@ void PointCloudToGridMap::rasterize(const sensor_msgs::msg::PointCloud2& cloud) 
     map_[layer_].setConstant(NAN);
   }
 
-  sensor_msgs::PointCloud2ConstIterator<float> it_x(cloud, "x");
-  sensor_msgs::PointCloud2ConstIterator<float> it_y(cloud, "y");
-  sensor_msgs::PointCloud2ConstIterator<float> it_z(cloud, "z");
+  pcl::PointCloud<pcl::PointXYZ>::Ptr raw(new pcl::PointCloud<pcl::PointXYZ>);
+  pcl::fromROSMsg(cloud, *raw);
 
-  for (; it_x != it_x.end(); ++it_x, ++it_y, ++it_z) {
-    const float x = *it_x, y = *it_y, z = *it_z;
-    if (!std::isfinite(x) || !std::isfinite(y) || !std::isfinite(z)) {
-      continue;
+  // Height-clip before ground fitting so far-off returns (ceiling, multipath)
+  // don't skew the morphological filter's notion of "low".
+  pcl::PointCloud<pcl::PointXYZ>::Ptr clipped(new pcl::PointCloud<pcl::PointXYZ>);
+  clipped->reserve(raw->size());
+  for (const auto& p : *raw) {
+    if (std::isfinite(p.x) && std::isfinite(p.y) && std::isfinite(p.z) &&
+        p.z >= min_z_ && p.z <= max_z_) {
+      clipped->push_back(p);
     }
-    if (z < min_z_ || z > max_z_) {
-      continue;
-    }
-    const grid_map::Position position(x, y);
+  }
+
+  pcl::PointCloud<pcl::PointXYZ>::Ptr ground = clipped;
+
+  if (ground_segmentation_ && !clipped->empty()) {
+    // Drop sparse noise (reflections, single stray returns) before ground
+    // fitting; PMF otherwise treats isolated high outliers as terrain.
+    pcl::PointCloud<pcl::PointXYZ>::Ptr denoised(
+        new pcl::PointCloud<pcl::PointXYZ>);
+    pcl::StatisticalOutlierRemoval<pcl::PointXYZ> sor;
+    sor.setInputCloud(clipped);
+    sor.setMeanK(outlier_mean_k_);
+    sor.setStddevMulThresh(outlier_stddev_);
+    sor.filter(*denoised);
+
+    // Separates the walkable surface from obstacles (furniture, overhangs)
+    // sitting above it, so those don't get rasterized as terrain steps.
+    pcl::PointIndicesPtr ground_indices(new pcl::PointIndices);
+    pcl::ProgressiveMorphologicalFilter<pcl::PointXYZ> pmf;
+    pmf.setInputCloud(denoised);
+    pmf.setCellSize(static_cast<float>(ground_cell_size_));
+    pmf.setMaxWindowSize(ground_max_window_size_);
+    pmf.setSlope(static_cast<float>(ground_slope_));
+    pmf.setInitialDistance(static_cast<float>(ground_initial_distance_));
+    pmf.setMaxDistance(static_cast<float>(ground_max_distance_));
+    pmf.extract(ground_indices->indices);
+
+    ground.reset(new pcl::PointCloud<pcl::PointXYZ>);
+    pcl::ExtractIndices<pcl::PointXYZ> extract;
+    extract.setInputCloud(denoised);
+    extract.setIndices(ground_indices);
+    extract.filter(*ground);
+  }
+
+  for (const auto& p : *ground) {
+    const grid_map::Position position(p.x, p.y);
     if (!map_.isInside(position)) {
       continue;
     }
     float& cell = map_.atPosition(layer_, position);
-    // Highest return wins, so obstacles survive rather than being averaged
-    // away against the ground beneath them.
-    cell = std::isnan(cell) ? z : std::max(cell, z);
+    cell = std::isnan(cell) ? p.z : std::max(cell, p.z);
   }
 }
 

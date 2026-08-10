@@ -103,7 +103,19 @@ def generate_launch_description():
     # --- Point cloud -> grid_map ---------------------------------------------
     gridmap = DeclareLaunchArgument(
         'gridmap', default_value='true',
-        description='Rasterize the cloud into a grid_map elevation layer.')
+        description='Turn the cloud into a grid_map elevation layer.')
+    mapping_backend = DeclareLaunchArgument(
+        'mapping_backend', default_value='octomap', choices=['octomap', 'custom'],
+        description=(
+            'octomap (default) - octomap_server does probabilistic log-odds '
+            'voxel fusion and sensor-origin ray-traced free-space clearing, so '
+            'noise self-corrects instead of accumulating as permanent spikes, '
+            'and real 3D structure keeps obstacles (e.g. a table) from being '
+            'read as a terrain step; quad_perception/octomap_to_gridmap then '
+            'projects it down to the same grid_map contract below. '
+            'custom - the original quad_perception/pointcloud_to_gridmap '
+            'node (PCL ground segmentation, naive max-height rasterizing); '
+            'kept as a lighter-weight fallback with no TF requirement.'))
     gridmap_topic = DeclareLaunchArgument(
         'gridmap_topic', default_value='/mapping/terrain_map_raw',
         description=('Where the elevation grid_map is published. This is the '
@@ -114,18 +126,37 @@ def generate_launch_description():
         description='Grid cell size in metres.')
     gridmap_length = DeclareLaunchArgument(
         'gridmap_length', default_value='10.0',
-        description='Side length of the (square) grid in metres.')
+        description='Side length of the (square) grid in metres. custom backend only.')
     map_frame = DeclareLaunchArgument(
         'map_frame', default_value='',
-        description=('Fixed frame to accumulate the grid in. Empty builds it in '
-                     'the cloud frame, which needs no TF tree; set this once a '
-                     'transform to a fixed frame is being published.'))
+        description=('Fixed frame to accumulate the grid in. custom backend only: '
+                     'empty builds it in the cloud frame, which needs no TF tree; '
+                     'set this once a transform to a fixed frame is being published. '
+                     'octomap backend always needs a real fixed frame, see '
+                     'octomap_frame_id.'))
+    octomap_frame_id = DeclareLaunchArgument(
+        'octomap_frame_id', default_value='odom',
+        description=('Fixed frame octomap_server accumulates in. Needs a real TF '
+                     'tree from the cloud frame to this one (unlike the custom '
+                     'backend, octomap_server cannot run frameless).'))
+    base_frame_id = DeclareLaunchArgument(
+        'base_frame_id', default_value='body',
+        description='Robot base frame, used by octomap_server for ground filtering.')
+    ground_min_z = DeclareLaunchArgument(
+        'ground_min_z', default_value='-0.5',
+        description=('Lower bound (m, in octomap_frame_id) of the band '
+                     'octomap_to_gridmap reads as terrain height.'))
+    ground_max_z = DeclareLaunchArgument(
+        'ground_max_z', default_value='0.5',
+        description=('Upper bound (m, in octomap_frame_id) of the band '
+                     'octomap_to_gridmap reads as terrain height; obstacles above '
+                     'this (tables, shelves) are excluded from the height layer.'))
     visualize = DeclareLaunchArgument(
         'visualize', default_value='false',
         description=('Run grid_map_visualization, which republishes the grid as '
                      'a PointCloud2 and OccupancyGrid for plain RViz.'))
 
-    gridmap_node = Node(
+    custom_gridmap_node = Node(
         package='quad_perception',
         executable='pointcloud_to_gridmap_node',
         name='pointcloud_to_gridmap',
@@ -139,7 +170,50 @@ def generate_launch_description():
             'map_frame': LaunchConfiguration('map_frame'),
             'use_sim_time': LaunchConfiguration('use_sim_time'),
         }],
-        condition=IfCondition(LaunchConfiguration('gridmap')),
+        condition=IfCondition(PythonExpression(
+            ["'", LaunchConfiguration('gridmap'), "' == 'true' and '",
+             LaunchConfiguration('mapping_backend'), "' == 'custom'"])),
+    )
+
+    octomap_server_node = Node(
+        package='octomap_server',
+        executable='octomap_server_node',
+        name='octomap_server',
+        output='screen',
+        parameters=[{
+            'frame_id': LaunchConfiguration('octomap_frame_id'),
+            'base_frame_id': LaunchConfiguration('base_frame_id'),
+            'resolution': LaunchConfiguration('gridmap_resolution'),
+            # Ground stays IN the octree; octomap_to_gridmap's ground band
+            # decides what counts as terrain at projection time instead.
+            'filter_ground_plane': False,
+            'use_sim_time': LaunchConfiguration('use_sim_time'),
+        }],
+        remappings=[('cloud_in', LaunchConfiguration('output_topic'))],
+        condition=IfCondition(PythonExpression(
+            ["'", LaunchConfiguration('gridmap'), "' == 'true' and '",
+             LaunchConfiguration('mapping_backend'), "' == 'octomap'"])),
+    )
+
+    octomap_gridmap_node = Node(
+        package='quad_perception',
+        executable='octomap_to_gridmap_node',
+        name='octomap_to_gridmap',
+        output='screen',
+        parameters=[{
+            # Relative: octomap_server_node also publishes 'octomap_full' as a
+            # relative name, so both need the same pushed namespace to agree
+            # on where it actually lands. gridmap_topic stays absolute, same
+            # as custom_gridmap_node's output.
+            'input_topic': 'octomap_full',
+            'output_topic': LaunchConfiguration('gridmap_topic'),
+            'ground_min_z': LaunchConfiguration('ground_min_z'),
+            'ground_max_z': LaunchConfiguration('ground_max_z'),
+            'use_sim_time': LaunchConfiguration('use_sim_time'),
+        }],
+        condition=IfCondition(PythonExpression(
+            ["'", LaunchConfiguration('gridmap'), "' == 'true' and '",
+             LaunchConfiguration('mapping_backend'), "' == 'octomap'"])),
     )
 
     # --- LiDAR mounting transform --------------------------------------------
@@ -209,10 +283,15 @@ def generate_launch_description():
         output_topic,
         use_sim_time,
         gridmap,
+        mapping_backend,
         gridmap_topic,
         gridmap_resolution,
         gridmap_length,
         map_frame,
+        octomap_frame_id,
+        base_frame_id,
+        ground_min_z,
+        ground_max_z,
         visualize,
         publish_lidar_tf,
         lidar_parent_frame,
@@ -243,7 +322,9 @@ def generate_launch_description():
             ),
             # Inside the namespace so it picks up the relative cloud topic; its
             # own output topic is absolute and so escapes the namespace.
-            gridmap_node,
+            custom_gridmap_node,
+            octomap_server_node,
+            octomap_gridmap_node,
             lidar_tf,
         ]),
         # Left unnamespaced: the yaml addresses the node as

@@ -23,6 +23,11 @@ find_package(grid_map_ros REQUIRED)
 find_package(tf2_ros REQUIRED)
 find_package(tf2_sensor_msgs REQUIRED)
 find_package(geometry_msgs REQUIRED)
+find_package(PCL REQUIRED)
+find_package(pcl_conversions REQUIRED)
+find_package(octomap REQUIRED)
+find_package(octomap_msgs REQUIRED)
+find_package(grid_map_octomap REQUIRED)
 
 # Unitree SDK2 setup (mirrors robot_driver/CMakeLists.txt)
 set(UNITREE_SDK2_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../external/unitree_sdk2)
@@ -91,7 +96,9 @@ add_library(pointcloud_to_gridmap SHARED
 target_include_directories(pointcloud_to_gridmap PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
   $<INSTALL_INTERFACE:include>
+  ${PCL_INCLUDE_DIRS}
 )
+target_link_libraries(pointcloud_to_gridmap ${PCL_LIBRARIES})
 ament_target_dependencies(pointcloud_to_gridmap
   rclcpp
   sensor_msgs
@@ -101,11 +108,35 @@ ament_target_dependencies(pointcloud_to_gridmap
   grid_map_ros
   tf2_ros
   tf2_sensor_msgs
+  pcl_conversions
 )
 
 add_executable(pointcloud_to_gridmap_node src/pointcloud_to_gridmap_node.cpp)
 target_link_libraries(pointcloud_to_gridmap_node pointcloud_to_gridmap)
 ament_target_dependencies(pointcloud_to_gridmap_node rclcpp)
+
+# Projects octomap_server's fused/ray-traced 3D occupancy map down into the
+# same grid_map elevation-layer contract pointcloud_to_gridmap publishes, so
+# the filter chain downstream doesn't care which one is running.
+# Built directly into the executable (not a SHARED lib): grid_map_octomap
+# ships as a non-PIC static archive, which can't link into another .so.
+add_executable(octomap_to_gridmap_node
+  src/octomap_to_gridmap.cpp
+  src/octomap_to_gridmap_node.cpp
+)
+target_include_directories(octomap_to_gridmap_node PUBLIC
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+  $<INSTALL_INTERFACE:include>
+  ${OCTOMAP_INCLUDE_DIRS}
+)
+target_link_libraries(octomap_to_gridmap_node ${OCTOMAP_LIBRARIES})
+ament_target_dependencies(octomap_to_gridmap_node
+  rclcpp
+  grid_map_msgs
+  grid_map_ros
+  grid_map_octomap
+  octomap_msgs
+)
 
 install(
   DIRECTORY include/
@@ -118,6 +149,7 @@ install(TARGETS
   unitree_pointcloud_bridge_node
   pointcloud_to_gridmap
   pointcloud_to_gridmap_node
+  octomap_to_gridmap_node
   ARCHIVE DESTINATION lib
   LIBRARY DESTINATION lib
   RUNTIME DESTINATION lib/${PROJECT_NAME}

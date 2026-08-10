@@ -49,6 +49,18 @@ class PointCloudToGridMap : public rclcpp::Node {
   bool follow_sensor_ = true;
   bool have_geometry_ = false;
 
+  // Ground segmentation: separates the walkable surface from obstacles
+  // (furniture, overhangs) before rasterizing, so a table doesn't get
+  // rasterized as a terrain step. See rasterize() for how these are used.
+  bool ground_segmentation_ = true;
+  int outlier_mean_k_ = 10;
+  double outlier_stddev_ = 1.0;
+  double ground_cell_size_ = 0.3;
+  int ground_max_window_size_ = 8;
+  double ground_slope_ = 0.5;
+  double ground_initial_distance_ = 0.15;
+  double ground_max_distance_ = 1.0;
+
   rclcpp::Subscription<sensor_msgs::msg::PointCloud2>::SharedPtr sub_;
   rclcpp::Publisher<grid_map_msgs::msg::GridMap>::SharedPtr pub_;
   rclcpp::TimerBase::SharedPtr timer_;
