@@ -152,12 +152,71 @@ mapping:
             # diagonals (~0.01414) are unambiguously outside, so erosion is
             # 4-connected and symmetric, trimming one cell (~1 cm) per side.
             #
-            # 3-cell erosion (~3 cm per side) -> ~10 cm corridor on the 15 cm
-            # b_beam. 12cm (2-cell) still ran too wide; 11cm isn't reachable
-            # at this 1cm map resolution (erosion only steps in ~2cm
-            # increments: 10/12/14), so landed on 10cm, the nearest tighter
-            # option.
-            radius: 0.031
+            # Erosion depth = how far the toe CENTRE is kept from the beam
+            # edge. The binding constraint is the centre, not the sphere: a
+            # sphere resting on a flat top contacts directly beneath its
+            # centre, so the equator may overhang without touching the edge.
+            # The original failure was a toe centre at y=-0.093 on a beam of
+            # half-width 0.0875 -- the centre was off the mesh entirely.
+            #
+            # 1-cell (~1 cm per side) at the 1 cm map pitch:
+            #   15 cm b_beam        -> 13 cm corridor, centre <= 1.0 cm from edge
+            #   10 cm beam_world    ->  8 cm corridor, centre <= 1.0 cm from edge
+            # Wider settings were tried first: 3-cell gave only a 4 cm corridor
+            # on the 10 cm beam and 2-cell gave 6 cm.
+            #
+            # NOTE the 1 cm edge margin is thin. The toe contacts directly
+            # beneath its centre, so contact stays on the flat top as long as
+            # the centre is inboard of the edge -- but boundary cells alias by
+            # +/-1 cell at this pitch (the beam edge falls mid-cell), so the
+            # realised margin varies between roughly 0 and 2 cm along the beam.
+            # Halving grid_map_resolution to 0.005 halves that ambiguity.
+            #
+            # 0.011, not 0.01: CircleIterator's <= radius^2 test sits on the
+            # floating-point edge when radius equals an exact multiple of the
+            # cell pitch, and rounds differently on +y vs -y cell centres,
+            # eroding asymmetrically. At 0.011 the 4-neighbours (0.01) are
+            # unambiguously inside the disk and the diagonals (~0.01414)
+            # unambiguously outside, so erosion is 4-connected and symmetric.
+            # MEASURED (bag 20260810_2057): the footstep planner pins footholds
+            # at the corridor boundary -- planned |y| was 0.0374 median / 0.0405
+            # max against a 0.040 limit -- because nominal stance (+/-0.15) pulls
+            # outward until traversability stops it. So corridor width sets how
+            # close feet are PLANNED to the beam edge, and widening the corridor
+            # moves footholds outward rather than giving the robot more room.
+            #
+            # Stance feet then overshoot plan by ~7-12 mm. The two extremes
+            # each fail, in opposite ways:
+            #
+            #   8 cm corridor (0.011): footholds at +/-0.040, touchdown ~0.052
+            #     vs a 0.050 edge -- a foot went over at t=11.75 s in bag
+            #     20260810_2057, yaw rate spiked to -1.74 rad/s, robot fell.
+            #
+            #   4 cm corridor (0.031): footholds confined to +/-0.020, so the
+            #     left and right foot of a pair converge onto the centreline.
+            #     In bag 20260810_2114 the front pair closed to 2 mm apart and
+            #     the rear pair from 294 mm to 46 mm -- the legs end up on one
+            #     line and cannot swing past each other.
+            #
+            # On the 10 cm beam, 6 cm (2 cm per side) was the ceiling, and even
+            # that left only 8 mm of margin against a measured 8-18 mm p95
+            # foothold overshoot -- i.e. no margin at all. Hence the move to the
+            # 15 cm b_beam.
+            #
+            # 3 cm per side on the 15 cm beam gives a 9 cm corridor:
+            #   footholds +/-0.045, +18 mm worst-case overshoot -> 0.063
+            #   against a 0.075 edge = 12 mm spare, and 9 cm of lateral leg
+            #   separation so the pairs cannot converge the way they did at
+            #   t=7.10 s in bag 20260810_2114 (front pair 2 mm apart).
+            # A 10 cm corridor (2.5 cm/side) was the other candidate but leaves
+            # only 7 mm; 9 cm trades 1 cm of width for 5 mm of margin.
+            #
+            # 0.031 at the 5 mm pitch erodes 6 cells = 3.0 cm, and is clear of
+            # the floating-point boundary that an exact pitch multiple (0.030)
+            # would sit on -- CircleIterator's <= radius^2 test rounds
+            # differently on +y vs -y cell centres there and erodes
+            # asymmetrically.
+            radius: 0.051
 
         filter11:
           # Set lower threshold on traversability hole mask.

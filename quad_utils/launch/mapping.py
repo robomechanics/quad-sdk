@@ -13,11 +13,23 @@ def generate_launch_description():
             description='Input used to generate terrain data'),
         DeclareLaunchArgument('frame_id_mesh_loaded', default_value='map'),
         DeclareLaunchArgument('grid_map_layer_name', default_value='z'),
-        DeclareLaunchArgument('grid_map_resolution', default_value='0.01'),
+        # 5 mm, not 1 cm: a 10 cm beam is only 10 cells wide at 1 cm, so the
+        # beam edge falling mid-cell aliases the traversable corridor by a full
+        # cell and it visibly wanders along the beam. At 5 mm that ambiguity
+        # halves. The erosion radius in filter_chain.yaml is specified in
+        # metres, so the physical 1 cm erosion is unchanged by this.
+        DeclareLaunchArgument('grid_map_resolution', default_value='0.005'),
         DeclareLaunchArgument('latch_grid_map_pub', default_value='true'),
         DeclareLaunchArgument('verbose', default_value='true'),
         DeclareLaunchArgument('world', default_value='step_20cm.sdf'),
         DeclareLaunchArgument('use_sim_time', default_value='true'),
+        DeclareLaunchArgument('track_frame', default_value='',
+            description='TF frame the terrain mesh follows (e.g. a mocap rigid '
+                        'body). Empty places the mesh statically at mesh_pose.'),
+        DeclareLaunchArgument('track_rate', default_value='5.0',
+            description='Hz at which the tracked mesh pose is polled'),
+        DeclareLaunchArgument('mesh_pose', default_value='[0.0, 0.0, 0.0, 0.0, 0.0, 0.0]',
+            description='Static mesh placement [x y z roll pitch yaw], used when not tracking'),
     ]
 
     # Node for terrain_map_publisher if input_type == "grid"
@@ -51,7 +63,10 @@ def generate_launch_description():
                     'latch_grid_map_pub': LaunchConfiguration('latch_grid_map_pub'),
                     'verbose': LaunchConfiguration('verbose'),
                     'world': LaunchConfiguration('world'),
-                    'use_sim_time': LaunchConfiguration('use_sim_time')
+                    'use_sim_time': LaunchConfiguration('use_sim_time'),
+                    'track_frame': LaunchConfiguration('track_frame'),
+                    'track_rate': LaunchConfiguration('track_rate'),
+                    'mesh_pose': LaunchConfiguration('mesh_pose'),
                 }]
             )
         ],

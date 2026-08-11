@@ -4,7 +4,14 @@
       update_rate: 20.0                       # Update rate of the ROS node (in Hz)
       num_calls: 1                            # Number of times to call the planner
       max_planning_time: 1.0                  # Maximum amount of time to run the planner. 1.0 chosen to give RRT-Connect enough budget to return *complete* plans under stacked CBS constraints (the four-robot corner-swap demo). Earlier 0.20 s budget caused the planner to return VALID_PARTIAL plans for the most-constrained robot, which the local_planner / NMPC could not track without segfaulting.
-      goal_state: [5.0, 0.0]                  # Nominal goal state (x/y coordinates)
+      # Centre of the beam_world_10cm far platform. The terrain map is only the
+      # beam's bounding box (3.66 x 0.61 m), so the old [5.0, 0.0] fell outside
+      # it and isInMap() rejected it as INVALID_GOAL_STATE before any
+      # traversability check ran.
+      # Beam centre measured at x=1.540, y=+0.002 (yaw ~0) on ROS_DOMAIN_ID=42;
+      # platform centre is +1.3716 along the beam from there. Re-measure and
+      # update if the platform moves -- /mocap_node/beam/pose is the beam centre.
+      goal_state: [2.91, 0.0]                 # Nominal goal state (x/y coordinates)
       pos_error_threshold: 25.0               # Error from planned state to trigger reset
       startup_delay: 2.0                      # Time to delay after starting node before planning
       replanning: true                        # Boolean to determine if replanning is allowed

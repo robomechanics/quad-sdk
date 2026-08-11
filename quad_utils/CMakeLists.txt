@@ -163,15 +163,22 @@ ament_target_dependencies(quad_utils
   grid_map_ros 
   grid_map_pcl
   grid_map_msgs  
-  quad_msgs 
+  quad_msgs
   pcl_msgs
   pcl_conversions
   Eigen3
   tf2
+  tf2_ros
   tf2_geometry_msgs
   cv_bridge
-  pinocchio
 )
+
+
+# ament_target_dependencies() only forwards pinocchio_INCLUDE_DIRS/pinocchio_LIBRARIES,
+# not the modern imported target's INTERFACE_COMPILE_DEFINITIONS. Those definitions
+# (e.g. BOOST_MPL_LIMIT_LIST_SIZE=30) are required for pinocchio's joint variant to
+# compile against this system's Boost version, so link the CMake target directly.
+target_link_libraries(quad_utils pinocchio::pinocchio)
 
 ament_target_dependencies(mesh_to_grid_map_node rclcpp)
 
@@ -318,6 +325,19 @@ ament_export_dependencies(
   grid_map_core grid_map_ros grid_map_pcl grid_map_msgs quad_msgs
   pcl_msgs pcl_conversions Eigen3 tf2 tf2_geometry_msgs cv_bridge pluginlib filters
   pinocchio
+)
+
+# quad_kd2.hpp is a public header that includes pinocchio, whose joint variant has
+# 25 alternatives and so needs Boost's MPL limits raised above the default 20.
+# pinocchio ships these on its pinocchio::pinocchio_headers imported target, but
+# ament's generated config only forwards pinocchio_INCLUDE_DIRS/pinocchio_LIBRARIES
+# and drops INTERFACE_COMPILE_DEFINITIONS. Export them so every downstream package
+# that pulls in quad_utils headers compiles.
+ament_export_definitions(
+  BOOST_MPL_LIMIT_LIST_SIZE=30
+  BOOST_MPL_LIMIT_VECTOR_SIZE=30
+  BOOST_MPL_CFG_NO_PREPROCESSED_HEADERS
+  BOOST_FUSION_INVOKE_MAX_ARITY=12
 )
 
 

@@ -17,8 +17,14 @@
 #include <grid_map_pcl/GridMapPclConverter.hpp>
 
 #include <pcl/io/vtk_lib_io.h>
+#include <pcl/common/transforms.h>
+#include <pcl/point_cloud.h>
+#include <pcl/point_types.h>
 #include <pcl_conversions/pcl_conversions.h>
 #include <ament_index_cpp/get_package_share_directory.hpp>
+#include <tf2/LinearMath/Quaternion.h>
+
+#include <cmath>
 
 #include "quad_utils/mesh_to_grid_map_converter.hpp"
 
@@ -31,7 +37,13 @@ MeshToGridMapConverter::MeshToGridMapConverter(rclcpp::Node::SharedPtr node)
       latch_grid_map_pub_(kDefaultLatchGridMapPub),
       verbose_(kDefaultVerbose),
       frame_id_mesh_loaded_(kDefaultFrameIdMeshLoaded),
-      world_name_(kDefaultWorldName) {
+      world_name_(kDefaultWorldName),
+      track_frame_(kDefaultTrackFrame),
+      track_rate_(kDefaultTrackRate),
+      track_position_tolerance_(kDefaultTrackPositionTolerance),
+      track_orientation_tolerance_(kDefaultTrackOrientationTolerance),
+      track_timeout_(kDefaultTrackTimeout),
+      mesh_pose_{0.0, 0.0, 0.0, 0.0, 0.0, 0.0} {
   // Initial interaction with ROS
   getParametersFromRos();
   subscribeToTopics();
@@ -54,7 +66,126 @@ MeshToGridMapConverter::MeshToGridMapConverter(rclcpp::Node::SharedPtr node)
       package_path + "/models/" + base_name + "/meshes/" + base_name + ".ply";
 
   RCLCPP_INFO(node_->get_logger(), "Loading mesh from: %s", full_path.c_str());
-  bool success = loadMeshFromFile(full_path);
+  loadMeshFromFile(full_path);
+
+  // When a tracked frame is configured the mesh follows mocap instead of
+  // sitting at its static pose.
+  if (!track_frame_.empty()) {
+    tf_buffer_ = std::make_shared<tf2_ros::Buffer>(node_->get_clock());
+    tf_listener_ = std::make_shared<tf2_ros::TransformListener>(*tf_buffer_);
+    track_start_time_ = node_->now();
+
+    const auto period = std::chrono::duration<double>(1.0 / track_rate_);
+    track_timer_ = node_->create_wall_timer(
+        std::chrono::duration_cast<std::chrono::nanoseconds>(period),
+        std::bind(&MeshToGridMapConverter::trackTimerCallback, this));
+
+    RCLCPP_INFO(node_->get_logger(),
+                "Tracking terrain mesh via TF '%s' -> '%s' at %.1f Hz",
+                frame_id_mesh_loaded_.c_str(), track_frame_.c_str(),
+                track_rate_);
+  }
+}
+
+Eigen::Isometry3d MeshToGridMapConverter::staticMeshPose() const {
+  Eigen::Isometry3d pose = Eigen::Isometry3d::Identity();
+  if (mesh_pose_.size() != 6) {
+    return pose;
+  }
+  pose.translation() =
+      Eigen::Vector3d(mesh_pose_[0], mesh_pose_[1], mesh_pose_[2]);
+  // Extrinsic RPY, matching the convention used by SDF <pose> tags
+  pose.linear() =
+      (Eigen::AngleAxisd(mesh_pose_[5], Eigen::Vector3d::UnitZ()) *
+       Eigen::AngleAxisd(mesh_pose_[4], Eigen::Vector3d::UnitY()) *
+       Eigen::AngleAxisd(mesh_pose_[3], Eigen::Vector3d::UnitX()))
+          .toRotationMatrix();
+  return pose;
+}
+
+bool MeshToGridMapConverter::publishMeshAtPose(
+    const Eigen::Isometry3d& mesh_to_map) {
+  if (!mesh_loaded_) {
+    RCLCPP_ERROR(node_->get_logger(), "No mesh loaded to place.");
+    return false;
+  }
+
+  pcl::PolygonMesh placed_mesh = mesh_from_file_;
+  if (!mesh_to_map.isApprox(Eigen::Isometry3d::Identity())) {
+    pcl::PointCloud<pcl::PointXYZ> cloud;
+    pcl::fromPCLPointCloud2(mesh_from_file_.cloud, cloud);
+    pcl::transformPointCloud(cloud, cloud,
+                             mesh_to_map.matrix().cast<float>());
+    pcl::toPCLPointCloud2(cloud, placed_mesh.cloud);
+  }
+
+  const bool converted = meshToGridMap(placed_mesh, frame_id_mesh_loaded_,
+                                       node_->now().nanoseconds());
+  if (converted) {
+    last_published_pose_ = mesh_to_map;
+    has_published_pose_ = true;
+  }
+  return converted;
+}
+
+void MeshToGridMapConverter::trackTimerCallback() {
+  geometry_msgs::msg::TransformStamped tf_msg;
+  try {
+    tf_msg = tf_buffer_->lookupTransform(frame_id_mesh_loaded_, track_frame_,
+                                         tf2::TimePointZero);
+  } catch (const tf2::TransformException& ex) {
+    RCLCPP_WARN_THROTTLE(node_->get_logger(), *node_->get_clock(), 5000,
+                         "Waiting for transform '%s' -> '%s': %s",
+                         frame_id_mesh_loaded_.c_str(), track_frame_.c_str(),
+                         ex.what());
+
+    // Publishing nothing starves the planners entirely, which is a far quieter
+    // failure than terrain in the wrong place. After the timeout, fall back to
+    // the static pose; a real transform still overrides it once it shows up.
+    const double waited = (node_->now() - track_start_time_).seconds();
+    if (!has_published_pose_ && !track_fallback_used_ &&
+        waited > track_timeout_) {
+      track_fallback_used_ = true;
+      RCLCPP_WARN(node_->get_logger(),
+                  "No '%s' transform after %.1f s - falling back to static "
+                  "mesh_pose. Terrain will NOT follow the platform.",
+                  track_frame_.c_str(), waited);
+      publishMeshAtPose(staticMeshPose());
+    }
+    return;
+  }
+
+  Eigen::Isometry3d mesh_to_map = Eigen::Isometry3d::Identity();
+  mesh_to_map.translation() = Eigen::Vector3d(tf_msg.transform.translation.x,
+                                              tf_msg.transform.translation.y,
+                                              tf_msg.transform.translation.z);
+  mesh_to_map.linear() =
+      Eigen::Quaterniond(
+          tf_msg.transform.rotation.w, tf_msg.transform.rotation.x,
+          tf_msg.transform.rotation.y, tf_msg.transform.rotation.z)
+          .normalized()
+          .toRotationMatrix();
+
+  // Rasterizing the mesh and reloading it downstream is not free, so only
+  // republish once the platform has actually moved.
+  if (has_published_pose_) {
+    const double d_pos =
+        (mesh_to_map.translation() - last_published_pose_.translation()).norm();
+    const Eigen::Quaterniond q_new(mesh_to_map.linear());
+    const Eigen::Quaterniond q_old(last_published_pose_.linear());
+    const double d_ang = q_new.angularDistance(q_old);
+    if (d_pos < track_position_tolerance_ &&
+        d_ang < track_orientation_tolerance_) {
+      return;
+    }
+  }
+
+  if (publishMeshAtPose(mesh_to_map) && verbose_) {
+    RCLCPP_INFO(node_->get_logger(),
+                "Replaced terrain map at tracked pose [%.3f %.3f %.3f]",
+                mesh_to_map.translation().x(), mesh_to_map.translation().y(),
+                mesh_to_map.translation().z());
+  }
 }
 
 void MeshToGridMapConverter::subscribeToTopics() {  // UPDATED
@@ -114,6 +245,43 @@ void MeshToGridMapConverter::getParametersFromRos() {  // UPDATED
 
   node_->declare_parameter("world", world_name_);
   node_->get_parameter("world", world_name_);
+
+  node_->declare_parameter("track_frame", track_frame_);
+  node_->get_parameter("track_frame", track_frame_);
+
+  node_->declare_parameter("track_rate", track_rate_);
+  node_->get_parameter("track_rate", track_rate_);
+  if (track_rate_ <= 0.0) {
+    RCLCPP_WARN(node_->get_logger(),
+                "track_rate must be positive, falling back to %.1f Hz",
+                kDefaultTrackRate);
+    track_rate_ = kDefaultTrackRate;
+  }
+
+  node_->declare_parameter("track_position_tolerance",
+                           track_position_tolerance_);
+  node_->get_parameter("track_position_tolerance", track_position_tolerance_);
+
+  node_->declare_parameter("track_orientation_tolerance",
+                           track_orientation_tolerance_);
+  node_->get_parameter("track_orientation_tolerance",
+                       track_orientation_tolerance_);
+
+  node_->declare_parameter("track_timeout", track_timeout_);
+  node_->get_parameter("track_timeout", track_timeout_);
+
+  // Static placement of the mesh in frame_id_mesh_loaded_, used whenever the
+  // mesh is not being tracked. Identity preserves the pre-existing behavior of
+  // meshes that are already baked into world coordinates.
+  node_->declare_parameter("mesh_pose", mesh_pose_);
+  node_->get_parameter("mesh_pose", mesh_pose_);
+  if (!mesh_pose_.empty() && mesh_pose_.size() != 6) {
+    RCLCPP_WARN(node_->get_logger(),
+                "mesh_pose must have 6 entries (x y z roll pitch yaw), got %zu "
+                "- ignoring",
+                mesh_pose_.size());
+    mesh_pose_.clear();
+  }
 
   // nh_private_.param("grid_map_resolution", grid_map_resolution_,
   //                   grid_map_resolution_);
@@ -295,8 +463,22 @@ bool MeshToGridMapConverter::loadMeshFromFile(
     return false;
   }
 
-  bool mesh_converted = meshToGridMap(mesh_from_file, frame_id_mesh_loaded_,
-                                      node_->now().nanoseconds());
+  mesh_from_file_ = mesh_from_file;
+  mesh_loaded_ = true;
+  has_published_pose_ = false;
+
+  // A tracked mesh has no meaningful placement until mocap reports one, so
+  // hold off publishing until the first transform arrives.
+  if (!track_frame_.empty()) {
+    if (verbose_) {
+      RCLCPP_INFO(node_->get_logger(),
+                  "Loaded mesh from file: %s. Awaiting '%s' pose from TF.",
+                  path_to_mesh_to_load.c_str(), track_frame_.c_str());
+    }
+    return true;
+  }
+
+  bool mesh_converted = publishMeshAtPose(staticMeshPose());
   if (!mesh_converted) {
     RCLCPP_ERROR(
         node_->get_logger(),
