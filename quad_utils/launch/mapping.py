@@ -73,6 +73,22 @@ def generate_launch_description():
         condition=IfCondition(PythonExpression(["'", LaunchConfiguration('input_type'), "' == 'mesh'"]))
     )
 
+    # Beam centreline / edge / corridor markers for RViz. The Gazebo SDF
+    # stripe is invisible to RViz (RViz never loads the world SDF), so the
+    # same geometry is republished as markers in the map frame.
+    beam_centerline_marker = Node(
+        package='quad_utils',
+        executable='beam_centerline_marker.py',
+        name='beam_centerline_marker',
+        parameters=[{
+            'frame_id': LaunchConfiguration('frame_id_mesh_loaded'),
+            # Same placement the terrain mesh gets, so the line lands on the
+            # beam rather than at the map origin.
+            'mesh_pose': LaunchConfiguration('mesh_pose'),
+            'use_sim_time': LaunchConfiguration('use_sim_time'),
+        }],
+    )
+
     # Launch the grid map visualizer
     grid_map_visualization = Node(
         package='grid_map_visualization',
@@ -123,6 +139,7 @@ def generate_launch_description():
         declared_arguments + [
             # terrain_map_group,
             mesh_to_grid_group,
+            beam_centerline_marker,
             grid_map_visualization,
             grid_map_filter_node,
             static_tf

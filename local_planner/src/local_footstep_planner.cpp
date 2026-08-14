@@ -243,11 +243,21 @@ void LocalFootstepPlanner::computeFootPlan(
         body_ang_vel_touchdown = body_plan.block<1, 3>(i, 9);
         ref_body_ang_vel_touchdown = ref_body_plan.block<1, 3>(i, 9);
 
-        // Compute dynamic shift
+        // Compute dynamic shift.
+        //
+        // Clamp into the map before querying: atPosition() throws
+        // std::out_of_range for an outside position and takes the whole node
+        // down. The terrain map is only the beam's bounding box -- 3.66 x 0.61 m
+        // for beam_world_10cm, versus 4.23 x 2.0 m for b_beam -- so the body
+        // plan only has to predict ~30 cm of lateral excursion to leave it.
+        grid_map::Position body_position_grid_map(body_plan(i, 0),
+                                                  body_plan(i, 1));
         double body_height_touchdown =
             std::max(body_plan(i, 2) -
                          terrain_grid_.atPosition(
-                             "z_inpainted", body_plan.row(i).segment<2>(0)),
+                             "z_inpainted",
+                             terrain_grid_.getClosestPositionInMap(
+                                 body_position_grid_map)),
                      0.0);
         // Ref: Highly Dynamic Quadruped Locomotion via Whole-Body Impulse
         // Control and Model Predictive Control (Centrifugal force and capture
@@ -405,6 +415,11 @@ void LocalFootstepPlanner::computeFootPlan(
               foot_position_next_grid_map = foot_position_prev.head(2);
               foot_position_next = foot_position_prev.head(2);
             }
+            // The fallback above can itself be outside the map, so clamp
+            // rather than trusting it.
+            foot_position_next_grid_map =
+                terrain_grid_.getClosestPositionInMap(
+                    foot_position_next_grid_map);
             foot_position_next.z() =
                 terrain_grid_.atPosition(
                     "z_inpainted", foot_position_next_grid_map,
@@ -616,8 +631,13 @@ Eigen::Vector3d LocalFootstepPlanner::getNearestValidFoothold(
         static_cast<rcutils_duration_value_t>(1e9),
         "No valid foothold found in radius of nominal, returning nominal");
   }
+  // Clamp into the map: when no valid foothold is found this returns the
+  // nominal, which may itself lie outside a beam-sized terrain map, and an
+  // out-of-range atPosition() throws and kills the node.
+  grid_map::Position foot_position_best_grid_map =
+      terrain_grid_.getClosestPositionInMap(foot_position_best.head<2>());
   foot_position_best.z() =
-      terrain_grid_.atPosition("z_inpainted", foot_position_best.head<2>(),
+      terrain_grid_.atPosition("z_inpainted", foot_position_best_grid_map,
                                grid_map::InterpolationMethods::INTER_LINEAR) +
       toe_radius_;
   return foot_position_best;

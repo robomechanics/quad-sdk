@@ -43,6 +43,17 @@ LocalPlanner::LocalPlanner(rclcpp::Node::SharedPtr node)
       cmd_vel_topic, 10,
       std::bind(&LocalPlanner::cmdVelCallback, this, std::placeholders::_1));
 
+  if (!lateral_anchor_topic_.empty()) {
+    lateral_anchor_sub_ =
+        node_->create_subscription<geometry_msgs::msg::PoseStamped>(
+            lateral_anchor_topic_, 10,
+            std::bind(&LocalPlanner::lateralAnchorCallback, this,
+                      std::placeholders::_1));
+    RCLCPP_INFO(node_->get_logger(),
+                "Lateral anchor tracking '%s' (was fixed at y=%.4f)",
+                lateral_anchor_topic_.c_str(), lateral_anchor_y_);
+  }
+
   local_plan_pub_ =
       node_->create_publisher<quad_msgs::msg::RobotPlan>(local_plan_topic, 10);
   foot_plan_discrete_pub_ =
@@ -75,6 +86,8 @@ LocalPlanner::LocalPlanner(rclcpp::Node::SharedPtr node)
                                   lateral_anchor_gain_, 0.0);
   quad_utils::loadROSParamDefault(node_, "local_planner.lateral_anchor_y",
                                   lateral_anchor_y_, 0.0);
+  quad_utils::loadROSParamDefault(node_, "local_planner.lateral_anchor_topic",
+                                  lateral_anchor_topic_, std::string(""));
   double robot_mass;
   quad_utils::loadROSParamDefault(node_, "global_body_planner.mass", robot_mass,
                                   16.3);
@@ -228,6 +241,14 @@ void LocalPlanner::robotStateCallback(
   if (msg->feet.feet.empty() || msg->joints.position.empty()) return;
 
   robot_state_msg_ = msg;
+}
+
+void LocalPlanner::lateralAnchorCallback(
+    const geometry_msgs::msg::PoseStamped::SharedPtr msg) {
+  // Only the lateral position is used: the anchor blends the stand-pose y
+  // reference toward the beam centreline, and the terrain map already supplies
+  // heights and headings for everything else.
+  lateral_anchor_y_ = msg->pose.position.y;
 }
 
 void LocalPlanner::cmdVelCallback(

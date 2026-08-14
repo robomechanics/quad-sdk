@@ -128,7 +128,7 @@ def generate_launch_description():
         DeclareLaunchArgument('live_plot', default_value = 'false', description='Whether to enable live plotting of the simulation data'),
         DeclareLaunchArgument('dash', default_value = 'false', description='Whether to enable the dashboard for visualizing the simulation data'),
         DeclareLaunchArgument('use_sim_time', default_value = 'false', description='Whether to use simulation time'),
-        DeclareLaunchArgument('world', default_value = 'beam_world_15cm.sdf', description='SDF world file name to load into simulation'),
+        DeclareLaunchArgument('world', default_value = 'beam_world_10cm.sdf', description='SDF world file name to load into simulation'),
         DeclareLaunchArgument('track_frame', default_value = 'beam', description='TF frame the terrain mesh follows (e.g. a mocap rigid body). Empty leaves the mesh at its static pose.'),
         # Fallback placement used until the tracked frame appears (and if mocap
         # never comes up). Paired with the beam_world_10cm mesh, whose origin is

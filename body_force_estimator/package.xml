@@ -15,6 +15,7 @@
   <depend>std_msgs</depend>
   <depend>sensor_msgs</depend>
   <depend>quad_utils</depend>
+  <depend>tf2_ros</depend>
   <depend>quad_msgs</depend>
 
   <export>

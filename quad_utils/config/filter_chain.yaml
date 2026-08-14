@@ -216,7 +216,7 @@ mapping:
             # would sit on -- CircleIterator's <= radius^2 test rounds
             # differently on +y vs -y cell centres there and erodes
             # asymmetrically.
-            radius: 0.051
+            radius: 0.016
 
         filter11:
           # Set lower threshold on traversability hole mask.

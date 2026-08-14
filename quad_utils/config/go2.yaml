@@ -16,7 +16,7 @@
 /**/local_planner:
   ros__parameters:
     local_planner:
-        desired_height: 0.3 # m
+        desired_height: 0.3 # m 
         toe_radius: 0.02 # m
     local_footstep_planner:
         hip_clearance: 0.1
@@ -97,8 +97,8 @@
       stand_kd: [2.0, 2.0, 2.0]
       stance_kp: [30.0, 30.0, 30.0] # 40 Learned, 30 MPC
       stance_kd: [4.0, 4.0, 4.0]
-      swing_kp: [30.0, 30.0, 30.0] #[10.0, 10.0, 10.0]
-      swing_kd: [4.0, 4.0, 4.0]
+      swing_kp: [50.0, 50.0, 50.0] # was 30.0; [10.0, 10.0, 10.0] originally
+      swing_kd: [4.0, 4.0, 4.0] # was 4.0
       swing_kp_cart: [0.0, 0.0, 0.0] # N/m
       swing_kd_cart: [0.0, 0.0, 0.0] # N/m
       safety_kp: [0.0, 0.0, 0.0]

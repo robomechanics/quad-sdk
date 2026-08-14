@@ -10,6 +10,7 @@
 #include <quad_msgs/msg/multi_foot_plan_discrete.hpp>
 #include <quad_msgs/msg/robot_plan.hpp>
 #include <quad_msgs/msg/robot_state.hpp>
+#include <geometry_msgs/msg/pose_stamped.hpp>
 #include <quad_utils/ros_utils.hpp>
 #include <std_msgs/msg/bool.hpp>
 #include <rclcpp/rclcpp.hpp>
@@ -312,6 +313,21 @@ class LocalPlanner {
   /// World-frame y target the lateral anchor blends toward (e.g. beam
   /// centerline)
   double lateral_anchor_y_;
+
+  /// Optional topic carrying the beam's mocap pose. When set, lateral_anchor_y_
+  /// follows that pose instead of staying at its configured constant -- the
+  /// constant is only correct while the beam lies on the world y=0 axis, and it
+  /// does not (measured ~-0.016 m), which offsets the body from the foothold
+  /// line the terrain map produces. Empty keeps the static value.
+  std::string lateral_anchor_topic_;
+
+  /// Subscriber for the above
+  rclcpp::Subscription<geometry_msgs::msg::PoseStamped>::SharedPtr
+      lateral_anchor_sub_;
+
+  /// Updates lateral_anchor_y_ from the tracked beam pose
+  void lateralAnchorCallback(
+      const geometry_msgs::msg::PoseStamped::SharedPtr msg);
 };
 
 #endif  // LOCAL_PLANNER_H
