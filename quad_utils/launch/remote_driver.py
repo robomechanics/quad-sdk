@@ -33,6 +33,16 @@ def launch_robot_mapping(context, *args, **kwargs):
         'launch',
         'mapping.py'
     ])
+
+    # track_beam:=false is the ground-test case: there is no physical beam for
+    # mocap to report, so the mesh is pinned at mesh_pose from the start. The
+    # beam world, its grid map and the centreline markers are all unchanged --
+    # the robot still plans and walks a beam, it just isn't chasing a rigid
+    # body that will never appear (which otherwise costs a track_timeout of
+    # TF warnings before the node falls back to the same static pose).
+    track_beam = LaunchConfiguration('track_beam').perform(context).lower() == 'true'
+    track_frame = LaunchConfiguration('track_frame').perform(context) if track_beam else ''
+
     return [
         GroupAction([
             PushRosNamespace('mapping'),
@@ -45,7 +55,7 @@ def launch_robot_mapping(context, *args, **kwargs):
                     # body instead of sitting at a fixed pose.
                     'input_type': 'mesh',
                     'world': LaunchConfiguration('world'),
-                    'track_frame': LaunchConfiguration('track_frame'),
+                    'track_frame': track_frame,
                     'mesh_pose': LaunchConfiguration('mesh_pose'),
                     'use_sim_time': LaunchConfiguration('use_sim_time')
                 }.items()
@@ -128,12 +138,18 @@ def generate_launch_description():
         DeclareLaunchArgument('live_plot', default_value = 'false', description='Whether to enable live plotting of the simulation data'),
         DeclareLaunchArgument('dash', default_value = 'false', description='Whether to enable the dashboard for visualizing the simulation data'),
         DeclareLaunchArgument('use_sim_time', default_value = 'false', description='Whether to use simulation time'),
-        DeclareLaunchArgument('world', default_value = 'beam_world_10cm.sdf', description='SDF world file name to load into simulation'),
-        DeclareLaunchArgument('track_frame', default_value = 'beam', description='TF frame the terrain mesh follows (e.g. a mocap rigid body). Empty leaves the mesh at its static pose.'),
-        # Fallback placement used until the tracked frame appears (and if mocap
-        # never comes up). Paired with the beam_world_10cm mesh, whose origin is
-        # the centre of its top face, so this puts the start platform under the
-        # robot spawn rather than the middle of the beam.
+        DeclareLaunchArgument('world', default_value = 'beam_world_15cm.sdf', description='SDF world file name to load into simulation'),
+        # Defaults false: testing runs on the ground, with the beam existing
+        # only as a terrain map, so there is no physical beam for mocap to
+        # report. Set true again if a tracked beam goes back on the floor.
+        DeclareLaunchArgument('track_beam', default_value = 'false', description='Whether the terrain mesh follows the mocap-tracked beam. False (the ground-test default) leaves the beam world loaded with the mesh pinned at mesh_pose.'),
+        DeclareLaunchArgument('track_frame', default_value = 'beam', description='TF frame the terrain mesh follows (e.g. a mocap rigid body). Ignored when track_beam is false.'),
+        # Placement used whenever the mesh is not tracking -- track_beam:=false,
+        # or before the tracked frame appears (and if mocap never comes up).
+        # The beam_world_* meshes all share this footprint (they differ only in
+        # waist width) and their origin is the centre of the top face, so this
+        # puts the start platform under the robot spawn rather than the middle
+        # of the beam.
         DeclareLaunchArgument('mesh_pose', default_value = '[1.3716, 0.0, 0.0127, 0.0, 0.0, 0.0]', description='Static terrain mesh placement [x y z roll pitch yaw] used when not tracking'),
         DeclareLaunchArgument('namespace', default_value = 'robot_1', description='Robot namespace'),
         DeclareLaunchArgument('robot_type', default_value = 'go2', description='Robot type'),

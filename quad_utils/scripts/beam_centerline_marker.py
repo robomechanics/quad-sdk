@@ -7,10 +7,11 @@ RViz never loads the world SDF, it only renders the grid map published on
 whatever marker topics are subscribed. So the line has to be published as a
 visualization_msgs/Marker to appear there.
 
-Defaults match beam_world_15cm: the platform mesh spans x in [-1.8288,
-1.8288] with the 15 cm narrow section between x = +/-0.9144, beam centred on
-y = 0, top surface at z = 0 in the map frame (mesh_pose is [0]*6, so mesh
-coordinates are map coordinates).
+Geometry (x extent, beam half-width, eroded corridor half-width) is supplied
+by mapping.py, which reads it from the same .ply the terrain map is built from
+and from the live erosion radius in filter_chain.yaml. The defaults below are
+only a standalone fallback -- they are overridden whenever this node is
+launched normally, so a new beam width needs no edit here.
 
 Published on a transient-local topic so RViz picks it up whenever it starts,
 AND re-published on a slow timer so it still shows if the RViz display is
@@ -38,9 +39,9 @@ class BeamCentrelineMarker(Node):
         # otherwise the line lands at the map origin while the beam sits
         # wherever mesh_pose put it.
         #
-        # Platform mesh spans x in [-1.8288, 1.8288] for both beam_world_10cm
-        # and beam_world_15cm; the narrow section is x in [-0.9144, 0.9144].
-        # The longer line makes approach alignment visible too.
+        # All beam_world_* meshes span x in [-1.8288, 1.8288] with the narrow
+        # section between x = +/-0.9144. Drawing the full length rather than
+        # just the waist makes approach alignment visible too.
         self.declare_parameter('x_min', -1.8288)
         self.declare_parameter('x_max', 1.8288)
         self.declare_parameter('y_center', 0.0)
@@ -54,10 +55,11 @@ class BeamCentrelineMarker(Node):
         # the beam is laid flat, so roll/pitch are not meaningful for a
         # top-surface reference line.
         self.declare_parameter('mesh_pose', [0.0] * 6)
-        # Defaults track beam_world_10cm (the live world): narrow section is
-        # y in [-0.05, 0.05]. Corridor half-width is that minus the
-        # filter_chain erosion, floor(0.016/0.005)=3 cells at 5 mm = 1.5 cm.
-        # For beam_world_15cm use 0.075 / 0.060 instead.
+        # Fallback only -- mapping.py overrides both. The corridor bound is
+        # NOT edge_half_width minus the erosion radius: erosion removes whole
+        # cells and the cell centres sit half a pitch off the centreline, so
+        # the 10 cm beam measures +/-0.0325, not +/-0.035. mapping.py computes
+        # it; see the derivation note there and in filter_chain.yaml.
         self.declare_parameter('draw_edges', True)
         self.declare_parameter('edge_half_width', 0.05)
         self.declare_parameter('corridor_half_width', 0.035)

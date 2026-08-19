@@ -1,0 +1,52 @@
+<?xml version="1.0"?>
+<sdf version="1.6">
+    <model name="beam_world_17cm">
+      <static>true</static>
+      <link name="body">
+        <visual name="visual">
+          <geometry>
+            <mesh>
+                <uri>meshes/beam_world_17cm.stl</uri>
+            </mesh>
+          </geometry>
+        </visual>
+        <!-- Centreline reference stripe. Visual only: no <collision>, so it
+             cannot touch physics, and mesh_to_grid_map builds the terrain
+             map straight from meshes/beam_world_17cm.ply without ever
+             parsing this SDF, so it cannot perturb traversability either.
+             Sits at y=0, 0.1 mm above the mesh top (local z=0) to avoid
+             z-fighting with the beam surface. Spans the full 3.6576 m
+             platform so approach alignment is visible too. -->
+        <visual name="centreline">
+          <pose>0 0 0.0006 0 0 0</pose>
+          <geometry>
+            <box>
+              <size>3.6576 0.004 0.001</size>
+            </box>
+          </geometry>
+          <material>
+            <ambient>1 0.1 0.1 1</ambient>
+            <diffuse>1 0.1 0.1 1</diffuse>
+            <specular>0 0 0 1</specular>
+            <emissive>1 0.1 0.1 1</emissive>
+          </material>
+        </visual>
+
+        <collision name="collision">
+          <geometry>
+            <mesh>
+                <uri>meshes/beam_world_17cm.stl</uri>
+            </mesh>
+          </geometry>
+          <surface>
+            <friction>
+              <ode>
+                <mu>100</mu>
+                <mu2>100</mu2>
+              </ode>
+            </friction>
+          </surface>
+        </collision>
+      </link>
+    </model>
+</sdf>

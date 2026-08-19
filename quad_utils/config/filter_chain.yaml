@@ -120,8 +120,9 @@ mapping:
             expression: z_finite
 
         filter10:
-          # Erode the binary safe mask by one cell to remove the boundary-cell
-          # overestimation.
+          # Erode the binary safe mask inward to remove the boundary-cell
+          # overestimation. Depth is set by `radius` below (currently 3 cells,
+          # 1.5 cm per side).
           #
           # The grid map's boundary cells (centers at y = +-0.0875 for the
           # 17.5 cm beam) are marked mask=1 because the raycaster's 1e-5
@@ -133,25 +134,15 @@ mapping:
           # beam top-side EDGE rather than the flat top -> edge friction is
           # poor and the robot slips laterally over multiple gait cycles.
           #
-          # MinInRadius with radius = one cell pulls any boundary cell to 0
-          # (since it has at least one NaN/0-mask neighbor). Interior cells
-          # stay 1. Net effect: usable foothold corridor shrinks by 2 cells
-          # (one each side) but every accepted foothold lands on the flat
-          # mesh top instead of the edge.
+          # MinInRadius pulls any cell within `radius` of a NaN/0-mask cell to
+          # 0; interior cells stay 1. Net effect: the usable foothold corridor
+          # shrinks by the erosion depth on each side, but every accepted
+          # foothold lands on the flat mesh top instead of the edge.
           name: traversability_erode_boundary
           type: gridMapFilters/MinInRadiusFilter
           params:
             input_layer: traversability_hole_mask
             output_layer: traversability_hole_mask_filtered
-            # Single-cell (4-connected) erosion at the current 0.01 m pitch.
-            # 0.011, not 0.01: CircleIterator's <= radius^2 check is on the
-            # floating-point edge when radius equals exactly the cell pitch,
-            # and floats round different directions on +y vs -y cell centers,
-            # so an exact-pitch radius erodes asymmetrically. At 0.011 the
-            # 4-neighbors (0.01) are unambiguously inside the disk and the
-            # diagonals (~0.01414) are unambiguously outside, so erosion is
-            # 4-connected and symmetric, trimming one cell (~1 cm) per side.
-            #
             # Erosion depth = how far the toe CENTRE is kept from the beam
             # edge. The binding constraint is the centre, not the sphere: a
             # sphere resting on a flat top contacts directly beneath its
@@ -159,63 +150,99 @@ mapping:
             # The original failure was a toe centre at y=-0.093 on a beam of
             # half-width 0.0875 -- the centre was off the mesh entirely.
             #
-            # 1-cell (~1 cm per side) at the 1 cm map pitch:
-            #   15 cm b_beam        -> 13 cm corridor, centre <= 1.0 cm from edge
-            #   10 cm beam_world    ->  8 cm corridor, centre <= 1.0 cm from edge
-            # Wider settings were tried first: 3-cell gave only a 4 cm corridor
-            # on the 10 cm beam and 2-cell gave 6 cm.
+            # Radius convention: N*pitch + 0.001 erodes N cells. The +0.001
+            # matters -- CircleIterator's <= radius^2 test sits on the
+            # floating-point edge when radius is an exact multiple of the cell
+            # pitch, and rounds differently on +y vs -y cell centres, so an
+            # exact-multiple radius erodes asymmetrically.
             #
-            # NOTE the 1 cm edge margin is thin. The toe contacts directly
-            # beneath its centre, so contact stays on the flat top as long as
-            # the centre is inboard of the edge -- but boundary cells alias by
-            # +/-1 cell at this pitch (the beam edge falls mid-cell), so the
-            # realised margin varies between roughly 0 and 2 cm along the beam.
-            # Halving grid_map_resolution to 0.005 halves that ambiguity.
+            # At the 5 mm pitch (mapping.py grid_map_resolution), against the
+            # 10 cm beam (beam_world_10cm.stl top face: y in +/-0.050 over
+            # x in [-0.844, +0.914]):
+            #   0.011 -> 2 cells = 1.0 cm/side -> 8.0 cm corridor
+            #   0.016 -> 3 cells = 1.5 cm/side -> 7.0 cm corridor
+            #   0.031 -> 6 cells = 3.0 cm/side -> 4.0 cm corridor
             #
-            # 0.011, not 0.01: CircleIterator's <= radius^2 test sits on the
-            # floating-point edge when radius equals an exact multiple of the
-            # cell pitch, and rounds differently on +y vs -y cell centres,
-            # eroding asymmetrically. At 0.011 the 4-neighbours (0.01) are
-            # unambiguously inside the disk and the diagonals (~0.01414)
-            # unambiguously outside, so erosion is 4-connected and symmetric.
-            # MEASURED (bag 20260810_2057): the footstep planner pins footholds
-            # at the corridor boundary -- planned |y| was 0.0374 median / 0.0405
-            # max against a 0.040 limit -- because nominal stance (+/-0.15) pulls
-            # outward until traversability stops it. So corridor width sets how
-            # close feet are PLANNED to the beam edge, and widening the corridor
-            # moves footholds outward rather than giving the robot more room.
+            # Corridor width sets how far outboard feet are PLANNED, not how
+            # much room they have: nominal stance (+/-0.15) pulls outward until
+            # traversability stops it, so the planner pins footholds at the
+            # corridor boundary.
             #
-            # Stance feet then overshoot plan by ~7-12 mm. The two extremes
-            # each fail, in opposite ways:
+            # 6.5 cm corridor (3-cell erosion). This is the baseline: 7.5 cm
+            # was tried twice and reverted both times, on hardware, because
+            # beam ENTRY misses before the extra width ever pays off.
             #
-            #   8 cm corridor (0.011): footholds at +/-0.040, touchdown ~0.052
-            #     vs a 0.050 edge -- a foot went over at t=11.75 s in bag
-            #     20260810_2057, yaw rate spiked to -1.74 rad/s, robot fell.
+            # THE LADDER IS QUANTISED, AND OFFSET. Erosion removes whole cells,
+            # so the corridor moves in 1.0 cm steps -- there is no 7.0 or 7.4
+            # setting -- and the step positions are set by where cell centres
+            # fall relative to the beam edge, not by the beam edge itself. The
+            # mesh is 0.6096 m wide, which at the 5 mm pitch is 121.92 -> 122
+            # cells. An EVEN count puts centres at +/-0.0025, +/-0.0075 ...
+            # +/-0.0475, +/-0.0525, i.e. half a pitch off zero, so the
+            # outermost centre still on the 10 cm beam is 0.0475 and NOT 0.050.
+            # Every corridor width is therefore 0.5 cm narrower than the
+            # beam-edge arithmetic suggests:
+            #   0.006 -> 1 cell -> boundary +/-0.0425 -> 8.5 cm
+            #   0.011 -> 2 cells -> boundary +/-0.0375 -> 7.5 cm
+            #   0.016 -> 3 cells -> boundary +/-0.0325 -> 6.5 cm   <-- current
+            #   0.031 -> 6 cells -> boundary +/-0.0175 -> 3.5 cm
+            # CONFIRMED against bag 20260817_2032 at this radius: planned
+            # |foothold y| had median exactly 0.0325, spread 0.030-0.0356. The
+            # spread is getNearestValidFoothold's sub-cell `offset` realignment
+            # (+/- half a pitch), not corridor width. If the mesh or the pitch
+            # changes, recompute the phase -- do NOT assume boundary =
+            # half_width - erosion.
             #
-            #   4 cm corridor (0.031): footholds confined to +/-0.020, so the
-            #     left and right foot of a pair converge onto the centreline.
-            #     In bag 20260810_2114 the front pair closed to 2 mm apart and
-            #     the rear pair from 294 mm to 46 mm -- the legs end up on one
-            #     line and cannot swing past each other.
+            # Radius convention: N*pitch + 0.001 erodes N cells. The +0.001
+            # matters -- CircleIterator's <= radius^2 test sits on the
+            # floating-point edge when radius is an exact multiple of the cell
+            # pitch, and rounds differently on +y vs -y cell centres, so an
+            # exact-multiple radius erodes asymmetrically.
             #
-            # On the 10 cm beam, 6 cm (2 cm per side) was the ceiling, and even
-            # that left only 8 mm of margin against a measured 8-18 mm p95
-            # foothold overshoot -- i.e. no margin at all. Hence the move to the
-            # 15 cm b_beam.
+            # Corridor width sets how far outboard feet are PLANNED, not how
+            # much room they have: nominal stance (+/-0.15) pulls outward until
+            # traversability stops it, so the planner pins footholds at the
+            # corridor boundary.
             #
-            # 3 cm per side on the 15 cm beam gives a 9 cm corridor:
-            #   footholds +/-0.045, +18 mm worst-case overshoot -> 0.063
-            #   against a 0.075 edge = 12 mm spare, and 9 cm of lateral leg
-            #   separation so the pairs cannot converge the way they did at
-            #   t=7.10 s in bag 20260810_2114 (front pair 2 mm apart).
-            # A 10 cm corridor (2.5 cm/side) was the other candidate but leaves
-            # only 7 mm; 9 cm trades 1 cm of width for 5 mm of margin.
+            # BOTH NEIGHBOURING RUNGS FAIL, IN OPPOSITE WAYS.
             #
-            # 0.031 at the 5 mm pitch erodes 6 cells = 3.0 cm, and is clear of
-            # the floating-point boundary that an exact pitch multiple (0.030)
-            # would sit on -- CircleIterator's <= radius^2 test rounds
-            # differently on +y vs -y cell centres there and erodes
-            # asymmetrically.
+            # 6.5 cm (here) fails mid-beam: it leaves the NMPC only a 3.25 cm
+            # normal-force roll moment arm. In bag 20260817_2032 that ran out
+            # at t~3.3 s -- left legs pinned at u_lb=10 N and right at
+            # u_ub=150 N, so the solver started paying for roll with lateral
+            # foot forces (friction cone saturated at mu*sqrt2=0.849), and
+            # because those act at feet +/-0.2 m in x they twisted the robot:
+            # commanded yaw moment went from ~1 to 15 N.m and it toppled at
+            # t=3.7 s.
+            #
+            # 7.5 cm fails at entry. Stance feet overshoot the planned foothold
+            # outward in two regimes (measured on 20260817_2032):
+            #   beam->beam steps:            -3.0 to  +7.2 mm
+            #   platform->beam steps (a leg's first step onto the beam):
+            #                               +11.8 to +22.5 mm
+            # Against the 0.050 m edge, footholds at +/-0.0375 put the
+            # transition steps at ~0.049-0.060 m. Entry is already marginal
+            # here at 6.5 cm -- those same four steps landed at
+            # 0.050/0.050/0.054/0.054 at t=2.03, 2.21, 2.93, 3.11 -- and 7.5 cm
+            # adds ~5 mm to each. Both hardware attempts at 0.011 missed a
+            # foothold immediately, at entry, before mid-beam roll authority
+            # ever became binding. Bag 20260810_2057 failed the same way at
+            # t=11.75 s (foot over the edge, yaw rate spike to -1.74 rad/s).
+            #
+            # And re-narrowing is worse: 3.5 cm (0.031) confined footholds to
+            # +/-0.0175, so the left and right foot of a pair converged onto
+            # the centreline and could not swing past each other (bag
+            # 20260810_2114: front pair 2 mm apart, rear pair 294 -> 46 mm).
+            #
+            # CONCLUSION: this knob is exhausted -- 6.5 cm is the floor set by
+            # beam-entry foot tracking, and it is below what mid-beam balance
+            # wants. Widening only becomes available after the transition step
+            # is fixed on the swing side (more swing time for a leg's first
+            # step onto the beam, or ramping stance width in over several steps
+            # instead of one 0.15 -> 0.0325 jump). The mid-beam roll-authority
+            # problem has to be solved elsewhere: NMPC yaw-rate weight
+            # (go2.yaml x_weights[12] = 0.01, the smallest in the vector),
+            # body height, or gait.
             radius: 0.016
 
         filter11:
