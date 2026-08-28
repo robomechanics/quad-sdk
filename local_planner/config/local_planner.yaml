@@ -14,7 +14,7 @@
       # (beam centerline) instead of just tracking wherever the body
       # currently is, so the NMPC's y-position weight has a real error to
       # correct against instead of chasing the drift itself.
-      lateral_anchor_gain: 0.9
+      lateral_anchor_gain: 1.0
       lateral_anchor_y: 0.0  # beam centerline y, world frame
     local_footstep_planner:
       grf_weight: 0.5

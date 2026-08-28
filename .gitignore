@@ -29,3 +29,4 @@ quad_logger/bags/archive/
 # Generated log output (figures, per-run dirs)
 quad_logger/logs/*
 !quad_logger/logs/.gitkeep
+external/livox_ros_driver2/

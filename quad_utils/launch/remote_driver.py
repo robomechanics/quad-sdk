@@ -39,9 +39,13 @@ def launch_robot_mapping(context, *args, **kwargs):
             IncludeLaunchDescription(
                 PythonLaunchDescriptionSource(mapping_launch_path),
                 launch_arguments={
-                    # b_beam MESH (custom: 11cm-wide x 5m narrow section,
-                    # centered y=0) via mesh_to_grid_map_node, loaded from
+                    # b_beam MESH (custom: 14cm-wide x 6ft 8in narrow section
+                    # centered y=0, 3ft pads either end) via
+                    # mesh_to_grid_map_node, loaded from
                     # quad_sim_scripts/models/b_beam/meshes/b_beam.ply.
+                    # The 14cm mesh yields a 12cm traversable corridor: the
+                    # grid_map hole mask covers all 14 cells, then filter10
+                    # erodes one cell (1cm) per side. See filter_chain.yaml.
                     'input_type': 'mesh',
                     'world': 'b_beam.sdf',
                     'use_sim_time': LaunchConfiguration('use_sim_time')

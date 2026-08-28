@@ -170,8 +170,19 @@ ament_target_dependencies(quad_utils
   tf2
   tf2_geometry_msgs
   cv_bridge
-  pinocchio
 )
+
+# Pinocchio must be consumed through its imported target, not
+# ament_target_dependencies: the target carries INTERFACE_COMPILE_DEFINITIONS
+# (BOOST_MPL_LIMIT_LIST_SIZE=30 etc.) that ament_target_dependencies drops, and
+# without them boost::variant cannot hold Pinocchio's 25 joint types.
+target_link_libraries(quad_utils pinocchio::pinocchio)
+
+# Re-export those same definitions so packages that pull in quad_utils headers
+# (ros_utils.hpp -> quad_kd2.hpp) compile with the identical Boost limits.
+get_target_property(_pinocchio_defs pinocchio::pinocchio_headers
+  INTERFACE_COMPILE_DEFINITIONS)
+ament_export_definitions(${_pinocchio_defs})
 
 ament_target_dependencies(mesh_to_grid_map_node rclcpp)
 

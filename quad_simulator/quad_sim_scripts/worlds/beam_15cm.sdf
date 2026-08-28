@@ -62,8 +62,13 @@
       <direction>-1 0 -1</direction>
     </light>
 
+    <!-- Identity pose on purpose: mesh_to_grid_map_node builds the terrain map
+         from models/beam_15cm/meshes/beam_15cm.ply with no pose offset, so the
+         mesh already carries map-frame coordinates.  Any offset here would slide
+         the physics out from under the planner's map.  Start pad is centred on
+         the origin, beam runs +x with its centreline on y=0. -->
     <include>
-      <uri>model://b_beam</uri>
+      <uri>model://beam_15cm</uri>
       <pose>0 0 0  0 0 0</pose>
     </include>
   </world>
