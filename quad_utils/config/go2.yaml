@@ -104,6 +104,44 @@
       stand_joint_angles: [0.0, 0.8, -1.5] # go2
       sit_joint_angles: [0.0, 1.36, -2.65]
 
+      # --- Learned policy (controller:=learned) ---------------------------
+      # Contract for the IsaacLab flat-terrain policy exported from
+      # logs/rsl_rl/unitree_go2_flat/2026-08-26_11-18-05 (stock
+      # Isaac-Velocity-Flat-Unitree-Go2-v0). Every value below mirrors that
+      # run's env.yaml; changing the training config means changing these.
+      #
+      # Path is relative to share/robot_driver (absolute paths also work).
+      model_path: models/go2/go2_flat.onnx
+      # env.yaml sim.dt 0.005 * decimation 4 = 0.02 s
+      policy_inference_rate: 50.0
+      # actions.joint_pos.scale, with use_default_offset: true
+      policy_action_scale: 0.25
+      # Default joint pose in IsaacLab order, i.e.
+      #   hips  [FL, FR, RL, RR], thighs [FL, FR, RL, RR], calves [FL, FR, RL, RR]
+      # Note this is NOT stand_joint_angles repeated per leg: the hips splay
+      # out (+0.1 left / -0.1 right) and the rear thighs sit 0.2 rad further
+      # forward than the front (1.0 vs 0.8).
+      policy_default_joint_pos: [0.1, -0.1, 0.1, -0.1, 0.8, 0.8, 1.0, 1.0, -1.5, -1.5, -1.5, -1.5]
+      # commands.base_velocity.ranges: [vx, vy, yaw_rate]
+      policy_cmd_vel_max: [1.0, 1.0, 1.0]
+      # Observation scales. IsaacLab leaves every ObsTerm.scale as None for
+      # this task, so all four are unity. Only change these if the policy was
+      # retrained with explicit scales.
+      policy_lin_vel_scale: 1.0
+      policy_ang_vel_scale: 1.0
+      policy_joint_pos_scale: 1.0
+      policy_joint_vel_scale: 1.0
+      # Feed the estimated base linear velocity as obs 0-2. Set false on
+      # hardware without a trustworthy linear-velocity estimate; the policy
+      # then sees zeros there rather than a drifting estimate.
+      policy_use_lin_vel_obs: true
+      # PD gains for the policy's position targets, matched to the IsaacLab
+      # DCMotor the policy was trained against (stiffness 25.0, damping 0.5).
+      # Deliberately separate from stance_kp/stance_kd above, which stay at
+      # 60/4 for the model-based controllers.
+      policy_kp: [25.0, 25.0, 25.0]
+      policy_kd: [0.5, 0.5, 0.5]
+
 /**/controller_manager:
   ros__parameters:
     update_rate: 500

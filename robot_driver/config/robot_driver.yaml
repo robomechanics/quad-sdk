@@ -43,7 +43,11 @@
       thresh_out: 10.0  # innovation outlier rejection threshold
       foot_radius: 0.022 # toe radius
 
-      model_path: /root/ros2_ws/src/quad-sdk/robot_driver/include/robot_driver/models/go2/policy.onnx # Path to Policy Onnx File
+      # Path to the policy ONNX file. Relative paths resolve against
+      # share/robot_driver; absolute paths are used verbatim. Per-robot
+      # configs (e.g. quad_utils/config/go2.yaml) override this along with
+      # the rest of the policy contract.
+      model_path: models/go2/go2_flat.onnx
       policy_inference_rate: 50.0  # Hz, rate at which learned policy runs inference (PD tracking runs at update_rate)
       cmd_vel_filter_const: 0.10
       cmd_vel_scale: 1.0

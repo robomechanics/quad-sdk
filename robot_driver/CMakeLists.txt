@@ -27,6 +27,7 @@ find_package(std_msgs REQUIRED)
 find_package(tf2 REQUIRED)
 find_package(tf2_eigen REQUIRED)
 find_package(geometry_msgs REQUIRED)
+find_package(ament_index_cpp REQUIRED)
 # Unitree SDK2 setup
 set(UNITREE_SDK2_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../external/unitree_sdk2)
 
@@ -134,6 +135,7 @@ ament_target_dependencies(robot_driver
   tf2_eigen
   tf2
   geometry_msgs
+  ament_index_cpp
 )
 
 add_executable(robot_driver_node src/robot_driver_node.cpp)
@@ -149,6 +151,13 @@ ament_target_dependencies(robot_driver_node
 install(
   DIRECTORY config/
   DESTINATION share/${PROJECT_NAME}/config
+)
+
+# Learned policy weights. Installed so robot_driver.model_path can be given
+# relative to the package share directory instead of an absolute container path.
+install(
+  DIRECTORY include/robot_driver/models/
+  DESTINATION share/${PROJECT_NAME}/models
 )
 
 install(

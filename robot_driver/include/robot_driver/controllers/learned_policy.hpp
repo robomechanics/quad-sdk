@@ -30,6 +30,11 @@
 
 class LearnedPolicy : public LegController {
  public:
+  /// Observation width of the IsaacLab velocity-flat contract:
+  /// base_lin_vel(3) + base_ang_vel(3) + projected_gravity(3) +
+  /// velocity_commands(3) + joint_pos_rel(12) + joint_vel(12) + actions(12)
+  static constexpr int kObsDim = 48;
+
   /**
    * @brief Constructor for LearnedPolicy
    * @return Constructed object of type LearnedPolicy
@@ -53,6 +58,26 @@ class LearnedPolicy : public LegController {
             const std::vector<double>& stand_joint_angles = {0.0, 0.8, -1.5});
 
   void loadONNXModel();
+
+  /**
+   * @brief Load the IsaacLab observation/action contract from the parameter
+   * server (scales, default joint pose, command clipping, PD gains).
+   *
+   * These must mirror the training env.yaml exactly. For the stock
+   * Isaac-Velocity-Flat-Unitree-Go2-v0 task every observation scale is unity
+   * (IsaacLab leaves ObsTerm.scale as None) and the action term is
+   * scale=0.25 with use_default_offset=true.
+   */
+  void loadPolicyParams();
+
+  /**
+   * @brief Resolve a possibly-relative ONNX path against the robot_driver
+   * package share directory so configs are not tied to a container layout.
+   * @param[in] path Absolute path, or path relative to share/robot_driver
+   * @return Absolute path to the ONNX file
+   */
+  std::string resolveModelPath(const std::string& path) const;
+
   /**
    * @brief Adjust Positional Targets to Work with Differences between Isaac and
    * Quad-SDK URDF
@@ -98,12 +123,12 @@ class LearnedPolicy : public LegController {
   /// Time of Newest Velocity Command Message
   rclcpp::Time last_cmd_vel_msg_time_;
 
-  /// Action Applied on the Last Inference (Current Joint Positions - Defaults)
-  /// / Scale Factor
+  /// Raw ONNX output of the previous inference (obs values 36-47). Zero before
+  /// the first inference and after any reset, per the policy contract.
   Eigen::VectorXd prev_action_{Eigen::VectorXd::Zero(12)};
 
   /// Observation and Action Vectors
-  Eigen::VectorXd obs_{Eigen::VectorXd::Zero(48)};
+  Eigen::VectorXd obs_{Eigen::VectorXd::Zero(kObsDim)};
   Eigen::VectorXd actions_{Eigen::VectorXd::Zero(12)};
   Eigen::VectorXd raw_actions_{Eigen::VectorXd::Zero(12)};
 
@@ -116,12 +141,37 @@ class LearnedPolicy : public LegController {
   /// Whether first inference has been run yet
   bool first_inference_ = true;
 
-  double scale_factor_ = 0.25;  // Grabbed Directly From IsaacLab Repo
+  /// IsaacLab JointPositionAction scale (env.yaml actions.joint_pos.scale)
+  double scale_factor_ = 0.25;
 
+  /// IsaacLab observation-term scales. The stock velocity task leaves every
+  /// ObsTerm.scale as None, i.e. unity — override only if the training config
+  /// actually sets them.
+  double lin_vel_scale_ = 1.0;
+  double ang_vel_scale_ = 1.0;
+  double joint_pos_scale_ = 1.0;
+  double joint_vel_scale_ = 1.0;
+
+  /// Whether to feed the estimated base linear velocity (obs 0-2). Set false
+  /// on hardware with no reliable linear-velocity estimate; the policy then
+  /// sees zeros there rather than a garbage estimate.
+  bool use_lin_vel_obs_ = true;
+
+  /// Command clipping, [vx, vy, yaw_rate], matched to the training ranges
+  Eigen::Vector3d cmd_vel_max_{1.0, 1.0, 1.0};
+
+  /// Default joint pose in IsaacLab order (obs 12-23 reference and the offset
+  /// added to the scaled action)
   Eigen::VectorXd nominal_stance_pose_{Eigen::VectorXd::Zero(12)};
 
-  Eigen::VectorXd temp_actions_{Eigen::VectorXd::Zero(12)};
+  /// Same pose reordered into Quad-SDK order, used as the command held before
+  /// the first successful inference
+  Eigen::VectorXd nominal_stance_pose_sdk_{Eigen::VectorXd::Zero(12)};
 
-  bool initialized_ = true;
+  /// PD gains applied to the policy's position targets. Separate from the
+  /// LegController stance gains so the learned controller can run the
+  /// IsaacLab actuator gains without retuning the model-based controllers.
+  std::vector<double> policy_kp_{25.0, 25.0, 25.0};
+  std::vector<double> policy_kd_{0.5, 0.5, 0.5};
 };
 #endif  // LEARNED_POLICY_H
