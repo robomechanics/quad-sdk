@@ -29,6 +29,28 @@ find_package(tf2_geometry_msgs REQUIRED)
 find_package(Python3 REQUIRED)
 find_package(pinocchio REQUIRED)
 
+# quad_kd2.hpp is a public header that pulls in pinocchio. Since pinocchio >= 3.0
+# the include path for its legacy headers (multibody/model.hpp, math/rpy.hpp,
+# joint/*) and the required BOOST_MPL_LIMIT_* definitions live only on the
+# imported target, not in the pinocchio_INCLUDE_DIRS / pinocchio_DEFINITIONS
+# variables that ament_target_dependencies() and downstream packages consume.
+# Pull them off the imported target and re-export so every consumer of quad_utils
+# compiles quad_kd2.hpp correctly.
+if(TARGET pinocchio::pinocchio_headers)
+  get_target_property(_pinocchio_extra_includes
+    pinocchio::pinocchio_headers INTERFACE_INCLUDE_DIRECTORIES)
+  get_target_property(_pinocchio_extra_defs
+    pinocchio::pinocchio_headers INTERFACE_COMPILE_DEFINITIONS)
+  if(_pinocchio_extra_includes)
+    include_directories(SYSTEM ${_pinocchio_extra_includes})
+    ament_export_include_directories(${_pinocchio_extra_includes})
+  endif()
+  if(_pinocchio_extra_defs)
+    add_compile_definitions(${_pinocchio_extra_defs})
+    ament_export_definitions(${_pinocchio_extra_defs})
+  endif()
+endif()
+
 find_package(pluginlib REQUIRED)
 find_package(filters REQUIRED)
 find_package(tf2_ros REQUIRED)
@@ -170,8 +192,16 @@ ament_target_dependencies(quad_utils
   tf2
   tf2_geometry_msgs
   cv_bridge
-  pinocchio
 )
+
+# Link the modern pinocchio imported target rather than routing it through
+# ament_target_dependencies(). pinocchio >= 3.0 ships its legacy headers
+# (multibody/model.hpp, math/rpy.hpp, ...) in a compat include subdir and needs
+# extra BOOST_MPL_LIMIT_* compile definitions; only the imported target carries
+# both. The plain signature (matching ament_target_dependencies above) still
+# propagates the target's usage requirements to executables/tests that recompile
+# quad_utils sources.
+target_link_libraries(quad_utils pinocchio::pinocchio)
 
 ament_target_dependencies(mesh_to_grid_map_node rclcpp)
 

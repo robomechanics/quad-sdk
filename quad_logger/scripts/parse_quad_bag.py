@@ -256,7 +256,7 @@ def parse_quad_bag(trial_name=None):
                     [0, 0, 0] for m in control_grfs_data]))
 
     # Read state GRF data
-    state_grfs_data = topic_data.get("/robot_1/state/grfs")
+    state_grfs_data = topic_data.get("/robot_1/state/grfs", [])
     state_grfs = {}
     state_grfs["vectors"] = []
     state_grfs["points"] = []
@@ -291,7 +291,7 @@ def parse_quad_bag(trial_name=None):
                     [0, 0, 0] for m in state_grfs_data]))
 
     # Read local plan data
-    local_plan_data = topic_data.get("/robot_1/local_plan")
+    local_plan_data = topic_data.get("/robot_1/local_plan", [])
     local_plan = {}
 
     for _, channel, message, ros_msg in reader.iter_decoded_messages(
@@ -343,13 +343,13 @@ def parse_quad_bag(trial_name=None):
     else:
         data["state_trajectory"] = []
 
-    if len(control_grfs.keys()) != 0:
+    if "time" in control_grfs:
         control_grfs["time"] = control_grfs["time"] - start_time
         data["control_grfs"] = control_grfs
     else:
         data["control_grfs"] = []
 
-    if len(state_grfs.keys()) != 0:
+    if "time" in state_grfs:
         state_grfs["time"] = state_grfs["time"] - start_time
         data["state_grfs"] = state_grfs
     else:

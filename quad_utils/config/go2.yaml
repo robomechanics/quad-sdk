@@ -139,8 +139,8 @@
       # DCMotor the policy was trained against (stiffness 25.0, damping 0.5).
       # Deliberately separate from stance_kp/stance_kd above, which stay at
       # 60/4 for the model-based controllers.
-      policy_kp: [25.0, 25.0, 25.0]
-      policy_kd: [0.5, 0.5, 0.5]
+      policy_kp: [60.0, 60.0, 60.0]
+      policy_kd: [4.0, 4.0, 4.0]
 
 /**/controller_manager:
   ros__parameters:

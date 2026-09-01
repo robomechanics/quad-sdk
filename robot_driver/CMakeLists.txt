@@ -155,10 +155,18 @@ install(
 
 # Learned policy weights. Installed so robot_driver.model_path can be given
 # relative to the package share directory instead of an absolute container path.
-install(
-  DIRECTORY include/robot_driver/models/
-  DESTINATION share/${PROJECT_NAME}/models
-)
+# The weights are not tracked in git, so only install the directory when it is
+# actually present (ament's symlink install hard-fails on a missing source dir).
+if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/include/robot_driver/models/")
+  install(
+    DIRECTORY include/robot_driver/models/
+    DESTINATION share/${PROJECT_NAME}/models
+  )
+else()
+  message(WARNING
+    "robot_driver: include/robot_driver/models/ not found; "
+    "learned-policy weights will not be installed.")
+endif()
 
 install(
   DIRECTORY include/

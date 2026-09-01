@@ -6,6 +6,7 @@ log directories, creating a persistent record of analysis plots for each trial r
 """
 
 import os
+import numpy as np
 import matplotlib.pyplot as plt
 
 def save_log(trial_name, fig_array):
@@ -34,7 +35,7 @@ def save_log(trial_name, fig_array):
     # Flatten nested lists
     flat_figs = []
     for item in fig_array:
-        if isinstance(item, list):
+        if isinstance(item, (list, np.ndarray)):
             flat_figs.extend(item)
         else:
             flat_figs.append(item)

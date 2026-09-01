@@ -1,5 +1,7 @@
 #include "robot_driver/robot_driver.hpp"
 
+#include <limits>
+
 RobotDriver::RobotDriver(std::shared_ptr<rclcpp::Node> node, int argc,
                          char** argv)
     : node_(node), argc_(argc), argv_(argv) {
@@ -563,8 +565,56 @@ bool RobotDriver::updateState() {
       last_robot_state_msg_.joints = last_joint_state_msg_;
       last_robot_state_msg_.joints.header.stamp = state_timestamp;
 
-      // Orientation from IMU quaternion
+      // Orientation from IMU quaternion. Guard against an uninitialized
+      // quaternion (the IMU msg defaults to (0,0,0,0) until the first
+      // hardware lowstate arrives): a zero-norm quaternion turns the FK
+      // rotation into NaN, which would silently floor the body height below.
+      const auto& q_imu = last_imu_msg_.orientation;
+      const double quat_norm = std::sqrt(q_imu.x * q_imu.x + q_imu.y * q_imu.y +
+                                         q_imu.z * q_imu.z + q_imu.w * q_imu.w);
+      if (quat_norm < 0.5) {
+        RCLCPP_WARN_THROTTLE(
+            node_->get_logger(), *node_->get_clock(), 1000,
+            "updateState: IMU orientation not yet valid; skipping state fill");
+        return true;
+      }
       last_robot_state_msg_.body.pose.orientation = last_imu_msg_.orientation;
+
+      // The learned policy only consumes orientation + joint state, but the
+      // published RobotState also drives rviz and the world->body TF, and the
+      // learned controller runs with mocap off. Fake the body height from leg
+      // kinematics: place the body at the origin, run FK, then lift the body so
+      // the lowest foot rests on the ground plane (z = 0). The lowest standing
+      // foot is below the body origin, so its FK z is negative and -min_foot_z
+      // is the stand height. Without this the body publishes at z = 0 and the
+      // robot renders half-buried in rviz.
+      //
+      // Seed min_foot_z from +inf (not 0.0) and skip non-finite samples so a
+      // bad FK frame can't clamp the body to z = 0; if no usable foot is
+      // found, hold the last good height instead of dropping into the floor.
+      static double last_good_z = 0.0;
+      last_robot_state_msg_.body.pose.position.x = 0.0;
+      last_robot_state_msg_.body.pose.position.y = 0.0;
+      last_robot_state_msg_.body.pose.position.z = 0.0;
+      quad_utils::fkRobotState(*quadKD2_, last_robot_state_msg_);
+      double min_foot_z = std::numeric_limits<double>::infinity();
+      for (const auto& foot : last_robot_state_msg_.feet.feet) {
+        if (std::isfinite(foot.position.z)) {
+          min_foot_z = std::min(min_foot_z, foot.position.z);
+        }
+      }
+      if (std::isfinite(min_foot_z)) {
+        last_good_z = -min_foot_z;
+      }
+      last_robot_state_msg_.body.pose.position.z = last_good_z;
+
+      // Anchor x/y at the origin so the robot stays centered in the map. There
+      // is no absolute horizontal reference for the learned controller (mocap
+      // is off), so integrating cmd_vel would only accumulate dead-reckoning
+      // drift and walk the robot off the map. Height (above) and orientation
+      // still track the real robot; only the horizontal position is pinned.
+      last_robot_state_msg_.body.pose.position.x = 0.0;
+      last_robot_state_msg_.body.pose.position.y = 0.0;
 
       // Angular velocity from IMU gyroscope
       last_robot_state_msg_.body.twist.angular = last_imu_msg_.angular_velocity;

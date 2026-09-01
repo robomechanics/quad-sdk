@@ -25,3 +25,11 @@ quad_logger/bags/archive/**/*.mcap
 quad_logger/bags/
 quad_logger/bags/archive/
 *.mcap
+quad_logger/logs/
+
+# colcon build artifacts
+install/
+log/
+
+# accidentally-vendored driver, not a submodule
+external/livox_ros_driver2/
