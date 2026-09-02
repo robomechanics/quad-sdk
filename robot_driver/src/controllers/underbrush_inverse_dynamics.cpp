@@ -284,6 +284,44 @@ bool UnderbrushInverseDynamicsController::computeLegCommandArray(
       }
     }
     quad_utils::ikRobotState(*quadKD_, ref_abad_msg);
+
+    // DEBUG: this abad-specific touchdown search uses the SAME plan-relative-
+    // vs-absolute-timestamp bug as the main swing loop above (t_now compared
+    // directly against an absolute stamp instead of stamp - t_first_state).
+    // Build a second, throwaway copy using the CORRECTED comparison, run IK
+    // on it too, and compare -- purely for logging, does not change what
+    // actually gets commanded. If "buggy" and "fixed" diverge by something in
+    // the ~0.05-0.2 rad range, that's this call site producing the abad
+    // discrepancy. Remove once the abad investigation is done.
+    {
+      quad_msgs::msg::RobotState ref_abad_fixed_msg = ref_underbrush_msg;
+      for (int i = 0; i < 4; i++) {
+        if (!ref_state_msg_.feet.feet.at(i).contact) {
+          for (size_t j = 0; j < last_local_plan_msg_->states.size() - 1; j++) {
+            if (t_now < (rclcpp::Time(last_local_plan_msg_->states[j].header.stamp) -
+                         t_first_state)
+                            .seconds() &&
+                bool(last_local_plan_msg_->states[j].feet.feet.at(i).contact)) {
+              ref_abad_fixed_msg.feet.feet.at(i).position =
+                  last_local_plan_msg_->states[j].feet.feet.at(i).position;
+              break;
+            }
+          }
+        }
+      }
+      quad_utils::ikRobotState(*quadKD_, ref_abad_fixed_msg);
+      for (int i = 0; i < 4; ++i) {
+        if (ref_state_msg_.feet.feet.at(i).contact) continue;  // swing only
+        double abad_buggy = ref_abad_msg.joints.position.at(3 * i + 0);
+        double abad_fixed = ref_abad_fixed_msg.joints.position.at(3 * i + 0);
+        RCLCPP_INFO_THROTTLE(
+            node_->get_logger(), *node_->get_clock(), 200,
+            "[underbrush][abad-stale-vs-fixed] %s: buggy=%.4f fixed=%.4f "
+            "delta=%.4f",
+            kDebugLegNames[i], abad_buggy, abad_fixed, abad_buggy - abad_fixed);
+      }
+    }
+
     for (int i = 0; i < num_feet_; ++i) {
       if (!ref_state_msg_.feet.feet.at(i).contact) {
         ref_underbrush_msg.joints.position.at(3 * i + 0) =
@@ -366,6 +404,40 @@ bool UnderbrushInverseDynamicsController::computeLegCommandArray(
     std::vector<int> contact_mode(num_feet_);
     for (int i = 0; i < num_feet_; i++) {
       contact_mode[i] = ref_state_msg_.feet.feet[i].contact;
+    }
+
+    // DEBUG: (1) at the exact tick a leg transitions swing->stance, compare
+    // the abad angle it's actually carrying in (robot_state_msg, real
+    // hardware) against the fresh stance plan's abad target for that same
+    // tick -- tests whether a swing-phase corruption shows up as a jump at
+    // touchdown. (2) throttled print of the CURRENT plan's own stance abad
+    // target over time, per stance leg -- tests whether the planner itself
+    // has already drifted vs. this just being a tracking-only issue. Remove
+    // once the abad investigation is done.
+    {
+      static bool was_stance[4] = {false, false, false, false};
+      for (int i = 0; i < 4; ++i) {
+        bool now_stance = contact_mode[i];
+        if (now_stance && !was_stance[i]) {
+          RCLCPP_INFO(
+              node_->get_logger(),
+              "[underbrush][stance-transition] %s: TOUCHDOWN incoming_actual_"
+              "abad=%.4f fresh_plan_target_abad=%.4f jump=%.4f",
+              kDebugLegNames[i], robot_state_msg.joints.position.at(3 * i + 0),
+              ref_state_msg_.joints.position.at(3 * i + 0),
+              ref_state_msg_.joints.position.at(3 * i + 0) -
+                  robot_state_msg.joints.position.at(3 * i + 0));
+        }
+        was_stance[i] = now_stance;
+        if (now_stance) {
+          RCLCPP_INFO_THROTTLE(
+              node_->get_logger(), *node_->get_clock(), 200,
+              "[underbrush][stance-plan-target] %s: plan_abad=%.4f "
+              "actual_abad=%.4f",
+              kDebugLegNames[i], ref_state_msg_.joints.position.at(3 * i + 0),
+              robot_state_msg.joints.position.at(3 * i + 0));
+        }
+      }
     }
 
     // Compute joint torques
@@ -454,6 +526,19 @@ bool UnderbrushInverseDynamicsController::computeLegCommandArray(
             leg_command_array_msg.leg_commands.at(i).motor_commands.at(j).kd =
                 swing_kd_.at(j);
           }
+          // DEBUG: what actually ends up commanded for abad -- closes the
+          // loop from "target computed above" to "value that reaches the
+          // motor". Remove once the abad investigation is done.
+          RCLCPP_INFO_THROTTLE(
+              node_->get_logger(), *node_->get_clock(), 200,
+              "[underbrush][abad-final-cmd] %s: pos_setpoint=%.4f "
+              "vel_setpoint=%.4f kp=%.1f",
+              kDebugLegNames[i],
+              leg_command_array_msg.leg_commands.at(i).motor_commands.at(0)
+                  .pos_setpoint,
+              leg_command_array_msg.leg_commands.at(i).motor_commands.at(0)
+                  .vel_setpoint,
+              leg_command_array_msg.leg_commands.at(i).motor_commands.at(0).kp);
         } else {
           // Obstructed swing mode
           for (int j = 0; j < 3; ++j) {
