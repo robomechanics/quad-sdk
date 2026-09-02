@@ -228,7 +228,41 @@ bool UnderbrushInverseDynamicsController::computeLegCommandArray(
         }
       }
     }
+
+    // DEBUG: does ikRobotState() below change a STANCE leg's joint angles,
+    // even though that leg's foot position was never touched by the swing
+    // loop above? ref_underbrush_msg.joints.position going into this call is
+    // still exactly ref_state_msg_'s (the clean planner value) for any
+    // stance leg -- the swing loop above only ever writes .feet.feet.at(i)
+    // for legs with !contact. If ikRobotState() re-derives a different valid
+    // IK solution for the same foot position, "before" and "after" will
+    // differ for a leg that is currently in stance. Remove once the
+    // ref_state_msg_ vs ref_underbrush_msg abad-target investigation is done.
+    static const char* kDebugLegNames[4] = {"FL", "RL", "FR", "RR"};
+    double abad_before[4], hip_before[4], knee_before[4];
+    for (int i = 0; i < 4; ++i) {
+      abad_before[i] = ref_underbrush_msg.joints.position.at(3 * i + 0);
+      hip_before[i] = ref_underbrush_msg.joints.position.at(3 * i + 1);
+      knee_before[i] = ref_underbrush_msg.joints.position.at(3 * i + 2);
+    }
+
     quad_utils::ikRobotState(*quadKD_, ref_underbrush_msg);
+
+    for (int i = 0; i < 4; ++i) {
+      if (!ref_state_msg_.feet.feet.at(i).contact) continue;  // stance only
+      double abad_after = ref_underbrush_msg.joints.position.at(3 * i + 0);
+      double hip_after = ref_underbrush_msg.joints.position.at(3 * i + 1);
+      double knee_after = ref_underbrush_msg.joints.position.at(3 * i + 2);
+      RCLCPP_INFO_THROTTLE(
+          node_->get_logger(), *node_->get_clock(), 200,
+          "[underbrush][stance-ik-drift] %s: abad before=%.4f after=%.4f "
+          "delta=%.4f | hip before=%.4f after=%.4f delta=%.4f | knee "
+          "before=%.4f after=%.4f delta=%.4f",
+          kDebugLegNames[i], abad_before[i], abad_after,
+          abad_after - abad_before[i], hip_before[i], hip_after,
+          hip_after - hip_before[i], knee_before[i], knee_after,
+          knee_after - knee_before[i]);
+    }
 
     // Compute abad joint IK
     ref_abad_msg = ref_underbrush_msg;

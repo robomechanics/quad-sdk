@@ -51,7 +51,7 @@ def generate_launch_description():
     robot_type = DeclareLaunchArgument('robot_type', default_value='go2')
     mocap = DeclareLaunchArgument('mocap', default_value='true')
     logging = DeclareLaunchArgument('logging', default_value='false')
-    controller = DeclareLaunchArgument('controller', default_value='inverse_dynamics')
+    controller = DeclareLaunchArgument('controller', default_value='underbrush')
     model_path = DeclareLaunchArgument('model_path', default_value='./policies/models/***')
     provider = DeclareLaunchArgument('provider', default_value = "tensorrt")
     estimator = DeclareLaunchArgument('estimator', default_value="comp_filter")
@@ -92,7 +92,7 @@ def generate_launch_description():
             package='robot_driver',
             executable='robot_driver_node',
             name='robot_driver',
-            # output='screen', 
+            output='screen',
             parameters=[
                 robot_driver_param_file,
                 robot_driver_topics_file,

@@ -145,6 +145,30 @@ bool InverseDynamicsController::computeLegCommandArray(
         jacobian.block(0, 0, 3 * num_feet_, 3 * num_feet_).transpose() *
         swing_cart_fb;
 
+    // DEBUG: leg-name lookup for the instrumentation prints below (quad-sdk
+    // leg order: FL, RL, FR, RR). Remove once the "falling short on swing
+    // height / dragging feet" investigation is done.
+    static const char* kDebugLegNames[4] = {"FL", "RL", "FR", "RR"};
+
+    // DEBUG: cartesian tracking error per leg -- this is the quantity
+    // swing_cart_fb is supposed to correct, but swing_kp_cart_/swing_kd_cart_
+    // are [0,0,0] in go2.yaml, so swing_cart_fb is mathematically zero
+    // regardless of how large this error gets. Z is the ground-clearance
+    // component specifically.
+    for (int i = 0; i < num_feet_; ++i) {
+      if (!contact_mode[i]) {
+        int zi = 3 * i + 2;
+        RCLCPP_INFO_THROTTLE(
+            node_->get_logger(), *node_->get_clock(), 200,
+            "[inverse_dynamics][cart-err] %s: foot_err(x,y,z)=(%.4f,%.4f,%.4f)"
+            "  swing_cart_fb(x,y,z)=(%.3f,%.3f,%.3f)",
+            kDebugLegNames[i], ref_foot_positions(3 * i) - foot_positions(3 * i),
+            ref_foot_positions(3 * i + 1) - foot_positions(3 * i + 1),
+            ref_foot_positions(zi) - foot_positions(zi),
+            swing_cart_fb(3 * i), swing_cart_fb(3 * i + 1), swing_cart_fb(zi));
+      }
+    }
+
     for (int i = 0; i < num_feet_; ++i) {
       leg_command_array_msg.leg_commands.at(i).motor_commands.resize(3);
       for (int j = 0; j < 3; ++j) {
@@ -173,6 +197,24 @@ bool InverseDynamicsController::computeLegCommandArray(
               swing_kp_.at(j);
           leg_command_array_msg.leg_commands.at(i).motor_commands.at(j).kd =
               swing_kd_.at(j);
+
+          // DEBUG: joint-space tracking error -- with swing_cart_fb pinned
+          // at zero (see above), this joint PD (kp=swing_kp_, kd=swing_kd_)
+          // is the ONLY thing correcting the actual trajectory back toward
+          // the planned one. j=2 is the knee, which dominates foot height.
+          double pos_err = ref_state_msg_.joints.position.at(joint_idx) -
+                           joint_positions(joint_idx);
+          double vel_err = ref_state_msg_.joints.velocity.at(joint_idx) -
+                           joint_velocities(joint_idx);
+          RCLCPP_INFO_THROTTLE(
+              node_->get_logger(), *node_->get_clock(), 200,
+              "[inverse_dynamics][joint-err] %s joint %d: pos_err=%.4f "
+              "vel_err=%.4f  kp=%.1f kd=%.1f  torque_ff=%.3f",
+              kDebugLegNames[i], j, pos_err, vel_err, swing_kp_.at(j),
+              swing_kd_.at(j),
+              leg_command_array_msg.leg_commands.at(i)
+                  .motor_commands.at(j)
+                  .torque_ff);
         }
       }
     }
