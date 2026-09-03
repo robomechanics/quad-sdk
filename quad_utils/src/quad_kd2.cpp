@@ -1,14 +1,22 @@
+// pinocchio/fwd.hpp must precede any boost/Eigen include (rclcpp pulls in
+// boost), so it comes before quad_kd2.hpp.
+#include <pinocchio/fwd.hpp>
+
 #include "quad_utils/quad_kd2.hpp"
 
+// pinocchio 3.x has no umbrella <pinocchio/math.hpp>, <pinocchio/multibody.hpp>
+// or <pinocchio/multibody/joint.hpp>; include the concrete headers instead.
 #include <pinocchio/algorithm/crba.hpp>
 #include <pinocchio/algorithm/frames.hpp>
 #include <pinocchio/algorithm/jacobian.hpp>
 #include <pinocchio/algorithm/kinematics.hpp>
 #include <pinocchio/algorithm/rnea.hpp>
-#include <pinocchio/math.hpp>
-#include <pinocchio/multibody.hpp>
-#include <pinocchio/multibody/joint.hpp>
+#include <pinocchio/multibody/data.hpp>
+#include <pinocchio/multibody/joint/joint-collection.hpp>
+#include <pinocchio/multibody/model.hpp>
 #include <pinocchio/parsers/urdf.hpp>
+#include <pinocchio/spatial/motion.hpp>
+#include <pinocchio/spatial/se3.hpp>
 
 #include "quad_utils/ros_utils.hpp"
 

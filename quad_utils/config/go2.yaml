@@ -95,8 +95,8 @@
       sit_kd: [1.0, 1.0, 1.0]
       stand_kp: [60.0, 60.0, 60.0]
       stand_kd: [2.0, 2.0, 2.0]
-      stance_kp: [30.0, 30.0, 30.0] # Isaac Lab stock Go2 RL gains; was 60 (too stiff for learned policy)
-      stance_kd: [10.0, 10.0, 10.0]
+      stance_kp: [25.0, 25.0, 25.0] # Isaac Lab stock Go2 RL gains; was 60 (too stiff for learned policy)
+      stance_kd: [3.0, 3.0, 3.0]
       swing_kp: [10.0, 10.0, 10.0] #[10.0, 10.0, 10.0]
       swing_kd: [5.0, 5.0, 5.0]
       swing_kp_cart: [0.0, 0.0, 0.0] # N/m
