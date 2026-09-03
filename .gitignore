@@ -27,3 +27,4 @@ quad_logger/bags/archive/
 *.mcap
 
 *.onnx
+external/livox_ros_driver2/

@@ -15,7 +15,9 @@ $HOME/ros2_ws/install/b2_description/share/b2_description/models"
 
 GZ_SIM_SYSTEM_PLUGIN_PATH_UPDATE="export GZ_SIM_SYSTEM_PLUGIN_PATH=$GZ_SIM_SYSTEM_PLUGIN_PATH:/opt/ros/jazzy/lib:$HOME/ros2_ws/install/gazebo_plugins/lib"
 
-QUAD_LOGGER_SRC ="export QUAD_LOGGER_SRC=$HOME/ros2_ws/src/quad-sdk/quad_logger/bags"
+# Points at the quad_logger package dir, not its bags/ subdir: the logging
+# launch files append "/bags/" themselves.
+QUAD_LOGGER_SRC_UPDATE="export QUAD_LOGGER_SRC=$HOME/ros2_ws/src/quad-sdk/quad_logger"
 
 LD_LIBRARY_PATH_UPDATE="export LD_LIBRARY_PATH=/usr/local/lib:\$LD_LIBRARY_PATH"
 
@@ -31,6 +33,13 @@ if ! grep -Fxq "$GZ_SIM_SYSTEM_PLUGIN_PATH_UPDATE" ~/.bashrc; then
    echo "$GZ_SIM_SYSTEM_PLUGIN_PATH_UPDATE" >> ~/.bashrc
 else
    echo "bashrc already contains GZ_SIM_SYSTEM_PLUGIN_PATH update"
+fi
+
+if ! grep -Fxq "$QUAD_LOGGER_SRC_UPDATE" ~/.bashrc; then
+   echo "Adding QUAD_LOGGER_SRC update to bashrc"
+   echo "$QUAD_LOGGER_SRC_UPDATE" >> ~/.bashrc
+else
+   echo "bashrc already contains QUAD_LOGGER_SRC update"
 fi
 
 if ! grep -Fxq "$LD_LIBRARY_PATH_UPDATE" ~/.bashrc; then

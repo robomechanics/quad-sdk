@@ -78,7 +78,7 @@ def launch_robot_group(context, *args, **kwargs):
 
 def generate_launch_description():
     return LaunchDescription([
-        DeclareLaunchArgument('logging', default_value='false', description='Rosbag Trial Run'),
+        DeclareLaunchArgument('logging', default_value='true', description='Rosbag Trial Run'),
         DeclareLaunchArgument('leaping', default_value='true', description='Enable Leaping in the Global Planner'),
         DeclareLaunchArgument('ac', default_value='false', description='Enable Adaptive Complexity Planner (Spirit ONLY)'),
         DeclareLaunchArgument('use_sim_time', default_value='false', description='Use Simulation Clock or Computer Clock'),
