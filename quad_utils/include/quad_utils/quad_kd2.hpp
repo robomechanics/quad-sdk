@@ -4,19 +4,9 @@
 #include <math.h>
 #include <rclcpp/rclcpp.hpp>
 #include <Eigen/Core>
-#include <pinocchio/algorithm/kinematics.hpp>
-#include <pinocchio/algorithm/frames.hpp>
-#include <pinocchio/algorithm/jacobian.hpp>
-#include <pinocchio/multibody/model.hpp>
-#include <pinocchio/multibody/data.hpp>
-#include <pinocchio/algorithm/crba.hpp>
-#include <pinocchio/algorithm/rnea.hpp>
-#include <pinocchio/parsers/urdf.hpp>
-#include <pinocchio/math/rpy.hpp>
-#include <pinocchio/multibody/joint/joint-revolute-unaligned.hpp>
-#include <pinocchio/multibody/joint/joint-revolute.hpp>
-#include <pinocchio/algorithm/crba.hpp>
-#include <pinocchio/algorithm/rnea.hpp>
+#include <Eigen/Geometry>
+#include <cstddef>
+#include <memory>
 #include <chrono>
 #include <grid_map_core/GridMap.hpp>
 #include <random>
@@ -55,6 +45,11 @@ class QuadKD2 {
    * @return Constructed object of type QuadKD
    */
   QuadKD2(rclcpp::Node::SharedPtr node, std::string ns);
+
+  /**
+   * @brief Destructor (defined in quad_kd2.cpp where Impl is a complete type)
+   */
+  ~QuadKD2();
 
   /**
    * @brief Initialize model for the class
@@ -106,22 +101,6 @@ class QuadKD2 {
   void transformWorldToBody(Eigen::Vector3d body_pos, Eigen::Vector3d body_rpy,
                             Eigen::Matrix4d transform_world,
                             Eigen::Matrix4d& transform_body) const;
-
-  /**
-   * @brief Convert an Eigen Eigen::Matrix4d containing a homogenous transform
-   * to a pinocchio pinocchio::SE3 Special Euclidean Group
-   * @param[in] g_transform Homogenous transformation matrix
-   * @return pinocchio SE3 transform
-   */
-  pinocchio::SE3 convertAffineToSE3(Eigen::Matrix4d g_transform) const;
-
-  /**
-   * @brief Convert an pinocchio pinocchio::SE# Special Euclidean Group
-   * to a Eigen Eigen::Matrix4d
-   * @param[in] se3_transform pinocchio SE3 transform
-   * @return Homogenous transformation matrix
-   */
-  Eigen::Matrix4d convertSE3ToAffine(pinocchio::SE3 se3_transform) const;
 
   /**
    * @brief Get the lower joint limit of a particular joint
@@ -452,9 +431,26 @@ class QuadKD2 {
     return (point.z() - terrain.atPosition("z", pos));
   }
 
-  const pinocchio::Model& model() const { return model_; }
+  /**
+   * @brief Get the wire↔URDF sign for a single joint (1.0 or -1.0)
+   * @param[in] leg_index Leg (0..num_feet_-1)
+   * @param[in] joint_index 0=abad, 1=hip, 2=knee
+   *
+   * Conversion is q_wire = q_urdf * sign + origin_offset.
+   * For Spirit40 this returns 1.0 for every joint; for Go2 the hip
+   * returns -1.0. Callers that only knew the wire-frame value can
+   * combine this with getJointOriginOffset() to recover q_urdf.
+   */
+  double getJointSign(int leg_index, int joint_index) const;
 
-  pinocchio::Data& data() { return data_; }
+  /**
+   * @brief Get the wire↔URDF origin offset for a single joint
+   * @param[in] leg_index Leg (0..num_feet_-1)
+   * @param[in] joint_index 0=abad, 1=hip, 2=knee
+   *
+   * Returns 0 for Spirit40. Go2 uses +pi/2 (hip) and -pi (knee).
+   */
+  double getJointOriginOffset(int leg_index, int joint_index) const;
 
  private:
   /// Number of feet
@@ -490,9 +486,6 @@ class QuadKD2 {
   /// Vector of legbase offsets
   std::vector<Eigen::Vector3d> legbase_offsets_;
 
-  /// Vector of legbase SE3s
-  std::vector<pinocchio::SE3> legbase_SE3_;
-
   /// Vector of legbase offsets
   std::vector<Eigen::Matrix4d> g_body_legbases_;
 
@@ -505,17 +498,17 @@ class QuadKD2 {
   /// Vector of the joint upper limits
   std::vector<std::vector<double>> joint_max_;
 
-  /// Pinocchio model derived from Robot URDF
-  pinocchio::Model model_;
-
-  /// Pinocchio data type
-  mutable pinocchio::Data data_;
+  /// Opaque implementation holding the pinocchio model + data. Keeps this
+  /// header free of pinocchio (a heavy dependency) so no consumer of QuadKD2
+  /// has to compile pinocchio. Defined in quad_kd2.cpp.
+  struct Impl;
+  std::unique_ptr<Impl> impl_;
 
   /// Shared pointer to ROS2 Node for pubs/subs
   rclcpp::Node::SharedPtr node_;
 
   /// Pinocchio frame ID for body link
-  pinocchio::FrameIndex body_fid_;
+  std::size_t body_fid_;
 
   /// JointConvention Struct Containing Mapping Between URDF Joint Origin/Axis
   /// Defintions
@@ -527,16 +520,17 @@ class QuadKD2 {
 
   /// Limb Info Struct Containing Per Leg Pinocchio Mappings
   struct LimbInfo {
-    pinocchio::FrameIndex hip_fid;
-    pinocchio::FrameIndex upper_fid;
-    pinocchio::FrameIndex lower_fid;
-    pinocchio::FrameIndex toe_fid;
+    // Pinocchio FrameIndex/JointIndex are both typedefs for std::size_t; using
+    // std::size_t directly keeps this header free of any pinocchio include.
+    std::size_t hip_fid;
+    std::size_t upper_fid;
+    std::size_t lower_fid;
+    std::size_t toe_fid;
 
-    pinocchio::JointIndex abad_jid;
-    pinocchio::JointIndex hip_jid;
-    pinocchio::JointIndex knee_jid;
-    pinocchio::FrameIndex
-        toe_jid;  // Pinocchio Stores Fixed Joints as FrameIndexes
+    std::size_t abad_jid;
+    std::size_t hip_jid;
+    std::size_t knee_jid;
+    std::size_t toe_jid;  // Pinocchio Stores Fixed Joints as FrameIndexes
 
     // Velocity and Position Ordering that Pinocchio Expects
     int abad_pin_vel_idx;

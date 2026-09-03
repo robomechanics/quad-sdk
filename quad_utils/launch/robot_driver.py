@@ -53,7 +53,7 @@ def generate_launch_description():
     controller = DeclareLaunchArgument('controller', default_value='learned')
     model_path = DeclareLaunchArgument('model_path', default_value='/root/ros2_ws/src/quad-sdk/robot_driver/models/go2/go2_policy.onnx')
     provider = DeclareLaunchArgument('provider', default_value = "tensorrt")
-    estimator = DeclareLaunchArgument('estimator', default_value="ekf_filter")
+    estimator = DeclareLaunchArgument('estimator', default_value="comp_filter")
     is_hardware = DeclareLaunchArgument('is_hardware', default_value='true')
     namespace = DeclareLaunchArgument('namespace', default_value='robot_1')
     robot_description = DeclareLaunchArgument('robot_description', default_value='')

@@ -1,14 +1,45 @@
 #include "quad_utils/quad_kd2.hpp"
 
+#include <pinocchio/algorithm/crba.hpp>
+#include <pinocchio/algorithm/frames.hpp>
+#include <pinocchio/algorithm/jacobian.hpp>
+#include <pinocchio/algorithm/kinematics.hpp>
+#include <pinocchio/algorithm/rnea.hpp>
+#include <pinocchio/math.hpp>
+#include <pinocchio/multibody.hpp>
+#include <pinocchio/multibody/joint.hpp>
+#include <pinocchio/parsers/urdf.hpp>
+
 #include "quad_utils/ros_utils.hpp"
 
 using namespace quad_utils;
 
-QuadKD2::QuadKD2(rclcpp::Node::SharedPtr node) : node_(node) { initModel(""); }
+// Opaque implementation: this .cpp is the ONLY place pinocchio is compiled,
+// keeping it out of quad_kd2.hpp so no consumer of QuadKD2 pulls in pinocchio.
+struct QuadKD2::Impl {
+  pinocchio::Model model;
+  pinocchio::Data data;
+};
 
-QuadKD2::QuadKD2(rclcpp::Node::SharedPtr node, std::string ns) : node_(node) {
+namespace {
+/// Convert a pinocchio SE3 to a homogeneous transform. File-local since it is
+/// only used inside this translation unit.
+Eigen::Matrix4d convertSE3ToAffine(const pinocchio::SE3& se3_transform) {
+  return se3_transform.toHomogeneousMatrix();
+}
+}  // namespace
+
+QuadKD2::QuadKD2(rclcpp::Node::SharedPtr node)
+    : impl_(std::make_unique<Impl>()), node_(node) {
+  initModel("");
+}
+
+QuadKD2::QuadKD2(rclcpp::Node::SharedPtr node, std::string ns)
+    : impl_(std::make_unique<Impl>()), node_(node) {
   initModel("/" + ns + "/");
 }
+
+QuadKD2::~QuadKD2() = default;
 
 void QuadKD2::initModel(std::string ns) {
   std::string robot_description_string;
@@ -21,11 +52,11 @@ void QuadKD2::initModel(std::string ns) {
 
   try {
     pinocchio::urdf::buildModelFromXML(
-        robot_description_string, pinocchio::JointModelFreeFlyer(), model_);
-    data_ = pinocchio::Data(model_);
+        robot_description_string, pinocchio::JointModelFreeFlyer(), impl_->model);
+    impl_->data = pinocchio::Data(impl_->model);
     RCLCPP_INFO(node_->get_logger(),
                 "Loaded Pinocchio model with %d joints and %d bodies.",
-                model_.njoints, model_.nbodies);
+                impl_->model.njoints, impl_->model.nbodies);
   } catch (const std::exception& e) {
     RCLCPP_FATAL(node_->get_logger(), "Error loading model.");
     rclcpp::shutdown();
@@ -41,15 +72,14 @@ void QuadKD2::initModel(std::string ns) {
     rclcpp::shutdown();
     return;
   }
-  body_fid_ = model_.getFrameId(body_frame_name);
-  nv_ = model_.nv;
-  nq_ = model_.nq;
+  body_fid_ = impl_->model.getFrameId(body_frame_name);
+  nv_ = impl_->model.nv;
+  nq_ = impl_->model.nq;
 
   limbs_.clear();
   limbs_.resize(num_feet_);
   legbase_offsets_.resize(num_feet_);
   l0_vec_.resize(num_feet_);
-  legbase_SE3_.resize(num_feet_);
   joint_min_.resize(num_feet_);
   joint_max_.resize(num_feet_);
 
@@ -111,61 +141,68 @@ void QuadKD2::initModel(std::string ns) {
       return;
     }
 
-    // Pinocchio Internal ID's, Used for Accessing internal Pinocchio data_
-    limb.toe_fid = model_.getFrameId(toe_frame_name);
-    limb.lower_fid = model_.getFrameId(lower_frame_name);
-    limb.upper_fid = model_.getFrameId(upper_frame_name);
-    limb.hip_fid = model_.getFrameId(hip_frame_name);
+    // Pinocchio Internal ID's, Used for Accessing internal Pinocchio data
+    limb.toe_fid = impl_->model.getFrameId(toe_frame_name);
+    limb.lower_fid = impl_->model.getFrameId(lower_frame_name);
+    limb.upper_fid = impl_->model.getFrameId(upper_frame_name);
+    limb.hip_fid = impl_->model.getFrameId(hip_frame_name);
 
-    limb.abad_jid = model_.getJointId(limb.joint_names[0]);
-    limb.hip_jid = model_.getJointId(limb.joint_names[1]);
-    limb.knee_jid = model_.getJointId(limb.joint_names[2]);
+    limb.abad_jid = impl_->model.getJointId(limb.joint_names[0]);
+    limb.hip_jid = impl_->model.getJointId(limb.joint_names[1]);
+    limb.knee_jid = impl_->model.getJointId(limb.joint_names[2]);
     limb.toe_jid = limb.toe_fid;
 
     // Set Indicies for q and v vector creation (Pinocchio Internal Mapping)
     // i.e. Joint Order that Pinocchio Expects When Performing Updates
-    limb.abad_pin_pos_idx = model_.joints[limb.abad_jid].idx_q();
-    limb.hip_pin_pos_idx = model_.joints[limb.hip_jid].idx_q();
-    limb.knee_pin_pos_idx = model_.joints[limb.knee_jid].idx_q();
+    limb.abad_pin_pos_idx = impl_->model.joints[limb.abad_jid].idx_q();
+    limb.hip_pin_pos_idx = impl_->model.joints[limb.hip_jid].idx_q();
+    limb.knee_pin_pos_idx = impl_->model.joints[limb.knee_jid].idx_q();
 
-    limb.abad_pin_vel_idx = model_.joints[limb.abad_jid].idx_v();
-    limb.hip_pin_vel_idx = model_.joints[limb.hip_jid].idx_v();
-    limb.knee_pin_vel_idx = model_.joints[limb.knee_jid].idx_v();
+    limb.abad_pin_vel_idx = impl_->model.joints[limb.abad_jid].idx_v();
+    limb.hip_pin_vel_idx = impl_->model.joints[limb.hip_jid].idx_v();
+    limb.knee_pin_vel_idx = impl_->model.joints[limb.knee_jid].idx_v();
 
     // Extract Robot Specific Geometries, Offsets
     // Leg Lengths, Legbase, Knee, and Foot Offsets
 
     // Abad to Hip Offset
-    legbase_offsets_[i] = model_.jointPlacements[limb.abad_jid].translation();
-    legbase_SE3_[i] = model_.jointPlacements[limb.abad_jid];
+    legbase_offsets_[i] = impl_->model.jointPlacements[limb.abad_jid].translation();
 
     // Y offset between abad an hip rotational planes
-    l0_vec_[i] = model_.jointPlacements[limb.hip_jid].translation()(1);
+    l0_vec_[i] = impl_->model.jointPlacements[limb.hip_jid].translation()(1);
 
     // Extract Length of Thigh
-    knee_offset_ = model_.jointPlacements[limb.knee_jid].translation();
+    knee_offset_ = impl_->model.jointPlacements[limb.knee_jid].translation();
     l1_ = knee_offset_.cwiseAbs().maxCoeff();
 
     // Extract Length of Calf
-    foot_offset_ = model_.frames[limb.toe_jid].placement.translation();
+    foot_offset_ = impl_->model.frames[limb.toe_jid].placement.translation();
     l2_ = foot_offset_.cwiseAbs().maxCoeff();
 
     // Extract Joint Limits for Each Leg
-    joint_min_[i] = {model_.lowerPositionLimit[limb.abad_pin_pos_idx],
-                     model_.lowerPositionLimit[limb.hip_pin_pos_idx],
-                     model_.lowerPositionLimit[limb.knee_pin_pos_idx]};
+    joint_min_[i] = {impl_->model.lowerPositionLimit[limb.abad_pin_pos_idx],
+                     impl_->model.lowerPositionLimit[limb.hip_pin_pos_idx],
+                     impl_->model.lowerPositionLimit[limb.knee_pin_pos_idx]};
 
-    joint_max_[i] = {model_.upperPositionLimit[limb.abad_pin_pos_idx],
-                     model_.upperPositionLimit[limb.hip_pin_pos_idx],
-                     model_.upperPositionLimit[limb.knee_pin_pos_idx]};
+    joint_max_[i] = {impl_->model.upperPositionLimit[limb.abad_pin_pos_idx],
+                     impl_->model.upperPositionLimit[limb.hip_pin_pos_idx],
+                     impl_->model.upperPositionLimit[limb.knee_pin_pos_idx]};
+  }
+
+  std::vector<double> armature;
+  loadROSParamDefault(node_, std::string("motor_limits.armature"), armature,
+                      std::vector<double>(3, 0.0));
+  for (int i = 0; i < num_feet_; ++i) {
+    impl_->model.armature[limbs_[i].abad_pin_vel_idx] = armature[0];
+    impl_->model.armature[limbs_[i].hip_pin_vel_idx] = armature[1];
+    impl_->model.armature[limbs_[i].knee_pin_vel_idx] = armature[2];
   }
 
   g_body_legbases_.resize(4);
   for (int leg_index = 0; leg_index < 4; leg_index++) {
-    // Compute transforms to the Legbase (Used in Local Planner)
     pinocchio::JointIndex j_abad = limbs_[leg_index].abad_jid;
     g_body_legbases_[leg_index] =
-        convertSE3ToAffine(model_.jointPlacements[j_abad]);
+        convertSE3ToAffine(impl_->model.jointPlacements[j_abad]);
   }
 }
 
@@ -189,27 +226,34 @@ Eigen::Matrix4d QuadKD2::createAffineMatrix(Eigen::Vector3d trans,
   return t.matrix();
 }
 
-pinocchio::SE3 QuadKD2::convertAffineToSE3(Eigen::Matrix4d g_transform) const {
-  Eigen::Matrix3d rot = g_transform.topLeftCorner<3, 3>();
-  Eigen::Vector3d trans = g_transform.topRightCorner<3, 1>();
-  pinocchio::SE3 se3_transform(rot, trans);
-
-  return se3_transform;
-}
-
-Eigen::Matrix4d QuadKD2::convertSE3ToAffine(
-    pinocchio::SE3 se3_transform) const {
-  Eigen::Matrix4d g_transform = se3_transform.toHomogeneousMatrix();
-
-  return g_transform;
-}
-
 double QuadKD2::getJointLowerLimit(int leg_index, int joint_index) const {
   return joint_min_[leg_index][joint_index];
 }
 
 double QuadKD2::getJointUpperLimit(int leg_index, int joint_index) const {
   return joint_max_[leg_index][joint_index];
+}
+
+double QuadKD2::getJointSign(int leg_index, int joint_index) const {
+  const auto& L = limbs_.at(leg_index);
+  switch (joint_index) {
+    case 0: return L.abad_conv.sign;
+    case 1: return L.hip_conv.sign;
+    case 2: return L.knee_conv.sign;
+    default:
+      throw std::runtime_error("Invalid joint index");
+  }
+}
+
+double QuadKD2::getJointOriginOffset(int leg_index, int joint_index) const {
+  const auto& L = limbs_.at(leg_index);
+  switch (joint_index) {
+    case 0: return L.abad_conv.origin_offset;
+    case 1: return L.hip_conv.origin_offset;
+    case 2: return L.knee_conv.origin_offset;
+    default:
+      throw std::runtime_error("Invalid joint index");
+  }
 }
 
 double QuadKD2::getLinkLength(int leg_index, int link_index) const {
@@ -333,23 +377,23 @@ void QuadKD2::updateFromPinocchio(const Eigen::VectorXd& q,
 
   // Compute only what we need instead of computeAllTerms (which also
   // computes CoM, kinetic/potential energy, etc.)
-  pinocchio::crba(model_, data_, q);
+  pinocchio::crba(impl_->model, impl_->data, q);
   // crba only fills the upper triangle of M; mirror it to get full symmetric M
-  data_.M.triangularView<Eigen::StrictlyLower>() =
-      data_.M.transpose().triangularView<Eigen::StrictlyLower>();
-  pinocchio::nonLinearEffects(model_, data_, q, v);
+  impl_->data.M.triangularView<Eigen::StrictlyLower>() =
+      impl_->data.M.transpose().triangularView<Eigen::StrictlyLower>();
+  pinocchio::nonLinearEffects(impl_->model, impl_->data, q, v);
 
   // 3-arg FK gives us accelerations needed by computeInverseDynamics
-  pinocchio::forwardKinematics(model_, data_, q, v, a);
-  pinocchio::computeJointJacobians(model_, data_, q);
-  pinocchio::updateFramePlacements(model_, data_);
+  pinocchio::forwardKinematics(impl_->model, impl_->data, q, v, a);
+  pinocchio::computeJointJacobians(impl_->model, impl_->data, q);
+  pinocchio::updateFramePlacements(impl_->model, impl_->data);
   updated_ = true;
 }
 
 void QuadKD2::updateFromPinocchio(const Eigen::VectorXd& q) {
-  pinocchio::forwardKinematics(model_, data_, q);
-  pinocchio::computeJointJacobians(model_, data_, q);
-  pinocchio::updateFramePlacements(model_, data_);
+  pinocchio::forwardKinematics(impl_->model, impl_->data, q);
+  pinocchio::computeJointJacobians(impl_->model, impl_->data, q);
+  pinocchio::updateFramePlacements(impl_->model, impl_->data);
   updated_ = true;
 }
 
@@ -425,11 +469,11 @@ void QuadKD2::bodyToFootFKBodyFrame(int leg_index,
   assert(updated_);
 
   /// World To Body Frame Transform
-  const pinocchio::SE3& g_world_body_se3 = data_.oMf[body_fid_];
+  const pinocchio::SE3& g_world_body_se3 = impl_->data.oMf[body_fid_];
 
   /// World to Toe Frame Transform
   const LimbInfo& limb = limbs_.at(leg_index);
-  const pinocchio::SE3& g_world_foot_se3 = data_.oMf[limb.toe_fid];
+  const pinocchio::SE3& g_world_foot_se3 = impl_->data.oMf[limb.toe_fid];
 
   // Convert To Body Frame Transformation
   pinocchio::SE3 g_body_foot_se3 =
@@ -459,7 +503,7 @@ void QuadKD2::worldToFootFKWorldFrame(int leg_index,
 
   /// World to Toe Frame Transform
   const LimbInfo& limb = limbs_.at(leg_index);
-  const pinocchio::SE3& g_world_foot_se3 = data_.oMf[limb.toe_fid];
+  const pinocchio::SE3& g_world_foot_se3 = impl_->data.oMf[limb.toe_fid];
 
   // Convert to Eigen Homogenous Matrix
   g_world_foot = g_world_foot_se3.toHomogeneousMatrix();
@@ -484,7 +528,7 @@ void QuadKD2::worldToKneeFKWorldFrame(int leg_index,
 
   // World To Knee Frame Transform
   const LimbInfo& limb = limbs_.at(leg_index);
-  const pinocchio::SE3& g_world_knee_se3 = data_.oMf[limb.lower_fid];
+  const pinocchio::SE3& g_world_knee_se3 = impl_->data.oMf[limb.lower_fid];
 
   // Convert to Eigen Homogenous Matrix
   g_world_knee = g_world_knee_se3.toHomogeneousMatrix();
@@ -667,7 +711,7 @@ bool QuadKD2::legbaseToFootIKLegbaseFrame(int leg_index,
 void QuadKD2::getJacobianGenCoord(Eigen::MatrixXd& jacobian) const {
   this->getJacobianBodyAngVel(jacobian);
 
-  const pinocchio::SE3& g_world_body_se3 = data_.oMf[body_fid_];
+  const pinocchio::SE3& g_world_body_se3 = impl_->data.oMf[body_fid_];
   Eigen::Matrix3d R_WB = g_world_body_se3.rotation();
   Eigen::Vector3d ypr = R_WB.eulerAngles(2, 1, 0);
   double yaw = ypr[0];
@@ -689,7 +733,7 @@ void QuadKD2::getJacobianGenCoord(Eigen::MatrixXd& jacobian) const {
 void QuadKD2::getJacobianWorldAngVel(Eigen::MatrixXd& jacobian) const {
   this->getJacobianBodyAngVel(jacobian);
 
-  const pinocchio::SE3& g_world_body_se3 = data_.oMf[body_fid_];
+  const pinocchio::SE3& g_world_body_se3 = impl_->data.oMf[body_fid_];
   Eigen::Matrix3d R_BW = g_world_body_se3.rotation().transpose();
 
   for (int i = 0; i < num_feet_; ++i) {
@@ -704,7 +748,7 @@ void QuadKD2::getJacobianBodyAngVel(Eigen::MatrixXd& jacobian) const {
   // Assume that a Pinocchio update has been called
   assert(updated_);
 
-  const pinocchio::SE3& g_world_body_se3 = data_.oMf[body_fid_];
+  const pinocchio::SE3& g_world_body_se3 = impl_->data.oMf[body_fid_];
   const Eigen::Matrix3d R_WB = g_world_body_se3.rotation();
   const Eigen::Matrix3d R_BW = R_WB.transpose();
 
@@ -712,7 +756,7 @@ void QuadKD2::getJacobianBodyAngVel(Eigen::MatrixXd& jacobian) const {
   Eigen::MatrixXd jac_block(6, nv_);
   for (int i = 0; i < num_feet_; i++) {
     jac_block.setZero();
-    pinocchio::getFrameJacobian(model_, data_, limbs_[i].toe_fid,
+    pinocchio::getFrameJacobian(impl_->model, impl_->data, limbs_[i].toe_fid,
                                 pinocchio::ReferenceFrame::LOCAL_WORLD_ALIGNED,
                                 jac_block);
 
@@ -754,7 +798,7 @@ void QuadKD2::computeInverseDynamics(const Eigen::VectorXd& foot_acc,
   for (int i = 0; i < num_feet_; ++i) {
     Eigen::MatrixXd jac_block(6, nv_);
     jac_block.setZero();
-    pinocchio::getFrameJacobian(model_, data_, limbs_[i].toe_fid,
+    pinocchio::getFrameJacobian(impl_->model, impl_->data, limbs_[i].toe_fid,
                                 pinocchio::ReferenceFrame::LOCAL_WORLD_ALIGNED,
                                 jac_block);
     J_pin.block(3 * i, 0, 3, nv_) = jac_block.block(0, 0, 3, nv_);
@@ -781,8 +825,8 @@ void QuadKD2::computeInverseDynamics(const Eigen::VectorXd& foot_acc,
 
   // Reorder M and N from Pinocchio order to quad-sdk order so all
   // block operations below use a consistent joint ordering.
-  const Eigen::MatrixXd& M_pin = data_.M;
-  const Eigen::VectorXd& N_pin = data_.nle;
+  const Eigen::MatrixXd& M_pin = impl_->data.M;
+  const Eigen::VectorXd& N_pin = impl_->data.nle;
 
   Eigen::MatrixXd M(nv_, nv_);
   Eigen::VectorXd N(nv_);
@@ -805,7 +849,7 @@ void QuadKD2::computeInverseDynamics(const Eigen::VectorXd& foot_acc,
   Eigen::VectorXd foot_acc_J_dot(12);
   for (int i = 0; i < 4; i++) {
     const pinocchio::Motion& a_world = pinocchio::getFrameAcceleration(
-        model_, data_, limbs_[i].toe_fid,
+        impl_->model, impl_->data, limbs_[i].toe_fid,
         pinocchio::ReferenceFrame::LOCAL_WORLD_ALIGNED);
     foot_acc_J_dot.segment(3 * i, 3) = a_world.linear();
   }
