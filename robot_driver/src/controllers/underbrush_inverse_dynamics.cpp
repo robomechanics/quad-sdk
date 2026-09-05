@@ -381,6 +381,23 @@ bool UnderbrushInverseDynamicsController::computeLegCommandArray(
       }
     }
 
+    // Only apply the Underbrush swing law to legs that are actually in
+    // obstructed (retract) mode. Un-obstructed swing legs keep the local
+    // plan's swing trajectory, exactly as InverseDynamicsController does.
+    // force_mode_ here is from the previous tick (it is updated in the
+    // command loop below); the one-tick lag is well inside min_switch_.
+    for (int i = 0; i < num_feet_; ++i) {
+      if (!ref_state_msg_.feet.feet.at(i).contact && !force_mode_.at(i)) {
+        ref_underbrush_msg.feet.feet.at(i) = ref_state_msg_.feet.feet.at(i);
+        for (int j = 0; j < 3; ++j) {
+          ref_underbrush_msg.joints.position.at(3 * i + j) =
+              ref_state_msg_.joints.position.at(3 * i + j);
+          ref_underbrush_msg.joints.velocity.at(3 * i + j) =
+              ref_state_msg_.joints.velocity.at(3 * i + j);
+        }
+      }
+    }
+
     ref_state_msg_ = ref_underbrush_msg;
 
     // Declare plan and state data as Eigen vectors
@@ -519,7 +536,7 @@ bool UnderbrushInverseDynamicsController::computeLegCommandArray(
                 .vel_setpoint = ref_state_msg_.joints.velocity.at(joint_idx);
             leg_command_array_msg.leg_commands.at(i)
                 .motor_commands.at(j)
-                .torque_ff = 0;
+                .torque_ff = tau_array(joint_idx);
 
             leg_command_array_msg.leg_commands.at(i).motor_commands.at(j).kp =
                 swing_kp_.at(j);
