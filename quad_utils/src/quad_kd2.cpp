@@ -5,9 +5,9 @@
 #include <pinocchio/algorithm/jacobian.hpp>
 #include <pinocchio/algorithm/kinematics.hpp>
 #include <pinocchio/algorithm/rnea.hpp>
-#include <pinocchio/math.hpp>
-#include <pinocchio/multibody.hpp>
-#include <pinocchio/multibody/joint.hpp>
+#include <pinocchio/multibody/data.hpp>
+#include <pinocchio/multibody/joint/joints.hpp>
+#include <pinocchio/multibody/model.hpp>
 #include <pinocchio/parsers/urdf.hpp>
 
 #include "quad_utils/ros_utils.hpp"

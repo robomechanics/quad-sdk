@@ -93,8 +93,8 @@
       sit_kd: [1.0, 1.0, 1.0]
       stand_kp: [60.0, 60.0, 60.0]
       stand_kd: [4.0, 4.0, 4.0]
-      stance_kp: [60.0, 60.0, 60.0] # 40 Learned, 30 MPC
-      stance_kd: [4.0, 4.0, 4.0]
+      stance_kp: [25.0, 25.0, 25.0] # 25 Learned (v81 underbrush), 60 MPC/ID
+      stance_kd: [5.0, 5.0, 5.0]
       swing_kp: [10.0, 10.0, 10.0] #[60.0, 60.0, 60.0] #[10.0, 10.0, 10.0]
       swing_kd: [1.0, 1.0, 1.0]  #[4.0, 4.0, 4.0]
       swing_kp_cart: [0.0, 0.0, 0.0] # N/m

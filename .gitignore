@@ -16,6 +16,10 @@ external/ipopt/*
 !external/ipopt/.gitkeep
 *.csv
 robot_driver/include/robot_driver/models/
+robot_driver/models/
+
+# Policy weights - never commit
+*.onnx
 matlab_msg_gen/
 
 # Large bag files
