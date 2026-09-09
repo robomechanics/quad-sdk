@@ -264,6 +264,12 @@ class RobotDriver {
   /// Estimator type
   std::string estimator_id_;
 
+  /// Whether motion capture is available. With mocap the learned
+  /// controllers run off the full state estimator like every other
+  /// controller; without it, state is faked from IMU + leg kinematics
+  /// (see updateState).
+  bool use_mocap_;
+
   /// Update rate for computing new controls;
   double update_rate_;
 

@@ -48,6 +48,7 @@ RobotDriver::RobotDriver(std::shared_ptr<rclcpp::Node> node, int argc,
                                   std::string("inverse_dynamics"));
   quad_utils::loadROSParamDefault(node_, "estimator_id", estimator_id_,
                                   std::string("comp_filter"));
+  quad_utils::loadROSParamDefault(node_, "mocap", use_mocap_, true);
   quad_utils::loadROSParamDefault(node_, "debug_estimator_id",
                                   debug_estimator_id_, std::string("none"));
   quad_utils::loadROSParam(node_, "robot_driver.update_rate", update_rate_);
@@ -580,12 +581,29 @@ bool RobotDriver::updateState() {
 #endif
     }
 
-    // For learned controllers on hardware, populate state directly from
-    // IMU + joint encoders without requiring mocap or a full state estimator.
-    // The learned policy only needs orientation, angular velocity, joint
-    // positions/velocities, and (for underbrush) joint effort — all available
-    // from onboard sensors. Foot contact is plumbed separately above.
-    if (controller_id_ == "learned" || controller_id_ == "underbrush_learned") {
+    // Pass IMU to the learned policy for acceleration access. Hoisted out of
+    // the no-mocap branch below so the policy is fed on every tick regardless
+    // of which path fills the state. Guarded because LearnedVelocityPolicy is
+    // only declared when the workspace was built with ONNX Runtime; without
+    // it, the learned controller ids would have been rejected earlier in
+    // initLegController() so this is a no-op anyway. The cast catches
+    // UnderbrushPolicy too (derived).
+#ifdef HAS_ONNXRUNTIME
+    if (auto c =
+            std::dynamic_pointer_cast<LearnedVelocityPolicy>(leg_controller_)) {
+      c->updateImuMsg(last_imu_msg_);
+    }
+#endif
+
+    // Fallback for running a learned controller WITHOUT motion capture: fake
+    // the state from IMU + joint encoders. The policy only needs orientation,
+    // angular velocity, joint positions/velocities, and (for underbrush) joint
+    // effort — all available from onboard sensors. Foot contact is plumbed
+    // separately above. With mocap (use_mocap_), fall through to the real
+    // state estimator instead: it supplies a true world pose rather than a
+    // body pinned to the origin.
+    if ((controller_id_ == "learned" || controller_id_ == "underbrush_learned") &&
+        !use_mocap_) {
       rclcpp::Time state_timestamp = node_->now();
 
       // Joint state from encoders (position, velocity, and effort/torque)
@@ -598,25 +616,14 @@ bool RobotDriver::updateState() {
       // Angular velocity from IMU gyroscope
       last_robot_state_msg_.body.twist.angular = last_imu_msg_.angular_velocity;
 
-      // Pass IMU to learned policy for acceleration access. Guarded
-      // because LearnedVelocityPolicy is only declared when the workspace was
-      // built with ONNX Runtime; without it, these controller ids would have
-      // been rejected earlier in initLegController() so this path is
-      // unreachable anyway. The cast catches UnderbrushPolicy too (derived).
-#ifdef HAS_ONNXRUNTIME
-      if (auto c = std::dynamic_pointer_cast<LearnedVelocityPolicy>(
-              leg_controller_)) {
-        c->updateImuMsg(last_imu_msg_);
-      }
-#endif
-
       // Update headers
       last_robot_state_msg_.header.stamp = state_timestamp;
 
       return true;
     }
 
-    // For other controllers, use the full state estimator (requires mocap)
+    // Everything else (and the learned controllers when mocap is on) runs
+    // off the full state estimator, which requires mocap.
     state_estimator_->loadSensorMsg(last_imu_msg_, last_joint_state_msg_);
 
     if (last_mocap_msg_ != NULL) {
