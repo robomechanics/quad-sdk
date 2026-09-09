@@ -7,7 +7,7 @@
     robot_type: "go2"
     body_force_estimator:
       update_rate: 250.0
-      K_O: 35.0 # 50
+      K_O: 21.0 # 50
       cancel_friction: 1
       # Per-launch override of effort_sign [abad, hip, knee] applied inside
       # the BFE observer. Purpose: switch between Gazebo (whose
