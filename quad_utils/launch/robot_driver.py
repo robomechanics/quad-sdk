@@ -51,8 +51,9 @@ def generate_launch_description():
     robot_type = DeclareLaunchArgument('robot_type', default_value='go2')
     mocap = DeclareLaunchArgument('mocap', default_value='true')
     logging = DeclareLaunchArgument('logging', default_value='false')
-    controller = DeclareLaunchArgument('controller', default_value='inverse_dynamics')
-    model_path = DeclareLaunchArgument('model_path', default_value='./policies/models/***')
+    controller = DeclareLaunchArgument('controller', default_value='underbrush_learned')
+    model_path = DeclareLaunchArgument('model_path',
+        default_value='/root/ros2_ws/src/quad-sdk/robot_driver/models/go2/v81_model_49999.onnx')
     provider = DeclareLaunchArgument('provider', default_value = "tensorrt")
     estimator = DeclareLaunchArgument('estimator', default_value="comp_filter")
     debug_estimator = DeclareLaunchArgument('debug_estimator', default_value="none",
@@ -105,7 +106,7 @@ def generate_launch_description():
                     'robot_type': LaunchConfiguration('robot_type'),
                     'estimator_id': LaunchConfiguration('estimator'),
                     'debug_estimator_id': LaunchConfiguration('debug_estimator'),
-                    'model_path': LaunchConfiguration('model_path'),
+                    'robot_driver.model_path': LaunchConfiguration('model_path'),
                     'provider': LaunchConfiguration('provider'),
                     'robot_description': ParameterValue(
                         LaunchConfiguration('robot_description'),

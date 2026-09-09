@@ -65,7 +65,7 @@ class UnderbrushPolicy : public LearnedVelocityPolicy {
 
  protected:
   // --- GRU shape constants (must match v51's RslRlPerLegGRUModelCfg) ---
-  static constexpr int kGRUHidden = 256;  // gru_hidden_dim (v51 default is 256)
+  static constexpr int kGRUHidden = 64;  // gru_hidden_dim (v81 export uses 64)
   static constexpr int kGRUNumLayers = 1;
   static constexpr int kBatch = 1;
   static constexpr int kPerLegObsDim = 10;
