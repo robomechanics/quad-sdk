@@ -30,6 +30,18 @@ void UnderbrushPolicy::updateFootContactMsg(
   last_foot_contact_msg_ = msg;
 }
 
+void UnderbrushPolicy::updateAppliedTorque(
+    const quad_msgs::msg::LegCommandArray& msg) {
+  for (int leg = 0; leg < 4; ++leg) {
+    if (leg >= static_cast<int>(msg.leg_commands.size())) break;
+    const auto& cmds = msg.leg_commands[leg].motor_commands;
+    for (int j = 0; j < 3; ++j) {
+      if (j >= static_cast<int>(cmds.size())) break;
+      applied_torque_[3 * leg + j] = cmds[j].effort;
+    }
+  }
+}
+
 void UnderbrushPolicy::computeObservations(
     const quad_msgs::msg::RobotState& robot_state_msg) {
   // robot_state joints/effort are in Quad-SDK order (leg-then-joint:
@@ -54,14 +66,24 @@ void UnderbrushPolicy::computeObservations(
   // ------------------------------------------------------------------
   int idx = 0;
 
-  // base_ang_vel — from IMU angular velocity, scaled to match the sim's
-  // ObsTerm(scale=0.2) on base_ang_vel.
-  obs_body_[idx++] =
-      kAngVelScale * static_cast<float>(last_imu_msg_.angular_velocity.x);
-  obs_body_[idx++] =
-      kAngVelScale * static_cast<float>(last_imu_msg_.angular_velocity.y);
-  obs_body_[idx++] =
-      kAngVelScale * static_cast<float>(last_imu_msg_.angular_velocity.z);
+  // base_ang_vel — Isaac's ObsTerm reads root_ang_vel_b, the angular velocity
+  // in the BODY frame, scaled by 0.2. The two deployments expose that through
+  // different channels, and each is empty on the other side:
+  //
+  //   Hardware: the Unitree IMU gyro, already body frame, cached by
+  //             RobotDriver::updateState() via updateImuMsg().
+  //   Sim:      the Gazebo estimator plugin's body twist, which stores
+  //             q_bw * w_w (estimator_plugin.cpp). RobotDriver only fills
+  //             last_imu_msg_ from hardware_interface_->recv(), so on the sim
+  //             path the cached IMU stays all zeros — reading it there feeds
+  //             the GRU a dead channel.
+  {
+    const auto& w = is_hardware_ ? last_imu_msg_.angular_velocity
+                                 : robot_state_msg.body.twist.angular;
+    obs_body_[idx++] = kAngVelScale * static_cast<float>(w.x);
+    obs_body_[idx++] = kAngVelScale * static_cast<float>(w.y);
+    obs_body_[idx++] = kAngVelScale * static_cast<float>(w.z);
+  }
 
   // projected_gravity = quat_rotate_inverse(q_world_body, (0,0,-1)), i.e.
   // R_body_world · (0,0,-1). Expanded directly from the body orientation
@@ -127,9 +149,21 @@ void UnderbrushPolicy::computeObservations(
                      ? kJointVelScale * static_cast<float>(qd_raw.at(raw_idx))
                      : 0.0f;
     }
-    // tau_meas_leg — measured joint torque (Unitree tau_est, already N·m)
+    // tau_meas_leg — Isaac's joint_effort_measured is applied_torque, the
+    // actuator model's PD output.
+    //
+    //   Hardware: Unitree tau_est in joints.effort is that same quantity.
+    //   Sim:      joints.effort is the joint's transmitted wrench, i.e. the
+    //             constraint reaction torque. A standing Go2 shows several Nm
+    //             per joint there where Isaac reports near zero, so the
+    //             driver's own PD effort from the previous tick is used
+    //             instead (see updateAppliedTorque).
     for (int j = 0; j < 3; ++j) {
       const int raw_idx = 3 * quad_leg + j;
+      if (!is_hardware_) {
+        obs[k++] = kTauScale * static_cast<float>(applied_torque_[raw_idx]);
+        continue;
+      }
       obs[k++] = joints_ok ? kTauScale * static_cast<float>(tau_raw.at(raw_idx))
                            : 0.0f;
     }

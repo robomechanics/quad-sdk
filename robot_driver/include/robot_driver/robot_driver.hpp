@@ -139,6 +139,19 @@ class RobotDriver {
   void remoteHeartbeatCallback(const std_msgs::msg::Header::SharedPtr msg);
 
   void cmdVelCallback(const geometry_msgs::msg::Twist::SharedPtr msg);
+
+  /**
+   * @brief Turn the simulator's ground-truth per-foot GRFs into a binary
+   *        contact reading for the learned policy
+   *
+   * On hardware the contact observation comes from the Unitree foot-force
+   * sensor, pulled in updateState() via getFootContact(). Gazebo has no such
+   * sensor and never populates that path, so the contact state publisher's
+   * GRF array stands in for it. Only the binary state is used; the force
+   * magnitude is thresholded and the vectors are otherwise discarded.
+   * @param[in] msg Per-foot ground reaction forces, quad-sdk leg order
+   */
+  void simGrfsCallback(const quad_msgs::msg::GRFArray::SharedPtr msg);
   /**
    * @brief Check to make sure required messages are fresh
    */
@@ -210,6 +223,10 @@ class RobotDriver {
   /// ROS Subscriber for twist velocity commands (for learned policies)
   rclcpp::Subscription<geometry_msgs::msg::Twist>::SharedPtr cmd_vel_sub_;
 
+  /// ROS subscriber for the simulator's ground-truth per-foot GRFs, the sim
+  /// stand-in for the hardware foot-force sensor
+  rclcpp::Subscription<quad_msgs::msg::GRFArray>::SharedPtr sim_grf_sub_;
+
   /// ROS publisher for time stamped twist velocity commands
   rclcpp::Publisher<geometry_msgs::msg::TwistStamped>::SharedPtr
       cmd_vel_stamped_pub_;
@@ -242,6 +259,10 @@ class RobotDriver {
 
   /// Threshold (raw int16 units) above which foot is considered in contact.
   int foot_contact_threshold_;
+
+  /// Force magnitude (N) above which a simulated foot counts as in contact.
+  /// The policy trained against contact binarized at 5 N.
+  double sim_contact_force_threshold_;
 
   /// ROS Wrapper Node
   std::shared_ptr<rclcpp::Node> node_;

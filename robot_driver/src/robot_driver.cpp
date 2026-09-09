@@ -30,6 +30,11 @@ RobotDriver::RobotDriver(std::shared_ptr<rclcpp::Node> node, int argc,
   quad_utils::loadROSParam(node_, "topics.body_force.joint_torques",
                            body_force_estimate_topic);
   quad_utils::loadROSParam(node_, "topics.control.grfs", grf_topic);
+  // Sim-only contact source. Defaulted rather than required: a config that
+  // predates this entry should not take the driver down on startup.
+  std::string sim_grf_topic;
+  quad_utils::loadROSParamDefault(node_, "topics.state.grfs", sim_grf_topic,
+                                  std::string("state/grfs"));
   quad_utils::loadROSParam(node_, "topics.control.joint_command",
                            leg_command_array_topic);
   quad_utils::loadROSParam(node_, "topics.control.mode", control_mode_topic);
@@ -126,6 +131,14 @@ RobotDriver::RobotDriver(std::shared_ptr<rclcpp::Node> node, int argc,
       std::bind(&RobotDriver::controlRestartFlagCallback, this,
                 std::placeholders::_1));
 
+  // Gazebo exposes no foot-force sensor, so the contact state publisher's
+  // ground-truth GRFs stand in as the learned policy's contact observation.
+  // Deliberately outside the is_hardware_ path in updateState(): on hardware
+  // this callback returns immediately and the real sensor wins.
+  sim_grf_sub_ = node_->create_subscription<quad_msgs::msg::GRFArray>(
+      sim_grf_topic, 1,
+      std::bind(&RobotDriver::simGrfsCallback, this, std::placeholders::_1));
+
   cmd_vel_sub_ = node_->create_subscription<geometry_msgs::msg::Twist>(
       cmd_vel_topic, 10,
       std::bind(&RobotDriver::cmdVelCallback, this, std::placeholders::_1));
@@ -155,6 +168,9 @@ RobotDriver::RobotDriver(std::shared_ptr<rclcpp::Node> node, int argc,
       foot_contact_topic, 10);
   quad_utils::loadROSParamDefault(node_, "robot_driver.foot_contact_threshold",
                                   foot_contact_threshold_, 30);
+  quad_utils::loadROSParamDefault(
+      node_, "robot_driver.sim_contact_force_threshold",
+      sim_contact_force_threshold_, 5.0);
 
   // Set up pubs and subs dependent on robot layer
   if (is_hardware_) {
@@ -507,6 +523,44 @@ void RobotDriver::cmdVelCallback(
     last_cmd_vel_msg_time_ = node_->now();
     c->updateCmdVelMsg(cmd_vel_, last_cmd_vel_msg_time_);
   }
+#endif
+}
+
+void RobotDriver::simGrfsCallback(
+    const quad_msgs::msg::GRFArray::SharedPtr msg) {
+#ifdef HAS_ONNXRUNTIME
+  // Hardware has a real foot-force sensor; never let this topic override it.
+  if (is_hardware_) return;
+
+  auto up = std::dynamic_pointer_cast<UnderbrushPolicy>(leg_controller_);
+  if (up == nullptr) return;
+
+  // Only the binary state reaches the policy. The publisher zeroes a leg's
+  // vector once its contact goes stale, so thresholding the magnitude tracks
+  // lift-off correctly without needing the simulator's own contact flag.
+  quad_msgs::msg::FootContact fc_msg;
+  fc_msg.header = msg->header;
+  fc_msg.contact_states.resize(num_feet_, false);
+  fc_msg.foot_force_raw.resize(num_feet_, 0);
+
+  for (int i = 0; i < num_feet_; ++i) {
+    double force = 0.0;
+    if (i < static_cast<int>(msg->vectors.size())) {
+      const auto& v = msg->vectors[i];
+      force = std::sqrt(v.x * v.x + v.y * v.y + v.z * v.z);
+    } else if (i < static_cast<int>(msg->contact_states.size())) {
+      // No force vector published; fall back to the simulator's own flag.
+      force = msg->contact_states[i] ? sim_contact_force_threshold_ + 1.0 : 0.0;
+    }
+    fc_msg.contact_states[i] = (force > sim_contact_force_threshold_);
+    fc_msg.foot_force_raw[i] = static_cast<int16_t>(std::min(
+        force, static_cast<double>(std::numeric_limits<int16_t>::max())));
+  }
+
+  last_foot_contact_msg_ = fc_msg;
+  up->updateFootContactMsg(fc_msg);
+#else
+  (void)msg;
 #endif
 }
 
@@ -977,6 +1031,21 @@ bool RobotDriver::updateControl() {
           fb_ratio;
     }
   }
+
+  // Hand the PD efforts just computed to the underbrush policy, which uses
+  // them as its tau_meas observation in simulation. Hardware reads the real
+  // tau_est from the joint state instead, so this is sim-only. Computed after
+  // computeLegCommandArray() above, so the policy sees the previous tick's
+  // effort, which is what Isaac's applied_torque reflects anyway.
+#ifdef HAS_ONNXRUNTIME
+  if (!is_hardware_) {
+    if (auto up =
+            std::dynamic_pointer_cast<UnderbrushPolicy>(leg_controller_)) {
+      up->updateAppliedTorque(leg_command_array_msg_);
+    }
+  }
+#endif
+
   return valid_cmd;
 }
 

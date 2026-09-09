@@ -136,6 +136,12 @@ class LearnedVelocityPolicy : public LegController {
   /// Whether first inference has been run yet
   bool first_inference_ = true;
 
+  /// Whether this is running on the physical robot. Decides which sensor a
+  /// derived policy reads for signals that have different sources in sim and
+  /// on hardware, most importantly base angular velocity. Loaded from the
+  /// `is_hardware` parameter, the same one RobotDriver uses.
+  bool is_hardware_ = true;
+
   double scale_factor_ = 0.25;  // Grabbed Directly From IsaacLab Repo
 
   Eigen::VectorXd nominal_stance_pose_{Eigen::VectorXd::Zero(12)};

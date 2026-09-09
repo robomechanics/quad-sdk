@@ -22,6 +22,10 @@ void LearnedVelocityPolicy::init(
   model_path_ = model_path;
   policy_inference_rate_ = policy_inference_rate;
   first_inference_ = true;
+
+  // Same parameter RobotDriver reads, so the two can never disagree.
+  quad_utils::loadROSParamDefault(node_, "is_hardware", is_hardware_, true);
+
   loadONNXModel();
   // Build nominal stance in Isaac ordering (FL,FR,RL,RR grouped by joint type)
   // stand_joint_angles is [abd, hip, knee] from robot_driver.yaml

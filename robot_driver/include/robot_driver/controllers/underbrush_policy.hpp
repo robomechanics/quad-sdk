@@ -50,6 +50,22 @@ class UnderbrushPolicy : public LearnedVelocityPolicy {
   void updateFootContactMsg(const quad_msgs::msg::FootContact& msg);
 
   /**
+   * @brief Cache the joint efforts the driver just computed, for the
+   *        tau_meas observation in simulation
+   *
+   * Isaac's joint_effort_measured returns applied_torque, the actuator
+   * model's PD output. On hardware the Unitree tau_est in
+   * RobotState.joints.effort is that same physical quantity, so it is used
+   * directly. Gazebo instead publishes the joint's transmitted wrench, the
+   * constraint reaction torque, which carries the full gravity load and reads
+   * several Nm per joint on a robot standing still. RobotDriver::updateControl
+   * already computes the real PD effort each tick, so in sim that value is
+   * pushed here rather than re-derived.
+   * @param[in] msg Leg commands with the effort field populated, quad-sdk order
+   */
+  void updateAppliedTorque(const quad_msgs::msg::LegCommandArray& msg);
+
+  /**
    * @brief Split the flat robot_state into per-leg + body observation
    *        groups matching the sim's observation manager.
    */
@@ -99,6 +115,10 @@ class UnderbrushPolicy : public LearnedVelocityPolicy {
   /// Per-leg GRU hidden states.
   /// Layout: [num_layers, batch, hidden_size] flattened.
   std::array<std::vector<float>, 4> h_state_;
+
+  /// Joint efforts from the driver's last PD evaluation, quad-sdk order.
+  /// Only read in simulation; see updateAppliedTorque().
+  std::array<double, 12> applied_torque_{};
 
   /// Latest cached foot-contact reading (Quad-SDK leg order).
   quad_msgs::msg::FootContact last_foot_contact_msg_;
