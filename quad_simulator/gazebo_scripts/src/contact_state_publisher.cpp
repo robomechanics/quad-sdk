@@ -62,8 +62,6 @@ ContactStatePublisher::ContactStatePublisher(rclcpp::Node::SharedPtr node)
 template <int toe_idx>
 void ContactStatePublisher::onContactToe(
     const ros_gz_interfaces::msg::Contacts::SharedPtr msg) {
-  std::string terrain_name =
-      "flat::body::collision";  // Change this to be the world name
   const std::string& toe_string = toe_collision_names_[toe_idx];
 
   // Toe Transform Names
@@ -71,6 +69,12 @@ void ContactStatePublisher::onContactToe(
   if (!ns.empty() && ns.front() == '/') {
     ns = ns.substr(1);  // Remove leading slash
   }
+  // A foot contact counts against anything that is not this robot: the
+  // terrain model of whatever world is loaded (flat, beam_10cm, step_20cm,
+  // ...) or an obstacle. Matching a fixed "flat::body::collision" name, as
+  // this used to, silently reported zero contacts on every other world, and
+  // the learned policies consume this as their foot-contact observation.
+  const std::string self_prefix = ns + "::";
   std::array<std::string, 4> toe_transform_names;
   for (int i = 0; i < num_feet_; ++i) {
     toe_transform_names[i] = ns + "_ground_truth/" + toe_frame_names_[i];
@@ -87,49 +91,42 @@ void ContactStatePublisher::onContactToe(
 
   grf_array_msg_.contact_states[toe_idx] = false;
 
+  // A foot touching a mesh terrain reports one contact entry per touched
+  // triangle, each carrying part of the wrench. Sum every non-robot entry:
+  // stopping at the first one, as this used to, under-reported the ground
+  // reaction force by about half and delayed the 5 N contact threshold.
+  double fx = 0.0, fy = 0.0, fz = 0.0;
+  double px = 0.0, py = 0.0, pz = 0.0;
+  std::size_t n_points = 0;
   for (const auto& contact : msg->contacts) {
     const std::string& str_toe = contact.collision1.name;
     const std::string& str_terrain = contact.collision2.name;
-    // RCLCPP_INFO( node_->get_logger(), "Contact detected between: [%s] and
-    // [%s]", str_toe.c_str(), str_terrain.c_str());
 
     std::size_t found_toe = str_toe.find(toe_string);
-    std::size_t found_terrain = str_terrain.find(terrain_name);
+    const bool other_is_robot = str_terrain.rfind(self_prefix, 0) == 0;
+    if (found_toe == std::string::npos || other_is_robot) continue;
 
-    if ((found_toe != std::string::npos) &&
-        (found_terrain != std::string::npos)) {
-      last_contact_time_[toe_idx] = node_->get_clock()->now().seconds();
-      // Get total wrench
-      if (!contact.wrenches.empty()) {
-        double fx = 0.0, fy = 0.0, fz = 0.0;
-        for (const auto& wrench : contact.wrenches) {
-          fx += wrench.body_1_wrench.force.x;
-          fy += wrench.body_1_wrench.force.y;
-          fz += wrench.body_1_wrench.force.z;
-        }
-        grf_array_msg_.vectors[toe_idx].x = fx;
-        grf_array_msg_.vectors[toe_idx].y = fy;
-        grf_array_msg_.vectors[toe_idx].z = fz;
-      }
-      // Add up position - there might be multiple contact points for one
-      // contaxct pair
-      for (const auto& pos : contact.positions) {
-        grf_array_msg_.points[toe_idx].x += pos.x;
-        grf_array_msg_.points[toe_idx].y += pos.y;
-        grf_array_msg_.points[toe_idx].z += pos.z;
-      }
-      // Compute averaged contact position
-      if (!contact.positions.empty()) {
-        grf_array_msg_.points[toe_idx].x /= contact.positions.size();
-        grf_array_msg_.points[toe_idx].y /= contact.positions.size();
-        grf_array_msg_.points[toe_idx].z /= contact.positions.size();
-      }
-      // Assign contact state
-      grf_array_msg_.contact_states[toe_idx] = true;
-
-      // We only want the contact pair with ground
-      break;  // Only use the first matching contact
+    last_contact_time_[toe_idx] = node_->get_clock()->now().seconds();
+    for (const auto& wrench : contact.wrenches) {
+      fx += wrench.body_1_wrench.force.x;
+      fy += wrench.body_1_wrench.force.y;
+      fz += wrench.body_1_wrench.force.z;
     }
+    for (const auto& pos : contact.positions) {
+      px += pos.x;
+      py += pos.y;
+      pz += pos.z;
+      ++n_points;
+    }
+    grf_array_msg_.contact_states[toe_idx] = true;
+  }
+  grf_array_msg_.vectors[toe_idx].x = fx;
+  grf_array_msg_.vectors[toe_idx].y = fy;
+  grf_array_msg_.vectors[toe_idx].z = fz;
+  if (n_points > 0) {
+    grf_array_msg_.points[toe_idx].x = px / n_points;
+    grf_array_msg_.points[toe_idx].y = py / n_points;
+    grf_array_msg_.points[toe_idx].z = pz / n_points;
   }
   // Not needed, Automatically published in the World Frame
   // geometry_msgs::msg::TransformStamped transform_stamped;

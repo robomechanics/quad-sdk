@@ -51,9 +51,9 @@ def generate_launch_description():
     robot_type = DeclareLaunchArgument('robot_type', default_value='go2')
     mocap = DeclareLaunchArgument('mocap', default_value='true')
     logging = DeclareLaunchArgument('logging', default_value='false')
-    controller = DeclareLaunchArgument('controller', default_value='underbrush_learned')
+    controller = DeclareLaunchArgument('controller', default_value='beamwalking')
     model_path = DeclareLaunchArgument('model_path',
-        default_value='/home/rml2/ros2_ws/src/quad-sdk/robot_driver/include/robot_driver/models/go2/v81_model_49999.onnx')
+        default_value='/home/rml2/ros2_ws/src/quad-sdk/robot_driver/include/robot_driver/models/go2/beamwalking_center_seed2_model1799.onnx')
     provider = DeclareLaunchArgument('provider', default_value = "tensorrt")
     estimator = DeclareLaunchArgument('estimator', default_value="comp_filter")
     debug_estimator = DeclareLaunchArgument('debug_estimator', default_value="none",

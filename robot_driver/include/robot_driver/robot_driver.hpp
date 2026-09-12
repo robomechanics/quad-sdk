@@ -34,6 +34,7 @@
 #ifdef HAS_ONNXRUNTIME
 #include "robot_driver/controllers/learned_velocity_policy.hpp"
 #include "robot_driver/controllers/underbrush_policy.hpp"
+#include "robot_driver/controllers/beamwalking_policy.hpp"
 #endif
 #include "robot_driver/estimators/comp_filter_estimator.hpp"
 #include "robot_driver/estimators/ekf_estimator.hpp"

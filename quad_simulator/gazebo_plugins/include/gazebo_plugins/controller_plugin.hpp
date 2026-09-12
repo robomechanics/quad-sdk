@@ -77,6 +77,16 @@ class QuadController : public controller_interface::ControllerInterface {
   std::vector<double> torque_lims_;
   std::vector<double> speed_lims_;
 
+  /// DC-motor torque-speed model (same form as Isaac Lab's DCMotor):
+  /// available torque falls linearly from strength_scale * saturation at zero
+  /// speed to zero at motor_model.speed. Baseline numbers are the real motor
+  /// peaks; strength_scale (per joint: abad, hip, knee) is the single knob for
+  /// weaker or stronger motors and mirrors the DR training's motor_strength
+  /// randomization. Falls back to motor_limits.* when motor_model.* is unset.
+  std::vector<double> motor_model_saturation_;
+  std::vector<double> motor_model_speed_;
+  std::vector<double> motor_model_strength_scale_;
+
   std::shared_ptr<rclcpp_lifecycle::LifecycleNode> node_;
 
   void commandCB(const quad_msgs::msg::LegCommandArray::SharedPtr msg);

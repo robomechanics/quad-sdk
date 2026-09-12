@@ -344,6 +344,15 @@ void RobotDriver::initLegController() {
         "Underbrush Learned policy requested but built without ONNX Runtime");
     leg_controller_ = nullptr;
 #endif
+  } else if (controller_id_ == "beamwalking") {
+#ifdef HAS_ONNXRUNTIME
+    leg_controller_ =
+        std::make_shared<BeamwalkingPolicy>(node_, robot_ns, quadKD2_);
+#else
+    RCLCPP_FATAL(node_->get_logger(),
+                 "Beamwalking policy requested but built without ONNX Runtime");
+    leg_controller_ = nullptr;
+#endif
   } else {
     RCLCPP_ERROR(node_->get_logger(),
                  "Invalid controller id %s, returning nullptr",
@@ -353,7 +362,8 @@ void RobotDriver::initLegController() {
   // Learned controllers need the extended init (model path, inference rate,
   // stand angles); everything else uses the gains-only init.
   const bool is_learned_policy =
-      (controller_id_ == "learned" || controller_id_ == "underbrush_learned");
+      (controller_id_ == "learned" || controller_id_ == "underbrush_learned" ||
+       controller_id_ == "beamwalking");
   if (leg_controller_ == nullptr) {
     // Instantiation failed above (invalid id or built without ONNX Runtime);
     // the relevant error was already logged, so skip init.
@@ -532,7 +542,7 @@ void RobotDriver::simGrfsCallback(
   // Hardware has a real foot-force sensor; never let this topic override it.
   if (is_hardware_) return;
 
-  auto up = std::dynamic_pointer_cast<UnderbrushPolicy>(leg_controller_);
+  auto up = std::dynamic_pointer_cast<LearnedVelocityPolicy>(leg_controller_);
   if (up == nullptr) return;
 
   // Only the binary state reaches the policy. The publisher zeroes a leg's
@@ -625,12 +635,12 @@ bool RobotDriver::updateState() {
         debug_state_estimator_->loadFootContactMsg(last_foot_contact_msg_);
       }
 
-      // Feed the measured foot forces to the underbrush GRU policy, which
-      // consumes a per-leg foot_force observation.
+      // Feed the measured foot contact to the learned policies that observe
+      // it (underbrush per-leg foot_force, beamwalking contact flags).
 #ifdef HAS_ONNXRUNTIME
-      if (auto up =
-              std::dynamic_pointer_cast<UnderbrushPolicy>(leg_controller_)) {
-        up->updateFootContactMsg(last_foot_contact_msg_);
+      if (auto c = std::dynamic_pointer_cast<LearnedVelocityPolicy>(
+              leg_controller_)) {
+        c->updateFootContactMsg(last_foot_contact_msg_);
       }
 #endif
     }
@@ -656,8 +666,16 @@ bool RobotDriver::updateState() {
     // separately above. With mocap (use_mocap_), fall through to the real
     // state estimator instead: it supplies a true world pose rather than a
     // body pinned to the origin.
-    if ((controller_id_ == "learned" || controller_id_ == "underbrush_learned") &&
+    if ((controller_id_ == "learned" || controller_id_ == "underbrush_learned" ||
+         controller_id_ == "beamwalking") &&
         !use_mocap_) {
+      if (controller_id_ == "beamwalking") {
+        // The beamwalking policy observes base linear velocity, which only
+        // the mocap-fused estimator provides. Without it that term is zero.
+        RCLCPP_WARN_ONCE(node_->get_logger(),
+                         "beamwalking without mocap: base linear velocity "
+                         "observation will read zero");
+      }
       rclcpp::Time state_timestamp = node_->now();
 
       // Joint state from encoders (position, velocity, and effort/torque)

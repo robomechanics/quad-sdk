@@ -39,6 +39,7 @@ def launch_bag_recording(context, *args, **kwargs):
         f"{topic_prefix}/body_force/toe_forces",
         f"{topic_prefix}/state/foot_contact",
         f"{topic_prefix}/cmd_vel_stamped",
+        f"{topic_prefix}/beamwalking/policy_debug",
         "/terrain_map",
         "/clock"
     ]
@@ -64,6 +65,7 @@ def launch_bag_recording(context, *args, **kwargs):
         f"{topic_prefix}/body_force/toe_forces",
         f"{topic_prefix}/state/foot_contact",
         f"{topic_prefix}/cmd_vel_stamped",
+        f"{topic_prefix}/beamwalking/policy_debug",
         "/terrain_map",
         "/clock"
     ]

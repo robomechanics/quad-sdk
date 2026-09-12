@@ -6,6 +6,7 @@
 #include <quad_msgs/msg/robot_state.hpp>
 #include <quad_msgs/msg/leg_command_array.hpp>
 #include <sensor_msgs/msg/imu.hpp>
+#include <quad_msgs/msg/foot_contact.hpp>
 #include <quad_utils/ros_utils.hpp>
 #include <onnxruntime_cxx_api.h>
 
@@ -81,6 +82,15 @@ class LearnedVelocityPolicy : public LegController {
 
   void updateImuMsg(const sensor_msgs::msg::Imu& imu_msg);
 
+  /**
+   * @brief Cache the latest per-foot contact reading. On hardware this is
+   *        the Unitree foot-force sensor; in Gazebo RobotDriver synthesizes
+   *        it from the ground-truth GRFs. contact_states are in Quad-SDK leg
+   *        order (FL, RL, FR, RR). Consumed by derived policies that observe
+   *        foot contact; the base MLP policy ignores it.
+   */
+  void updateFootContactMsg(const quad_msgs::msg::FootContact& msg);
+
   bool computeLegCommandArray(
       const quad_msgs::msg::RobotState& robot_state_msg,
       quad_msgs::msg::LegCommandArray& leg_command_array_msg,
@@ -111,6 +121,9 @@ class LearnedVelocityPolicy : public LegController {
 
   /// Cached IMU message (for acceleration access)
   sensor_msgs::msg::Imu last_imu_msg_;
+
+  /// Latest cached foot-contact reading (Quad-SDK leg order).
+  quad_msgs::msg::FootContact last_foot_contact_msg_;
 
   /// Newest Velocity Command
   Eigen::VectorXd cmd_vel_msg_{Eigen::VectorXd::Zero(3)};

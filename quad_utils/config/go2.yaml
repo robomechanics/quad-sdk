@@ -93,8 +93,8 @@
       sit_kd: [1.0, 1.0, 1.0]
       stand_kp: [60.0, 60.0, 60.0]
       stand_kd: [4.0, 4.0, 4.0]
-      stance_kp: [25.0, 25.0, 25.0] # 25 Learned (v81 underbrush), 60 MPC/ID
-      stance_kd: [0.5, 0.5, 0.5]
+      stance_kp: [25.0, 25.0, 25.0] # DIAGNOSTIC for beamwalking sag test; policy trained at 25 (v81 underbrush also 25), 60 MPC/ID
+      stance_kd: [0.5, 0.5, 0.5]  # DIAGNOSTIC, trained value 0.5
       swing_kp: [25.0, 25.0, 25.0] #[60.0, 60.0, 60.0] #[10.0, 10.0, 10.0]
       swing_kd: [0.5, 0.5, 0.5]  #[4.0, 4.0, 4.0]
       swing_kp_cart: [0.0, 0.0, 0.0] # N/m
@@ -103,6 +103,46 @@
       safety_kd: [2.0, 2.0, 2.0]
       stand_joint_angles: [0.0, 0.8, -1.5] # go2
       sit_joint_angles: [0.0, 1.36, -2.65]
+
+      # Gait command for controller "beamwalking" (beam_walking_RL seed-2
+      # model_1799, 68-obs / 12-action MLP). Launch with
+      #   controller:=beamwalking model_path:=.../models/go2/beamwalking_seed2_model1799.onnx
+      # cmd_vel is only the walk enable: |linear.x| > walk_cmd_threshold walks,
+      # anything else holds the stand pose. Speed comes from here, not cmd_vel.
+      # Trained ranges: speed .25-.40 m/s, duty .50-.75, step_width .10-.50 m,
+      # period .36-.54 s on a 0.02 s tick grid. Walk was trained only at duty
+      # .75 with period >= .40 s. Out-of-range values are clamped with a warning.
+      # Kp/Kd for this policy are 25 / 0.5, i.e. stance_kp / stance_kd above.
+      beamwalking:
+        gait: "trot"           # "trot" or "walk"
+        speed: 0.30            # m/s, forward
+        duty_factor: 0.75      # stance fraction of the period (0.75 = least drift for the narrow policy)
+        step_width: 0.06       # m, full lateral stance width (0.06 is below the
+                               # trained 0.10 minimum; needs allow_narrow_width)
+        allow_narrow_width: true   # let step_width go below 0.10 (extrapolation)
+        # Lateral-drift correction via the heading input: heading_obs += gain *
+        # (offset left of the walk-start line). 0 = off. 0.5 rad/m turns a 4 cm
+        # offset into a 0.02 rad heading bias, inside what the policy trained on.
+        lateral_heading_gain: 1.0
+        # Course reference for heading and the lateral offset. false = the line
+        # through the walk-start pose along the walk-start heading. true = a
+        # fixed world-frame line: yaw course_yaw through (course_x, course_y).
+        # The beam worlds run along world x through y = 0. On hardware use the
+        # beam axis in the mocap frame.
+        use_fixed_course: true
+        course_yaw: 0.0
+        course_x: 0.0
+        course_y: 0.0
+        period: 0.48           # s, gait period
+        walk_cmd_threshold: 0.05
+        # Diagnostic: true = no inference, hold default_joint_pos at stance
+        # gains so the settled sag can be compared with Isaac's calibration.
+        hold_default_pose: false
+        action_scale: 0.25
+        action_clip: 5.0
+        # Isaac Go2 default joint pose, Isaac joint order:
+        # FL_hip FR_hip RL_hip RR_hip | FL_thigh FR_thigh RL_thigh RR_thigh | calves
+        default_joint_pos: [0.1, -0.1, 0.1, -0.1, 0.8, 0.8, 1.0, 1.0, -1.5, -1.5, -1.5, -1.5]
 
 /**/controller_manager:
   ros__parameters:
@@ -125,6 +165,18 @@
     motor_limits:
       torque: [33.5, 33.5, 50.0]
       speed: [30.0, 30.0, 20.06]
+    # Gazebo-only actuator torque-speed model (read by the QuadController
+    # plugin; hardware ignores this block). Baseline is the real Go2 motor:
+    # peak torque and zero-torque speed per joint (abad, hip, knee), from the
+    # URDF effort limits and the Unitree motor spec. strength_scale is the one
+    # knob for weaker/stronger motors; 1.0 = hardware rehearsal. The
+    # beamwalking policy trained on Isaac's Go2 model (23.5 Nm and 30 rad/s on
+    # every joint), which is roughly strength_scale [1.0, 1.0, 0.52] with
+    # speed [30, 30, 30]. Torque is still hard-capped at motor_limits.torque.
+    motor_model:
+      saturation: [23.7, 23.7, 45.43]
+      speed: [30.0, 30.0, 20.06]
+      strength_scale: [1.0, 1.0, 1.0]
     leg_0: 
       joints:
         abad:

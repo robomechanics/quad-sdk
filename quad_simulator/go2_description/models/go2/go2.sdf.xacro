@@ -57,6 +57,12 @@
         </material>
       </visual>
     </link>
+    <!-- Leg joints: no joint springs or viscous damping. The sit-pose springs
+         (3 Nm/rad toward 0 / 1.36 / -2.65) and 0.5 Nm s/rad damping that used
+         to be here have no physical counterpart on the Go2 and are absent from
+         the Isaac Lab model the learned policies train on; they added ~3.5 Nm
+         of knee load and doubled the effective Kd. Joint damping/friction
+         belongs in the controller gains or a motor model, not the SDF. -->
     <joint name='8' type='revolute'>
       <pose relative_to='body'>0.19339999999999999 0.0465 0 0 0 0</pose>
       <parent>body</parent>
@@ -70,9 +76,9 @@
           <velocity>30.100000000000001</velocity>
         </limit>
         <dynamics>
-          <damping>0.5</damping>
+          <damping>0</damping>
           <spring_reference>0</spring_reference>
-          <spring_stiffness>3</spring_stiffness>
+          <spring_stiffness>0</spring_stiffness>
         </dynamics>
       </axis>
     </joint>
@@ -126,9 +132,9 @@
           <velocity>30.100000000000001</velocity>
         </limit>
         <dynamics>
-          <damping>0.5</damping>
+          <damping>0</damping>
           <spring_reference>1.36</spring_reference>
-          <spring_stiffness>3</spring_stiffness>
+          <spring_stiffness>0</spring_stiffness>
         </dynamics>
       </axis>
     </joint>
@@ -181,9 +187,9 @@
           <velocity>15.699999999999999</velocity>
         </limit>
         <dynamics>
-          <damping>0.5</damping>
+          <damping>0</damping>
           <spring_reference>-2.65</spring_reference>
-          <spring_stiffness>3</spring_stiffness>
+          <spring_stiffness>0</spring_stiffness>
         </dynamics>
       </axis>
     </joint>
@@ -361,9 +367,9 @@
           <velocity>30.100000000000001</velocity>
         </limit>
         <dynamics>
-          <damping>0.5</damping>
+          <damping>0</damping>
           <spring_reference>0</spring_reference>
-          <spring_stiffness>3</spring_stiffness>
+          <spring_stiffness>0</spring_stiffness>
         </dynamics>
       </axis>
     </joint>
@@ -417,9 +423,9 @@
           <velocity>30.100000000000001</velocity>
         </limit>
         <dynamics>
-          <damping>0.5</damping>
+          <damping>0</damping>
           <spring_reference>1.36</spring_reference>
-          <spring_stiffness>3</spring_stiffness>
+          <spring_stiffness>0</spring_stiffness>
         </dynamics>
       </axis>
     </joint>
@@ -472,9 +478,9 @@
           <velocity>15.699999999999999</velocity>
         </limit>
         <dynamics>
-          <damping>0.5</damping>
+          <damping>0</damping>
           <spring_reference>-2.65</spring_reference>
-          <spring_stiffness>3</spring_stiffness>
+          <spring_stiffness>0</spring_stiffness>
         </dynamics>
       </axis>
     </joint>
@@ -653,9 +659,9 @@
           <velocity>30.100000000000001</velocity>
         </limit>
         <dynamics>
-          <damping>0.5</damping>
+          <damping>0</damping>
           <spring_reference>0</spring_reference>
-          <spring_stiffness>3</spring_stiffness>
+          <spring_stiffness>0</spring_stiffness>
         </dynamics>
       </axis>
     </joint>
@@ -709,9 +715,9 @@
           <velocity>30.100000000000001</velocity>
         </limit>
         <dynamics>
-          <damping>0.5</damping>
+          <damping>0</damping>
           <spring_reference>1.36</spring_reference>
-          <spring_stiffness>3</spring_stiffness>
+          <spring_stiffness>0</spring_stiffness>
         </dynamics>
       </axis>
     </joint>
@@ -764,9 +770,9 @@
           <velocity>15.699999999999999</velocity>
         </limit>
         <dynamics>
-          <damping>0.5</damping>
+          <damping>0</damping>
           <spring_reference>-2.65</spring_reference>
-          <spring_stiffness>3</spring_stiffness>
+          <spring_stiffness>0</spring_stiffness>
         </dynamics>
       </axis>
     </joint>
@@ -944,9 +950,9 @@
           <velocity>30.100000000000001</velocity>
         </limit>
         <dynamics>
-          <damping>0.5</damping>
+          <damping>0</damping>
           <spring_reference>0</spring_reference>
-          <spring_stiffness>3</spring_stiffness>
+          <spring_stiffness>0</spring_stiffness>
         </dynamics>
       </axis>
     </joint>
@@ -1000,9 +1006,9 @@
           <velocity>30.100000000000001</velocity>
         </limit>
         <dynamics>
-          <damping>0.5</damping>
+          <damping>0</damping>
           <spring_reference>1.36</spring_reference>
-          <spring_stiffness>3</spring_stiffness>
+          <spring_stiffness>0</spring_stiffness>
         </dynamics>
       </axis>
     </joint>
@@ -1055,9 +1061,9 @@
           <velocity>15.699999999999999</velocity>
         </limit>
         <dynamics>
-          <damping>0.5</damping>
+          <damping>0</damping>
           <spring_reference>-2.65</spring_reference>
-          <spring_stiffness>3</spring_stiffness>
+          <spring_stiffness>0</spring_stiffness>
         </dynamics>
       </axis>
     </joint>

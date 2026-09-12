@@ -188,6 +188,12 @@ controller_interface::CallbackReturn QuadController::on_init() {
                                                 std::vector<double>{});
   node_->declare_parameter<std::vector<double>>("speed_lims",
                                                 std::vector<double>{});
+  node_->declare_parameter<std::vector<double>>("motor_model.saturation",
+                                                std::vector<double>{});
+  node_->declare_parameter<std::vector<double>>("motor_model.speed",
+                                                std::vector<double>{});
+  node_->declare_parameter<std::vector<double>>(
+      "motor_model.strength_scale", std::vector<double>{1.0, 1.0, 1.0});
 
   return controller_interface::CallbackReturn::SUCCESS;
 }
@@ -220,16 +226,39 @@ controller_interface::CallbackReturn QuadController::on_configure(
   if (!validate_motor_limits(node_, torque_lims_, speed_lims_)) {
     return controller_interface::CallbackReturn::ERROR;
   }
-  // RCLCPP_INFO(node_->get_logger(), "Torque Limits for each joint:");
-  // for (size_t i = 0; i < joint_names_.size(); ++i) {
-  //     if (i < torque_lims_.size()) {
-  //         RCLCPP_INFO(node_->get_logger(), "  %s: %.3f Nm",
-  //         joint_names_[i].c_str(), torque_lims_[i]);
-  //     } else {
-  //         RCLCPP_WARN(node_->get_logger(), "  %s: No torque limit
-  //         specified!", joint_names_[i].c_str());
-  //     }
-  // }
+  {
+    constexpr size_t kExpectedMotorDims = 3;  // abad, hip, knee
+    node_->get_parameter("motor_model.saturation", motor_model_saturation_);
+    node_->get_parameter("motor_model.speed", motor_model_speed_);
+    node_->get_parameter("motor_model.strength_scale",
+                         motor_model_strength_scale_);
+    if (motor_model_saturation_.empty()) motor_model_saturation_ = torque_lims_;
+    if (motor_model_speed_.empty()) motor_model_speed_ = speed_lims_;
+    if (motor_model_saturation_.size() != kExpectedMotorDims ||
+        motor_model_speed_.size() != kExpectedMotorDims ||
+        motor_model_strength_scale_.size() != kExpectedMotorDims) {
+      RCLCPP_ERROR(node_->get_logger(),
+                   "motor_model.{saturation,speed,strength_scale} must each "
+                   "have %zu values (abad, hip, knee)",
+                   kExpectedMotorDims);
+      return controller_interface::CallbackReturn::ERROR;
+    }
+    for (size_t k = 0; k < kExpectedMotorDims; ++k) {
+      if (motor_model_speed_[k] <= 0.0 || motor_model_strength_scale_[k] <= 0.0) {
+        RCLCPP_ERROR(node_->get_logger(),
+                     "motor_model.speed and strength_scale must be positive");
+        return controller_interface::CallbackReturn::ERROR;
+      }
+    }
+    RCLCPP_INFO(node_->get_logger(),
+                "DC motor model: saturation [%.1f %.1f %.1f] Nm x strength "
+                "[%.2f %.2f %.2f], zero-torque speed [%.1f %.1f %.1f] rad/s",
+                motor_model_saturation_[0], motor_model_saturation_[1],
+                motor_model_saturation_[2], motor_model_strength_scale_[0],
+                motor_model_strength_scale_[1], motor_model_strength_scale_[2],
+                motor_model_speed_[0], motor_model_speed_[1],
+                motor_model_speed_[2]);
+  }
 
   n_joints_ = joint_names_.size();
   if (n_joints_ == 0) {
@@ -384,17 +413,22 @@ controller_interface::return_type QuadController::update(
     // Collect feedback
     double torque_feedback = kp * pos_error + kd * vel_error;
     double torque_lim = torque_lims_[ind.second];
-    double motor_model_ub = torque_lims_[ind.second] *
-                            (1.0 - current_vel / speed_lims_[ind.second]);
-    double motor_model_lb = -torque_lims_[ind.second] *
-                            (1.0 + current_vel / speed_lims_[ind.second]);
     double torque_command = std::min(
         std::max(torque_feedback + torque_ff, -torque_lim), torque_lim);
-    bool apply_motor_model = false;
-    torque_command =
-        (apply_motor_model)
-            ? std::min(std::max(torque_command, motor_model_lb), motor_model_ub)
-            : torque_command;
+    {
+      // Four-quadrant linear torque-speed curve (Isaac Lab DCMotor form):
+      // strength * saturation at zero speed, zero torque at the speed limit,
+      // capped at strength * saturation. Strength scales both together, the
+      // way the DR training's motor_strength randomization does.
+      const double sat = motor_model_strength_scale_[ind.second] *
+                         motor_model_saturation_[ind.second];
+      const double vlim = motor_model_speed_[ind.second];
+      const double ub =
+          std::min(std::max(sat * (1.0 - current_vel / vlim), 0.0), sat);
+      const double lb =
+          std::max(std::min(sat * (-1.0 - current_vel / vlim), 0.0), -sat);
+      torque_command = std::min(std::max(torque_command, lb), ub);
+    }
 
     // Update joint torque
     // joints_.at(i).setCommand(torque_command);

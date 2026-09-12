@@ -301,3 +301,8 @@ void LearnedVelocityPolicy::updateCmdVelMsg(Eigen::VectorXd msg,
 void LearnedVelocityPolicy::updateImuMsg(const sensor_msgs::msg::Imu& imu_msg) {
   last_imu_msg_ = imu_msg;
 }
+
+void LearnedVelocityPolicy::updateFootContactMsg(
+    const quad_msgs::msg::FootContact& msg) {
+  last_foot_contact_msg_ = msg;
+}

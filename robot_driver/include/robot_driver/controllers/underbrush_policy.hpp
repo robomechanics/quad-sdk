@@ -43,13 +43,6 @@ class UnderbrushPolicy : public LearnedVelocityPolicy {
   void resetHiddenStates();
 
   /**
-   * @brief Cache the latest per-foot contact reading (Unitree foot-force
-   *        sensor). The binary contact_states (Quad-SDK leg order FL, RL, FR,
-   *        RR) feed the per-leg foot_force observation.
-   */
-  void updateFootContactMsg(const quad_msgs::msg::FootContact& msg);
-
-  /**
    * @brief Cache the joint efforts the driver just computed, for the
    *        tau_meas observation in simulation
    *
@@ -119,9 +112,6 @@ class UnderbrushPolicy : public LearnedVelocityPolicy {
   /// Joint efforts from the driver's last PD evaluation, quad-sdk order.
   /// Only read in simulation; see updateAppliedTorque().
   std::array<double, 12> applied_torque_{};
-
-  /// Latest cached foot-contact reading (Quad-SDK leg order).
-  quad_msgs::msg::FootContact last_foot_contact_msg_;
 
   /// Cached ONNX I/O metadata (populated lazily on first runInference)
   std::vector<std::string> input_names_;

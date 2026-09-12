@@ -25,11 +25,6 @@ void UnderbrushPolicy::resetHiddenStates() {
               "UnderbrushPolicy: per-leg GRU hidden states reset");
 }
 
-void UnderbrushPolicy::updateFootContactMsg(
-    const quad_msgs::msg::FootContact& msg) {
-  last_foot_contact_msg_ = msg;
-}
-
 void UnderbrushPolicy::updateAppliedTorque(
     const quad_msgs::msg::LegCommandArray& msg) {
   for (int leg = 0; leg < 4; ++leg) {

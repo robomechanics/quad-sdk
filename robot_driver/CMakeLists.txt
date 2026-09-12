@@ -88,7 +88,8 @@ set(ROBOT_DRIVER_SOURCES
 if(ONNXRUNTIME_LIB)
   list(APPEND ROBOT_DRIVER_SOURCES
     src/controllers/learned_velocity_policy.cpp
-    src/controllers/underbrush_policy.cpp)
+    src/controllers/underbrush_policy.cpp
+    src/controllers/beamwalking_policy.cpp)
 endif()
 
 add_library(robot_driver SHARED ${ROBOT_DRIVER_SOURCES})
