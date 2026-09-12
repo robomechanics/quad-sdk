@@ -36,7 +36,7 @@ find_package(tf2_ros REQUIRED)
 find_package(mujoco_vendor QUIET)
 find_package(glfw3 QUIET)
 
-add_library(quad_utils
+add_library(quad_utils SHARED
   src/rviz_interface.cpp
   src/fast_terrain_map.cpp
   src/mesh_to_grid_map_converter.cpp
