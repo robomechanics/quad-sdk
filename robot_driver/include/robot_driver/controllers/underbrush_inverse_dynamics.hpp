@@ -82,6 +82,10 @@ class UnderbrushInverseDynamicsController : public LegController {
   /// Leg swing mode logic
   std::vector<int> force_mode_;
   std::vector<int> last_mode_;
+  /// 1 once the leg has taken the clean exit (knee torque below
+  /// tau_contact_end) in the current swing; reset in stance. A forced
+  /// put-down only sets last_mode_ when this is 0.
+  std::vector<int> cleared_;
   std::vector<double> t_switch_;
   std::vector<double> t_LO_;
   std::vector<double> t_TD_;

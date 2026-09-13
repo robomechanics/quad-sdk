@@ -6,6 +6,7 @@ UnderbrushInverseDynamicsController::UnderbrushInverseDynamicsController(
     : LegController(node, robot_ns, quadKD) {
   force_mode_ = {0, 0, 0, 0};
   last_mode_ = {0, 0, 0, 0};
+  cleared_ = {0, 0, 0, 0};
 
   double t_now = node_->now().seconds();
   t_switch_ = {t_now, t_now, t_now, t_now};
@@ -309,6 +310,23 @@ bool UnderbrushInverseDynamicsController::computeLegCommandArray(
       }
     }
 
+    // Only apply the Underbrush swing law to legs that are actually in
+    // obstructed (retract) mode. Un-obstructed swing legs keep the local
+    // plan's swing trajectory, exactly as InverseDynamicsController does.
+    // force_mode_ here is from the previous tick (it is updated in the
+    // command loop below); the one-tick lag is well inside min_switch_.
+    for (int i = 0; i < num_feet_; ++i) {
+      if (!ref_state_msg_.feet.feet.at(i).contact && !force_mode_.at(i)) {
+        ref_underbrush_msg.feet.feet.at(i) = ref_state_msg_.feet.feet.at(i);
+        for (int j = 0; j < 3; ++j) {
+          ref_underbrush_msg.joints.position.at(3 * i + j) =
+              ref_state_msg_.joints.position.at(3 * i + j);
+          ref_underbrush_msg.joints.velocity.at(3 * i + j) =
+              ref_state_msg_.joints.velocity.at(3 * i + j);
+        }
+      }
+    }
+
     ref_state_msg_ = ref_underbrush_msg;
 
     // Declare plan and state data as Eigen vectors
@@ -343,6 +361,7 @@ bool UnderbrushInverseDynamicsController::computeLegCommandArray(
 
       if (contact_mode[i]) {
         // Stance phase
+        cleared_.at(i) = 0;  // new swing starts with no clean exit yet
         for (int j = 0; j < 3; ++j) {
           int joint_idx = 3 * i + j;
 
@@ -371,6 +390,7 @@ bool UnderbrushInverseDynamicsController::computeLegCommandArray(
             t_TD_.at(i) - t_now2 >= t_down_) {
           // leg is not obstructed anymore: stop retracting and extend
           last_mode_.at(i) = 0;
+          cleared_.at(i) = 1;
           force_mode_.at(i) = 0;
           t_switch_.at(i) = t_now2;
         } else if (!force_mode_.at(i) &&
@@ -390,7 +410,12 @@ bool UnderbrushInverseDynamicsController::computeLegCommandArray(
                                                // stance; put the foot down)
           force_mode_.at(i) = 0;
           t_switch_.at(i) = t_now2;
-          last_mode_.at(i) = 1;
+          // Only remember the obstruction for the next swing if this leg never
+          // cleanly cleared it during this swing. After a clean exit, the
+          // retract kick's own hip/knee residual (and the landing) re-trigger
+          // the contact test late in swing; without this guard that latches
+          // the next swing and the high step never ends on open ground.
+          last_mode_.at(i) = cleared_.at(i) ? 0 : 1;
         }
 
         if (t_now2 - t_LO_.at(i) < t_up_) {
