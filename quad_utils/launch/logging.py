@@ -38,6 +38,11 @@ def launch_bag_recording(context, *args, **kwargs):
         f"{topic_prefix}/body_force/joint_torques",
         f"{topic_prefix}/body_force/toe_forces",
         f"{topic_prefix}/state/foot_contact",
+        f"{topic_prefix}/state/applied_joint_torques",
+        f"{topic_prefix}/state/foot_net_forces",
+        *[f"{topic_prefix}/gazebo/toe{i}_contact_states" for i in range(4)],
+        f"{topic_prefix}/policy/observations",
+        f"{topic_prefix}/policy/raw_actions",
         f"{topic_prefix}/cmd_vel_stamped",
         "/terrain_map",
         "/clock"
@@ -63,6 +68,11 @@ def launch_bag_recording(context, *args, **kwargs):
         f"{topic_prefix}/body_force/joint_torques",
         f"{topic_prefix}/body_force/toe_forces",
         f"{topic_prefix}/state/foot_contact",
+        f"{topic_prefix}/state/applied_joint_torques",
+        f"{topic_prefix}/state/foot_net_forces",
+        *[f"{topic_prefix}/gazebo/toe{i}_contact_states" for i in range(4)],
+        f"{topic_prefix}/policy/observations",
+        f"{topic_prefix}/policy/raw_actions",
         f"{topic_prefix}/cmd_vel_stamped",
         "/terrain_map",
         "/clock"

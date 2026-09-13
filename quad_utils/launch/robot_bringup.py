@@ -11,6 +11,7 @@ from functools import partial
 import os
 import xacro
 import yaml
+import tempfile
 
 def load_robot_params(context, *args, **kwargs):
     # Load Robot URDF and Robot Centric Parameters
@@ -71,6 +72,17 @@ def load_robot_params(context, *args, **kwargs):
     sdf_path = os.path.join(desc_path, 'models', robot_type, sdf_file)
 
     controller_config_path = os.path.join(FindPackageShare('quad_utils').perform(context), 'config', config_file)
+
+    controller = LaunchConfiguration('controller').perform(context)
+    if robot_type == 'go2' and controller in ('underbrush_v90', 'underbrush_v92'):
+        with open(controller_config_path) as config_stream:
+            sim_config = yaml.safe_load(config_stream)
+        sim_config['/**/joint_controller']['ros__parameters']['publish_applied_torque'] = True
+        if controller == 'underbrush_v90':
+            sim_config['/**/joint_controller']['ros__parameters']['use_isaac_go2hv_actuator'] = True
+        with tempfile.NamedTemporaryFile(mode='w', prefix='quad_policy_telemetry_', suffix='.yaml', delete=False) as config_stream:
+            yaml.safe_dump(sim_config, config_stream)
+            controller_config_path = config_stream.name
 
     # Load URDF and SDF from disk
     urdf = xacro.process_file(urdf_path).toxml()
@@ -222,6 +234,8 @@ def launch_robot_driver(context, *args, **kwargs):
             launch_arguments={
                 'robot_type': robot_type,
                 'controller': controller,
+                'model_path': LaunchConfiguration('model_path'),
+                'use_sim_time': LaunchConfiguration('use_sim_time'),
                 'estimator': estimator,
                 'mocap': 'false',
                 'is_hardware': 'false',
@@ -389,6 +403,7 @@ def generate_launch_description():
         DeclareLaunchArgument('robot_type', default_value = 'spirit', description='Robot type'),
         DeclareLaunchArgument('namespace', default_value = 'robot_1', description='Robot namespace'),
         DeclareLaunchArgument('controller', default_value = 'inverse_kinematics', description='Controller type'),
+        DeclareLaunchArgument('model_path', default_value='', description='Optional ONNX checkpoint override'),
         DeclareLaunchArgument('estimator', default_value = 'comp_filter', description='State estimator type (comp_filter or ekf_filter)'),
         DeclareLaunchArgument('init_pose', default_value = '-x 2.0 -y 0.0 -z 15', description= "Initial Robot Position"),
         DeclareLaunchArgument('is_hardware', default_value = 'false', description="Simulation or Hardware"),

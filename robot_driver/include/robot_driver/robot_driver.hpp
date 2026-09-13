@@ -102,6 +102,14 @@ class RobotDriver {
   void robotStateCallback(const quad_msgs::msg::RobotState::SharedPtr msg);
 
   /**
+   * @brief SIM-ONLY: derive per-foot binary contact from Gazebo's ground-truth
+   * GRFArray on topics.state.grfs and push it into UnderbrushPolicy so the
+   * foot_force observation toggles (as it did in training) instead of the
+   * constant-1 fallback used when no FootContact publisher exists in sim.
+   */
+  void simGrfsCallback(const quad_msgs::msg::GRFArray::SharedPtr msg);
+
+  /**
    * @brief Callback function to handle current robot pose
    * @param[in] msg input message contining current robot pose
    */
@@ -184,6 +192,13 @@ class RobotDriver {
 
   /// ROS subscriber for state estimate
   rclcpp::Subscription<quad_msgs::msg::RobotState>::SharedPtr robot_state_sub_;
+
+  /// SIM-ONLY: ground-truth per-foot GRFArray subscriber (used to synthesize
+  /// a FootContact reading for UnderbrushPolicy — no FootContact publisher
+  /// exists in the Gazebo pipeline).
+  rclcpp::Subscription<quad_msgs::msg::GRFArray>::SharedPtr sim_grfs_sub_;
+  rclcpp::Subscription<sensor_msgs::msg::JointState>::SharedPtr sim_applied_torque_sub_;
+  sensor_msgs::msg::JointState sim_applied_torque_msg_;
 
   /// ROS subscriber for body force estimates
   rclcpp::Subscription<quad_msgs::msg::BodyForceEstimate>::SharedPtr

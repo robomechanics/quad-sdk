@@ -17,6 +17,7 @@
 #include <urdf/model.h>
 
 #include <quad_msgs/msg/leg_command.hpp>
+#include <sensor_msgs/msg/joint_state.hpp>
 #include <quad_msgs/msg/leg_command_array.hpp>
 #include <quad_msgs/msg/motor_command.hpp>
 #include <quad_utils/ros_utils.hpp>
@@ -54,6 +55,10 @@ class QuadController : public controller_interface::ControllerInterface {
       const rclcpp::Time& time, const rclcpp::Duration& period) override;
 
  private:
+  bool publish_applied_torque_ = false;
+  bool use_isaac_go2hv_actuator_ = false;
+  rclcpp::Publisher<sensor_msgs::msg::JointState>::SharedPtr applied_torque_pub_;
+  sensor_msgs::msg::JointState applied_torque_msg_;
   std::vector<std::string> joint_names_;
   //   std::vector<hardware_interface::JointHandle> joints_;
 

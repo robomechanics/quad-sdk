@@ -189,7 +189,7 @@ def launch_local_planner(context, *args, **kwargs):
     config_robot_type = LaunchConfiguration('robot_type').perform(context)
     robot_specific_param_file = os.path.join(quad_utils_pkg.perform(context), 'config', config_robot_type + '.yaml')
 
-    if LaunchConfiguration('controller_mode').perform(context) == 'learned' or LaunchConfiguration('controller_mode').perform(context) == 'underbrush_learned':
+    if LaunchConfiguration('controller_mode').perform(context) in ('learned', 'underbrush_learned', 'underbrush_v90', 'underbrush_v92'):
         return []
 
     return [

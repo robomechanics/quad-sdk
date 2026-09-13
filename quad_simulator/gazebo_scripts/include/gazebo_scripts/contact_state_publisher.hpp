@@ -61,7 +61,10 @@ class ContactStatePublisher {
   rclcpp::Subscription<ros_gz_interfaces::msg::Contacts>::SharedPtr
       toe_3_contact_state_sub_;
 
-  std::array<double, 4> last_contact_time_;
+  std::array<double, 4> last_contact_time_{};
+  std::array<double, 4> last_net_force_time_{};
+  quad_msgs::msg::GRFArray net_foot_force_msg_;
+  rclcpp::Publisher<quad_msgs::msg::GRFArray>::SharedPtr net_foot_force_pub_;
   std::array<std::string, 4> toe_frame_names_;
   std::array<std::string, 4> toe_collision_names_;
 

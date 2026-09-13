@@ -175,6 +175,15 @@ if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)
   find_package(ament_cmake_gtest REQUIRED)
   find_package(ament_index_cpp REQUIRED)
+  # Pure CPU actuator-envelope tests: no ROS node, ONNX session, or hardware access.
+  ament_add_gtest(underbrush_torque_observation_test
+    test/test_underbrush_torque_observation.cpp)
+  target_include_directories(underbrush_torque_observation_test PRIVATE include)
+  if(ONNXRUNTIME_LIB)
+    ament_add_gtest(underbrush_v92_observations_test
+      test/test_underbrush_v92_observations.cpp)
+    target_link_libraries(underbrush_v92_observations_test ${PROJECT_NAME})
+  endif()
   set(ament_cmake_cpplint_FOUND TRUE)
   set(ament_cmake_uncrustify_FOUND TRUE)
   # the following line skips the linter which checks for copyrights

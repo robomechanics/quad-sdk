@@ -4,6 +4,7 @@
 #include "robot_driver/controllers/learned_velocity_policy.hpp"
 #include <quad_msgs/msg/foot_contact.hpp>
 #include <array>
+#include <std_msgs/msg/float32_multi_array.hpp>
 
 //! Recurrent per-leg-GRU + MLP policy trained on the underbrush vine field.
 /*!
@@ -22,7 +23,7 @@
    Observation layout (must match VineWalkV28GRUObservationsCfg):
      body       [21] = base_ang_vel(3, scale=0.2) + projected_gravity(3) +
                        velocity_commands(3) + last_action(12)
-     per_leg_X  [10] = q_leg(3) + qd_leg(3) + foot_force(1) + tau_meas_leg(3)
+     per_leg_X  [10] = q_leg(3) + qd_leg(3) + joint_effort(3) + foot_contact(1)
      leg order = FL, FR, RL, RR (must match _LEG_NAMES in per_leg_gru_model.py)
 
    The action head is identical to the base policy's, so runInference() reuses
@@ -32,13 +33,21 @@
 class UnderbrushPolicy : public LearnedVelocityPolicy {
  public:
   UnderbrushPolicy(rclcpp::Node::SharedPtr node, const std::string& robot_ns,
-                   std::shared_ptr<quad_utils::QuadKD2> quadKD);
+                   std::shared_ptr<quad_utils::QuadKD2> quadKD,
+                   bool per_leg_action_history = false);
 
   /**
-   * @brief Zero out all per-leg GRU hidden states. Call on any mode
-   *        transition (stand->walk, walk->stand, safety-recovery) — the
-   *        hidden state carries regime-specific context that becomes
-   *        stale on transitions.
+   * @brief Zero out all per-leg GRU hidden states AND arm the encoder-warmup
+   *        counter. Call on any mode transition (stand->walk, walk->stand,
+   *        safety-recovery) — the hidden state carries regime-specific
+   *        context that becomes stale on transitions.
+   *
+   *        Deploy-fix: v51 was never trained on the (h=0 ∧ settled) state
+   *        that occurs at Gazebo/hardware handoff, so raw MLP output rails at
+   *        tick 0. After reset, we run ONNX forward as normal (to fill hidden
+   *        with contextually-driven state) but hold PD-nominal joint targets
+   *        for kEncoderWarmupTicks before releasing MLP output. See docs and
+   *        the reset_condition videos.
    */
   void resetHiddenStates();
 
@@ -63,12 +72,35 @@ class UnderbrushPolicy : public LearnedVelocityPolicy {
    */
   void runInference() override;
 
+  /**
+   * @brief Override init so we can restore our v51-specific gains + asymmetric
+   *        nominal stance AFTER the parent's init overwrites them from yaml.
+   *        Parent init reads stance_kp/kd + stand_joint_angles from robot_driver
+   *        config, but v51 was trained with kp=25/kd=0.5 and asymmetric per-leg
+   *        defaults (Isaac's `.*L_hip = +0.1, .*R_hip = -0.1, F/R thigh differ`).
+   */
+  void init(const std::vector<double>& stance_kp,
+            const std::vector<double>& stance_kd,
+            const std::vector<double>& swing_kp,
+            const std::vector<double>& swing_kd,
+            const std::vector<double>& swing_kp_cart,
+            const std::vector<double>& swing_kd_cart,
+            const std::string& model_path,
+            double policy_inference_rate,
+            const std::vector<double>& stand_joint_angles) override;
+
  protected:
-  // --- GRU shape constants (must match v51's RslRlPerLegGRUModelCfg) ---
-  static constexpr int kGRUHidden = 256;  // gru_hidden_dim (v51 default is 256)
+  rclcpp::Publisher<std_msgs::msg::Float32MultiArray>::SharedPtr obs_debug_pub_;
+  rclcpp::Publisher<std_msgs::msg::Float32MultiArray>::SharedPtr action_debug_pub_;
+  // --- GRU shape constants (must match v51's actual trained weights) ---
+  // NB: RslRlPerLegGRUModelCfg default is 256 but PerLegGRUModel default is 64,
+  // and v51's actual weights are 64 (verified from ckpt weight_ih_l0 shape
+  // (192, 10) = 3*64). The runner cfg's 256 was never actually plumbed through.
+  static constexpr int kGRUHidden = 64;
   static constexpr int kGRUNumLayers = 1;
   static constexpr int kBatch = 1;
   static constexpr int kPerLegObsDim = 10;
+  const int per_leg_obs_dim_;  // V90: 10; V92: 13 (append previous raw actions).
   static constexpr int kBodyObsDim = 21;
   static constexpr int kActionDim = 12;
 
@@ -80,7 +112,7 @@ class UnderbrushPolicy : public LearnedVelocityPolicy {
   static constexpr float kJointPosScale = 1.0f;
   /// qd_leg (joint_vel_rel; default vel is 0 so ≈ absolute) ObsTerm scale.
   static constexpr float kJointVelScale = 0.05f;
-  /// tau_meas (joint_effort_measured) ObsTerm scale. Unitree tau_est is N·m.
+  /// Simulator/Unitree torque observation scale, matching training.
   static constexpr float kTauScale = 0.01f;
   // foot_force is a BINARY contact flag in v51 (sim force > 5 N, scale 1.0);
   // it is fed straight from the interface's contact_states — no scale constant.
@@ -111,6 +143,19 @@ class UnderbrushPolicy : public LearnedVelocityPolicy {
 
   /// Leg index → name mapping. 0=FL, 1=FR, 2=RL, 3=RR.
   static constexpr const char* kLegNames[4] = {"FL", "FR", "RL", "RR"};
+
+  /// Encoder-warmup: number of policy ticks after any hidden-state reset
+  /// during which we run the ONNX encoder forward (to fill hidden with real
+  /// obs-driven context) but override the MLP head output to zero (→ actions
+  /// = nominal stance via postProcessActions). Rationale: v51 was trained on
+  /// (h!=0) settled states but never (h=0 ∧ settled), so the raw MLP output
+  /// rails at deploy handoff. Empirically the hidden fills within ~30 ticks
+  /// (~600ms at 50Hz) — long enough to escape the OOD region, short enough to
+  /// not delay operator commands appreciably.
+  static constexpr int kEncoderWarmupTicks = 30;
+
+  /// Warmup counter (decremented in runInference; 0 → normal closed-loop).
+  int warmup_ticks_remaining_ = 0;
 };
 
 #endif  // UNDERBRUSH_POLICY_H

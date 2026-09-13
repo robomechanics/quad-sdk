@@ -16,6 +16,7 @@ find_package(realtime_tools REQUIRED)
 find_package(urdf REQUIRED)
 find_package(quad_utils REQUIRED)
 find_package(std_msgs REQUIRED)
+find_package(sensor_msgs REQUIRED)
 find_package(quad_msgs REQUIRED)
 find_package(tf2_ros REQUIRED)
 find_package(RBDL REQUIRED COMPONENTS URDFREADER)
@@ -46,6 +47,9 @@ add_library(quad_controller SHARED
 add_library(quad_wheel_controller SHARED
   src/quad_wheel_controller_plugin.cpp
 )
+
+add_library(vine_axial_spring SHARED src/vine_axial_spring.cpp)
+ament_target_dependencies(vine_axial_spring gz-sim8 gz-plugin2)
 
 add_library(spawn_lock SHARED
   src/spawn_lock_plugin.cpp
@@ -101,6 +105,7 @@ ament_target_dependencies(spawn_lock
 )
 
 ament_target_dependencies(quad_controller
+  sensor_msgs
   rclcpp
   controller_interface
   hardware_interface
@@ -133,6 +138,7 @@ install(TARGETS
   quad_controller
   quad_wheel_controller
   spawn_lock
+  vine_axial_spring
   DESTINATION lib
 )
 

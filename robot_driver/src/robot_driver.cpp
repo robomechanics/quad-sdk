@@ -4,6 +4,7 @@ RobotDriver::RobotDriver(std::shared_ptr<rclcpp::Node> node, int argc,
                          char** argv)
     : node_(node), argc_(argc), argv_(argv) {
   std::string imu_topic, joint_state_topic, grf_topic, robot_state_topic,
+      sim_grfs_topic,
       trajectory_state_topic, local_plan_topic, leg_command_array_topic,
       control_mode_topic, remote_heartbeat_topic, robot_heartbeat_topic,
       single_joint_cmd_topic, mocap_topic, control_restart_flag_topic,
@@ -21,6 +22,7 @@ RobotDriver::RobotDriver(std::shared_ptr<rclcpp::Node> node, int argc,
   quad_utils::loadROSParam(node_, "topics.local_plan", local_plan_topic);
   quad_utils::loadROSParam(node_, "topics.state.ground_truth",
                            robot_state_topic);
+  quad_utils::loadROSParam(node_, "topics.state.grfs", sim_grfs_topic);
   quad_utils::loadROSParam(node_, "topics.state.trajectory",
                            trajectory_state_topic);
   quad_utils::loadROSParam(node_, "topics.heartbeat.remote",
@@ -172,6 +174,24 @@ RobotDriver::RobotDriver(std::shared_ptr<rclcpp::Node> node, int argc,
         robot_state_topic, 1,
         std::bind(&RobotDriver::robotStateCallback, this,
                   std::placeholders::_1));
+
+    if (controller_id_ == "underbrush_v90" || controller_id_ == "underbrush_v92") {
+      sim_applied_torque_sub_ = node_->create_subscription<sensor_msgs::msg::JointState>(
+          "state/applied_joint_torques", rclcpp::QoS(10),
+          [this](sensor_msgs::msg::JointState::SharedPtr msg) {
+            sim_applied_torque_msg_ = *msg;
+          });
+    }
+
+    // Isaac's foot sensor includes all collision partners, not only ground.
+    // Keep the legacy GRF route for other controllers.
+    if (controller_id_ == "underbrush_v90" || controller_id_ == "underbrush_v92") {
+      sim_grfs_topic = "state/foot_net_forces";
+      RCLCPP_INFO(node_->get_logger(), "Underbrush contact input: all-object foot net forces (>5 N)");
+    }
+    sim_grfs_sub_ = node_->create_subscription<quad_msgs::msg::GRFArray>(
+        sim_grfs_topic, 1,
+        std::bind(&RobotDriver::simGrfsCallback, this, std::placeholders::_1));
   }
 
   // Initialize kinematics object
@@ -317,10 +337,11 @@ void RobotDriver::initLegController() {
                  "Learned policy requested but built without ONNX Runtime");
     leg_controller_ = nullptr;
 #endif
-  } else if (controller_id_ == "underbrush_learned") {
+  } else if (controller_id_ == "underbrush_learned" || controller_id_ == "underbrush_v90" || controller_id_ == "underbrush_v92") {
 #ifdef HAS_ONNXRUNTIME
     leg_controller_ =
-        std::make_shared<UnderbrushPolicy>(node_, robot_ns, quadKD2_);
+        std::make_shared<UnderbrushPolicy>(node_, robot_ns, quadKD2_,
+                                           controller_id_ == "underbrush_v92");
 #else
     RCLCPP_FATAL(
         node_->get_logger(),
@@ -336,7 +357,8 @@ void RobotDriver::initLegController() {
   // Learned controllers need the extended init (model path, inference rate,
   // stand angles); everything else uses the gains-only init.
   const bool is_learned_policy =
-      (controller_id_ == "learned" || controller_id_ == "underbrush_learned");
+      (controller_id_ == "learned" || controller_id_ == "underbrush_learned" || controller_id_ == "underbrush_v90" ||
+       controller_id_ == "underbrush_v92");
   if (leg_controller_ == nullptr) {
     // Instantiation failed above (invalid id or built without ONNX Runtime);
     // the relevant error was already logged, so skip init.
@@ -465,6 +487,35 @@ void RobotDriver::robotStateCallback(
   last_robot_state_msg_ = *msg;
 }
 
+void RobotDriver::simGrfsCallback(
+    const quad_msgs::msg::GRFArray::SharedPtr msg) {
+  // Sim-only path — the hardware pipeline pulls a real FootContact through
+  // hardware_interface_->getFootContact(). Guard against ever being invoked
+  // on a physical robot (would silently overwrite the real reading).
+  if (is_hardware_) return;
+
+  const size_t n = std::min<size_t>(msg->vectors.size(), 4);
+  last_foot_contact_msg_.header = msg->header;
+  last_foot_contact_msg_.contact_states.assign(4, false);
+  last_foot_contact_msg_.foot_force_raw.assign(4, 0);
+  // Training uses force norm > 5 N. The publisher's contact_states only
+  // indicate a collision pair, which is not the same force threshold.
+  for (size_t i = 0; i < n; ++i) {
+    const auto& v = msg->vectors[i];
+    const double fnorm = std::sqrt(v.x * v.x + v.y * v.y + v.z * v.z);
+    last_foot_contact_msg_.contact_states[i] =
+        fnorm > 5.0;
+    last_foot_contact_msg_.foot_force_raw[i] =
+        static_cast<int16_t>(std::min(fnorm, 32767.0));
+  }
+#ifdef HAS_ONNXRUNTIME
+  if (auto up =
+          std::dynamic_pointer_cast<UnderbrushPolicy>(leg_controller_)) {
+    up->updateFootContactMsg(last_foot_contact_msg_);
+  }
+#endif
+}
+
 void RobotDriver::bodyForceEstimateCallback(
     const quad_msgs::msg::BodyForceEstimate::SharedPtr msg) {
   if (controller_id_ == "underbrush") {
@@ -585,7 +636,8 @@ bool RobotDriver::updateState() {
     // The learned policy only needs orientation, angular velocity, joint
     // positions/velocities, and (for underbrush) joint effort — all available
     // from onboard sensors. Foot contact is plumbed separately above.
-    if (controller_id_ == "learned" || controller_id_ == "underbrush_learned") {
+    if (controller_id_ == "learned" || controller_id_ == "underbrush_learned" || controller_id_ == "underbrush_v90" ||
+       controller_id_ == "underbrush_v92") {
       rclcpp::Time state_timestamp = node_->now();
 
       // Joint state from encoders (position, velocity, and effort/torque)
@@ -704,6 +756,20 @@ bool RobotDriver::updateState() {
       return false;
     }
   } else {
+    if (sim_applied_torque_sub_) {
+      const auto& torque = sim_applied_torque_msg_;
+      const double age = node_->now().seconds() -
+          rclcpp::Time(torque.header.stamp).seconds();
+      if (torque.effort.size() != 12 || torque.name != last_robot_state_msg_.joints.name ||
+          age < -0.01 || age > 0.05) {
+        RCLCPP_WARN_THROTTLE(node_->get_logger(), *node_->get_clock(), 2000,
+                            "Waiting for fresh simulator applied_joint_torques with matching joint names");
+        return false;
+      }
+      // Preserve estimator telemetry; only the controller's state copy uses
+      // the applied motor command, matching Isaac's applied_torque feature.
+      last_robot_state_msg_.joints.effort = torque.effort;
+    }
     // State information coming through sim subscribers, not hardware interface.
     // Optionally run EKF in parallel for testing (does not affect control).
     if (debug_estimator_ && state_estimator_ != nullptr &&

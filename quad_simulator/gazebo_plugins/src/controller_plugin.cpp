@@ -1,4 +1,5 @@
 #include "gazebo_plugins/controller_plugin.hpp"
+#include "gazebo_plugins/go2hv_effort.hpp"
 
 #include <angles/angles.h>
 
@@ -169,6 +170,8 @@ controller_interface::CallbackReturn QuadController::on_init() {
   leg_map_[11] = std::make_pair(3, 0);  // abd3
 
   node_ = get_node();
+  node_->declare_parameter<bool>("publish_applied_torque", false);
+  node_->declare_parameter<bool>("use_isaac_go2hv_actuator", false);
   node_->declare_parameter<std::vector<std::string>>(
       "joints", std::vector<std::string>{});
   for (int leg_idx = 0; leg_idx < 4; ++leg_idx) {
@@ -249,6 +252,22 @@ controller_interface::CallbackReturn QuadController::on_configure(
     joint_urdfs_.push_back(joint_urdf);
   }
 
+  node_->get_parameter("publish_applied_torque", publish_applied_torque_);
+  node_->get_parameter("use_isaac_go2hv_actuator", use_isaac_go2hv_actuator_);
+  RCLCPP_INFO(node_->get_logger(), "Isaac Go2HV actuator: %s",
+              use_isaac_go2hv_actuator_ ? "enabled (raw target PD, torque-speed envelope)" : "disabled");
+  if (publish_applied_torque_) {
+    applied_torque_pub_ = node_->create_publisher<sensor_msgs::msg::JointState>(
+        "state/applied_joint_torques", rclcpp::QoS(10));
+    applied_torque_msg_.name.resize(12);
+    applied_torque_msg_.effort.assign(12, 0.0);
+    for (unsigned int i = 0; i < n_joints_; ++i) {
+      const auto ind = leg_map_[i];
+      applied_torque_msg_.name[3 * ind.first + ind.second] = joint_names_[i];
+    }
+    RCLCPP_INFO(node_->get_logger(), "Publishing simulator actuator torque for policy observations; existing actuator calculation unchanged");
+  }
+
   int num_legs = 4;
   commands_buffer_.writeFromNonRT(BufferType(num_legs));
 
@@ -325,10 +344,17 @@ controller_interface::return_type QuadController::update(
         double torque = hold_kp * (target - pos) + hold_kd * (0.0 - vel);
         double torque_lim = torque_lims_[ind.second];
         torque = std::min(std::max(torque, -torque_lim), torque_lim);
+        if (publish_applied_torque_) {
+          applied_torque_msg_.effort[3 * ind.first + ind.second] = torque;
+        }
         if (!joint_cmd_handles_[i].set_value(torque)) {
           RCLCPP_WARN(node_->get_logger(),
                       "Failed to set Torque Command for Joint");
         }
+      }
+      if (publish_applied_torque_) {
+        applied_torque_msg_.header.stamp = time;
+        applied_torque_pub_->publish(applied_torque_msg_);
       }
       return controller_interface::return_type::OK;
     }
@@ -350,7 +376,7 @@ controller_interface::return_type QuadController::update(
 
     // Compute position error
     double command_position = motor_command.pos_setpoint;
-    enforceJointLimits(command_position, i);
+    if (!use_isaac_go2hv_actuator_) enforceJointLimits(command_position, i);
     // double current_position = joints_.at(i).getPosition();
     // double current_position = joint_pos_handles_[i].get_value(); // get_value
     // deprecated in next ros release
@@ -363,9 +389,15 @@ controller_interface::return_type QuadController::update(
     }
     double kp = motor_command.kp;
     double pos_error;
+    if (use_isaac_go2hv_actuator_) {
+      // Isaac computes PD from the raw target; physical joint stops remain
+      // enforced by the simulator, independently of the actuator target.
+      pos_error = command_position - current_position;
+    } else {
     angles::shortest_angular_distance_with_large_limits(
         current_position, command_position, joint_urdfs_[i]->limits->lower,
         joint_urdfs_[i]->limits->upper, pos_error);
+    }
 
     // Compute velocity error
     // double current_vel = joints_.at(i).getVelocity();
@@ -396,6 +428,13 @@ controller_interface::return_type QuadController::update(
             ? std::min(std::max(torque_command, motor_model_lb), motor_model_ub)
             : torque_command;
 
+    if (use_isaac_go2hv_actuator_) {
+      torque_command = clipGo2HVEffort(torque_feedback + torque_ff, current_vel);
+    }
+
+    if (publish_applied_torque_) {
+      applied_torque_msg_.effort[3 * ind.first + ind.second] = torque_command;
+    }
     // Update joint torque
     // joints_.at(i).setCommand(torque_command);
     bool success = joint_cmd_handles_[i].set_value(torque_command);
@@ -403,6 +442,10 @@ controller_interface::return_type QuadController::update(
       RCLCPP_WARN(node_->get_logger(),
                   "Failed to set Torque Command for Joint");
     }
+  }
+  if (publish_applied_torque_) {
+    applied_torque_msg_.header.stamp = time;
+    applied_torque_pub_->publish(applied_torque_msg_);
   }
   return controller_interface::return_type::OK;
 }

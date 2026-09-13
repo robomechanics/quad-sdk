@@ -4,6 +4,7 @@ from launch.substitutions import LaunchConfiguration, PathJoinSubstitution, Comm
 from launch_ros.actions import Node
 from launch_ros.substitutions import FindPackageShare
 import json
+import os
 import xacro
 
 
@@ -34,7 +35,19 @@ def spawn_obstacle(name: str, init_pose: str, sdf, context):
     )
 
 def parse_obstacles(context):
-    compliant_cord_sdf = PathJoinSubstitution([FindPackageShare('underbrush_description'), 'models', 'underbrush_description', 'compliant_cord_ros2.sdf.xacro'])
+    # Select cord model via env var UNDERBRUSH_CORD_MODEL:
+    #   'ros2' (default) — original thin whip cord (radius 5mm, mass 10g, damping 0.005)
+    #   'isaac_matched'  — Isaac-vine-matched cord (radius 20mm, mass 60g,
+    #                       damping 4.0, spring 25) so the v81 policy sees
+    #                       contact patterns it was actually trained on.
+    _cord_variant = os.environ.get('UNDERBRUSH_CORD_MODEL', 'ros2')
+    _cord_file = 'compliant_cord_isaac_matched.sdf.xacro' if _cord_variant == 'isaac_matched' else 'compliant_cord_ros2.sdf.xacro'
+    print(f"[spawn_obstacles] cord variant: {_cord_variant} ({_cord_file})")
+    compliant_cord_sdf = PathJoinSubstitution([FindPackageShare('underbrush_description'), 'models', 'underbrush_description', _cord_file])
+    # underbrush2 scenario pins the Isaac-matched cord regardless of env var
+    # so a scenario:=underbrush2 launch is always the in-distribution vine
+    # geometry for the v81 policy (radius 20mm, mass 60g, spring 25, damping 4).
+    compliant_cord_isaac_sdf = PathJoinSubstitution([FindPackageShare('underbrush_description'), 'models', 'underbrush_description', 'compliant_cord_isaac_matched.sdf.xacro'])
     compliant_beam_sdf = PathJoinSubstitution([FindPackageShare('underbrush_description'), 'models', 'underbrush_description','compliant_beam_horizontal.sdf.xacro'])
     box = PathJoinSubstitution([FindPackageShare('objects_description'), 'models', 'box','sdf', 'box.sdf'])
 
@@ -42,16 +55,50 @@ def parse_obstacles(context):
     obstacles_config_raw = LaunchConfiguration('obstacles').perform(context)
 
     nodes = []
-    
+
     # Add Scenario Configurations to Launch Order
     if scenario_config == 'underbrush':
-        print("Handling Underbrush Scenario")
+        print("Handling Underbrush Scenario (z-heights TEMPORARILY clamped to Isaac range [0.10, 0.18] for in-distribution v81 eval)")
+        # TEMPORARY clamp — orig z values: 0.20, 0.12, 0.20, 0.15
+        # Two of four were at 0.20 (above Isaac's height_range max of 0.18),
+        # putting the v81 policy out of distribution. Lowered to 0.18 to
+        # bring the interaction plane into Isaac training. Restore originals
+        # if you want the pre-v81 obstacle layout back.
         nodes.extend([
-            spawn_obstacle('underbrush',  "-x 0.60 -y -0.50 -z 0.20", compliant_cord_sdf, context),
+            spawn_obstacle('underbrush',  "-x 0.60 -y -0.50 -z 0.18", compliant_cord_sdf, context),  # was 0.20
             spawn_obstacle('underbrush1', "-x 1.03 -y -0.50 -z 0.12", compliant_cord_sdf, context),
-            spawn_obstacle('underbrush2', "-x 1.03 -y -0.50 -z 0.20", compliant_cord_sdf, context),
+            spawn_obstacle('underbrush2', "-x 1.03 -y -0.50 -z 0.18", compliant_cord_sdf, context),  # was 0.20
             spawn_obstacle('underbrush3', "-x 1.36 -y -0.50 -z 0.15", compliant_cord_sdf, context),
         ])
+    elif scenario_config == 'underbrush2':
+        # Same spawn positions/orientations as the 'underbrush' scenario, but
+        # each cord is the Isaac-vine-matched model (chunky 20mm radius, 60g
+        # links, stiff spring, 0.9m anchor-to-anchor length). Z-heights
+        # clamped to Isaac's height_range=(0.10, 0.18) — the original
+        # underbrush z=0.20 spawns were ABOVE Isaac's max training height and
+        # would put the v81 policy out of distribution. Use this scenario to
+        # check whether the v81 transfer failure is purely a vine-parameter
+        # mismatch.
+        print("Handling Underbrush2 Scenario (Isaac-matched cords, z clamped to [0.10, 0.18])")
+        nodes.extend([
+            spawn_obstacle('underbrush',  "-x 0.60 -y -0.50 -z 0.18", compliant_cord_isaac_sdf, context),
+            spawn_obstacle('underbrush1', "-x 1.03 -y -0.50 -z 0.12", compliant_cord_isaac_sdf, context),
+            spawn_obstacle('underbrush2', "-x 1.03 -y -0.50 -z 0.18", compliant_cord_isaac_sdf, context),
+            spawn_obstacle('underbrush3', "-x 1.36 -y -0.50 -z 0.15", compliant_cord_isaac_sdf, context),
+        ])
+    elif scenario_config == 'underbrush3':
+        vine_v90 = PathJoinSubstitution([FindPackageShare('underbrush_description'),
+            'models', 'underbrush_description', 'vine_v90_single.sdf.xacro'])
+        print("Underbrush3: four v90 comparison vines; approximate spherical joints")
+        # This model is centered laterally, unlike the original cord model.
+        # Retain its y=0 placement while using the established four x/z pairs.
+        nodes.extend([
+            spawn_obstacle('underbrush3_vine_0', "-x 0.60 -y 0.0 -z 0.18", vine_v90, context),
+            spawn_obstacle('underbrush3_vine_1', "-x 1.03 -y 0.0 -z 0.12", vine_v90, context),
+            spawn_obstacle('underbrush3_vine_2', "-x 1.03 -y 0.0 -z 0.18", vine_v90, context),
+            spawn_obstacle('underbrush3_vine_3', "-x 1.36 -y 0.0 -z 0.15", vine_v90, context),
+        ])
+
     # Add Custom Scenario Configurations Here
 
     # Add Obstacle Configurations to Launch Order

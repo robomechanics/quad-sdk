@@ -7,6 +7,7 @@
         ground_truth: state/ground_truth
         estimate: state/estimate
         trajectory: state/trajectory
+        grfs: state/grfs
       local_plan: local_plan
       heartbeat:
         remote: heartbeat/remote

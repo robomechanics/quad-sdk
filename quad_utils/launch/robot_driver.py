@@ -52,8 +52,9 @@ def generate_launch_description():
     mocap = DeclareLaunchArgument('mocap', default_value='true')
     logging = DeclareLaunchArgument('logging', default_value='false')
     controller = DeclareLaunchArgument('controller', default_value='inverse_dynamics')
-    model_path = DeclareLaunchArgument('model_path', default_value='./policies/models/***')
-    provider = DeclareLaunchArgument('provider', default_value = "tensorrt")
+    model_path = DeclareLaunchArgument('model_path', default_value='',
+        description='Optional ONNX path; empty uses robot_driver.yaml')
+    provider = DeclareLaunchArgument('provider', default_value = "cpu")
     estimator = DeclareLaunchArgument('estimator', default_value="comp_filter")
     debug_estimator = DeclareLaunchArgument('debug_estimator', default_value="none",
                                             description='Parallel ride-along estimator (publishes to topics.state.estimate for comparison). Set to "none" to disable.')
@@ -87,7 +88,8 @@ def generate_launch_description():
             remappings=[('joint_states', 'state/joints')]
         )
 
-    def _make_robot_driver_node():
+    def _make_robot_driver_node(context):
+        policy_path = LaunchConfiguration('model_path').perform(context)
         return Node(
             package='robot_driver',
             executable='robot_driver_node',
@@ -105,7 +107,7 @@ def generate_launch_description():
                     'robot_type': LaunchConfiguration('robot_type'),
                     'estimator_id': LaunchConfiguration('estimator'),
                     'debug_estimator_id': LaunchConfiguration('debug_estimator'),
-                    'model_path': LaunchConfiguration('model_path'),
+                    **({'robot_driver.model_path': policy_path} if policy_path else {}),
                     'provider': LaunchConfiguration('provider'),
                     'robot_description': ParameterValue(
                         LaunchConfiguration('robot_description'),
@@ -122,7 +124,7 @@ def generate_launch_description():
     hardware_group = GroupAction([
         PushRosNamespace(LaunchConfiguration('namespace')),
         _make_rsp_node(),
-        _make_robot_driver_node(),
+        OpaqueFunction(function=lambda context: [_make_robot_driver_node(context)]),
     ], condition=IfCondition(LaunchConfiguration('is_hardware')))
 
     # Sim mode: robot_bringup.py is included from quad_gazebo.py inside a
@@ -131,7 +133,7 @@ def generate_launch_description():
     # NOT push it again. robot_state_publisher is owned by robot_bringup
     # in this path.
     sim_group = GroupAction([
-        _make_robot_driver_node(),
+        OpaqueFunction(function=lambda context: [_make_robot_driver_node(context)]),
     ], condition=UnlessCondition(LaunchConfiguration('is_hardware')))
 
     return LaunchDescription([

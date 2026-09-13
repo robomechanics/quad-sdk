@@ -123,6 +123,8 @@ def launch_robot_group(context, *args, **kwargs):
                     'robot_type': TextSubstitution(text=robot_type),
                     'namespace': TextSubstitution(text=robot_ns),
                     'controller': TextSubstitution(text=controller),
+                    'model_path': TextSubstitution(text=config.get(
+                        'model_path', LaunchConfiguration('model_path').perform(context))),
                     'init_pose' : TextSubstitution(text=init_pose),
                     'world': LaunchConfiguration('world'),
                     'use_sim_time': LaunchConfiguration('use_sim_time')
@@ -169,6 +171,9 @@ def launch_plot_juggler(context, *args, **kwargs):
 
 def generate_launch_description():
     declared_args = [
+        DeclareLaunchArgument('model_path',
+            default_value='/home/rml/ros2_ws/src/quad-sdk/robot_driver/include/robot_driver/models/go2/v90_model_42900.onnx',
+            description='ONNX checkpoint; may also be overridden per robot in robot_configs'),
         DeclareLaunchArgument('world', default_value='flat.sdf', description='SDF world file name to load into simulation'),
         DeclareLaunchArgument('gui', default_value='true', description='Whether to launch the Gazebo GUI. Defaults on for the single-robot case where the GUI is useful for debugging; the multi-robot launch (quad_multi.py) defaults it off.'),
         DeclareLaunchArgument('paused', default_value='false', description='Whether to start the simulation in a paused state'),
@@ -179,10 +184,10 @@ def generate_launch_description():
         DeclareLaunchArgument('rviz', default_value='true', description='Launch RViz'),
         DeclareLaunchArgument('use_sim_time', default_value='true', description='Whether to use Computer Clock or Sim Clock'),
         DeclareLaunchArgument(
-            'robot_configs', default_value=('[{"name": "robot_1", "type": "go2", "controller": "underbrush", "init_pose": "-x 0.0 -y 0.0 -z 3.0"}]'),
+            'robot_configs', default_value=('[{"name": "robot_1", "type": "go2", "controller": "underbrush_v90", "init_pose": "-x 0.0 -y 0.0 -z 3.0"}]'),
             description='A JSON List of robot configurations: MUST specify name, type, controller, and spawn pose. init_pose accepts -x/-y/-z and optionally -R/-P/-Y for orientation.'
         ),
-        DeclareLaunchArgument('scenario', default_value="underbrush", description='Custom Obstacle Scenario to Spawn e.g. Underbrush, Procedural Underbrush)'),
+        DeclareLaunchArgument('scenario', default_value="underbrush3", description='Custom Obstacle Scenario to Spawn e.g. Underbrush, Procedural Underbrush)'),
         DeclareLaunchArgument('obstacles', default_value='[]',
             description= 'A JSON List of obstacles to spawn (e.g {"name": "box", "init_pose" : "-x 3.0 -y 0.0 -z 2"})')
     ]

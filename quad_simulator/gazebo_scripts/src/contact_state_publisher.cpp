@@ -1,4 +1,5 @@
 #include "gazebo_scripts/contact_state_publisher.hpp"
+#include "gazebo_scripts/net_foot_force.hpp"
 
 ContactStatePublisher::ContactStatePublisher(rclcpp::Node::SharedPtr node)
     : node_(node),
@@ -49,6 +50,11 @@ ContactStatePublisher::ContactStatePublisher(rclcpp::Node::SharedPtr node)
 
   // Setup pubs
   grf_pub_ = node_->create_publisher<quad_msgs::msg::GRFArray>(grf_topic, 10);
+  net_foot_force_pub_ = node_->create_publisher<quad_msgs::msg::GRFArray>("state/foot_net_forces", 10);
+  net_foot_force_msg_.vectors.resize(num_feet_);
+  net_foot_force_msg_.points.resize(num_feet_);
+  net_foot_force_msg_.contact_states.resize(num_feet_);
+
 
   // Init messgaes
   grf_array_msg_.vectors.resize(num_feet_);
@@ -65,6 +71,13 @@ void ContactStatePublisher::onContactToe(
   std::string terrain_name =
       "flat::body::collision";  // Change this to be the world name
   const std::string& toe_string = toe_collision_names_[toe_idx];
+  const auto net = gazebo_scripts::netFootForce(*msg, toe_string);
+  auto& net_vector = net_foot_force_msg_.vectors[toe_idx];
+  net_vector.x = net[0]; net_vector.y = net[1]; net_vector.z = net[2];
+  net_foot_force_msg_.contact_states[toe_idx] =
+      std::sqrt(net[0]*net[0] + net[1]*net[1] + net[2]*net[2]) > 5.0;
+  last_net_force_time_[toe_idx] = node_->get_clock()->now().seconds();
+
 
   // Toe Transform Names
   std::string ns = node_->get_namespace();
@@ -194,6 +207,8 @@ void ContactStatePublisher::resetMessage(int toe_idx) {
 void ContactStatePublisher::publishContactState() {
   grf_array_msg_.header.stamp = node_->get_clock()->now();
   grf_pub_->publish(grf_array_msg_);
+  net_foot_force_msg_.header = grf_array_msg_.header;
+  net_foot_force_pub_->publish(net_foot_force_msg_);
 }
 
 void ContactStatePublisher::spin() {
@@ -205,6 +220,11 @@ void ContactStatePublisher::spin() {
 
     double sim_time_now = node_->get_clock()->now().seconds();
     for (int i = 0; i < 4; ++i) {
+      if (sim_time_now - last_net_force_time_[i] > timeout_threshold_ ||
+          sim_time_now < last_net_force_time_[i]) {
+        net_foot_force_msg_.vectors[i] = geometry_msgs::msg::Vector3();
+        net_foot_force_msg_.contact_states[i] = false;
+      }
       if (checkMessageTiming(sim_time_now, i)) {
         // Leg Contact Has Ended
         resetMessage(i);

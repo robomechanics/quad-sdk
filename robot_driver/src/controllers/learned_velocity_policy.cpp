@@ -49,10 +49,18 @@ void LearnedVelocityPolicy::loadONNXModel() {
     so_.SetIntraOpNumThreads(1);
     so_.SetInterOpNumThreads(1);
 
-    // Enable CUDA execution provider for GPU inference.
-    OrtCUDAProviderOptions cuda_options{};
-    cuda_options.device_id = 0;
-    so_.AppendExecutionProvider_CUDA(cuda_options);
+    // This small recurrent policy runs on CPU without competing with training.
+    // CUDA is opt-in; selecting the provider must not be silently ignored.
+    std::string provider;
+    quad_utils::loadROSParamDefault(node_, "provider", provider, std::string("cpu"));
+    if (provider == "cuda") {
+      OrtCUDAProviderOptions cuda_options{};
+      cuda_options.device_id = 0;
+      so_.AppendExecutionProvider_CUDA(cuda_options);
+    } else if (provider != "cpu") {
+      throw std::runtime_error("Unsupported ONNX provider: " + provider);
+    }
+    RCLCPP_INFO(node_->get_logger(), "ONNX execution provider: %s", provider.c_str());
 
     if (!std::filesystem::exists(model_path_)) {
       RCLCPP_ERROR(node_->get_logger(), "ONNX file not found: %s",
