@@ -1,0 +1,130 @@
+<?xml version="1.0"?>
+<!-- V90 comparison fixture, universal-joint variant. Same six 0.18 m / 0.1 kg links, same +/-35 deg bend limits,
+     same prismatic end slider and VineAxialSpring plugin as vine_v90_single.sdf.xacro. Each spherical joint is
+     approximated by ONE universal joint (two bend axes, no twist) instead of three co-located revolutes, which
+     removes the 13 near-massless carrier links that destabilise ODE's constraint solver under robot contact. -->
+<sdf xmlns:xacro="http://www.ros.org/wiki/xacro" version="1.9">
+  <model name="vine_v90">
+    <xacro:arg name="model_name" default="underbrush3_vine" />
+    <xacro:property name="seg_len" value="0.18" />
+    <xacro:property name="y0" value="-0.565" />
+    <xacro:property name="bend_lim" value="0.6108652381980153" />
+
+    <xacro:macro name="segment" params="i parent">
+      <link name="link_${i}">
+        <pose>0 ${y0 + seg_len * i} 0 0 0 0</pose>
+        <inertial>
+          <pose>0 ${seg_len/2} 0 0 0 0</pose>
+          <mass>0.1</mass>
+          <inertia>
+            <ixx>0.0002736</ixx>
+            <iyy>7.2e-06</iyy>
+            <izz>0.0002736</izz>
+            <ixy>0</ixy>
+            <ixz>0</ixz>
+            <iyz>0</iyz>
+          </inertia>
+        </inertial>
+        <collision name="collision">
+          <pose>0 ${seg_len/2} 0 -1.5707963267948966 0 0</pose>
+          <geometry>
+            <cylinder>
+              <radius>0.012</radius>
+              <length>${seg_len}</length>
+            </cylinder>
+          </geometry>
+        </collision>
+        <visual name="visual">
+          <pose>0 ${seg_len/2} 0 -1.5707963267948966 0 0</pose>
+          <geometry>
+            <cylinder>
+              <radius>0.012</radius>
+              <length>${seg_len}</length>
+            </cylinder>
+          </geometry>
+          <material>
+            <diffuse>0.1 0.4 0.08 1</diffuse>
+          </material>
+        </visual>
+      </link>
+      <joint name="bend_joint_${i}" type="universal">
+        <parent>${parent}</parent>
+        <child>link_${i}</child>
+        <pose>0 0 0 0 0 0</pose>
+        <axis>
+          <xyz>1 0 0</xyz>
+          <dynamics>
+            <damping>0</damping>
+            <spring_stiffness>0</spring_stiffness>
+          </dynamics>
+          <limit>
+            <lower>-${bend_lim}</lower>
+            <upper>${bend_lim}</upper>
+          </limit>
+        </axis>
+        <axis2>
+          <xyz>0 0 1</xyz>
+          <dynamics>
+            <damping>0</damping>
+            <spring_stiffness>0</spring_stiffness>
+          </dynamics>
+          <limit>
+            <lower>-${bend_lim}</lower>
+            <upper>${bend_lim}</upper>
+          </limit>
+        </axis2>
+      </joint>
+    </xacro:macro>
+
+    <xacro:segment i="0" parent="world" />
+    <xacro:segment i="1" parent="link_0" />
+    <xacro:segment i="2" parent="link_1" />
+    <xacro:segment i="3" parent="link_2" />
+    <xacro:segment i="4" parent="link_3" />
+    <xacro:segment i="5" parent="link_4" />
+
+    <link name="right_slider">
+      <pose>0 ${y0 + seg_len * 5} 0 0 0 0</pose>
+      <inertial>
+        <pose>0 0 0 0 0 0</pose>
+        <mass>0.0001</mass>
+        <inertia>
+          <ixx>1e-07</ixx>
+          <iyy>1e-07</iyy>
+          <izz>1e-07</izz>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyz>0</iyz>
+        </inertia>
+      </inertial>
+    </link>
+    <joint name="axial_spring" type="prismatic">
+      <parent>world</parent>
+      <child>right_slider</child>
+      <pose>0 ${seg_len} 0 0 0 0</pose>
+      <axis>
+        <xyz>0 1 0</xyz>
+        <dynamics>
+          <damping>0</damping>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+        <limit>
+          <lower>-0.1</lower>
+          <upper>0.2</upper>
+        </limit>
+      </axis>
+    </joint>
+    <plugin filename="libgz-sim-detachable-joint-system.so" name="gz::sim::systems::DetachableJoint">
+      <parent_link>link_5</parent_link>
+      <child_model>$(arg model_name)</child_model>
+      <child_link>right_slider</child_link>
+    </plugin>
+    <plugin filename="libvine_axial_spring.so" name="underbrush::VineAxialSpring">
+      <joint_name>axial_spring</joint_name>
+      <stiffness>50</stiffness>
+      <damping>10</damping>
+      <target>0.05</target>
+      <max_force>40</max_force>
+    </plugin>
+  </model>
+</sdf>

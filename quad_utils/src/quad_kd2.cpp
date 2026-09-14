@@ -5,10 +5,17 @@
 #include <pinocchio/algorithm/jacobian.hpp>
 #include <pinocchio/algorithm/kinematics.hpp>
 #include <pinocchio/algorithm/rnea.hpp>
+#include <pinocchio/parsers/urdf.hpp>
+// pinocchio 4.x ships umbrella headers (math.hpp / multibody.hpp); pinocchio
+// 3.x (ROS Jazzy apt package, 3.9.0) only has the per-component headers.
+#if __has_include(<pinocchio/multibody.hpp>)
 #include <pinocchio/math.hpp>
 #include <pinocchio/multibody.hpp>
-#include <pinocchio/multibody/joint.hpp>
-#include <pinocchio/parsers/urdf.hpp>
+#else
+#include <pinocchio/multibody/data.hpp>
+#include <pinocchio/multibody/model.hpp>
+#include <pinocchio/spatial/se3.hpp>
+#endif
 
 #include "quad_utils/ros_utils.hpp"
 

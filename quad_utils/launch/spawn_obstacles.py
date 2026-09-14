@@ -87,9 +87,15 @@ def parse_obstacles(context):
             spawn_obstacle('underbrush3', "-x 1.36 -y -0.50 -z 0.15", compliant_cord_isaac_sdf, context),
         ])
     elif scenario_config == 'underbrush3':
+        # Universal-joint variant (one 2-axis joint per segment, no carrier links).
+        # vine_v90_single.sdf.xacro (3 co-located revolutes + 13 near-massless
+        # carriers) blows up ODE on robot contact; set UNDERBRUSH_VINE_MODEL=single
+        # to spawn it anyway for comparison.
+        _vine_file = ('vine_v90_single.sdf.xacro' if os.environ.get('UNDERBRUSH_VINE_MODEL') == 'single'
+                      else 'vine_v90_universal.sdf.xacro')
         vine_v90 = PathJoinSubstitution([FindPackageShare('underbrush_description'),
-            'models', 'underbrush_description', 'vine_v90_single.sdf.xacro'])
-        print("Underbrush3: four v90 comparison vines; approximate spherical joints")
+            'models', 'underbrush_description', _vine_file])
+        print(f"Underbrush3: four v90 comparison vines ({_vine_file})")
         # This model is centered laterally, unlike the original cord model.
         # Retain its y=0 placement while using the established four x/z pairs.
         nodes.extend([
