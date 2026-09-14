@@ -26,5 +26,9 @@ quad_logger/bags/
 quad_logger/bags/archive/
 *.mcap
 
+# quad_logger plot output
+quad_logger/logs/*
+!quad_logger/logs/.gitkeep
+
 # Policy checkpoints are large binaries; keep them out of the repo
 *.onnx
