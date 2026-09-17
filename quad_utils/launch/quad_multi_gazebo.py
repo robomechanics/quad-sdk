@@ -209,14 +209,14 @@ def generate_launch_description():
             # release drops the robot onto its already-sit-folded
             # legs rather than onto an unstable extended-leg stance.
             default_value=(
-                '[{"name": "robot_1", "type": "go2", "controller": "inverse_dynamics", "init_pose": "-x  8.00 -y  0.00 -z 3.0 -Y  3.14159"},'
-                ' {"name": "robot_2", "type": "go2", "controller": "inverse_dynamics", "init_pose": "-x  5.66 -y  5.66 -z 3.0 -Y -2.35619"},'
-                ' {"name": "robot_3", "type": "go2", "controller": "inverse_dynamics", "init_pose": "-x  0.00 -y  8.00 -z 3.0 -Y -1.57080"},'
-                ' {"name": "robot_4", "type": "go2", "controller": "inverse_dynamics", "init_pose": "-x -5.66 -y  5.66 -z 3.0 -Y -0.78540"},'
-                ' {"name": "robot_5", "type": "go2", "controller": "inverse_dynamics", "init_pose": "-x -8.00 -y  0.00 -z 3.0 -Y  0.00000"},'
-                ' {"name": "robot_6", "type": "go2", "controller": "inverse_dynamics", "init_pose": "-x -5.66 -y -5.66 -z 3.0 -Y  0.78540"},'
-                ' {"name": "robot_7", "type": "go2", "controller": "inverse_dynamics", "init_pose": "-x  0.00 -y -8.00 -z 3.0 -Y  1.57080"},'
-                ' {"name": "robot_8", "type": "go2", "controller": "inverse_dynamics", "init_pose": "-x  5.66 -y -5.66 -z 3.0 -Y  2.35619"}]'
+                '[{"name": "robot_1", "type": "go2", "controller": "underbrush_v90", "init_pose": "-x  8.00 -y  0.00 -z 3.0 -Y  3.14159"},'
+                ' {"name": "robot_2", "type": "go2", "controller": "underbrush_v90", "init_pose": "-x  5.66 -y  5.66 -z 3.0 -Y -2.35619"},'
+                ' {"name": "robot_3", "type": "go2", "controller": "underbrush_v90", "init_pose": "-x  0.00 -y  8.00 -z 3.0 -Y -1.57080"},'
+                ' {"name": "robot_4", "type": "go2", "controller": "underbrush_v90", "init_pose": "-x -5.66 -y  5.66 -z 3.0 -Y -0.78540"},'
+                ' {"name": "robot_5", "type": "go2", "controller": "underbrush_v90", "init_pose": "-x -8.00 -y  0.00 -z 3.0 -Y  0.00000"},'
+                ' {"name": "robot_6", "type": "go2", "controller": "underbrush_v90", "init_pose": "-x -5.66 -y -5.66 -z 3.0 -Y  0.78540"},'
+                ' {"name": "robot_7", "type": "go2", "controller": "underbrush_v90", "init_pose": "-x  0.00 -y -8.00 -z 3.0 -Y  1.57080"},'
+                ' {"name": "robot_8", "type": "go2", "controller": "underbrush_v90", "init_pose": "-x  5.66 -y -5.66 -z 3.0 -Y  2.35619"}]'
             ),
             description='A JSON List of robot configurations: MUST specify name, type, controller, and spawn pose. init_pose accepts -x/-y/-z and optionally -R/-P/-Y for orientation.'
         ),

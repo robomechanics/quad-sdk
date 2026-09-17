@@ -173,7 +173,7 @@ def generate_launch_description():
     declared_args = [
         DeclareLaunchArgument('model_path',
             default_value=PathJoinSubstitution([
-                FindPackageShare('robot_driver'), 'models', 'go2', 'v90_model_42900.onnx']),
+                FindPackageShare('robot_driver'), 'models', 'go2', 'v97_model_30500.onnx']),
             description='ONNX checkpoint; may also be overridden per robot in robot_configs'),
         DeclareLaunchArgument('world', default_value='flat.sdf', description='SDF world file name to load into simulation'),
         DeclareLaunchArgument('gui', default_value='true', description='Whether to launch the Gazebo GUI. Defaults on for the single-robot case where the GUI is useful for debugging; the multi-robot launch (quad_multi.py) defaults it off.'),

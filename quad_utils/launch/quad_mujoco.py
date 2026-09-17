@@ -392,7 +392,7 @@ def generate_launch_description():
         DeclareLaunchArgument('use_sim_time', default_value='true', description='Whether to use Computer Clock or Sim Clock'),
         DeclareLaunchArgument(
             'robot_configs',
-            default_value='[{"name": "robot_1", "type": "go2", "controller": "inverse_dynamics", "init_pose" : "-x 0.0 -y 0.0 -z 5"}]',
+            default_value='[{"name": "robot_1", "type": "go2", "controller": "underbrush_v90", "init_pose" : "-x 0.0 -y 0.0 -z 5"}]',
             description='A JSON List of robot configurations: MUST specify name, type, controller, and spawn pose'
         ),
         DeclareLaunchArgument('scenario', default_value="None", description='Custom Obstacle Scenario to Spawn e.g. Underbrush, Procedural Underbrush)'),
@@ -415,4 +415,4 @@ def generate_launch_description():
 
 
 # Example Usage, for Running Multiple Robots
-# ros2 launch quad_utils quad_mujoco.py robot_configs:='[{"name": "robot_1", "type": "spirit", "controller": "inverse_dynamics",  "init_pose": "-x 0.0 -y 0.0 -z 15"}, {"name": "robot_2", "type": "go2", "controller": "inverse_dynamics",  "init_pose": "-x 2.0 -y 0.0 -z 15"}]'
+# ros2 launch quad_utils quad_mujoco.py robot_configs:='[{"name": "robot_1", "type": "spirit", "controller": "inverse_dynamics",  "init_pose": "-x 0.0 -y 0.0 -z 15"}, {"name": "robot_2", "type": "go2", "controller": "underbrush_v90",  "init_pose": "-x 2.0 -y 0.0 -z 15"}]'

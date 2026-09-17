@@ -16,7 +16,7 @@ Typical launch order:
         bash <path>/run_isaac_bridge.sh --robot go2 --scene flat
     Terminal 2 -- bringup (terrain + rsp + driver)
         ros2 launch quad_utils quad_isaac_bringup.py \
-            namespace:=robot_1 robot_type:=go2 controller:=inverse_dynamics
+            namespace:=robot_1 robot_type:=go2 controller:=underbrush_v90
     Terminal 3 -- this launch (planning)
         ros2 launch quad_utils quad_isaac_planning.py \
             namespace:=robot_1 robot_type:=go2

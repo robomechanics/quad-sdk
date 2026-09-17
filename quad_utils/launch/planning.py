@@ -287,7 +287,7 @@ def generate_launch_description():
         DeclareLaunchArgument('reference', default_value='twist'),
         DeclareLaunchArgument('logging', default_value='true'),
         DeclareLaunchArgument('twist_input', default_value='none'),
-        DeclareLaunchArgument('controller_mode', default_value='mpc'),
+        DeclareLaunchArgument('controller_mode', default_value='underbrush_v90'),
         DeclareLaunchArgument('namespace', default_value='robot_1'),
         DeclareLaunchArgument('robot_type', default_value='spirit'),
         DeclareLaunchArgument('leaping', default_value='true'),

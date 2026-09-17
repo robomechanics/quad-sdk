@@ -94,11 +94,11 @@
       stand_kp: [60.0, 60.0, 60.0]
       stand_kd: [4.0, 4.0, 4.0]
       # Learned policies use stance gains for every joint throughout the gait.
-      stance_kp: [60.0, 60.0, 60.0] # underbrush MPC (09-08 crossing runs); v90 training used 25
-      stance_kd: [4.0, 4.0, 4.0] # v90 training used 0.5
+      stance_kp: [25.0, 25.0, 25.0] # underbrush MPC (09-08 crossing runs); v90 training used 25
+      stance_kd: [0.5, 0.5, 0.5] # v90 training used 0.5
       # Swing gains below are for controllers that switch gains by gait phase.
-      swing_kp: [30.0, 30.0, 30.0] # underbrush MPC (09-08 crossing runs)
-      swing_kd: [4.0, 4.0, 4.0] # sets kick hip torque = swing_kd * retract_vel; 09-07 kd 4 runs put foot furthest forward (09-08 used 2)
+      swing_kp: [25.0, 25.0, 25.0] # underbrush MPC (09-08 crossing runs)
+      swing_kd: [0.5, 0.5, 0.5]  # sets kick hip torque = swing_kd * retract_vel; 09-07 kd 4 runs put foot furthest forward (09-08 used 2)
       swing_kp_cart: [0.0, 0.0, 0.0] # N/m
       swing_kd_cart: [0.0, 0.0, 0.0] # N/m
       safety_kp: [0.0, 0.0, 0.0]

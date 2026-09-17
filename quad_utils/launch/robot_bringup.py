@@ -402,10 +402,10 @@ def generate_launch_description():
         DeclareLaunchArgument('world', default_value = 'flat.sdf', description = 'Loaded World SDF File'),
         DeclareLaunchArgument('robot_type', default_value = 'spirit', description='Robot type'),
         DeclareLaunchArgument('namespace', default_value = 'robot_1', description='Robot namespace'),
-        DeclareLaunchArgument('controller', default_value = 'inverse_kinematics', description='Controller type'),
+        DeclareLaunchArgument('controller', default_value = 'underbrush_v90', description='Controller type'),
         DeclareLaunchArgument('model_path',
             default_value=PathJoinSubstitution([
-                FindPackageShare('robot_driver'), 'models', 'go2', 'v90_model_42900.onnx']),
+                FindPackageShare('robot_driver'), 'models', 'go2', 'v97_model_30500.onnx']),
             description='ONNX checkpoint for learned controllers; pass an empty string to fall back to robot_driver.yaml'),
         DeclareLaunchArgument('estimator', default_value = 'comp_filter', description='State estimator type (comp_filter or ekf_filter)'),
         DeclareLaunchArgument('init_pose', default_value = '-x 2.0 -y 0.0 -z 15', description= "Initial Robot Position"),

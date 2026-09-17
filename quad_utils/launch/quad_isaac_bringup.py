@@ -19,7 +19,7 @@ Typical launch order:
         bash <path>/run_isaac_bridge.sh --robot go2 --terrain rough_25cm
     Terminal 2 -- this launch (bringup)
         ros2 launch quad_utils quad_isaac_bringup.py \
-            namespace:=robot_1 robot_type:=go2 controller:=inverse_dynamics \
+            namespace:=robot_1 robot_type:=go2 controller:=underbrush_v90 \
             terrain:=rough_25cm
     Terminal 3 -- planning (sibling launch)
         ros2 launch quad_utils quad_isaac_planning.py \
@@ -339,8 +339,8 @@ def generate_launch_description() -> LaunchDescription:
         DeclareLaunchArgument('namespace', default_value='robot_1'),
         DeclareLaunchArgument('robot_type', default_value='spirit'),
         DeclareLaunchArgument(
-            'controller', default_value='inverse_dynamics',
-            description='inverse_dynamics | underbrush | learned',
+            'controller', default_value='underbrush_v90',
+            description='underbrush_v90 | inverse_dynamics | underbrush | learned',
         ),
         DeclareLaunchArgument('use_sim_time', default_value='true'),
         DeclareLaunchArgument('robot_description', default_value=''),

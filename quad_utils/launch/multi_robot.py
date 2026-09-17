@@ -173,21 +173,21 @@ def generate_launch_description():
             # robot's near the origin. Twenty-eight pairwise OBB
             # conflicts to resolve.
             default_value=(
-                '[{"name": "robot_1", "type": "go2", "controller_mode": "inverse_dynamics",'
+                '[{"name": "robot_1", "type": "go2", "controller_mode": "underbrush_v90",'
                 ' "twist_input": "none", "goal_state": [-8.00,  0.00]},'
-                ' {"name": "robot_2", "type": "go2", "controller_mode": "inverse_dynamics",'
+                ' {"name": "robot_2", "type": "go2", "controller_mode": "underbrush_v90",'
                 ' "twist_input": "none", "goal_state": [-5.66, -5.66]},'
-                ' {"name": "robot_3", "type": "go2", "controller_mode": "inverse_dynamics",'
+                ' {"name": "robot_3", "type": "go2", "controller_mode": "underbrush_v90",'
                 ' "twist_input": "none", "goal_state": [ 0.00, -8.00]},'
-                ' {"name": "robot_4", "type": "go2", "controller_mode": "inverse_dynamics",'
+                ' {"name": "robot_4", "type": "go2", "controller_mode": "underbrush_v90",'
                 ' "twist_input": "none", "goal_state": [ 5.66, -5.66]},'
-                ' {"name": "robot_5", "type": "go2", "controller_mode": "inverse_dynamics",'
+                ' {"name": "robot_5", "type": "go2", "controller_mode": "underbrush_v90",'
                 ' "twist_input": "none", "goal_state": [ 8.00,  0.00]},'
-                ' {"name": "robot_6", "type": "go2", "controller_mode": "inverse_dynamics",'
+                ' {"name": "robot_6", "type": "go2", "controller_mode": "underbrush_v90",'
                 ' "twist_input": "none", "goal_state": [ 5.66,  5.66]},'
-                ' {"name": "robot_7", "type": "go2", "controller_mode": "inverse_dynamics",'
+                ' {"name": "robot_7", "type": "go2", "controller_mode": "underbrush_v90",'
                 ' "twist_input": "none", "goal_state": [ 0.00,  8.00]},'
-                ' {"name": "robot_8", "type": "go2", "controller_mode": "inverse_dynamics",'
+                ' {"name": "robot_8", "type": "go2", "controller_mode": "underbrush_v90",'
                 ' "twist_input": "none", "goal_state": [-5.66,  5.66]}]'
             ),
             description=(
