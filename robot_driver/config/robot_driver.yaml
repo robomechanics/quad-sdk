@@ -43,26 +43,27 @@
       thresh_out: 10.0  # innovation outlier rejection threshold
       foot_radius: 0.022 # toe radius
 
-      model_path: /home/rml2/ros2_ws/src/quad-sdk/robot_driver/include/robot_driver/models/go2/v90_model_42900.onnx # V90 GRU checkpoint 42900
+      model_path: /root/ros2_ws/src/quad-sdk/robot_driver/models/go2/v90_model_42900.onnx # V90 GRU checkpoint 42900; launch files override with the installed share copy
       policy_inference_rate: 50.0  # Hz, rate at which learned policy runs inference (PD tracking runs at update_rate)
       cmd_vel_filter_const: 0.10
       cmd_vel_scale: 1.0
 
     underbrush_swing:
-      retract_vel: 20.0 # rad/s retraction speed at proximal link (magnitude)
-      tau_push: 2.0 # N m forward torque at distal link
+      retract_vel: 18.0 # rad/s retraction speed at proximal link (magnitude)
+      tau_push: 12.0 # N m forward torque at distal link (09-08 runs used 8)
       # DIAGNOSTIC: force force_mode always active during swing so retract
       # direction can be visually inspected on empty ground. Restore normal
       # tuning (tau_contact_start=2, tau_contact_end=5) once retract
       # behavior is verified.
-      tau_contact_start: 2.0    # near-zero: any swing residual triggers
-      tau_contact_end: 5.0   # never met: force_mode holds through swing
-      min_switch: 0.1 # s minimum time between switching
-      t_down: 0.135 # s time before requiring leg extension
-      t_up: 0.04 # s time before allowing contact initiation detection
+      tau_contact_start: 2.5    # 09-08 0131-0159 stiffer bungees (K_O 35); worn bungees 3.5; K_O 21 runs used 3.0
+      tau_contact_end: 1.3   # 09-08 K_O 35 runs; K_O 21 runs used 1.1
+      min_switch: 0.07 # s minimum time between switching
+      t_down: 0.17 # s time before requiring leg extension
+      t_up: 0.1 # s time before allowing contact initiation detection
       # Sign of the hip retract direction. +1 for Spirit-convention URDFs
       # (hip axis -y), -1 for URDFs whose hip axis is +y (Go2). Applied
       # as: vel_setpoint = -retract_vel * hip_retract_sign.
       hip_retract_sign: -1.0  # Go2: hip axis is +y in the URDF, needs fli, might need to be flipped back on hardware
     ## Note these quantities are tuned for a gait period of 0.54
     
+

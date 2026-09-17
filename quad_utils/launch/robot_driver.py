@@ -51,9 +51,13 @@ def generate_launch_description():
     robot_type = DeclareLaunchArgument('robot_type', default_value='go2')
     mocap = DeclareLaunchArgument('mocap', default_value='true')
     logging = DeclareLaunchArgument('logging', default_value='false')
-    controller = DeclareLaunchArgument('controller', default_value='inverse_dynamics')
-    model_path = DeclareLaunchArgument('model_path', default_value='',
-        description='Optional ONNX path; empty uses robot_driver.yaml')
+    controller = DeclareLaunchArgument('controller', default_value='underbrush')
+    # V90 GRU checkpoint 42900, installed from robot_driver/models/go2/ into
+    # share/robot_driver/models/go2/ so the path resolves on any workspace.
+    model_path = DeclareLaunchArgument('model_path',
+        default_value=PathJoinSubstitution([
+            FindPackageShare('robot_driver'), 'models', 'go2', 'v90_model_42900.onnx']),
+        description='ONNX checkpoint for learned controllers; pass an empty string to fall back to robot_driver.yaml')
     provider = DeclareLaunchArgument('provider', default_value = "cpu")
     estimator = DeclareLaunchArgument('estimator', default_value="comp_filter")
     debug_estimator = DeclareLaunchArgument('debug_estimator', default_value="none",

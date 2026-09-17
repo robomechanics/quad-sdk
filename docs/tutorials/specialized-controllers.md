@@ -24,7 +24,7 @@ The runtime can execute neural-network policies trained in **IsaacLab** or **MuJ
 ### Switching to a learned controller
 
 1. In `quad_gazebo.py` and `quad_plan.py`, set `controller_mode` to `learned` in the robot config.
-2. Copy your `.onnx` weights into `robot_driver/include/robot_driver/models/`.
+2. Copy your `.onnx` weights into `robot_driver/models/<robot_type>/` (installed to `share/robot_driver/models/`).
 3. Update the model path in `robot_driver/config/robot_driver.yaml`.
 
 ### Run

@@ -1,7 +1,7 @@
 from launch import LaunchDescription
 from launch.actions import DeclareLaunchArgument, OpaqueFunction, IncludeLaunchDescription, ExecuteProcess, TimerAction, RegisterEventHandler
 from launch.actions import SetEnvironmentVariable, GroupAction, SetLaunchConfiguration
-from launch.substitutions import LaunchConfiguration, EnvironmentVariable
+from launch.substitutions import LaunchConfiguration, EnvironmentVariable, PathJoinSubstitution
 from launch_ros.actions import Node
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch_ros.parameter_descriptions import ParameterValue
@@ -403,7 +403,10 @@ def generate_launch_description():
         DeclareLaunchArgument('robot_type', default_value = 'spirit', description='Robot type'),
         DeclareLaunchArgument('namespace', default_value = 'robot_1', description='Robot namespace'),
         DeclareLaunchArgument('controller', default_value = 'inverse_kinematics', description='Controller type'),
-        DeclareLaunchArgument('model_path', default_value='', description='Optional ONNX checkpoint override'),
+        DeclareLaunchArgument('model_path',
+            default_value=PathJoinSubstitution([
+                FindPackageShare('robot_driver'), 'models', 'go2', 'v90_model_42900.onnx']),
+            description='ONNX checkpoint for learned controllers; pass an empty string to fall back to robot_driver.yaml'),
         DeclareLaunchArgument('estimator', default_value = 'comp_filter', description='State estimator type (comp_filter or ekf_filter)'),
         DeclareLaunchArgument('init_pose', default_value = '-x 2.0 -y 0.0 -z 15', description= "Initial Robot Position"),
         DeclareLaunchArgument('is_hardware', default_value = 'false', description="Simulation or Hardware"),

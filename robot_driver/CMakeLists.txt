@@ -161,6 +161,13 @@ install(
   DESTINATION include
 )
 
+# Policy checkpoints (*.onnx) live in robot_driver/models/ and are gitignored;
+# install them so launch files can resolve a machine-independent share path.
+install(
+  DIRECTORY models/
+  DESTINATION share/${PROJECT_NAME}/models
+)
+
 install(TARGETS
   robot_driver
   robot_driver_node
