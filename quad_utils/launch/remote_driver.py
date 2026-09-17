@@ -39,13 +39,13 @@ def launch_robot_mapping(context, *args, **kwargs):
             IncludeLaunchDescription(
                 PythonLaunchDescriptionSource(mapping_launch_path),
                 launch_arguments={
-                    # b_beam MESH (custom: 21cm-wide x 6ft 8in narrow section
+                    # b_beam MESH (custom: 15cm-wide x 6ft 8in narrow section
                     # centered y=0, 3ft pads either end) via
                     # mesh_to_grid_map_node, loaded from
                     # quad_sim_scripts/models/b_beam/meshes/b_beam.ply.
-                    # Widened 15cm -> 21cm on 2026-09-15 (restored the
-                    # committed HEAD mesh); 15cm mesh kept as
-                    # b_beam.ply.before_back21cm / b_beam.stl.before_back21cm.
+                    # Back to 15cm on 2026-09-15 after a brief switch to the
+                    # committed 21cm HEAD mesh; 21cm mesh is HEAD and is also
+                    # kept as b_beam.ply.before_21cm / b_beam.stl.before_21cm.
                     # filter10 still erodes one cell (1cm) per side, so the
                     # traversable corridor is ~2cm narrower than the mesh.
                     # See filter_chain.yaml.
