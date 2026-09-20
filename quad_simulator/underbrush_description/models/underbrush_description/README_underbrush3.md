@@ -27,9 +27,11 @@ This is a comparison fixture, not an exact PhysX reproduction or a calibrated
 outdoor vegetation model. Each spherical joint is represented by three
 co-located revolute axes: two bends limited separately to +/-35 degrees,
 and an unrestricted twist. Separate angular limits differ from a spherical
-cone, and local-axis damping differs at finite rotations. Extra carriers add
-0.0001 kg and 1e-7 kg m^2 each (13 carriers total). PhysX's 0.0005 joint
-armature is not reproduced. Contact/friction and constraint-solver behavior
+cone, and local-axis damping differs at finite rotations. The 12 intermediate hinge carriers each have mass 0.0001 kg and isotropic
+inertia 0.0005 kg m^2. The endpoint slider remains 0.0001 kg with inertia
+1e-7 kg m^2. The hinge inertia is numerical rotational regularization: it
+changes rotational dynamics and is not an exact implementation of PhysX joint
+armature or a calibrated vegetation property. Contact/friction and constraint-solver behavior
 remain engine dependent and have not been force-deflection calibrated.
 
 A runtime fixed detachable joint closes the endpoint constraint after the
@@ -50,3 +52,25 @@ vine spawner does not create that additional drive. See also NVIDIA
 https://docs.omniverse.nvidia.com/kit/docs/omni_physics/107.3/dev_guide/rigid_bodies_articulations/joints.html
 This identifies a configuration/implementation mismatch; it does not by
 itself demonstrate successful robot recovery after correction.
+
+## Contact-crash correction (2026-09-13)
+
+The original intermediate-link inertia of 1e-7 kg m^2 reproduced a DART
+BoxedLcpConstraintSolver `isSymmetric` assertion under a 10 kg falling-sphere
+contact test with the four-vine fixture. Unloaded simulation did not reveal
+the failure. Replacing the hinges with universal or ball joints alone also
+failed. Increasing only the endpoint-slider mass/inertia also failed.
+Intermediate-link inertia of 1e-5 passed the 10 kg case but failed at 20 kg;
+5e-4 is used for the contact-tested correction. Geometry, masses, angular
+limits, angular damping, axial spring and four-vine placement are unchanged.
+
+Reproducer worlds, variant logs, load-test scripts and pose checks are in
+`/home/rml/underbrush/outputs/vine_crash_audit/`. These are isolated contact
+tests, not a demonstration of robot recovery or proof against every possible
+constraint-solver failure.
+
+Validation of the corrected model: four load cases (1 kg, 10 kg offset,
+20 kg central, 10 kg front vine) each completed 30,000 steps at 1 ms with
+exit code 0. A separate 30,000-step pose-monitoring run received 12,000
+pose messages without nonfinite values. Expanded installed/source model
+links, joints and plugins match the tested model; `gz sdf -k` passes.

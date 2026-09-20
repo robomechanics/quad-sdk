@@ -110,6 +110,41 @@ The main control-loop node. Runs at `update_rate` Hz (default 500 Hz). Each iter
 * `robot_driver.model_path` (string) — absolute path to the ONNX policy file.
 * `robot_driver.policy_inference_rate` (double, default: `50.0`) — Hz.
 * `robot_driver.cmd_vel_filter_const`, `cmd_vel_scale` — applied to policy inputs.
+* `robot_driver.underbrush_actuation_mode` — `clipped_effort` in the supplied
+  YAML; `position_pd` restores the previous onboard-PD path. Applies only to
+  Go2/Go2-W Underbrush learned controllers. If omitted, code defaults to
+  `position_pd` for existing configurations.
+* `robot_driver.underbrush_effort_state_timeout` — hardware LowState receipt
+  timeout for clipped-effort mode, default `0.02` seconds, measured with a
+  monotonic clock rather than republished state timestamps.
+
+In `clipped_effort`, each motor update (at least 500 Hz) computes
+`kp*(q_target-q) + kd*(qd_target-qd) + torque_ff` from current feedback and the
+held actor target. Underbrush policy gains remain 25/0.5 in this host-side
+calculation. The result is capped by the Go2HV envelope: 20.2 Nm when torque
+and velocity have the same sign, 23.4 Nm otherwise; full torque below
+13.5 rad/s, linear reduction to zero at 30 rad/s. Configured
+`motor_limits.torque` also remain an upper bound.
+
+The transmitted motor command has `kp=kd=0` and `torque_ff=clipped effort`,
+so Unitree does not add a second PD term. Original position/velocity targets
+remain in the message for diagnosis. `pos_component`, `vel_component` and
+`fb_component` record the original host PD contributions; `effort` and
+`torque_ff` record the transmitted result. Actor observations, raw previous
+actions, recurrence and inference cadence are unchanged.
+
+Conversion runs only after a successful policy command in READY mode.
+Standing fallback (including stale velocity commands), sit/stand transitions
+and safety retain their existing onboard gains. Missing/stale hardware
+feedback or invalid effort calculations enter the existing safety mode
+(Go2 onboard damping, kp=0/kd=2), rebuilding all joint commands. A stopped
+host cannot execute this watchdog; firmware communication-loss behavior
+still matters. This source change does not activate a running controller.
+
+Use a controlled, supported hardware check before walking with host-side
+torque feedback: its transport delay differs from onboard PD, and the
+simulated envelope is not a calibration of the physical motors. Changing
+this mode does not change the training reward or the torque observation.
 
 **Mode gains** — `sit_kp/kd`, `stand_kp/kd`, `stance_kp/kd`, `swing_kp/kd`, `swing_kp_cart/kd_cart`, `safety_kp/kd` (all 3-vectors).
 

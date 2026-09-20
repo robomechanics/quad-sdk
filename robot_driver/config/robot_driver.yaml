@@ -45,6 +45,9 @@
 
       model_path: /root/ros2_ws/src/quad-sdk/robot_driver/models/go2/v97_model_30500.onnx # V97 checkpoint 30500; launch files override with the installed share copy
       policy_inference_rate: 50.0  # Hz, rate at which learned policy runs inference (PD tracking runs at update_rate)
+      # Underbrush Go2 controllers only. position_pd restores legacy onboard PD.
+      underbrush_actuation_mode: clipped_effort
+      underbrush_effort_state_timeout: 0.02  # s since last hardware LowState receipt
       cmd_vel_filter_const: 0.10
       cmd_vel_scale: 1.0
 

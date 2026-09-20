@@ -1,6 +1,9 @@
 <?xml version="1.0"?>
 <!-- V90 comparison fixture. Three co-located hinge axes approximate each spherical joint; independent bend limits are not an exact spherical cone. -->
 <sdf xmlns:xacro="http://www.ros.org/wiki/xacro" version="1.9">
+  <!-- Intermediate hinge links use 5e-4 kg m^2 rotational inertia.
+       The former 1e-7 value caused DART LCP symmetry assertions under contact.
+       This is numerical rotational regularization, not an exact PhysX armature. -->
   <model name="vine_v90">
     <xacro:arg name="model_name" default="underbrush3_vine" />
     <link name="bend_x_0">
@@ -9,9 +12,9 @@
         <pose>0 0 0 0 0 0</pose>
         <mass>0.0001</mass>
         <inertia>
-          <ixx>1e-07</ixx>
-          <iyy>1e-07</iyy>
-          <izz>1e-07</izz>
+          <ixx>0.0005</ixx>
+          <iyy>0.0005</iyy>
+          <izz>0.0005</izz>
           <ixy>0</ixy>
           <ixz>0</ixz>
           <iyz>0</iyz>
@@ -24,9 +27,9 @@
         <pose>0 0 0 0 0 0</pose>
         <mass>0.0001</mass>
         <inertia>
-          <ixx>1e-07</ixx>
-          <iyy>1e-07</iyy>
-          <izz>1e-07</izz>
+          <ixx>0.0005</ixx>
+          <iyy>0.0005</iyy>
+          <izz>0.0005</izz>
           <ixy>0</ixy>
           <ixz>0</ixz>
           <iyz>0</iyz>
@@ -123,9 +126,9 @@
         <pose>0 0 0 0 0 0</pose>
         <mass>0.0001</mass>
         <inertia>
-          <ixx>1e-07</ixx>
-          <iyy>1e-07</iyy>
-          <izz>1e-07</izz>
+          <ixx>0.0005</ixx>
+          <iyy>0.0005</iyy>
+          <izz>0.0005</izz>
           <ixy>0</ixy>
           <ixz>0</ixz>
           <iyz>0</iyz>
@@ -138,9 +141,9 @@
         <pose>0 0 0 0 0 0</pose>
         <mass>0.0001</mass>
         <inertia>
-          <ixx>1e-07</ixx>
-          <iyy>1e-07</iyy>
-          <izz>1e-07</izz>
+          <ixx>0.0005</ixx>
+          <iyy>0.0005</iyy>
+          <izz>0.0005</izz>
           <ixy>0</ixy>
           <ixz>0</ixz>
           <iyz>0</iyz>
@@ -237,9 +240,9 @@
         <pose>0 0 0 0 0 0</pose>
         <mass>0.0001</mass>
         <inertia>
-          <ixx>1e-07</ixx>
-          <iyy>1e-07</iyy>
-          <izz>1e-07</izz>
+          <ixx>0.0005</ixx>
+          <iyy>0.0005</iyy>
+          <izz>0.0005</izz>
           <ixy>0</ixy>
           <ixz>0</ixz>
           <iyz>0</iyz>
@@ -252,9 +255,9 @@
         <pose>0 0 0 0 0 0</pose>
         <mass>0.0001</mass>
         <inertia>
-          <ixx>1e-07</ixx>
-          <iyy>1e-07</iyy>
-          <izz>1e-07</izz>
+          <ixx>0.0005</ixx>
+          <iyy>0.0005</iyy>
+          <izz>0.0005</izz>
           <ixy>0</ixy>
           <ixz>0</ixz>
           <iyz>0</iyz>
@@ -351,9 +354,9 @@
         <pose>0 0 0 0 0 0</pose>
         <mass>0.0001</mass>
         <inertia>
-          <ixx>1e-07</ixx>
-          <iyy>1e-07</iyy>
-          <izz>1e-07</izz>
+          <ixx>0.0005</ixx>
+          <iyy>0.0005</iyy>
+          <izz>0.0005</izz>
           <ixy>0</ixy>
           <ixz>0</ixz>
           <iyz>0</iyz>
@@ -366,9 +369,9 @@
         <pose>0 0 0 0 0 0</pose>
         <mass>0.0001</mass>
         <inertia>
-          <ixx>1e-07</ixx>
-          <iyy>1e-07</iyy>
-          <izz>1e-07</izz>
+          <ixx>0.0005</ixx>
+          <iyy>0.0005</iyy>
+          <izz>0.0005</izz>
           <ixy>0</ixy>
           <ixz>0</ixz>
           <iyz>0</iyz>
@@ -465,9 +468,9 @@
         <pose>0 0 0 0 0 0</pose>
         <mass>0.0001</mass>
         <inertia>
-          <ixx>1e-07</ixx>
-          <iyy>1e-07</iyy>
-          <izz>1e-07</izz>
+          <ixx>0.0005</ixx>
+          <iyy>0.0005</iyy>
+          <izz>0.0005</izz>
           <ixy>0</ixy>
           <ixz>0</ixz>
           <iyz>0</iyz>
@@ -480,9 +483,9 @@
         <pose>0 0 0 0 0 0</pose>
         <mass>0.0001</mass>
         <inertia>
-          <ixx>1e-07</ixx>
-          <iyy>1e-07</iyy>
-          <izz>1e-07</izz>
+          <ixx>0.0005</ixx>
+          <iyy>0.0005</iyy>
+          <izz>0.0005</izz>
           <ixy>0</ixy>
           <ixz>0</ixz>
           <iyz>0</iyz>
@@ -579,9 +582,9 @@
         <pose>0 0 0 0 0 0</pose>
         <mass>0.0001</mass>
         <inertia>
-          <ixx>1e-07</ixx>
-          <iyy>1e-07</iyy>
-          <izz>1e-07</izz>
+          <ixx>0.0005</ixx>
+          <iyy>0.0005</iyy>
+          <izz>0.0005</izz>
           <ixy>0</ixy>
           <ixz>0</ixz>
           <iyz>0</iyz>
@@ -594,9 +597,9 @@
         <pose>0 0 0 0 0 0</pose>
         <mass>0.0001</mass>
         <inertia>
-          <ixx>1e-07</ixx>
-          <iyy>1e-07</iyy>
-          <izz>1e-07</izz>
+          <ixx>0.0005</ixx>
+          <iyy>0.0005</iyy>
+          <izz>0.0005</izz>
           <ixy>0</ixy>
           <ixz>0</ixz>
           <iyz>0</iyz>

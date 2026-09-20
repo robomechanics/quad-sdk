@@ -1,4 +1,7 @@
 #include "robot_driver/robot_driver.hpp"
+#include "robot_driver/controllers/underbrush_effort_command.hpp"
+#include <algorithm>
+#include <stdexcept>
 
 RobotDriver::RobotDriver(std::shared_ptr<rclcpp::Node> node, int argc,
                          char** argv)
@@ -95,6 +98,32 @@ RobotDriver::RobotDriver(std::shared_ptr<rclcpp::Node> node, int argc,
   quad_utils::loadROSParam(node_, "robot_driver.cmd_vel_filter_const",
                            cmd_vel_filter_const_);
   quad_utils::loadROSParam(node_, "robot_driver.cmd_vel_scale", cmd_vel_scale_);
+
+  std::string underbrush_actuation;
+  quad_utils::loadROSParamDefault(node_, "robot_driver.underbrush_actuation_mode",
+                                  underbrush_actuation, std::string("position_pd"));
+  quad_utils::loadROSParamDefault(node_, "robot_driver.underbrush_effort_state_timeout",
+                                  underbrush_effort_state_timeout_, 0.02);
+  if (underbrush_actuation != "position_pd" && underbrush_actuation != "clipped_effort") {
+    throw std::invalid_argument("underbrush_actuation_mode must be position_pd or clipped_effort");
+  }
+  const bool underbrush_policy = controller_id_ == "underbrush_learned" ||
+      controller_id_ == "underbrush_v90" || controller_id_ == "underbrush_v92";
+  underbrush_clipped_effort_ = underbrush_policy && underbrush_actuation == "clipped_effort";
+  if (underbrush_clipped_effort_) {
+    if ((robot_name != "go2" && robot_name != "go2w") ||
+        !std::isfinite(underbrush_effort_state_timeout_) || underbrush_effort_state_timeout_ <= 0 ||
+        !std::isfinite(update_rate_) || update_rate_ < 500.0 ||
+        torque_limits_.size() != 3 ||
+        !std::all_of(torque_limits_.begin(), torque_limits_.end(),
+                     [](double x) { return std::isfinite(x) && x > 0; })) {
+      throw std::invalid_argument("Clipped effort requires Go2, >=500 Hz, positive state timeout and three torque limits");
+    }
+    RCLCPP_INFO(node_->get_logger(),
+                "Underbrush clipped_effort: host PD at %.1f Hz, Go2HV torque-speed limits; "
+                "onboard policy kp/kd=0, hardware state timeout=%.3f s; stance/safety PD unchanged",
+                update_rate_, underbrush_effort_state_timeout_);
+  }
 
   // Setup pubs and subs
   local_plan_sub_ = node_->create_subscription<quad_msgs::msg::RobotPlan>(
@@ -565,6 +594,15 @@ void RobotDriver::checkMessagesForSafety() {
   // Do nothing if already in safety mode
   if (control_mode_ == SAFETY) return;
 
+  if (underbrush_clipped_effort_ && is_hardware_) {
+    const auto unitree = std::dynamic_pointer_cast<UnitreeInterface>(hardware_interface_);
+    if (!unitree || !unitree->hasFreshState(underbrush_effort_state_timeout_)) {
+      control_mode_ = SAFETY;
+      RCLCPP_ERROR(node_->get_logger(), "Clipped-effort feedback is stale; entering onboard damping safety mode");
+      return;
+    }
+  }
+
   // Check the remote heartbeat for timeout
   // (this adds extra safety if no heartbeat messages are arriving)
   if (abs(node_->now().seconds() - remote_heartbeat_received_time_) >=
@@ -864,6 +902,7 @@ void RobotDriver::publishState() {
 bool RobotDriver::updateControl() {
   // Check if state machine should be skipped
   bool valid_cmd = true;
+  bool policy_command_active = false;
 
   // Check incoming messages to determine if we should enter safety mode
   checkMessagesForSafety();
@@ -872,7 +911,7 @@ bool RobotDriver::updateControl() {
     return false;
   }
 
-  if (last_robot_state_msg_.joints.position.empty()) {
+  if (last_robot_state_msg_.joints.position.empty() && !underbrush_clipped_effort_) {
     // RCLCPP_WARN(node_->get_logger(),
     //             "updateControl(): received RobotState with empty
     //             joint.position → aborting control update");
@@ -885,10 +924,21 @@ bool RobotDriver::updateControl() {
 
   joint_positions.setZero();
   joint_velocities.setZero();
-  quad_utils::vectorToEigen(last_robot_state_msg_.joints.position,
-                            joint_positions);
-  quad_utils::vectorToEigen(last_robot_state_msg_.joints.velocity,
-                            joint_velocities);
+  const auto& feedback = last_robot_state_msg_.joints;
+  const auto valid_joints = [](const auto& values) {
+    return values.size() >= 12 && std::all_of(values.begin(), values.begin() + 12,
+                                             [](double x) { return std::isfinite(x); });
+  };
+  if (underbrush_clipped_effort_ &&
+      (!valid_joints(feedback.position) || !valid_joints(feedback.velocity))) {
+    control_mode_ = SAFETY;
+    RCLCPP_ERROR_THROTTLE(node_->get_logger(), *node_->get_clock(), 1000,
+                          "Invalid joint feedback; entering onboard damping safety mode");
+    // Safety damping is computed onboard; do not run inference on bad feedback.
+  } else {
+    quad_utils::vectorToEigen(feedback.position, joint_positions);
+    quad_utils::vectorToEigen(feedback.velocity, joint_velocities);
+  }
 
   // Initialize leg command message
   leg_command_array_msg_.leg_commands.resize(num_feet_);
@@ -928,6 +978,7 @@ bool RobotDriver::updateControl() {
         }
       }
     } else {
+      policy_command_active = true;
       if (InverseDynamicsController* p =
               dynamic_cast<InverseDynamicsController*>(leg_controller_.get())) {
         // Uncomment to publish trajectory reference state
@@ -991,7 +1042,8 @@ bool RobotDriver::updateControl() {
       int joint_idx = 3 * i + j;
 
       // Add soft joint limit for knees
-      if (j == knee_idx && joint_positions(joint_idx) > knee_soft_ub) {
+      if (!(underbrush_clipped_effort_ && control_mode_ == SAFETY) &&
+          j == knee_idx && joint_positions(joint_idx) > knee_soft_ub) {
         RCLCPP_INFO(node_->get_logger(), "Triggering Soft Knee Joint Limit");
         leg_command_array_msg_.leg_commands.at(i)
             .motor_commands.at(j)
@@ -1004,6 +1056,18 @@ bool RobotDriver::updateControl() {
       }
       quad_msgs::msg::MotorCommand cmd =
           leg_command_array_msg_.leg_commands.at(i).motor_commands.at(j);
+
+      if (underbrush_clipped_effort_ && policy_command_active) {
+        auto& outgoing = leg_command_array_msg_.leg_commands.at(i).motor_commands.at(j);
+        if (!underbrush::makeClippedEffortCommand(
+                outgoing, joint_positions[joint_idx], joint_velocities[joint_idx], torque_limits_[j])) {
+          RCLCPP_ERROR(node_->get_logger(), "Invalid clipped-effort command; entering onboard damping safety mode");
+          control_mode_ = SAFETY;
+          // Rebuild ALL joints in safety mode, including any converted above.
+          return updateControl();
+        }
+        continue;
+      }
 
       double pos_component =
           cmd.kp * (cmd.pos_setpoint - joint_positions[joint_idx]);

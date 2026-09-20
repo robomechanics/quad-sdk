@@ -276,6 +276,10 @@ class RobotDriver {
   /// Controller type
   std::string controller_id_;
 
+  /// Underbrush policy-only host PD + Go2HV torque-speed clipping.
+  bool underbrush_clipped_effort_ = false;
+  double underbrush_effort_state_timeout_ = 0.02;
+
   /// Estimator type
   std::string estimator_id_;
 

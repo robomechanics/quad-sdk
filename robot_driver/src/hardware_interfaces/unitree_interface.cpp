@@ -112,6 +112,14 @@ void UnitreeInterface::lowStateHandler(const void* message) {
     foot_force_quad_order_[leg] = ff[kFootForceMap[leg]];
   }
   state_received_ = true;
+  last_state_received_ = std::chrono::steady_clock::now();
+}
+
+bool UnitreeInterface::hasFreshState(double max_age_seconds) const {
+  std::lock_guard<std::mutex> lock(state_mutex_);
+  return state_received_ && max_age_seconds > 0 &&
+         std::chrono::duration<double>(std::chrono::steady_clock::now() -
+                                       last_state_received_).count() < max_age_seconds;
 }
 
 bool UnitreeInterface::getFootContact(
@@ -154,6 +162,14 @@ uint32_t UnitreeInterface::crc32Core(uint32_t* ptr, uint32_t len) {
 }
 
 bool UnitreeInterface::send(
+    const quad_msgs::msg::LegCommandArray& leg_command_array_msg,
+    const Eigen::VectorXd& user_tx_data) {
+  prepareCommand(leg_command_array_msg, user_tx_data);
+  cmd_pub_->Write(low_cmd_);
+  return true;
+}
+
+void UnitreeInterface::prepareCommand(
     const quad_msgs::msg::LegCommandArray& leg_command_array_msg,
     const Eigen::VectorXd& user_tx_data) {
   for (int leg = 0; leg < kNumLegs; ++leg) {
@@ -214,8 +230,6 @@ bool UnitreeInterface::send(
   // CRC must be computed before every publish.
   low_cmd_.crc() = crc32Core(reinterpret_cast<uint32_t*>(&low_cmd_),
                              (sizeof(unitree_go::msg::dds_::LowCmd_) >> 2) - 1);
-  cmd_pub_->Write(low_cmd_);
-  return true;
 }
 
 bool UnitreeInterface::recv(sensor_msgs::msg::JointState& joint_state_msg,

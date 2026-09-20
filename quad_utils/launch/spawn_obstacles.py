@@ -105,6 +105,16 @@ def parse_obstacles(context):
             spawn_obstacle('underbrush3_vine_3', "-x 1.36 -y 0.0 -z 0.15", vine_v90, context),
         ])
 
+    elif scenario_config == 'hardware_v90_2205':
+        vine_v90 = PathJoinSubstitution([FindPackageShare('underbrush_description'),
+            'models', 'underbrush_description', 'vine_v90_single.sdf.xacro'])
+        # Measured hardware spacing/heights. First-vine distance is provisionally
+        # 0.60 m; material/tension remains the existing comparison fixture.
+        for i, (x, z) in enumerate(((0.600, 0.127), (1.032, 0.229),
+                                     (1.032, 0.127), (1.362, 0.152))):
+            nodes.append(spawn_obstacle(f'hardware_v90_2205_vine_{i}',
+                         f'-x {x} -y 0.0 -z {z}', vine_v90, context))
+
     # Add Custom Scenario Configurations Here
 
     # Add Obstacle Configurations to Launch Order

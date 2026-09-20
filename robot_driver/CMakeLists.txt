@@ -186,6 +186,9 @@ if(BUILD_TESTING)
   ament_add_gtest(underbrush_torque_observation_test
     test/test_underbrush_torque_observation.cpp)
   target_include_directories(underbrush_torque_observation_test PRIVATE include)
+  ament_add_gtest(underbrush_effort_command_test
+    test/test_underbrush_effort_command.cpp)
+  target_link_libraries(underbrush_effort_command_test ${PROJECT_NAME})
   if(ONNXRUNTIME_LIB)
     ament_add_gtest(underbrush_v92_observations_test
       test/test_underbrush_v92_observations.cpp)

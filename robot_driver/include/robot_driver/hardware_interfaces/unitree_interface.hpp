@@ -10,6 +10,7 @@
 #include <unitree/idl/go2/LowState_.hpp>
 
 #include <array>
+#include <chrono>
 #include <mutex>
 #include <string>
 #include <vector>
@@ -57,6 +58,9 @@ class UnitreeInterface : public HardwareInterface {
             sensor_msgs::msg::Imu& imu_msg,
             Eigen::VectorXd& user_rx_data) override;
 
+  //! Receipt age uses a monotonic clock, independent of republished ROS stamps.
+  bool hasFreshState(double max_age_seconds) const;
+
   //! Build a FootContact message from the latest rt/lowstate foot-force
   //! readings (quad-sdk leg order FL, RL, FR, RR, int16 units). Always returns
   //! true — the Go2/Go2-W has foot-force sensors.
@@ -65,6 +69,8 @@ class UnitreeInterface : public HardwareInterface {
 
  protected:
   void initLowCmd();
+  void prepareCommand(const quad_msgs::msg::LegCommandArray& commands,
+                      const Eigen::VectorXd& user_tx_data);
   void lowStateHandler(const void* message);
   static uint32_t crc32Core(uint32_t* ptr, uint32_t len);
 
@@ -121,6 +127,7 @@ class UnitreeInterface : public HardwareInterface {
       "jtoe0", "jtoe1", "jtoe2", "jtoe3"};
 
   bool state_received_ = false;
+  std::chrono::steady_clock::time_point last_state_received_{};
 };
 
 #endif  // UNITREE_INTERFACE_H
