@@ -63,6 +63,7 @@ install(
 install(PROGRAMS
   scripts/leg_flail.py
   scripts/path_following.py
+  scripts/world_path_following.py
   DESTINATION lib/${PROJECT_NAME}
 )
 

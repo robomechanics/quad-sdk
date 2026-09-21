@@ -79,7 +79,11 @@ def load_robot_params(context, *args, **kwargs):
             sim_config = yaml.safe_load(config_stream)
         sim_config['/**/joint_controller']['ros__parameters']['publish_applied_torque'] = True
         if controller == 'underbrush_v90':
-            sim_config['/**/joint_controller']['ros__parameters']['use_isaac_go2hv_actuator'] = True
+            # Respect the go2.yaml value; only default to the Go2HV envelope
+            # if the yaml doesn't set it. (Force-True here silently overrode
+            # the yaml on every policy run since 2026-09-13.)
+            sim_config['/**/joint_controller']['ros__parameters'].setdefault(
+                'use_isaac_go2hv_actuator', True)
         with tempfile.NamedTemporaryFile(mode='w', prefix='quad_policy_telemetry_', suffix='.yaml', delete=False) as config_stream:
             yaml.safe_dump(sim_config, config_stream)
             controller_config_path = config_stream.name

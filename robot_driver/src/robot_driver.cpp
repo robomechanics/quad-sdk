@@ -110,6 +110,17 @@ RobotDriver::RobotDriver(std::shared_ptr<rclcpp::Node> node, int argc,
   const bool underbrush_policy = controller_id_ == "underbrush_learned" ||
       controller_id_ == "underbrush_v90" || controller_id_ == "underbrush_v92";
   underbrush_clipped_effort_ = underbrush_policy && underbrush_actuation == "clipped_effort";
+  // Clipped-effort (host PD -> raw torque_ff to the Unitree interface) is a
+  // HARDWARE command path. In simulation fall back to the position_pd
+  // structure: kp/kd + setpoints on the wire, with the Gazebo QuadController
+  // performing the PD (and, when enabled, the Go2HV torque-speed envelope).
+  if (underbrush_clipped_effort_ && !is_hardware_) {
+    underbrush_clipped_effort_ = false;
+    RCLCPP_INFO(node_->get_logger(),
+                "underbrush_actuation_mode=clipped_effort requested but "
+                "is_hardware=false: using position_pd command structure in "
+                "simulation (kp/kd + setpoints; sim-side PD)");
+  }
   if (underbrush_clipped_effort_) {
     if ((robot_name != "go2" && robot_name != "go2w") ||
         !std::isfinite(underbrush_effort_state_timeout_) || underbrush_effort_state_timeout_ <= 0 ||

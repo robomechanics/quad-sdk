@@ -119,6 +119,16 @@
     topics:
       control:
         joint_command: control/joint_command
+    # Isaac-matched actuator mode for RL policy testing (v115+): torque runs
+    # through the Go2HV envelope (20.2 Nm drive / 23.4 Nm brake, taper 13.5->30
+    # rad/s, go2hv_effort.hpp) instead of the flat motor_limits clamp, and PD
+    # error uses Isaac's raw-target convention (no shortest-angle wrap, no
+    # position clamp; simulator joint stops still apply). Go2-only file, so
+    # other robots keep the default flat-clamp behavior.
+    use_isaac_go2hv_actuator: true  # ON (2026-09-21): training-faithful envelope; retest now that springs/damping/collision fixed (static rear knee 11.5 vs 20.2 ceiling)
+    # Log applied torques so the first run can verify the envelope is active
+    # and the policy is not riding saturation in Gazebo.
+    publish_applied_torque: true
 
 /**:
   ros__parameters:

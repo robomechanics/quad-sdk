@@ -173,7 +173,7 @@ def generate_launch_description():
     declared_args = [
         DeclareLaunchArgument('model_path',
             default_value=PathJoinSubstitution([
-                FindPackageShare('robot_driver'), 'models', 'go2', 'v97_model_30500.onnx']),
+                FindPackageShare('robot_driver'), 'models', 'go2', 'v115_model_49999.onnx']),
             description='ONNX checkpoint; may also be overridden per robot in robot_configs'),
         DeclareLaunchArgument('world', default_value='flat.sdf', description='SDF world file name to load into simulation'),
         DeclareLaunchArgument('gui', default_value='true', description='Whether to launch the Gazebo GUI. Defaults on for the single-robot case where the GUI is useful for debugging; the multi-robot launch (quad_multi.py) defaults it off.'),
@@ -188,7 +188,7 @@ def generate_launch_description():
             'robot_configs', default_value=('[{"name": "robot_1", "type": "go2", "controller": "underbrush_v90", "init_pose": "-x 0.0 -y 0.0 -z 3.0"}]'),
             description='A JSON List of robot configurations: MUST specify name, type, controller, and spawn pose. init_pose accepts -x/-y/-z and optionally -R/-P/-Y for orientation.'
         ),
-        DeclareLaunchArgument('scenario', default_value="underbrush3", description='Custom Obstacle Scenario to Spawn e.g. Underbrush, Procedural Underbrush)'),
+        DeclareLaunchArgument('scenario', default_value="none", description='Custom Obstacle Scenario to Spawn e.g. Underbrush, Procedural Underbrush)'),
         DeclareLaunchArgument('obstacles', default_value='[]',
             description= 'A JSON List of obstacles to spawn (e.g {"name": "box", "init_pose" : "-x 3.0 -y 0.0 -z 2"})')
     ]

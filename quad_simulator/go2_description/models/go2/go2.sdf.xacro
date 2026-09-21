@@ -70,9 +70,9 @@
           <velocity>30.100000000000001</velocity>
         </limit>
         <dynamics>
-          <damping>0.5</damping>
+          <damping>0</damping>
           <spring_reference>0</spring_reference>
-          <spring_stiffness>3</spring_stiffness>
+          <spring_stiffness>0</spring_stiffness>
         </dynamics>
       </axis>
     </joint>
@@ -126,9 +126,9 @@
           <velocity>30.100000000000001</velocity>
         </limit>
         <dynamics>
-          <damping>0.5</damping>
+          <damping>0</damping>
           <spring_reference>1.36</spring_reference>
-          <spring_stiffness>3</spring_stiffness>
+          <spring_stiffness>0</spring_stiffness>
         </dynamics>
       </axis>
     </joint>
@@ -181,9 +181,9 @@
           <velocity>15.699999999999999</velocity>
         </limit>
         <dynamics>
-          <damping>0.5</damping>
+          <damping>0</damping>
           <spring_reference>-2.65</spring_reference>
-          <spring_stiffness>3</spring_stiffness>
+          <spring_stiffness>0</spring_stiffness>
         </dynamics>
       </axis>
     </joint>
@@ -226,14 +226,6 @@
             <length>0.029999999999999999</length>
             <radius>0.0155</radius>
           </cylinder>
-        </geometry>
-      </collision>
-      <collision name='lower0_fixed_joint_lump__FL_foot_collision_3'>
-        <pose>-0.002 0 -0.21299999999999999 0 0 0</pose>
-        <geometry>
-          <sphere>
-            <radius>0.021999999999999999</radius>
-          </sphere>
         </geometry>
       </collision>
       <visual name='lower0_visual'>
@@ -361,9 +353,9 @@
           <velocity>30.100000000000001</velocity>
         </limit>
         <dynamics>
-          <damping>0.5</damping>
+          <damping>0</damping>
           <spring_reference>0</spring_reference>
-          <spring_stiffness>3</spring_stiffness>
+          <spring_stiffness>0</spring_stiffness>
         </dynamics>
       </axis>
     </joint>
@@ -417,9 +409,9 @@
           <velocity>30.100000000000001</velocity>
         </limit>
         <dynamics>
-          <damping>0.5</damping>
+          <damping>0</damping>
           <spring_reference>1.36</spring_reference>
-          <spring_stiffness>3</spring_stiffness>
+          <spring_stiffness>0</spring_stiffness>
         </dynamics>
       </axis>
     </joint>
@@ -472,9 +464,9 @@
           <velocity>15.699999999999999</velocity>
         </limit>
         <dynamics>
-          <damping>0.5</damping>
+          <damping>0</damping>
           <spring_reference>-2.65</spring_reference>
-          <spring_stiffness>3</spring_stiffness>
+          <spring_stiffness>0</spring_stiffness>
         </dynamics>
       </axis>
     </joint>
@@ -517,14 +509,6 @@
             <length>0.029999999999999999</length>
             <radius>0.0155</radius>
           </cylinder>
-        </geometry>
-      </collision>
-      <collision name='lower2_fixed_joint_lump__FR_foot_collision_3'>
-        <pose>-0.002 0 -0.21299999999999999 0 0 0</pose>
-        <geometry>
-          <sphere>
-            <radius>0.021999999999999999</radius>
-          </sphere>
         </geometry>
       </collision>
       <visual name='lower2_visual'>
@@ -653,9 +637,9 @@
           <velocity>30.100000000000001</velocity>
         </limit>
         <dynamics>
-          <damping>0.5</damping>
+          <damping>0</damping>
           <spring_reference>0</spring_reference>
-          <spring_stiffness>3</spring_stiffness>
+          <spring_stiffness>0</spring_stiffness>
         </dynamics>
       </axis>
     </joint>
@@ -709,9 +693,9 @@
           <velocity>30.100000000000001</velocity>
         </limit>
         <dynamics>
-          <damping>0.5</damping>
+          <damping>0</damping>
           <spring_reference>1.36</spring_reference>
-          <spring_stiffness>3</spring_stiffness>
+          <spring_stiffness>0</spring_stiffness>
         </dynamics>
       </axis>
     </joint>
@@ -764,9 +748,9 @@
           <velocity>15.699999999999999</velocity>
         </limit>
         <dynamics>
-          <damping>0.5</damping>
+          <damping>0</damping>
           <spring_reference>-2.65</spring_reference>
-          <spring_stiffness>3</spring_stiffness>
+          <spring_stiffness>0</spring_stiffness>
         </dynamics>
       </axis>
     </joint>
@@ -809,14 +793,6 @@
             <length>0.029999999999999999</length>
             <radius>0.0155</radius>
           </cylinder>
-        </geometry>
-      </collision>
-      <collision name='lower1_fixed_joint_lump__RL_foot_collision_3'>
-        <pose>-0.002 0 -0.21299999999999999 0 0 0</pose>
-        <geometry>
-          <sphere>
-            <radius>0.021999999999999999</radius>
-          </sphere>
         </geometry>
       </collision>
       <visual name='lower1_visual'>
@@ -944,9 +920,9 @@
           <velocity>30.100000000000001</velocity>
         </limit>
         <dynamics>
-          <damping>0.5</damping>
+          <damping>0</damping>
           <spring_reference>0</spring_reference>
-          <spring_stiffness>3</spring_stiffness>
+          <spring_stiffness>0</spring_stiffness>
         </dynamics>
       </axis>
     </joint>
@@ -1000,9 +976,9 @@
           <velocity>30.100000000000001</velocity>
         </limit>
         <dynamics>
-          <damping>0.5</damping>
+          <damping>0</damping>
           <spring_reference>1.36</spring_reference>
-          <spring_stiffness>3</spring_stiffness>
+          <spring_stiffness>0</spring_stiffness>
         </dynamics>
       </axis>
     </joint>
@@ -1055,9 +1031,9 @@
           <velocity>15.699999999999999</velocity>
         </limit>
         <dynamics>
-          <damping>0.5</damping>
+          <damping>0</damping>
           <spring_reference>-2.65</spring_reference>
-          <spring_stiffness>3</spring_stiffness>
+          <spring_stiffness>0</spring_stiffness>
         </dynamics>
       </axis>
     </joint>
@@ -1100,14 +1076,6 @@
             <length>0.029999999999999999</length>
             <radius>0.0155</radius>
           </cylinder>
-        </geometry>
-      </collision>
-      <collision name='lower3_fixed_joint_lump__RR_foot_collision_3'>
-        <pose>-0.002 0 -0.21299999999999999 0 0 0</pose>
-        <geometry>
-          <sphere>
-            <radius>0.021999999999999999</radius>
-          </sphere>
         </geometry>
       </collision>
       <visual name='lower3_visual'>
