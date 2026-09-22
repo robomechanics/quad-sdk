@@ -195,8 +195,22 @@ RobotDriver::RobotDriver(std::shared_ptr<rclcpp::Node> node, int argc,
                                   std::string("state/foot_contact"));
   foot_contact_pub_ = node_->create_publisher<quad_msgs::msg::FootContact>(
       foot_contact_topic, 10);
-  quad_utils::loadROSParamDefault(node_, "robot_driver.foot_contact_threshold",
-                                  foot_contact_threshold_, 30);
+  {
+    // Per-foot thresholds (quad order FL,RL,FR,RR). Scalar fallback kept for
+    // back-compat: robot_driver.foot_contact_threshold applies to all feet.
+    int scalar_threshold;
+    quad_utils::loadROSParamDefault(
+        node_, "robot_driver.foot_contact_threshold", scalar_threshold, 30);
+    std::vector<int64_t> per_foot = node_->declare_parameter(
+        "robot_driver.foot_contact_thresholds",
+        std::vector<int64_t>(4, scalar_threshold));
+    foot_contact_thresholds_.assign(per_foot.begin(), per_foot.end());
+    // Release (exit) thresholds for schmitt hysteresis; default = enter
+    // thresholds, i.e. plain thresholding.
+    std::vector<int64_t> release = node_->declare_parameter(
+        "robot_driver.foot_contact_release_thresholds", per_foot);
+    foot_contact_release_thresholds_.assign(release.begin(), release.end());
+  }
 
   // Set up pubs and subs dependent on robot layer
   if (is_hardware_) {
@@ -656,7 +670,8 @@ bool RobotDriver::updateState() {
     // consumers below get it immediately; the ROS topic is emitted later in
     // publishState(). Interfaces with no such sensor (e.g. Spirit) return
     // false and this block is skipped.
-    if (hardware_interface_->getFootContact(foot_contact_threshold_,
+    if (hardware_interface_->getFootContact(foot_contact_thresholds_,
+                                            foot_contact_release_thresholds_,
                                             last_foot_contact_msg_)) {
       last_foot_contact_msg_.header.stamp = node_->now();
 

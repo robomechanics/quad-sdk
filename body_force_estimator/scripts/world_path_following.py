@@ -26,13 +26,14 @@ class WorldPathFollowingNode(Node):
 
         # Parameters
         self.declare_parameter('speed', 0.5)     # world +x speed, m/s
-        # Publish cmd=0 for the first warmup_secs after the first state msg.
-        # The robot_driver stand gate holds PD stance while the policy's GRU
-        # integrates real stance observations, so its latent has converged
-        # before the walk command arrives (Isaac probe 2026-09-21: 10 s of
-        # policy-active stance -> clean walk-off through the cmd step; the
-        # cold-start h=0 + immediate 0.5 cmd is when RL gets tucked).
-        self.declare_parameter('warmup_secs', 10.0)
+        # Optional stance hold (cmd=0) after the first state msg. Default OFF:
+        # the cold-start hypothesis it was built for was refuted in Isaac
+        # (h=0 + immediate cmd = a normal training episode start), and under
+        # the stand gate the hold is raw kp25 PD -- the robot sags rearward
+        # and (on hardware) unloads the front feet to the contact-bit margin
+        # for the whole hold (2026-09-21 bag 1934). The controller's built-in
+        # 0.6 s encoder warmup already covers the handoff transient.
+        self.declare_parameter('warmup_secs', 0.0)
         self.declare_parameter('y_pt', 0.0)      # target line y, m
         self.declare_parameter('y_gain', 0.3)    # world cross-track P gain
         self.declare_parameter('vy_max', 0.15)   # clamp on cross-track term, m/s
@@ -46,7 +47,10 @@ class WorldPathFollowingNode(Node):
         self.yaw_gain = float(self.get_parameter('yaw_gain').value)
         self.wz_max = float(self.get_parameter('wz_max').value)
         self.yaw_pt = 0.0
-        self.rate_hz = 100
+        # 50 Hz matches the policy inference rate; the controller only samples
+        # the latest cmd, so publishing faster buys nothing and doubles DDS
+        # traffic over the robot's radio link.
+        self.rate_hz = 50
 
         self.pub_ = self.create_publisher(Twist, '/robot_1/cmd_vel', 10)
         self.sub_ = self.create_subscription(

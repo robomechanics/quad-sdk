@@ -64,7 +64,8 @@ class UnitreeInterface : public HardwareInterface {
   //! Build a FootContact message from the latest rt/lowstate foot-force
   //! readings (quad-sdk leg order FL, RL, FR, RR, int16 units). Always returns
   //! true — the Go2/Go2-W has foot-force sensors.
-  bool getFootContact(int contact_threshold,
+  bool getFootContact(const std::vector<int>& contact_thresholds,
+                      const std::vector<int>& release_thresholds,
                       quad_msgs::msg::FootContact& foot_contact_msg) override;
 
  protected:
@@ -81,6 +82,7 @@ class UnitreeInterface : public HardwareInterface {
   unitree_go::msg::dds_::LowCmd_ low_cmd_{};
   unitree_go::msg::dds_::LowState_ low_state_{};
   std::array<int16_t, kNumLegs> foot_force_quad_order_{};  // FL, RL, FR, RR
+  std::array<bool, kNumLegs> contact_latched_{};  // schmitt state per foot
   mutable std::mutex state_mutex_;
 
   unitree::robot::ChannelPublisherPtr<

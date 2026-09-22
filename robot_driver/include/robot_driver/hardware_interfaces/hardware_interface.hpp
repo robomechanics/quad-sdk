@@ -73,14 +73,24 @@ class HardwareInterface {
    *        false, leaves the message untouched); interfaces with a foot-force
    *        sensor override this and fill foot_force_raw + contact_states in
    *        quad-sdk leg order (FL, RL, FR, RR).
-   * @param[in]  contact_threshold Raw reading above which a foot counts as in
-   *             contact (used to fill contact_states)
+   * @param[in]  contact_thresholds Per-leg raw reading (quad-sdk leg order
+   *             FL, RL, FR, RR) above which that foot counts as in contact.
+   *             Per-foot because sensor baselines/offsets differ per foot
+   *             (2026-09-21 Go2 bag: swing baselines 10-16, quiet-stance
+   *             fronts 19-22 -- one global threshold cannot separate both).
    * @param[out] foot_contact_msg Populated foot_force_raw + contact_states
    * @return true if this interface provides foot contact, false otherwise
    */
-  virtual bool getFootContact(int contact_threshold,
+  virtual bool getFootContact(const std::vector<int>& contact_thresholds,
+                              const std::vector<int>& release_thresholds,
                               quad_msgs::msg::FootContact& foot_contact_msg) {
-    (void)contact_threshold;
+    // release_thresholds enable per-foot hysteresis (bit latches ON above
+    // contact threshold, releases only below the release threshold). Pass
+    // the same vector twice for a plain threshold. Go2 sensors hover at
+    // 15-16 raw between strides, ringing a bare threshold at ~2x the
+    // trained contact-flip rate (2026-09-21 bag 2000: 7-9 vs 4.7 flips/s).
+    (void)contact_thresholds;
+    (void)release_thresholds;
     (void)foot_contact_msg;
     return false;
   }

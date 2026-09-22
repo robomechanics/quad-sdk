@@ -1,8 +1,23 @@
 /**/robot_driver:
   ros__parameters:
     robot_driver:
-      update_rate: 500.0 
+      update_rate: 500.0
       publish_rate: 500.0
+      # Per-foot contact thresholds, quad order [FL, RL, FR, RR].
+      # Go2 foot sensors are uncalibrated with per-foot baseline offsets:
+      # 2026-09-21 bag 1934 measured swing baselines [11,12,10,16] and
+      # policy-PD quiet-stance loads [22,41,20,42]. The old global 30 put the
+      # FRONT quiet-stance load (~20) below threshold -> front bits read
+      # AIRBORNE for the whole 10 s warmup ("torqued but no contact" = the
+      # trained vine-stuck signature) -> rear-leg tuck + fall at walk onset.
+      # Schmitt hysteresis on the Go2 foot-force counts. Calibration
+      # (operator float test 2026-09-21): unloaded 14-19, solid stance 30-40;
+      # bag swing floor 10-16, sagged policy-stance fronts ~20. Bit latches
+      # ON above enter, OFF below release; the ambiguous sagged-stance ~20
+      # lands inside the band and correctly HOLDS the previous state.
+      # Quad order FL,RL,FR,RR.
+      foot_contact_thresholds: [25, 25, 25, 25]           # enter
+      foot_contact_release_thresholds: [20, 20, 20, 20]   # release
       mocap_rate: 360.0 # This must match the mocap frame rate or velocity estimates will be mis-scaled
       mocap_dropout_threshold: 0.035 # s
       filter_time_constant: 0.01 # s

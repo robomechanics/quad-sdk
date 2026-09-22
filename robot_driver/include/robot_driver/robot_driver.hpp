@@ -256,7 +256,8 @@ class RobotDriver {
   quad_msgs::msg::FootContact last_foot_contact_msg_;
 
   /// Threshold (raw int16 units) above which foot is considered in contact.
-  int foot_contact_threshold_;
+  std::vector<int> foot_contact_thresholds_;  // per leg, quad order FL,RL,FR,RR
+  std::vector<int> foot_contact_release_thresholds_;  // schmitt exit levels
 
   /// ROS Wrapper Node
   std::shared_ptr<rclcpp::Node> node_;

@@ -123,15 +123,28 @@ bool UnitreeInterface::hasFreshState(double max_age_seconds) const {
 }
 
 bool UnitreeInterface::getFootContact(
-    int contact_threshold, quad_msgs::msg::FootContact& foot_contact_msg) {
+    const std::vector<int>& contact_thresholds,
+    const std::vector<int>& release_thresholds,
+    quad_msgs::msg::FootContact& foot_contact_msg) {
   std::lock_guard<std::mutex> lock(state_mutex_);
   foot_contact_msg.header.frame_id = "map";
   foot_contact_msg.foot_force_raw.resize(kNumLegs);
   foot_contact_msg.contact_states.resize(kNumLegs);
   for (int i = 0; i < kNumLegs; ++i) {
     foot_contact_msg.foot_force_raw[i] = foot_force_quad_order_[i];
-    foot_contact_msg.contact_states[i] =
-        (foot_force_quad_order_[i] > contact_threshold);
+    const int enter = i < static_cast<int>(contact_thresholds.size())
+                          ? contact_thresholds[i]
+                          : (contact_thresholds.empty() ? 30 : contact_thresholds.back());
+    const int release = i < static_cast<int>(release_thresholds.size())
+                            ? release_thresholds[i]
+                            : enter;
+    const int force = foot_force_quad_order_[i];
+    if (force > enter) {
+      contact_latched_[i] = true;
+    } else if (force < release) {
+      contact_latched_[i] = false;
+    }
+    foot_contact_msg.contact_states[i] = contact_latched_[i];
   }
   return true;
 }
