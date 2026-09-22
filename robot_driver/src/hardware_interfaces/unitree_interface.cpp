@@ -111,6 +111,23 @@ void UnitreeInterface::lowStateHandler(const void* message) {
   for (int leg = 0; leg < kNumLegs; ++leg) {
     foot_force_quad_order_[leg] = ff[kFootForceMap[leg]];
   }
+  // DIAGNOSTIC (2026-09-21): the Go2 LowState also carries foot_force_est,
+  // unread by this stack. On Go1-era firmware it held the onboard ESTIMATED
+  // foot force (kinematics/torque-based). Log both ~every 2 s to learn
+  // whether Go2 firmware populates it; if it does, it is a better contact
+  // source than the raw pads. Remove once answered.
+  {
+    static auto last_log = std::chrono::steady_clock::now() -
+                           std::chrono::seconds(10);
+    auto now_t = std::chrono::steady_clock::now();
+    if (std::chrono::duration<double>(now_t - last_log).count() > 2.0) {
+      last_log = now_t;
+      const auto& fe = low_state_.foot_force_est();
+      printf("[unitree_interface] foot_force raw(FR,FL,RR,RL)=[%d,%d,%d,%d]  "
+             "foot_force_EST=[%d,%d,%d,%d]\n",
+             ff[0], ff[1], ff[2], ff[3], fe[0], fe[1], fe[2], fe[3]);
+    }
+  }
   state_received_ = true;
   last_state_received_ = std::chrono::steady_clock::now();
 }
