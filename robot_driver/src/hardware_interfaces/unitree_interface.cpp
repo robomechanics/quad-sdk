@@ -123,10 +123,10 @@ void UnitreeInterface::lowStateHandler(const void* message) {
     if (std::chrono::duration<double>(now_t - last_log).count() > 2.0) {
       last_log = now_t;
       const auto& fe = low_state_.foot_force_est();
-      printf("[unitree_interface] foot_force raw(FR,FL,RR,RL)=[%d,%d,%d,%d]  "
-             "foot_force_EST=[%d,%d,%d,%d]\n",
-             ff[0], ff[1], ff[2], ff[3], fe[0], fe[1], fe[2], fe[3]);
-      fflush(stdout);
+      RCLCPP_INFO(rclcpp::get_logger("unitree_interface"),
+                  "foot_force raw(FR,FL,RR,RL)=[%d,%d,%d,%d]  "
+                  "foot_force_EST=[%d,%d,%d,%d]",
+                  ff[0], ff[1], ff[2], ff[3], fe[0], fe[1], fe[2], fe[3]);
     }
   }
   state_received_ = true;
