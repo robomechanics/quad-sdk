@@ -101,6 +101,11 @@ class UnderbrushPolicy : public LearnedVelocityPolicy {
   static constexpr int kBatch = 1;
   static constexpr int kPerLegObsDim = 10;
   const int per_leg_obs_dim_;  // V90: 10; V92: 13 (append previous raw actions).
+  // Effective per-leg width, set at init() from the loaded ONNX: 9 for
+  // contactless models (V121: no binary foot-contact input), else equal to
+  // per_leg_obs_dim_. include_contact_ gates the obs-assembly contact write.
+  int leg_obs_dim_ = kPerLegObsDim;
+  bool include_contact_ = true;
   static constexpr int kBodyObsDim = 21;
   static constexpr int kActionDim = 12;
 

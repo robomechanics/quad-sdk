@@ -49,6 +49,25 @@ void UnderbrushPolicy::init(
   if (!session_ || session_->GetInputCount() != 9 || session_->GetOutputCount() != 5) {
     throw std::runtime_error("Underbrush requires a 9-input, 5-output GRU model");
   }
+  // Self-configure the per-leg width from the loaded model. V121-class
+  // exports take 9-dim per-leg inputs (no binary foot-contact channel);
+  // V90/V115-class take 10 (V92: 13). Everything downstream (validation,
+  // buffers, tensor shapes, obs assembly) follows leg_obs_dim_.
+  leg_obs_dim_ = per_leg_obs_dim_;
+  include_contact_ = true;
+  {
+    auto leg0 = session_->GetInputTypeInfo(0).GetTensorTypeAndShapeInfo();
+    const auto leg0_shape = leg0.GetShape();
+    if (per_leg_obs_dim_ == kPerLegObsDim && !leg0_shape.empty() &&
+        leg0_shape.back() == kPerLegObsDim - 1) {
+      leg_obs_dim_ = kPerLegObsDim - 1;
+      include_contact_ = false;
+      for (auto& leg : obs_per_leg_) leg.assign(leg_obs_dim_, 0.0f);
+      RCLCPP_INFO(node_->get_logger(),
+                  "UnderbrushPolicy: contactless model detected (per-leg 9 "
+                  "dims) — binary foot-contact observation disabled");
+    }
+  }
   Ort::AllocatorWithDefaultOptions alloc;
   const std::vector<std::string> expected_inputs = {
       "per_leg_FL", "per_leg_FR", "per_leg_RL", "per_leg_RR", "body",
@@ -66,7 +85,7 @@ void UnderbrushPolicy::init(
     auto shape = tensor.GetShape();
     const bool hidden = input ? index >= 5 : index >= 1;
     const int dim = hidden ? kGRUHidden :
-        (input ? (index < 4 ? per_leg_obs_dim_ : kBodyObsDim) : kActionDim);
+        (input ? (index < 4 ? leg_obs_dim_ : kBodyObsDim) : kActionDim);
     const auto& expected_name = input ? expected_inputs[index] : expected_outputs[index];
     if (name.get() != expected_name ||
         tensor.GetElementType() != ONNX_TENSOR_ELEMENT_DATA_TYPE_FLOAT ||
@@ -82,7 +101,7 @@ void UnderbrushPolicy::init(
   // discarded; real hidden state and previous actions still start at zero.
   std::vector<Ort::Value> preflight_inputs;
   std::vector<const char*> preflight_in_names, preflight_out_names;
-  const int64_t leg_shape[] = {1, per_leg_obs_dim_};
+  const int64_t leg_shape[] = {1, leg_obs_dim_};
   const int64_t body_shape[] = {1, kBodyObsDim};
   const int64_t hidden_shape[] = {1, 1, kGRUHidden};
   for (auto& name : expected_inputs) preflight_in_names.push_back(name.c_str());
@@ -269,10 +288,12 @@ void UnderbrushPolicy::computeObservations(
     // If neither has fired yet (first tick), fall back to 0 (airborne) rather
     // than 1 — a stray "planted" reading during ballistic drop before the
     // subscribers wake up caused the policy to command a full-weight push.
-    if (static_cast<int>(contact.size()) >= 4) {
-      obs[k++] = contact[quad_leg] ? 1.0f : 0.0f;
-    } else {
-      obs[k++] = 0.0f;
+    if (include_contact_) {
+      if (static_cast<int>(contact.size()) >= 4) {
+        obs[k++] = contact[quad_leg] ? 1.0f : 0.0f;
+      } else {
+        obs[k++] = 0.0f;
+      }
     }
     // V92 appends this leg's previous raw hip/thigh/calf actions. The
     // action vector is in Isaac joint-type order, not Quad-SDK leg order.
@@ -397,7 +418,7 @@ void UnderbrushPolicy::runInference() {
   std::vector<Ort::Value> inputs;
   inputs.reserve(9);
 
-  const int64_t per_leg_shape[] = {kBatch, per_leg_obs_dim_};
+  const int64_t per_leg_shape[] = {kBatch, leg_obs_dim_};
   const int64_t body_shape[] = {kBatch, kBodyObsDim};
   const int64_t hidden_shape[] = {kGRUNumLayers, kBatch, kGRUHidden};
 
