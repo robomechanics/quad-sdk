@@ -126,6 +126,7 @@ void UnitreeInterface::lowStateHandler(const void* message) {
       printf("[unitree_interface] foot_force raw(FR,FL,RR,RL)=[%d,%d,%d,%d]  "
              "foot_force_EST=[%d,%d,%d,%d]\n",
              ff[0], ff[1], ff[2], ff[3], fe[0], fe[1], fe[2], fe[3]);
+      fflush(stdout);
     }
   }
   state_received_ = true;
