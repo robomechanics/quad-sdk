@@ -51,12 +51,16 @@ bool InertiaEstimationController::computeLegCommandArray(
                                     target_leg_, 0);
     quad_utils::loadROSParamDefault(node_, "inertia_estimation.time_scale",
                                     time_scale_, 1.0);
+    quad_utils::loadROSParamDefault(node_, "inertia_estimation.isolate_joint",
+                                    isolate_joint_, -1);
     if (target_leg_ < -1 || target_leg_ > 3) target_leg_ = 0;
     time_scale_ = std::min(std::max(time_scale_, 0.1), 1.0);
+    if (isolate_joint_ < -1 || isolate_joint_ > 2) isolate_joint_ = -1;
     RCLCPP_INFO(node_->get_logger(),
                 "[inertia_estimation] target_leg=%d (0=FL 1=BL 2=FR 3=BR, "
-                "-1=all) time_scale=%.2f",
-                target_leg_, time_scale_);
+                "-1=all) time_scale=%.2f isolate_joint=%d (-1=all, 0=abad "
+                "1=hip 2=knee)",
+                target_leg_, time_scale_, isolate_joint_);
     conv_loaded_ = true;
   }
 
@@ -249,7 +253,7 @@ bool InertiaEstimationController::computeLegCommandArray(
       // Abad envelope — asymmetric outward-only swing. The stand hardware
       // sits directly under the body, so abad swinging the leg INWARD
       // (toward body midline) collides with the stand; swinging OUTWARD
-      // is free. Center the excitation at +kAbadCenter so all motion
+      // is free. Center the excitation at side*kAbadCenter so all motion
       // stays on the outward side. Amplitude bumped 2× so total abad
       // excursion is ~0.30 rad (vs the previous ~0.15) — better M[0,0]
       // identifiability without the stand collision risk.
@@ -313,6 +317,29 @@ bool InertiaEstimationController::computeLegCommandArray(
       leg_command_array_msg.leg_commands.at(i)
           .motor_commands.at(2)
           .pos_setpoint = q_ctrl_knee * joint_sign_[i][2] + joint_offset_[i][2];
+
+      // Joint isolation: overwrite the non-isolated joints' setpoints with
+      // the pose LATCHED at isolation start. (Tracking the live observed
+      // pose instead would zero the position error every tick — no spring
+      // force — and the joints would sag under gravity; the held-LEG branch
+      // above tolerates that, a fixed leg shape for the regressor does
+      // not.) Latched once per controller lifetime; the read-once params
+      // already make relaunch-per-bag the workflow. Held joints get the
+      // stiff flail gains below, which they need to fight the coupling
+      // torque from the isolated joint's swing.
+      if (isolate_joint_ >= 0) {
+        if (isolate_hold_pose_.empty()) {
+          isolate_hold_pose_.assign(robot_state_msg.joints.position.begin(),
+                                    robot_state_msg.joints.position.end());
+        }
+        for (int j = 0; j < 3; ++j) {
+          if (j != isolate_joint_) {
+            leg_command_array_msg.leg_commands.at(i)
+                .motor_commands.at(j)
+                .pos_setpoint = isolate_hold_pose_.at(3 * i + j);
+          }
+        }
+      }
 
       }  // end excitation branch
 

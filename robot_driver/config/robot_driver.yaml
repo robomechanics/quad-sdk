@@ -6,8 +6,10 @@
     # NOTE: deliberately a SIBLING of the `robot_driver:` key below — the
     # controller reads the un-prefixed names `inertia_estimation.*`.
     inertia_estimation:
-      target_leg: 0    # 0=FL 1=BL 2=FR 3=BR, -1=all four
-      time_scale: 1.0  # excitation clock; run each leg at 1.0 AND 0.5
+      target_leg: 0     # 0=FL 1=BL 2=FR 3=BR, -1=all four
+      time_scale: 1.0   # excitation clock; run each leg at 1.0 AND 0.5
+      isolate_joint: -1 # -1=all 3 joints flail; 0=abad 1=hip 2=knee flails
+                        # alone, other two held (abad-focus pass: set 0)
     robot_driver:
       update_rate: 500.0
       publish_rate: 500.0

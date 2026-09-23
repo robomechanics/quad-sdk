@@ -62,6 +62,16 @@ class InertiaEstimationController : public LegController {
   /// quarter acceleration (slow pass for Coulomb-vs-viscous separation).
   int target_leg_ = 0;
   double time_scale_ = 1.0;
+
+  /// isolate_joint: -1 = off (all 3 joints flail, legacy behavior);
+  /// 0=abad 1=hip 2=knee = flail ONLY that joint of the target leg and hold
+  /// the other two at the pose latched when isolation starts. Purpose:
+  /// abad's tau_est is dominated by config-dependent gravity/inertia
+  /// coupling from the hip/knee flail (July fit R2 0.11); freezing them
+  /// makes the leg a rigid pendulum in the roll plane so the single-axis
+  /// gravity regressor is exact.
+  int isolate_joint_ = -1;
+  std::vector<double> isolate_hold_pose_;  // wire-space, latched once
 };
 
 #endif  // INERTIA_ESTIMATION_CONTROLLER
