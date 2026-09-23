@@ -56,7 +56,7 @@ def generate_launch_description():
     # share/robot_driver/models/go2/ so the path resolves on any workspace.
     model_path = DeclareLaunchArgument('model_path',
         default_value=PathJoinSubstitution([
-            FindPackageShare('robot_driver'), 'models', 'go2', 'v97_model_30500.onnx']),
+            FindPackageShare('robot_driver'), 'models', 'go2', 'v121_model_14999.onnx']),
         description='ONNX checkpoint for learned controllers; pass an empty string to fall back to robot_driver.yaml')
     provider = DeclareLaunchArgument('provider', default_value = "cpu")
     estimator = DeclareLaunchArgument('estimator', default_value="comp_filter")

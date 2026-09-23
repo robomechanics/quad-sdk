@@ -56,8 +56,14 @@ void UnderbrushPolicy::init(
   leg_obs_dim_ = per_leg_obs_dim_;
   include_contact_ = true;
   {
-    auto leg0 = session_->GetInputTypeInfo(0).GetTensorTypeAndShapeInfo();
-    const auto leg0_shape = leg0.GetShape();
+    // NB: GetTensorTypeAndShapeInfo() returns a NON-OWNING view into the
+    // OrtTypeInfo. The TypeInfo must be held in a named variable — binding
+    // only the view lets the temporary TypeInfo die at the end of the
+    // statement, and GetShape() then reads freed memory (observed as
+    // std::length_error from a vector sized off garbage). Same pattern as
+    // the validation loop below.
+    Ort::TypeInfo leg0_info = session_->GetInputTypeInfo(0);
+    const auto leg0_shape = leg0_info.GetTensorTypeAndShapeInfo().GetShape();
     if (per_leg_obs_dim_ == kPerLegObsDim && !leg0_shape.empty() &&
         leg0_shape.back() == kPerLegObsDim - 1) {
       leg_obs_dim_ = kPerLegObsDim - 1;
