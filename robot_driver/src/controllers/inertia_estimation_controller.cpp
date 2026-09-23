@@ -254,16 +254,27 @@ bool InertiaEstimationController::computeLegCommandArray(
       // excursion is ~0.30 rad (vs the previous ~0.15) — better M[0,0]
       // identifiability without the stand collision risk.
       //
-      // Sign of "out" depends on leg + URDF axis convention. If your
-      // physical setup has "out" as NEGATIVE abad angle, flip the
-      // sign of kAbadCenter (per leg if needed).
-      constexpr double kAbadCenter = 0.20;  // radians, NEGATIVE = outward on Go2
-                                             // (verified by hardware test 8/7: +0.20 swung leg INWARD)
+      // Sign of "out" depends on the LEG SIDE: go2.yaml has abad sign=1.0
+      // for all four legs (no left/right mirroring), so a single global
+      // center cannot be outward on both sides — outward-left and
+      // outward-right are opposite wire directions. Mirror the whole abad
+      // ctrl expression per side.
+      //   8/7 hardware test: +0.20 swung the tested LEFT leg (FL, quad
+      //   leg 0) INWARD → outward for left legs (0=FL, 1=BL) is NEGATIVE;
+      //   right legs (2=FR, 3=BR) mirror to POSITIVE.
+      // VERIFY on first run per leg: watch the first seconds of flail and
+      // confirm abad swings AWAY from the stand. If your stand/robot
+      // orientation differs, flip kAbadOutwardSignLeftLegs only.
+      constexpr double kAbadCenter = 0.20;  // radians, magnitude only
+      constexpr double kAbadOutwardSignLeftLegs = -1.0;
       {
+        const double side =
+            (i < 2) ? kAbadOutwardSignLeftLegs : -kAbadOutwardSignLeftLegs;
         const double wa = w_main(sin(2.7 * t));
         leg_command_array_msg.leg_commands.at(i)
             .motor_commands.at(0)
             .pos_setpoint =
+            side *
             (kAbadCenter +
              wa * (0.10 * sin(2 * t) + 0.15 * cos(7.5 * sin(1.3 * t))) +
              (1.0 - wa) * (0.15 * sin(0.35 * t))) *
