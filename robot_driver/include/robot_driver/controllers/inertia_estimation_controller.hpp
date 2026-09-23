@@ -54,6 +54,14 @@ class InertiaEstimationController : public LegController {
   bool conv_loaded_ = false;
   std::vector<std::vector<double>> joint_sign_;
   std::vector<std::vector<double>> joint_offset_;
+
+  /// Sys-ID collection knobs, loaded lazily with the convention coefficients.
+  /// target_leg: 0..3 flails only that leg (quad order 0=FL 1=BL 2=FR 3=BR),
+  /// -1 flails all four. time_scale scales the excitation clock: 1.0 = the
+  /// hardware-verified envelope, 0.5 = same amplitudes at half velocity /
+  /// quarter acceleration (slow pass for Coulomb-vs-viscous separation).
+  int target_leg_ = 0;
+  double time_scale_ = 1.0;
 };
 
 #endif  // INERTIA_ESTIMATION_CONTROLLER

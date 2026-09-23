@@ -6,14 +6,18 @@
 //            calf range [-2.72, -0.84] after (sign=1, offset=-pi) conversion)
 static constexpr bool kUseGo2KneeEnvelope = true;
 
-// Which single leg to excite. Set to 0..3 to flail only that leg (others
-// hold their current observed pose); set to -1 to flail all four legs
+// Which single leg to excite: now the ROS param
+// `inertia_estimation.target_leg` (default 0). 0..3 flails only that leg
+// (others hold their current observed pose); -1 flails all four legs
 // simultaneously (original Spirit40 behavior).
 //   Quad-SDK convention (used everywhere including unitree_interface.hpp
 //   kLegMap): 0 = FL   1 = BL   2 = FR   3 = BR
-//   Bag verification 8/7/26 confirmed each kTargetLeg value moves the
+//   Bag verification 8/7/26 confirmed each target_leg value moves the
 //   physically-correct leg per this convention.
-static constexpr int kTargetLeg = 0;
+// `inertia_estimation.time_scale` (default 1.0) scales the excitation
+// clock: identical amplitudes, velocities scale linearly, accelerations
+// quadratically. Run each leg once at 1.0 and once at 0.5 — the slow pass
+// decorrelates Coulomb (sign(qd)) from viscous (qd) in the PACE fit.
 
 InertiaEstimationController::InertiaEstimationController(
     rclcpp::Node::SharedPtr node, const std::string& robot_ns,
@@ -43,6 +47,16 @@ bool InertiaEstimationController::computeLegCommandArray(
             joint_offset_[i][j], 0.0);
       }
     }
+    quad_utils::loadROSParamDefault(node_, "inertia_estimation.target_leg",
+                                    target_leg_, 0);
+    quad_utils::loadROSParamDefault(node_, "inertia_estimation.time_scale",
+                                    time_scale_, 1.0);
+    if (target_leg_ < -1 || target_leg_ > 3) target_leg_ = 0;
+    time_scale_ = std::min(std::max(time_scale_, 0.1), 1.0);
+    RCLCPP_INFO(node_->get_logger(),
+                "[inertia_estimation] target_leg=%d (0=FL 1=BL 2=FR 3=BR, "
+                "-1=all) time_scale=%.2f",
+                target_leg_, time_scale_);
     conv_loaded_ = true;
   }
 
@@ -197,16 +211,16 @@ bool InertiaEstimationController::computeLegCommandArray(
     }  // end t_now-in-range check
     }  // end if (have_plan)
 
-    double t = node_->now().seconds();
+    double t = time_scale_ * node_->now().seconds();
 
     for (int i = 0; i < num_feet_; ++i) {
       leg_command_array_msg.leg_commands.at(i).motor_commands.resize(3);
 
-      // Single-leg gating: if kTargetLeg is set (0..3) and this isn't it,
+      // Single-leg gating: if target_leg_ is set (0..3) and this isn't it,
       // hold this leg at its currently observed pose (wire convention — no
       // sign/offset conversion needed since it's already in wire space).
-      // kTargetLeg = -1 flails all legs simultaneously.
-      if (kTargetLeg >= 0 && i != kTargetLeg) {
+      // target_leg_ = -1 flails all legs simultaneously.
+      if (target_leg_ >= 0 && i != target_leg_) {
         for (int j = 0; j < 3; ++j) {
           leg_command_array_msg.leg_commands.at(i)
               .motor_commands.at(j)
@@ -310,10 +324,10 @@ bool InertiaEstimationController::computeLegCommandArray(
         leg_command_array_msg.leg_commands.at(i)
             .motor_commands.at(j)
             .torque_ff = 0;
-        // For the non-flailed legs (kTargetLeg gating), use SOFT gains
+        // For the non-flailed legs (target_leg_ gating), use SOFT gains
         // (swing_kp_/kd_) so they hold their observed pose gently; for the
         // flailed leg, use the stiff flail gains above.
-        const bool is_flail_leg = (kTargetLeg < 0) || (i == kTargetLeg);
+        const bool is_flail_leg = (target_leg_ < 0) || (i == target_leg_);
         leg_command_array_msg.leg_commands.at(i).motor_commands.at(j).kp =
             is_flail_leg ? flail_kp[j] : swing_kp_.at(j);
         leg_command_array_msg.leg_commands.at(i).motor_commands.at(j).kd =
