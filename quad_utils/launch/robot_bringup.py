@@ -406,7 +406,7 @@ def generate_launch_description():
         DeclareLaunchArgument('world', default_value = 'flat.sdf', description = 'Loaded World SDF File'),
         DeclareLaunchArgument('robot_type', default_value = 'spirit', description='Robot type'),
         DeclareLaunchArgument('namespace', default_value = 'robot_1', description='Robot namespace'),
-        DeclareLaunchArgument('controller', default_value = 'underbrush_v90', description='Controller type'),
+        DeclareLaunchArgument('controller', default_value = 'inertia_estimation', description='Controller type'),
         DeclareLaunchArgument('model_path',
             default_value=PathJoinSubstitution([
                 FindPackageShare('robot_driver'), 'models', 'go2', 'v121_model_14999.onnx']),

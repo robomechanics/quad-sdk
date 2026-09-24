@@ -51,7 +51,7 @@ def generate_launch_description():
     robot_type = DeclareLaunchArgument('robot_type', default_value='go2')
     mocap = DeclareLaunchArgument('mocap', default_value='true')
     logging = DeclareLaunchArgument('logging', default_value='false')
-    controller = DeclareLaunchArgument('controller', default_value='underbrush_v90')
+    controller = DeclareLaunchArgument('controller', default_value='inertia_estimation')
     # V90 GRU checkpoint 42900, installed from robot_driver/models/go2/ into
     # share/robot_driver/models/go2/ so the path resolves on any workspace.
     model_path = DeclareLaunchArgument('model_path',

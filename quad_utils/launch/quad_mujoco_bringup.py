@@ -302,7 +302,7 @@ def generate_launch_description():
                               description='Robot type'),
         DeclareLaunchArgument('namespace', default_value='robot_1',
                               description='Robot namespace'),
-        DeclareLaunchArgument('controller', default_value='underbrush_v90',
+        DeclareLaunchArgument('controller', default_value='inertia_estimation',
                               description='Controller type'),
         DeclareLaunchArgument('estimator', default_value='comp_filter',
                               description='State estimator type (comp_filter or ekf_filter)'),
