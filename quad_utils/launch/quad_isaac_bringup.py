@@ -339,7 +339,7 @@ def generate_launch_description() -> LaunchDescription:
         DeclareLaunchArgument('namespace', default_value='robot_1'),
         DeclareLaunchArgument('robot_type', default_value='spirit'),
         DeclareLaunchArgument(
-            'controller', default_value='inertia_estimation',
+            'controller', default_value='underbrush_v90',
             description='underbrush_v90 | inverse_dynamics | underbrush | learned',
         ),
         DeclareLaunchArgument('use_sim_time', default_value='true'),
