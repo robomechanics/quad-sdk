@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1500" height="304" viewBox="0 36 1500 304" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="12.5">
+  <title>Go2 field network: wired control chain and 5 GHz robot link</title>
+  <desc>Offboard Linux computer wired to a GL.iNet Slate AX1800 router, which feeds a TP-Link PoE injector powering a Ubiquiti E7 Campus access point. The Unitree Go2 backpack computer joins the E7 over 5 GHz Wi-Fi and reaches the robot's internal network over Ethernet.</desc>
+  <defs>
+    <style>
+      .name{font-size:15px;font-weight:600;fill:#1a1a1a}
+      .line{fill:#5f6368}
+      .edge{font-size:12px;fill:#5f6368}
+      .note{font-size:11.5px;fill:#5f6368}
+      .wire{stroke:#333333;stroke-width:1.75;fill:none}
+      .poe{stroke:#333333;stroke-width:3.5;fill:none}
+      .wifi{stroke:#1f5fa8;stroke-width:1.75;fill:none;stroke-dasharray:6 5}
+      .arc{stroke:#1f5fa8;stroke-width:1.75;fill:none}
+      .glyph{stroke:#1a1a1a;stroke-width:1.6;fill:#ffffff;stroke-linejoin:round;stroke-linecap:round}
+      .leg{stroke:#1a1a1a;stroke-width:1.6;fill:none;stroke-linejoin:round;stroke-linecap:round}
+      .accent{stroke:#1f5fa8;stroke-width:1.8;fill:#eaf1fb;stroke-linejoin:round}
+      .bracket{stroke:#8a8a8a;stroke-width:1.25;fill:none}
+      .thin{stroke:#8a8a8a;stroke-width:1.25;fill:none}
+    </style>
+  </defs>
+  <rect x="0" y="0" width="1500" height="340" fill="#ffffff"/>
+
+  <!-- links (drawn first so glyphs sit on top) -->
+  <g id="links">
+    <path class="wire" d="M182 100 H340"/>
+    <path class="wire" d="M420 100 H592"/>
+    <path class="poe"  d="M648 100 H834"/>
+    <path class="wifi" d="M912 100 H1026"/>
+    <path class="wire" d="M1134 100 H1296"/>
+  </g>
+
+  <!-- edge labels -->
+  <text class="edge" x="261" y="88" text-anchor="middle">1 GbE (USB adapter)</text>
+  <text class="edge" x="506" y="88" text-anchor="middle">1 GbE (LAN port)</text>
+  <text class="edge" x="741" y="88" text-anchor="middle">PoE + data, one cable</text>
+  <text class="edge" x="969" y="56" text-anchor="middle" fill="#1f5fa8" font-weight="600">SSID RML-Go2</text>
+  <text class="edge" x="969" y="72" text-anchor="middle">5 GHz 802.11ac, WPA2</text>
+  <text class="edge" x="1215" y="88" text-anchor="middle">Ethernet</text>
+
+  <!-- offboard computer -->
+  <g id="offboard">
+    <rect class="glyph" x="100" y="58" width="80" height="50" rx="4"/>
+    <rect x="106" y="64" width="68" height="38" rx="2" fill="#f2f2f2"/>
+    <path class="glyph" d="M92 110 h96 l6 8 h-108 z"/>
+    <text class="name" x="140" y="165" text-anchor="middle">Offboard computer (Linux)</text>
+    <text class="line" x="140" y="184" text-anchor="middle">runs UniFi OS Server + Quad-SDK</text>
+    <text class="line" x="140" y="201" text-anchor="middle">192.168.8.103</text>
+  </g>
+
+  <!-- GL.iNet Slate router -->
+  <g id="slate">
+    <path class="glyph" d="M356 84 l-8 -24"/>
+    <path class="glyph" d="M404 84 l8 -24"/>
+    <rect class="glyph" x="340" y="84" width="80" height="30" rx="5"/>
+    <circle cx="352" cy="99" r="2" fill="#1a1a1a"/>
+    <circle cx="362" cy="99" r="2" fill="#1a1a1a"/>
+    <circle cx="372" cy="99" r="2" fill="#1a1a1a"/>
+    <text class="name" x="380" y="165" text-anchor="middle">GL.iNet Slate AX1800</text>
+    <text class="line" x="380" y="184" text-anchor="middle">router, DHCP for 192.168.8.0/24</text>
+    <text class="line" x="380" y="201" text-anchor="middle">192.168.8.1, own radios off</text>
+  </g>
+
+  <!-- PoE injector -->
+  <g id="injector">
+    <path class="glyph" d="M620 80 v-13"/>
+    <rect class="glyph" x="614" y="58" width="12" height="9" rx="2"/>
+    <path class="glyph" d="M617 58 v-4 M623 58 v-4"/>
+    <rect class="glyph" x="592" y="80" width="56" height="36" rx="5"/>
+    <rect class="glyph" x="600" y="108" width="14" height="10" rx="1"/>
+    <rect class="glyph" x="626" y="108" width="14" height="10" rx="1"/>
+    <text class="name" x="620" y="165" text-anchor="middle">TP-Link POE160S</text>
+    <text class="line" x="620" y="184" text-anchor="middle">PoE injector, 802.3at, 30 W</text>
+    <text class="line" x="620" y="201" text-anchor="middle">data in, PoE + data out</text>
+  </g>
+
+  <!-- Ubiquiti E7 Campus -->
+  <g id="e7">
+    <rect class="accent" x="834" y="70" width="52" height="60" rx="9"/>
+    <path class="glyph" d="M860 130 v10 M850 140 h20"/>
+    <path class="arc" d="M893.1 92.9 A10 10 0 0 1 893.1 107.1"/>
+    <path class="arc" d="M898.7 87.3 A18 18 0 0 1 898.7 112.7"/>
+    <path class="arc" d="M904.4 81.6 A26 26 0 0 1 904.4 118.4"/>
+    <text class="name" x="860" y="165" text-anchor="middle">Ubiquiti E7 Campus</text>
+    <text class="line" x="860" y="184" text-anchor="middle">access point, 192.168.8.194</text>
+    <text class="line" x="860" y="201" text-anchor="middle">5 GHz ch 149, 80 MHz, 12 dBi</text>
+  </g>
+
+  <!-- Go2 backpack computer with USB Wi-Fi adapter -->
+  <g id="go2pc">
+    <path class="arc" d="M1040.3 94.3 A8 8 0 0 0 1040.3 105.7"/>
+    <path class="arc" d="M1035.4 89.4 A15 15 0 0 0 1035.4 110.6"/>
+    <path class="arc" d="M1030.4 84.4 A22 22 0 0 0 1030.4 115.6"/>
+    <rect class="accent" x="1050" y="90" width="16" height="20" rx="3"/>
+    <rect class="glyph" x="1066" y="78" width="68" height="44" rx="5"/>
+    <rect x="1084" y="90" width="32" height="20" rx="2" fill="#f2f2f2" stroke="#1a1a1a" stroke-width="1"/>
+    <text class="name" x="1100" y="165" text-anchor="middle">Go2 backpack computer</text>
+    <text class="line" x="1100" y="184" text-anchor="middle">USB Wi-Fi adapter, 2x2 802.11ac</text>
+    <text class="line" x="1100" y="201" text-anchor="middle">192.168.8.x (DHCP)</text>
+  </g>
+
+  <!-- Unitree Go2 -->
+  <g id="go2">
+    <rect class="glyph" x="1312" y="66" width="30" height="14" rx="3"/>
+    <rect class="glyph" x="1296" y="78" width="80" height="28" rx="10"/>
+    <rect class="glyph" x="1374" y="74" width="18" height="18" rx="5"/>
+    <path class="leg" d="M1308 106 l-8 10 l6 10"/>
+    <path class="leg" d="M1322 106 l-6 10 l6 10"/>
+    <path class="leg" d="M1358 106 l-6 10 l6 10"/>
+    <path class="leg" d="M1370 106 l-8 10 l6 10"/>
+    <text class="name" x="1340" y="165" text-anchor="middle">Unitree Go2</text>
+    <text class="line" x="1340" y="184" text-anchor="middle">internal computers and sensors</text>
+    <text class="line" x="1340" y="201" text-anchor="middle">192.168.123.x</text>
+  </g>
+
+  <!-- subnet brackets -->
+  <g id="subnets">
+    <path class="bracket" d="M100 226 v8 H1090 v-8"/>
+    <text class="note" x="595" y="252" text-anchor="middle">192.168.8.0/24: Slate LAN and the RML-Go2 Wi-Fi network, addresses from the Slate's DHCP</text>
+    <path class="bracket" d="M1110 226 v8 H1392 v-8"/>
+    <text class="note" x="1251" y="252" text-anchor="middle">192.168.123.0/24: Unitree internal network</text>
+  </g>
+
+  <!-- legend -->
+  <g id="legend">
+    <path class="wire" d="M100 300 H140"/>
+    <text class="note" x="148" y="304">Ethernet, 1 GbE</text>
+    <path class="poe" d="M300 300 H340"/>
+    <text class="note" x="348" y="304">PoE power + data</text>
+    <path class="wifi" d="M520 300 H560"/>
+    <text class="note" x="568" y="304">Wi-Fi, 5 GHz 802.11ac, WPA2</text>
+    <rect class="accent" x="790" y="293" width="14" height="14" rx="3"/>
+    <text class="note" x="812" y="304">added in this setup (E7 Campus and the 5 GHz robot link)</text>
+  </g>
+</svg>

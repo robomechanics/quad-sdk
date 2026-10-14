@@ -20,6 +20,7 @@ The RML mocap network is a TP-Link router (`192.168.8.0/24`) sitting between the
 | **Simon** (Go2-W) | `192.168.8.20` | Robot |
 | **Mocap PC** | `192.162.8.104` | Optitrack/Motive host |
 | **Legged Controls laptop** | `192.168.8.103` | Quad-SDK remote driver |
+| **E7 Campus AP** (field Wi-Fi) | `192.168.8.194` | Ubiquiti access point — see [Field Wi-Fi](field-wifi.md) |
 | Unitree low-level MCU | `192.168.123.161` | Reserved — **never reassign** |
 
 !!! warning "DNS field is required on the TP-Link"

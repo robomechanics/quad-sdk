@@ -27,6 +27,14 @@ This hub collects everything an RML member needs to bring up Quad-SDK on the lab
 
     [:octicons-arrow-right-24: Networking](networking.md)
 
+-   :material-wifi:{ .lg .middle } **Go2 field Wi-Fi (E7 Campus)**
+
+    ---
+
+    Long-range 5 GHz robot link for field tests: cabling, PoE, UniFi OS Server on the lab laptop, radio settings, robot-side config.
+
+    [:octicons-arrow-right-24: Field Wi-Fi](field-wifi.md)
+
 -   :material-clock-time-eight:{ .lg .middle } **Time sync (chrony)**
 
     ---
