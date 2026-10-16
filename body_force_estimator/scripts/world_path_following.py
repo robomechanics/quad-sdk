@@ -37,8 +37,8 @@ class WorldPathFollowingNode(Node):
         self.declare_parameter('y_pt', 0.0)      # target line y, m
         self.declare_parameter('y_gain', 0.3)    # world cross-track P gain
         self.declare_parameter('vy_max', 0.15)   # clamp on cross-track term, m/s
-        self.declare_parameter('yaw_gain', 0.5)  # yaw-hold P gain
-        self.declare_parameter('wz_max', 0.3)    # clamp on wz; training used +-0.3
+        self.declare_parameter('yaw_gain', 2.5)  # yaw-hold P gain
+        self.declare_parameter('wz_max', 1.0)    # clamp on wz; training used +-0.3
         self.speed = float(self.get_parameter('speed').value)
         self.warmup_secs = float(self.get_parameter('warmup_secs').value)
         self.y_pt = float(self.get_parameter('y_pt').value)

@@ -118,7 +118,7 @@ class UnderbrushPolicy : public LearnedVelocityPolicy {
   /// qd_leg (joint_vel_rel; default vel is 0 so ≈ absolute) ObsTerm scale.
   static constexpr float kJointVelScale = 0.05f;
   /// Simulator/Unitree torque observation scale, matching training.
-  static constexpr float kTauScale = 0.01f;
+  static constexpr float kTauScale = 0.8f;
   // foot_force is a BINARY contact flag in v51 (sim force > 5 N, scale 1.0);
   // it is fed straight from the interface's contact_states — no scale constant.
 

@@ -1,0 +1,33 @@
+<CycloneDDS>
+    <!-- Go2 native DDS (stock controller) as seen from the Jetson.
+
+         The Go2 firmware publishes rt/lowstate, rt/sportmodestate, ... on DDS
+         domain 0 over the internal 192.168.123.0/24 Ethernet, with ordinary
+         multicast discovery -- the same settings unitree_ros2's setup.sh uses.
+         The domain comes from ROS_DOMAIN_ID (default 0, set by
+         go2_bag_recorder.sh); GO2_DDS_IFACE is the Jetson's interface on that
+         subnet (auto-detected, e.g. enP8p1s0).
+
+         Binding to that interface only means the recorder
+           * never sends DDS traffic over Wi-Fi (nothing to lose when Wi-Fi drops,
+             and no bandwidth stolen from the remote computer), and
+           * is invisible to the Quad-SDK domain-42 graph on 192.168.8.0/24. -->
+    <Domain Id="any">
+        <General>
+            <Interfaces>
+                <NetworkInterface name="${GO2_DDS_IFACE}" priority="default" multicast="default"/>
+            </Interfaces>
+        </General>
+        <Internal>
+            <!-- Ask for big socket buffers but don't demand them (no min=):
+                 the kernel clamps to net.core.rmem_max and the recorder still
+                 starts. go2_bag_recorder.sh warns when rmem_max is small. -->
+            <SocketReceiveBufferSize max="64MB"/>
+            <SocketSendBufferSize max="8MB"/>
+        </Internal>
+        <Discovery>
+            <ParticipantIndex>auto</ParticipantIndex>
+            <MaxAutoParticipantIndex>64</MaxAutoParticipantIndex>
+        </Discovery>
+    </Domain>
+</CycloneDDS>

@@ -52,14 +52,17 @@ def generate_launch_description():
     mocap = DeclareLaunchArgument('mocap', default_value='true')
     logging = DeclareLaunchArgument('logging', default_value='false')
     controller = DeclareLaunchArgument('controller', default_value='underbrush_v90')
-    # V90 GRU checkpoint 42900, installed from robot_driver/models/go2/ into
-    # share/robot_driver/models/go2/ so the path resolves on any workspace.
+    # V126 checkpoint 47700 (contactless, 9-dim per-leg -- needs the
+    # underbrush_v90 id; v92's 13-dim obs will not auto-detect), installed from
+    # robot_driver/models/go2/ into share/robot_driver/models/go2/ so the path
+    # resolves on any workspace. New .onnx files are gitignored and only land
+    # in share/ on a colcon build -- add one and rebuild, or the path dangles.
     model_path = DeclareLaunchArgument('model_path',
         default_value=PathJoinSubstitution([
-            FindPackageShare('robot_driver'), 'models', 'go2', 'v123_model_49999.onnx']),
+            FindPackageShare('robot_driver'), 'models', 'go2', 'underbrush_v149_m45000.onnx']),
         description='ONNX checkpoint for learned controllers; pass an empty string to fall back to robot_driver.yaml')
     provider = DeclareLaunchArgument('provider', default_value = "cpu")
-    estimator = DeclareLaunchArgument('estimator', default_value="comp_filter")
+    estimator = DeclareLaunchArgument('estimator', default_value="ekf_filter")
     debug_estimator = DeclareLaunchArgument('debug_estimator', default_value="none",
                                             description='Parallel ride-along estimator (publishes to topics.state.estimate for comparison). Set to "none" to disable.')
     is_hardware = DeclareLaunchArgument('is_hardware', default_value='true')
