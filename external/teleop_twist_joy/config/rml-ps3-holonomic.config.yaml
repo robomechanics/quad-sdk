@@ -4,13 +4,13 @@
       x: 1
       y: 0
     scale_linear:
-      x: 0.5
+      x: 1.0
       y: 0.5
     scale_linear_turbo:
       x: 1.0
       y: 0.5
     axis_angular:
-      yaw: 0
+      yaw: 2
     scale_angular:
       yaw: 1.0
     scale_angular_turbo:

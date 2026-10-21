@@ -59,7 +59,7 @@ def generate_launch_description():
     # in share/ on a colcon build -- add one and rebuild, or the path dangles.
     model_path = DeclareLaunchArgument('model_path',
         default_value=PathJoinSubstitution([
-            FindPackageShare('robot_driver'), 'models', 'go2', 'underbrush_v149_m45000.onnx']),
+            FindPackageShare('robot_driver'), 'models', 'go2', 'underbrush_v157_m30000.onnx']),
         description='ONNX checkpoint for learned controllers; pass an empty string to fall back to robot_driver.yaml')
     provider = DeclareLaunchArgument('provider', default_value = "cpu")
     estimator = DeclareLaunchArgument('estimator', default_value="ekf_filter")

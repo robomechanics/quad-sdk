@@ -409,7 +409,7 @@ def generate_launch_description():
         DeclareLaunchArgument('controller', default_value = 'underbrush_v90', description='Controller type'),
         DeclareLaunchArgument('model_path',
             default_value=PathJoinSubstitution([
-                FindPackageShare('robot_driver'), 'models', 'go2', 'underbrush_v149_m45000.onnx']),
+                FindPackageShare('robot_driver'), 'models', 'go2', 'underbrush_v157_m30000.onnx']),
             description='ONNX checkpoint for learned controllers; pass an empty string to fall back to robot_driver.yaml'),
         DeclareLaunchArgument('estimator', default_value = 'comp_filter', description='State estimator type (comp_filter or ekf_filter)'),
         DeclareLaunchArgument('init_pose', default_value = '-x 2.0 -y 0.0 -z 15', description= "Initial Robot Position"),
