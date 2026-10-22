@@ -10,3 +10,6 @@
 [submodule "external/livox_ros_driver2"]
 	path = external/livox_ros_driver2
 	url = https://github.com/Livox-SDK/livox_ros_driver2.git
+[submodule "external/realsense-ros"]
+	path = external/realsense-ros
+	url = https://github.com/IntelRealSense/realsense-ros.git

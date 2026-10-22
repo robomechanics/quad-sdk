@@ -19,7 +19,7 @@ def launch_robot_group(context, *args, **kwargs):
 
     robot_groups = []
 
-    for config in robot_configs:
+    for i, config in enumerate(robot_configs):
         robot_ns = config["name"]
         robot_type = config["type"]
         robot_controller = config["controller_mode"]
@@ -54,6 +54,8 @@ def launch_robot_group(context, *args, **kwargs):
                     'twist_input': TextSubstitution(text=twist_input),
                     'goal_state': TextSubstitution(text=goal_state),
                     'logging' : LaunchConfiguration('logging'),
+                    # One physical camera: only the first robot's logger starts it.
+                    'camera' : LaunchConfiguration('camera') if i == 0 else TextSubstitution(text='false'),
                     'leaping' : LaunchConfiguration('leaping'),
                     'ac' : LaunchConfiguration('ac'),
                     'cbs_mode' : LaunchConfiguration('cbs_mode'),
@@ -79,6 +81,7 @@ def launch_robot_group(context, *args, **kwargs):
 def generate_launch_description():
     return LaunchDescription([
         DeclareLaunchArgument('logging', default_value='true', description='Rosbag Trial Run'),
+        DeclareLaunchArgument('camera', default_value='true', description='Start the offboard RealSense D456 and bag its color stream (needs logging:=true)'),
         DeclareLaunchArgument('leaping', default_value='true', description='Enable Leaping in the Global Planner'),
         DeclareLaunchArgument('ac', default_value='false', description='Enable Adaptive Complexity Planner (Spirit ONLY)'),
         DeclareLaunchArgument('use_sim_time', default_value='false', description='Use Simulation Clock or Computer Clock (pass use_sim_time:=true for Gazebo sessions)'),

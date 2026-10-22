@@ -79,3 +79,9 @@ sudo apt install -y ros-jazzy-pinocchio
 cd ..
 rosdep install --from-paths external/mocap4ros2_optitrack external/mocap4r2_msgs external/mocap4r2 --ignore-src -r -y
 cd external
+
+# Setup dependencies for realsense-ros (offboard RealSense D456, logging.py)
+# The ROS wrapper is a submodule built by colcon; librealsense2 (the SDK, >= 2.58,
+# matching the 4.58.4 wrapper) comes from apt via rosdep, like Livox-SDK2 comes
+# from the image rather than from source.
+rosdep install --from-paths realsense-ros --ignore-src -r -y

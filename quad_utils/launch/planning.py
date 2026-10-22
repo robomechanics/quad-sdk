@@ -265,7 +265,8 @@ def launch_logging(context, *args, **kwargs):
             PythonLaunchDescriptionSource(PathJoinSubstitution([
                 FindPackageShare('quad_utils'), 'launch', 'logging.py'
             ])),
-            launch_arguments={'namespace': TextSubstitution(text=namespace)}.items()
+            launch_arguments={'namespace': TextSubstitution(text=namespace),
+                              'camera': LaunchConfiguration('camera')}.items()
         )
     ]
 
@@ -286,6 +287,8 @@ def generate_launch_description():
     return LaunchDescription([
         DeclareLaunchArgument('reference', default_value='twist'),
         DeclareLaunchArgument('logging', default_value='true'),
+        DeclareLaunchArgument('camera', default_value='false',
+                              description='Start the RealSense D456 and bag its color stream (with logging)'),
         DeclareLaunchArgument('twist_input', default_value='none'),
         DeclareLaunchArgument('controller_mode', default_value='underbrush_v90'),
         DeclareLaunchArgument('namespace', default_value='robot_1'),
