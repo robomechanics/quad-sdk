@@ -150,6 +150,16 @@ ament_target_dependencies(robot_driver_node
   quad_utils
 )
 
+# Forwards Quad-SDK teleop (cmd_vel, control/mode) to the Unitree sport
+# controller, for policy vs. stock comparisons with matched commands.
+add_executable(go2_sport_bridge_node src/go2_sport_bridge_node.cpp)
+target_link_libraries(go2_sport_bridge_node robot_driver)
+ament_target_dependencies(go2_sport_bridge_node
+  rclcpp
+  std_msgs
+  geometry_msgs
+)
+
 
 install(
   DIRECTORY config/
@@ -171,6 +181,7 @@ install(
 install(TARGETS
   robot_driver
   robot_driver_node
+  go2_sport_bridge_node
   ARCHIVE DESTINATION lib
   LIBRARY DESTINATION lib
   RUNTIME DESTINATION lib/${PROJECT_NAME}
