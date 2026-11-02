@@ -56,6 +56,7 @@ def launch_robot_group(context, *args, **kwargs):
                     'logging' : LaunchConfiguration('logging'),
                     # One physical camera: only the first robot's logger starts it.
                     'camera' : LaunchConfiguration('camera') if i == 0 else TextSubstitution(text='false'),
+                    'camera_profile' : LaunchConfiguration('camera_profile'),
                     'leaping' : LaunchConfiguration('leaping'),
                     'ac' : LaunchConfiguration('ac'),
                     'cbs_mode' : LaunchConfiguration('cbs_mode'),
@@ -81,7 +82,8 @@ def launch_robot_group(context, *args, **kwargs):
 def generate_launch_description():
     return LaunchDescription([
         DeclareLaunchArgument('logging', default_value='true', description='Rosbag Trial Run'),
-        DeclareLaunchArgument('camera', default_value='true', description='Start the offboard RealSense D456 and bag its color stream (needs logging:=true)'),
+        DeclareLaunchArgument('camera', default_value='false', description='Start the offboard RealSense D456 and bag its color stream (needs logging:=true)'),
+        DeclareLaunchArgument('camera_profile', default_value='1280,800,30', description='D456 color stream width,height,fps (needs USB 3; 640,480,30 is the USB-safe fallback)'),
         DeclareLaunchArgument('leaping', default_value='true', description='Enable Leaping in the Global Planner'),
         DeclareLaunchArgument('ac', default_value='false', description='Enable Adaptive Complexity Planner (Spirit ONLY)'),
         DeclareLaunchArgument('use_sim_time', default_value='false', description='Use Simulation Clock or Computer Clock (pass use_sim_time:=true for Gazebo sessions)'),
@@ -89,7 +91,7 @@ def generate_launch_description():
         DeclareLaunchArgument('cbs_mode', default_value='false', description='Suppress GBP spin-loop solo planning (used by multi_robot.py for CBS).'),
         DeclareLaunchArgument(
             'robot_configs',
-            default_value='[{"name": "robot_1", "type": "go2", "controller_mode" : "underbrush_v90", "reference": "twist", "twist_input": "none"}]',
+            default_value='[{"name": "robot_1", "type": "go2", "controller_mode" : "underbrush_v90", "reference": "twist", "twist_input": "joy"}]',
             description='A JSON List of robot configurations: MUST specifiy name, type, and controller_mode, reference'
         ),
         OpaqueFunction(function=launch_robot_group)

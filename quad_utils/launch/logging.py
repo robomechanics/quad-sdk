@@ -164,7 +164,7 @@ def generate_launch_description():
         DeclareLaunchArgument('robot_type', default_value='go2'),
         DeclareLaunchArgument('camera', default_value='true',
                               description='Start the RealSense D456 and bag its color stream'),
-        DeclareLaunchArgument('camera_profile', default_value='640,480,30',
+        DeclareLaunchArgument('camera_profile', default_value='1280,800,30',
                               description='Color stream width,height,fps'),
         DeclareLaunchArgument('camera_raw', default_value='false',
                               description='Also bag uncompressed color (~28 MB/s at 640x480x30)'),

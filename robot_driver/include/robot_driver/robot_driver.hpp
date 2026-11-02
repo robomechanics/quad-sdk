@@ -157,6 +157,11 @@ class RobotDriver {
    */
   bool updateState();
 
+  /// Tick the optional ride-along estimator (debug_estimator_id) on the
+  /// current sensor inputs. Seeds from last_robot_state_msg_ at READY. Output
+  /// goes to debug_estimate_msg_ only; it never drives control.
+  void updateDebugEstimator();
+
   /**
    * @brief Function to compute leg command array message
    */

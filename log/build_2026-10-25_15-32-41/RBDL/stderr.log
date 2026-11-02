@@ -1,0 +1,11 @@
+gmake[2]: *** [CMakeFiles/rbdl.dir/build.make:90: CMakeFiles/rbdl.dir/src/rbdl_mathutils.cc.o] Interrupt
+gmake[2]: *** [CMakeFiles/rbdl.dir/build.make:146: CMakeFiles/rbdl.dir/src/Constraint_Contact.cc.o] Interrupt
+gmake[2]: *** [CMakeFiles/rbdl.dir/build.make:104: CMakeFiles/rbdl.dir/src/rbdl_utils.cc.o] Interrupt
+gmake[2]: *** [CMakeFiles/rbdl.dir/build.make:160: CMakeFiles/rbdl.dir/src/Constraint_Loop.cc.o] Interrupt
+gmake[2]: *** [CMakeFiles/rbdl.dir/build.make:174: CMakeFiles/rbdl.dir/src/Dynamics.cc.o] Interrupt
+gmake[2]: *** [CMakeFiles/rbdl.dir/build.make:202: CMakeFiles/rbdl.dir/src/Joint.cc.o] Interrupt
+gmake[2]: *** [CMakeFiles/rbdl.dir/build.make:216: CMakeFiles/rbdl.dir/src/Model.cc.o] Interrupt
+gmake[2]: *** [CMakeFiles/rbdl.dir/build.make:230: CMakeFiles/rbdl.dir/src/Kinematics.cc.o] Interrupt
+gmake[2]: *** [CMakeFiles/rbdl.dir/build.make:132: CMakeFiles/rbdl.dir/src/Constraints.cc.o] Interrupt
+gmake[1]: *** [CMakeFiles/Makefile2:83: CMakeFiles/rbdl.dir/all] Interrupt
+gmake: *** [Makefile:156: all] Interrupt

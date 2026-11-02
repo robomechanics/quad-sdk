@@ -1,0 +1,42 @@
+[0.012s] Invoking command in '/home/rml_admin/ros2_ws/src/quad-sdk/build/RBDL': DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake /home/rml_admin/ros2_ws/src/quad-sdk/external/rbdl-orb -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/home/rml_admin/ros2_ws/src/quad-sdk/install/RBDL
+[0.061s] -- The C compiler identification is GNU 13.3.0
+[0.103s] -- The CXX compiler identification is GNU 13.3.0
+[0.116s] -- Detecting C compiler ABI info
+[0.195s] -- Detecting C compiler ABI info - done
+[0.203s] -- Check for working C compiler: /usr/bin/cc - skipped
+[0.203s] -- Detecting C compile features
+[0.203s] -- Detecting C compile features - done
+[0.213s] -- Detecting CXX compiler ABI info
+[0.290s] -- Detecting CXX compiler ABI info - done
+[0.296s] -- Check for working CXX compiler: /usr/bin/c++ - skipped
+[0.297s] -- Detecting CXX compile features
+[0.297s] -- Detecting CXX compile features - done
+[0.313s] -- Configuring done (0.3s)
+[0.315s] -- Generating done (0.0s)
+[0.316s] -- Build files have been written to: /home/rml_admin/ros2_ws/src/quad-sdk/build/RBDL
+[0.319s] Invoked command in '/home/rml_admin/ros2_ws/src/quad-sdk/build/RBDL' returned '0': DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake /home/rml_admin/ros2_ws/src/quad-sdk/external/rbdl-orb -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/home/rml_admin/ros2_ws/src/quad-sdk/install/RBDL
+[0.320s] Invoking command in '/home/rml_admin/ros2_ws/src/quad-sdk/build/RBDL': DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake --build /home/rml_admin/ros2_ws/src/quad-sdk/build/RBDL -- -j22 -l22
+[0.369s] [ 38%] [32mBuilding CXX object CMakeFiles/rbdl.dir/src/Dynamics.cc.o[0m
+[0.369s] [ 38%] [32mBuilding CXX object CMakeFiles/rbdl.dir/src/Constraint_Contact.cc.o[0m
+[0.369s] [ 38%] [32mBuilding CXX object CMakeFiles/rbdl.dir/src/Logging.cc.o[0m
+[0.369s] [ 38%] [32mBuilding CXX object CMakeFiles/rbdl.dir/src/rbdl_errors.cc.o[0m
+[0.369s] [ 38%] [32mBuilding CXX object CMakeFiles/rbdl.dir/src/Constraints.cc.o[0m
+[0.369s] [ 46%] [32mBuilding CXX object CMakeFiles/rbdl.dir/src/Kinematics.cc.o[0m
+[0.370s] [ 53%] [32mBuilding CXX object CMakeFiles/rbdl.dir/src/rbdl_utils.cc.o[0m
+[0.370s] [ 61%] [32mBuilding CXX object CMakeFiles/rbdl.dir/src/rbdl_mathutils.cc.o[0m
+[0.370s] [ 69%] [32mBuilding CXX object CMakeFiles/rbdl.dir/src/rbdl_version.cc.o[0m
+[0.371s] [ 76%] [32mBuilding CXX object CMakeFiles/rbdl.dir/src/Constraint_Loop.cc.o[0m
+[0.372s] [ 84%] [32mBuilding CXX object CMakeFiles/rbdl.dir/src/Joint.cc.o[0m
+[0.372s] [ 92%] [32mBuilding CXX object CMakeFiles/rbdl.dir/src/Model.cc.o[0m
+[2.513s] gmake[2]: *** [CMakeFiles/rbdl.dir/build.make:90: CMakeFiles/rbdl.dir/src/rbdl_mathutils.cc.o] Interrupt
+[2.513s] gmake[2]: *** [CMakeFiles/rbdl.dir/build.make:146: CMakeFiles/rbdl.dir/src/Constraint_Contact.cc.o] Interrupt
+[2.513s] gmake[2]: *** [CMakeFiles/rbdl.dir/build.make:104: CMakeFiles/rbdl.dir/src/rbdl_utils.cc.o] Interrupt
+[2.513s] gmake[2]: *** [CMakeFiles/rbdl.dir/build.make:160: CMakeFiles/rbdl.dir/src/Constraint_Loop.cc.o] Interrupt
+[2.513s] gmake[2]: *** [CMakeFiles/rbdl.dir/build.make:174: CMakeFiles/rbdl.dir/src/Dynamics.cc.o] Interrupt
+[2.513s] gmake[2]: *** [CMakeFiles/rbdl.dir/build.make:202: CMakeFiles/rbdl.dir/src/Joint.cc.o] Interrupt
+[2.513s] gmake[2]: *** [CMakeFiles/rbdl.dir/build.make:216: CMakeFiles/rbdl.dir/src/Model.cc.o] Interrupt
+[2.514s] gmake[2]: *** [CMakeFiles/rbdl.dir/build.make:230: CMakeFiles/rbdl.dir/src/Kinematics.cc.o] Interrupt
+[2.514s] gmake[2]: *** [CMakeFiles/rbdl.dir/build.make:132: CMakeFiles/rbdl.dir/src/Constraints.cc.o] Interrupt
+[2.514s] gmake[1]: *** [CMakeFiles/Makefile2:83: CMakeFiles/rbdl.dir/all] Interrupt
+[2.515s] gmake: *** [Makefile:156: all] Interrupt
+[2.544s] Invoked command in '/home/rml_admin/ros2_ws/src/quad-sdk/build/RBDL' returned '-2': DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake --build /home/rml_admin/ros2_ws/src/quad-sdk/build/RBDL -- -j22 -l22

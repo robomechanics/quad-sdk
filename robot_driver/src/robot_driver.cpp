@@ -537,6 +537,51 @@ void RobotDriver::mocapCallback(
   last_mocap_msg_ = msg;
 }
 
+void RobotDriver::updateDebugEstimator() {
+  // Run the ride-along estimator on the same sensor inputs. Its output
+  // goes to debug_estimate_msg_ and is published on topics.state.estimate
+  // for comparison; it never reaches the controller.
+  //
+  // Gate the first seed on READY (standing): if we initialize during sit
+  // or the sit->stand transient, the contact-aided EKF dead-reckons
+  // through legs extending / feet breaking contact and accumulates x/y
+  // drift before the robot is even walking. Waiting for a settled standing
+  // pose makes it start coincident with the mocap-fused comp filter.
+  // Once seeded it keeps running across all modes.
+  if (debug_state_estimator_ != nullptr &&
+      (debug_estimator_seeded_ || control_mode_ == READY)) {
+    bool first_seed = !debug_estimator_seeded_;
+    if (!debug_estimator_seeded_) {
+      // Seed from the primary's first valid output so both filters
+      // initialize from the same pose (EKF reads X0 from this msg).
+      debug_estimate_msg_ = last_robot_state_msg_;
+      debug_estimator_seeded_ = true;
+    }
+    debug_state_estimator_->loadSensorMsg(last_imu_msg_,
+                                          last_joint_state_msg_);
+    if (last_mocap_msg_ != nullptr) {
+      debug_state_estimator_->loadMocapMsg(last_mocap_msg_);
+    }
+    debug_state_estimator_->updateOnce(debug_estimate_msg_);
+
+    // One-time init diagnostic: shows the seed (mocap-fused comp filter
+    // pose) vs the ride-along's first published estimate, so we can see
+    // whether they start coincident.
+    if (first_seed) {
+      RCLCPP_INFO(
+          node_->get_logger(),
+          "EKF ride-along init: seed(comp/mocap)=(%.3f, %.3f, %.3f) "
+          "first_est=(%.3f, %.3f, %.3f)",
+          last_robot_state_msg_.body.pose.position.x,
+          last_robot_state_msg_.body.pose.position.y,
+          last_robot_state_msg_.body.pose.position.z,
+          debug_estimate_msg_.body.pose.position.x,
+          debug_estimate_msg_.body.pose.position.y,
+          debug_estimate_msg_.body.pose.position.z);
+    }
+  }
+}
+
 void RobotDriver::robotStateCallback(
     const quad_msgs::msg::RobotState::SharedPtr msg) {
   last_robot_state_msg_ = *msg;
@@ -737,6 +782,11 @@ bool RobotDriver::updateState() {
       // Update headers
       last_robot_state_msg_.header.stamp = state_timestamp;
 
+      // No estimator drives control on this path, but a ride-along estimator
+      // (debug_estimator_id) can still run on IMU + kinematics so its output is
+      // logged on topics.state.estimate when mocap is unavailable (outdoors).
+      updateDebugEstimator();
+
       return true;
     }
 
@@ -778,48 +828,8 @@ bool RobotDriver::updateState() {
             "updateState returning false: estimator updateOnce failed");
       }
 
-      // Run the ride-along estimator on the same sensor inputs. Its output
-      // goes to debug_estimate_msg_ and is published on topics.state.estimate
-      // for comparison; it never reaches the controller.
-      //
-      // Gate the first seed on READY (standing): if we initialize during sit
-      // or the sit->stand transient, the contact-aided EKF dead-reckons
-      // through legs extending / feet breaking contact and accumulates x/y
-      // drift before the robot is even walking. Waiting for a settled standing
-      // pose makes it start coincident with the mocap-fused comp filter.
-      // Once seeded it keeps running across all modes.
-      if (debug_state_estimator_ != nullptr && result &&
-          (debug_estimator_seeded_ || control_mode_ == READY)) {
-        bool first_seed = !debug_estimator_seeded_;
-        if (!debug_estimator_seeded_) {
-          // Seed from the primary's first valid output so both filters
-          // initialize from the same pose (EKF reads X0 from this msg).
-          debug_estimate_msg_ = last_robot_state_msg_;
-          debug_estimator_seeded_ = true;
-        }
-        debug_state_estimator_->loadSensorMsg(last_imu_msg_,
-                                              last_joint_state_msg_);
-        if (last_mocap_msg_ != nullptr) {
-          debug_state_estimator_->loadMocapMsg(last_mocap_msg_);
-        }
-        debug_state_estimator_->updateOnce(debug_estimate_msg_);
-
-        // One-time init diagnostic: shows the seed (mocap-fused comp filter
-        // pose) vs the ride-along's first published estimate, so we can see
-        // whether they start coincident.
-        if (first_seed) {
-          RCLCPP_INFO(
-              node_->get_logger(),
-              "EKF ride-along init: seed(comp/mocap)=(%.3f, %.3f, %.3f) "
-              "first_est=(%.3f, %.3f, %.3f)",
-              last_robot_state_msg_.body.pose.position.x,
-              last_robot_state_msg_.body.pose.position.y,
-              last_robot_state_msg_.body.pose.position.z,
-              debug_estimate_msg_.body.pose.position.x,
-              debug_estimate_msg_.body.pose.position.y,
-              debug_estimate_msg_.body.pose.position.z);
-        }
-      }
+      // Ride-along estimator (see updateDebugEstimator()).
+      if (result) updateDebugEstimator();
 
       return result;
     } else {

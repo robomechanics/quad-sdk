@@ -51,7 +51,7 @@ def generate_launch_description():
     robot_type = DeclareLaunchArgument('robot_type', default_value='go2')
     mocap = DeclareLaunchArgument('mocap', default_value='true')
     logging = DeclareLaunchArgument('logging', default_value='false')
-    controller = DeclareLaunchArgument('controller', default_value='underbrush_v90')
+    controller = DeclareLaunchArgument('controller', default_value='underbrush')
     # V126 checkpoint 47700 (contactless, 9-dim per-leg -- needs the
     # underbrush_v90 id; v92's 13-dim obs will not auto-detect), installed from
     # robot_driver/models/go2/ into share/robot_driver/models/go2/ so the path
@@ -59,7 +59,7 @@ def generate_launch_description():
     # in share/ on a colcon build -- add one and rebuild, or the path dangles.
     model_path = DeclareLaunchArgument('model_path',
         default_value=PathJoinSubstitution([
-            FindPackageShare('robot_driver'), 'models', 'go2', 'underbrush_v157_m30000.onnx']),
+            FindPackageShare('robot_driver'), 'models', 'go2', 'underbrush_v160_m34700.onnx']),
         description='ONNX checkpoint for learned controllers; pass an empty string to fall back to robot_driver.yaml')
     provider = DeclareLaunchArgument('provider', default_value = "cpu")
     estimator = DeclareLaunchArgument('estimator', default_value="ekf_filter")

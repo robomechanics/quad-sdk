@@ -226,8 +226,8 @@ void UnderbrushPolicy::computeObservations(
   {
     const double wz = (cmd_vel_msg_.size() > 5) ? cmd_vel_msg_(5) : 0.0;
     Eigen::Vector3d vel_cmd(cmd_vel_msg_(0), cmd_vel_msg_(1), wz);
-    const Eigen::Vector3d vmin(-1.0, -0.4, -1.0);
-    const Eigen::Vector3d vmax(1.0, 0.4, 1.0);
+    const Eigen::Vector3d vmin(-1.0, -0.5, -1.0);
+    const Eigen::Vector3d vmax(1.0, 0.5, 1.0);
     vel_cmd = vel_cmd.cwiseMin(vmax).cwiseMax(vmin);
     obs_body_[idx++] = static_cast<float>(vel_cmd(0));
     obs_body_[idx++] = static_cast<float>(vel_cmd(1));

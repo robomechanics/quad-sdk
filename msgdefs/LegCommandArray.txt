@@ -1,0 +1,55 @@
+# This is a message of leg commands for each leg on quad. The order is in FL, BL, FR, BR.
+#
+# Accurate timing information is stored in the header
+
+Header header
+
+LegCommand[] leg_commands # FL, BL, FR, BR
+
+================================================================================
+MSG: std_msgs/Header
+# Standard metadata for higher-level stamped data types.
+# This is generally used to communicate timestamped data 
+# in a particular coordinate frame.
+# 
+# sequence ID: consecutively increasing ID 
+uint32 seq
+#Two-integer timestamp that is expressed as:
+# * stamp.sec: seconds (stamp_secs) since epoch (in Python the variable is called 'secs')
+# * stamp.nsec: nanoseconds since stamp_secs (in Python the variable is called 'nsecs')
+# time-handling sugar is provided by the client library
+time stamp
+#Frame this data is associated with
+string frame_id
+
+================================================================================
+MSG: quad_msgs/LegCommand
+# This is a message of motor commands for each joint on a quad leg.
+#
+# Accurate timing information is stored in the header
+
+Header header
+
+MotorCommand[] motor_commands # Stored as Abd, Hip, Knee
+
+================================================================================
+MSG: quad_msgs/MotorCommand
+# This is a message to hold the desired position, desired velocity, feedforward torques and control gains for a single joint on Quad
+#
+# Accurate timing information is stored in the header
+
+Header header
+
+# Commands
+float64 pos_setpoint # Position command
+float64 vel_setpoint # Velocity command
+float32 kp # Position setpoint gain
+float32 kd # Derivative setpoint gain
+float64 torque_ff # Feedforward torque
+
+# Diagnostics
+float64 pos_component # Feedback position component
+float64 vel_component # Feedback velocity component
+float64 fb_component # Feedback total component
+float64 effort # Total effort
+float64 fb_ratio # Feedback to total ratio

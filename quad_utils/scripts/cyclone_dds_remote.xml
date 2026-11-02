@@ -4,6 +4,11 @@
             <Interfaces>
                 <NetworkInterface address="192.168.8.103"/>
             </Interfaces>
+            <!-- Mirrors the robot side. With multicast on, data for topics with
+                 several laptop readers (local_plan -> bag + RViz) went out the
+                 NIC as ~110 Mbit/s of 239.255.0.1 multicast, which the AP
+                 floods over the air at basic rate and starves the robot link. -->
+            <AllowMulticast>false</AllowMulticast>
         </General>
         <Internal>
             <!-- Mirrors the robot side. Without this Cyclone falls back to a
@@ -19,6 +24,9 @@
         <Discovery>
             <Peers>
                 <Peer address="${REMOTE_ROBOT_IP}"/>
+                <!-- This laptop, so laptop nodes discover each other without
+                     multicast (SPDP is unicast-only now). -->
+                <Peer address="192.168.8.103"/>
             </Peers>
             <ParticipantIndex>auto</ParticipantIndex>
         </Discovery>
