@@ -7,16 +7,20 @@
 #include <pinocchio/algorithm/kinematics.hpp>
 #include <pinocchio/algorithm/frames.hpp>
 #include <pinocchio/algorithm/jacobian.hpp>
-#include <pinocchio/multibody/model.hpp>
-#include <pinocchio/multibody/data.hpp>
 #include <pinocchio/algorithm/crba.hpp>
 #include <pinocchio/algorithm/rnea.hpp>
 #include <pinocchio/parsers/urdf.hpp>
+#if __has_include(<pinocchio/multibody.hpp>)
+#include <pinocchio/math.hpp>
+#include <pinocchio/multibody.hpp>
+#include <pinocchio/multibody/joint.hpp>
+#else
 #include <pinocchio/math/rpy.hpp>
+#include <pinocchio/multibody/data.hpp>
 #include <pinocchio/multibody/joint/joint-revolute-unaligned.hpp>
 #include <pinocchio/multibody/joint/joint-revolute.hpp>
-#include <pinocchio/algorithm/crba.hpp>
-#include <pinocchio/algorithm/rnea.hpp>
+#include <pinocchio/multibody/model.hpp>
+#endif
 #include <chrono>
 #include <grid_map_core/GridMap.hpp>
 #include <random>

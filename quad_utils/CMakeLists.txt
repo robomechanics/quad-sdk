@@ -151,6 +151,8 @@ target_link_libraries(rviz_interface_node
 # )
 
 
+target_link_libraries(quad_utils pinocchio::pinocchio)
+
 ament_target_dependencies(quad_utils 
   rclcpp
   std_msgs
@@ -170,7 +172,6 @@ ament_target_dependencies(quad_utils
   tf2
   tf2_geometry_msgs
   cv_bridge
-  pinocchio
 )
 
 ament_target_dependencies(mesh_to_grid_map_node rclcpp)
@@ -359,4 +360,4 @@ if(BUILD_TESTING)
   endif()
 endif()
 
-ament_package()
+ament_package(CONFIG_EXTRAS_POST cmake/quad_utils-extras.cmake)
