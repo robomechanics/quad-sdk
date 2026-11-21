@@ -1,0 +1,44 @@
+joint_ids_map: [3, 0, 9, 6, 4, 1, 10, 7, 5, 2, 11, 8]
+step_dt: 0.02
+cpg_residual:
+  version: 1
+  gait: {bpm: 90.0, swing_seconds: 0.2, clearance: 0.06, leg_height: 0.3, residual_scale: 0.12,
+    max_speed: 0.12, max_yaw: 0.15, timing_tolerance: 0.06, kick_lateral: 0.08, kick_height: 0.05,
+    kick_duration: 0.25, kick_hold: 0.75, bounce_amplitude: 0.0, mode: dance, load_compensation: 1.0,
+    attitude_compensation: 0.0, velocity_reward_std: 0.1, yaw_reward_std: 0.15, training_zero_fraction: 0.4,
+    training_backward_fraction: 0.1, training_turn_fraction: 0.15, balanced_phrases: true,
+    wrench_compensation: 1.0, freeze_hold_phase: true, support_velocity_damping: 6.0,
+    support_angular_damping: 2.0, recovery_strategy: land_and_rejoin, extended_hold_fraction: 0.0,
+    hold_angular_std: 0.3, support_com_x: -0.001, support_com_z: -0.02, kick_shift_back: 0.03,
+    kick_shift_side: 0.015, integrated_walk_reference: false, linear_acceleration_limit: 0.075,
+    yaw_acceleration_limit: 0.15, exclude_pause_tracking: true, estimated_feedback: true,
+    training_command_period: 6.0, strict_kick_timing_reward: true, kick_tracking_std: 0.015}
+  observation_dim: 75
+  extra_feedback: []
+  actuator_profile: go2hv_mujoco_v1
+  equivariant_actor: true
+  action: q_nominal + residual_scale * tanh(policy_action)
+  hardware_compatible: false
+  requires: [scheduler, IK, contact estimator, state estimator, validated recovery]
+stiffness: [25.0, 25.0, 25.0, 25.0, 25.0, 25.0, 25.0, 25.0, 25.0, 25.0, 25.0, 25.0]
+damping: [0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5]
+default_joint_pos: [0.0, 0.0, 0.0, 0.0, 0.789, 0.789, 0.789, 0.789, -1.58, -1.58,
+  -1.58, -1.58]
+commands: {}
+actions:
+  JointPositionAction:
+    clip: null
+    joint_names: [.*]
+    scale: [0.12, 0.12, 0.12, 0.12, 0.12, 0.12, 0.12, 0.12, 0.12, 0.12, 0.12, 0.12]
+    offset: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+    joint_ids: null
+observations:
+  measured:
+    params: {extra_feedback: false}
+    clip: null
+    scale: [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
+      1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
+      1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
+      1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
+      1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]
+    history_length: 1

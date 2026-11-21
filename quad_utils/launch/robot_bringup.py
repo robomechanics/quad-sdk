@@ -5,12 +5,47 @@ from launch.substitutions import LaunchConfiguration, EnvironmentVariable
 from launch_ros.actions import Node
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch_ros.parameter_descriptions import ParameterValue
-from launch_ros.substitutions import FindPackageShare
+from launch_ros.substitutions import ExecutableInPackage, FindPackageShare
 from launch.event_handlers import OnProcessStart, OnProcessExit
 from functools import partial
 import os
 import xacro
 import yaml
+
+def cpg_go2_contact_model(sdf, disable_springs=False, disable_damping=False, actuator_profile="legacy"):
+    """Remove duplicate fixed-lumped foot spheres; retain instrumented toes.
+
+    Only used by the CPG Go2 simulation. Inertia, friction and joint dynamics
+    remain unchanged by default. Explicit diagnostic flags disable one passive
+    term at a time; they never change the source SDF.
+    """
+    import xml.etree.ElementTree as ET
+    if actuator_profile not in ('legacy','go2hv_mujoco_v1'):
+        raise ValueError('Unknown CPG actuator profile')
+    root = ET.fromstring(sdf)
+    for leg, name in enumerate(('FL', 'RL', 'FR', 'RR')):
+        lower = root.find(f".//link[@name='lower{leg}']")
+        toe = root.find(f".//link[@name='toe{leg}']/collision[@name='toe{leg}_collision']")
+        duplicate = lower.find(f"collision[@name='lower{leg}_fixed_joint_lump__{name}_foot_collision_3']")
+        if toe is None or duplicate is None:
+            raise RuntimeError('Go2 collision model changed; review CPG contact mapping')
+        if abs(float(toe.findtext('geometry/sphere/radius'))-float(duplicate.findtext('geometry/sphere/radius'))) > 1e-8:
+            raise RuntimeError('Go2 foot spheres differ; cannot deduplicate automatically')
+        lower.remove(duplicate)
+    for joint in root.findall('.//joint'):
+        if joint.get('type') == 'revolute':
+            dynamics = joint.find('axis/dynamics')
+            if actuator_profile == 'go2hv_mujoco_v1':
+                for name,value in [('spring_stiffness','0'),('damping','0.1'),('friction','0.2')]:
+                    element=dynamics.find(name)
+                    if element is None:element=ET.SubElement(dynamics,name)
+                    element.text=value
+            if disable_springs:
+                dynamics.find('spring_stiffness').text = '0'
+            if disable_damping:
+                dynamics.find('damping').text = '0'
+    return ET.tostring(root, encoding='unicode')
+
 
 def load_robot_params(context, *args, **kwargs):
     # Load Robot URDF and Robot Centric Parameters
@@ -67,12 +102,30 @@ def load_robot_params(context, *args, **kwargs):
 
     controller_config_path = os.path.join(FindPackageShare('quad_utils').perform(context), 'config', config_file)
 
+    profile=LaunchConfiguration('cpg_actuator_profile').perform(context)
+    if profile != 'legacy':
+        if profile != 'go2hv_mujoco_v1' or robot_type != 'go2' or LaunchConfiguration('controller').perform(context) not in ('cpg', 'conga_driver'):
+            raise RuntimeError('Actuator profile is only supported by Go2 CPG simulation')
+        import tempfile
+        with open(controller_config_path) as handle:config=yaml.safe_load(handle)
+        config.setdefault('/**/joint_controller',{}).setdefault('ros__parameters',{}).setdefault('motor_limits',{})['go2hv_envelope']=True
+        with tempfile.NamedTemporaryFile(mode='w',prefix='cpg_go2hv_',suffix='.yaml',delete=False) as handle:
+            yaml.safe_dump(config,handle);controller_config_path=handle.name
     # Load URDF and SDF from disk
     urdf = xacro.process_file(urdf_path).toxml()
     sdf = xacro.process_file(
         sdf_path,
         mappings={"namespace": namespace, "controller_config_path": controller_config_path},
     ).toxml()
+
+    if robot_type == 'go2' and LaunchConfiguration('controller').perform(context) in ('cpg', 'conga_driver'):
+        sdf = cpg_go2_contact_model(sdf,
+            LaunchConfiguration('cpg_disable_springs').perform(context).lower() == 'true',
+            LaunchConfiguration('cpg_disable_damping').perform(context).lower() == 'true', profile)
+        dump = LaunchConfiguration('cpg_model_dump').perform(context)
+        if dump:
+            from pathlib import Path
+            Path(dump).write_text(sdf)
 
     return [
         SetLaunchConfiguration('robot_urdf', urdf),
@@ -156,10 +209,11 @@ def spawn_sdf_model(context, *args, **kwargs):
 
 def spawn_controller_broadcasters(context, *args, **kwargs):
     namespace = LaunchConfiguration('namespace').perform(context)
-    gazebo_scripts_path = FindPackageShare('gazebo_scripts').perform(context)
+    # Track the spawner directly so launch can stop it and release its lock.
+    spawner = ExecutableInPackage(package='controller_manager', executable='spawner')
     spawn_joint_state_broadcaster = ExecuteProcess(
         cmd=[
-            'ros2', 'run', 'controller_manager', 'spawner',
+            spawner,
             'joint_state_broadcaster',
             '--controller-manager', f'/{namespace}/controller_manager',
             '--controller-manager-timeout', '120',
@@ -170,7 +224,7 @@ def spawn_controller_broadcasters(context, *args, **kwargs):
 
     spawn_joint_controller = ExecuteProcess(
         cmd=[
-            'ros2', 'run', 'controller_manager', 'spawner',
+            spawner,
             'joint_controller',
             '--controller-manager', f'/{namespace}/controller_manager',
             '--controller-manager-timeout', '120',
@@ -218,6 +272,7 @@ def launch_robot_driver(context, *args, **kwargs):
             launch_arguments={
                 'robot_type': robot_type,
                 'controller': controller,
+                'model_path': LaunchConfiguration('model_path'),
                 'estimator': estimator,
                 'mocap': 'false',
                 'is_hardware': 'false',
@@ -309,9 +364,13 @@ def harmonic_ros_bridge(context, *args, **kwargs):
         ],
         parameters=[{'use_sim_time': LaunchConfiguration('use_sim_time')}]
     )
+    if LaunchConfiguration('controller').perform(context) in ('cpg', 'conga_driver'):
+        return [imu_bridge]
     return [contact_state_bridge, imu_bridge]
 
 def launch_contact_state_publisher(context, *args, **kwargs):
+    if LaunchConfiguration('controller').perform(context) in ('cpg', 'conga_driver'):
+        return []
     namespace = LaunchConfiguration('namespace').perform(context)
     robot_type = LaunchConfiguration('robot_type').perform(context)
     world_name = LaunchConfiguration('world').perform(context)
@@ -385,6 +444,11 @@ def generate_launch_description():
         DeclareLaunchArgument('robot_type', default_value = 'spirit', description='Robot type'),
         DeclareLaunchArgument('namespace', default_value = 'robot_1', description='Robot namespace'),
         DeclareLaunchArgument('controller', default_value = 'inverse_kinematics', description='Controller type'),
+        DeclareLaunchArgument('cpg_disable_springs', default_value='false'),
+        DeclareLaunchArgument('cpg_disable_damping', default_value='false'),
+        DeclareLaunchArgument('cpg_model_dump', default_value=''),
+        DeclareLaunchArgument('cpg_actuator_profile', default_value='legacy'),
+        DeclareLaunchArgument('model_path', default_value='', description='ONNX policy path; empty keeps YAML setting'),
         DeclareLaunchArgument('estimator', default_value = 'ekf_filter', description='State estimator type (comp_filter or ekf_filter)'),
         DeclareLaunchArgument('init_pose', default_value = '-x 2.0 -y 0.0 -z 15', description= "Initial Robot Position"),
         DeclareLaunchArgument('is_hardware', default_value = 'false', description="Simulation or Hardware"),

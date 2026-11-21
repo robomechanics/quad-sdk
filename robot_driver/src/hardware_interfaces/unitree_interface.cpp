@@ -1,7 +1,9 @@
 #include "robot_driver/hardware_interfaces/unitree_interface.hpp"
 
 #include <cstdlib>
+#include "robot_driver/controllers/cpg_command_guard.hpp"
 #include <iostream>
+#include <optional>
 #include <unistd.h>
 
 constexpr int UnitreeInterface::kLegMap[UnitreeInterface::kNumLegs]
@@ -32,6 +34,38 @@ void UnitreeInterface::loadInterface(int /*argc*/, char** /*argv*/) {
             << "' for MCU DDS domain." << std::endl;
 
   unitree::robot::ChannelFactory::Instance()->Init(0, net_iface);
+
+  const auto subscribe_to_low_state = [this] {
+    state_sub_.reset(new unitree::robot::ChannelSubscriber<
+                     unitree_go::msg::dds_::LowState_>("rt/lowstate"));
+    state_sub_->InitChannel(std::bind(&UnitreeInterface::lowStateHandler, this,
+                                      std::placeholders::_1),
+                            1);
+  };
+  if (cpg_guard_) {
+    // Wait for DDS discovery and advancing telemetry while sport mode still owns
+    // the robot. The normal command watchdog starts after handover.
+    subscribe_to_low_state();
+    const auto deadline = std::chrono::steady_clock::now() + std::chrono::seconds(5);
+    std::optional<uint32_t> first_tick;
+    bool live_state = false;
+    while (rclcpp::ok() && std::chrono::steady_clock::now() < deadline) {
+      {
+        std::lock_guard<std::mutex> lock(state_mutex_);
+        if (cpg_fault_) break;
+        if (state_received_) {
+          if (!first_tick) first_tick = low_state_.tick();
+          const auto age = std::chrono::steady_clock::now() - state_received_at_;
+          live_state = low_state_.tick() != *first_tick && age <= std::chrono::milliseconds(50);
+        }
+      }
+      if (live_state) break;
+      std::this_thread::sleep_for(std::chrono::milliseconds(5));
+    }
+    if (!live_state) {
+      throw std::runtime_error("Conga requires advancing Unitree low state before releasing sport mode");
+    }
+  }
 
   // Disable sport mode so low-level commands are not overridden.
   // Mirrors the retry loop in Unitree's go2_stand_example.
@@ -69,16 +103,19 @@ void UnitreeInterface::loadInterface(int /*argc*/, char** /*argv*/) {
                  unitree_go::msg::dds_::LowCmd_>("rt/lowcmd"));
   cmd_pub_->InitChannel();
 
-  state_sub_.reset(new unitree::robot::ChannelSubscriber<
-                   unitree_go::msg::dds_::LowState_>("rt/lowstate"));
-  state_sub_->InitChannel(std::bind(&UnitreeInterface::lowStateHandler, this,
-                                    std::placeholders::_1),
-                          1);
+  if (!cpg_guard_) subscribe_to_low_state();
 
   initLowCmd();
+  if(cpg_guard_) {
+    command_received_at_=std::chrono::steady_clock::now();
+    watchdog_=std::thread(&UnitreeInterface::watchdogLoop,this);
+  }
 }
 
 void UnitreeInterface::unloadInterface() {
+  watchdog_stop_=true;
+  if(watchdog_.joinable()) watchdog_.join();
+  std::lock_guard<std::mutex> command_lock(command_mutex_);
   initLowCmd();
   low_cmd_.crc() = crc32Core(reinterpret_cast<uint32_t*>(&low_cmd_),
                              (sizeof(unitree_go::msg::dds_::LowCmd_) >> 2) - 1);
@@ -103,7 +140,17 @@ void UnitreeInterface::initLowCmd() {
 
 void UnitreeInterface::lowStateHandler(const void* message) {
   std::lock_guard<std::mutex> lock(state_mutex_);
-  low_state_ = *(const unitree_go::msg::dds_::LowState_*)message;
+  const auto& incoming=*(const unitree_go::msg::dds_::LowState_*)message;
+  // Repeated DDS delivery does not refresh a frozen MCU sample. A wrapping
+  // counter is allowed; source time is otherwise represented by host receipt.
+  if(cpg_guard_ && state_received_) {
+    const int32_t delta=static_cast<int32_t>(incoming.tick()-low_state_.tick());
+    if(delta<0) cpg_fault_=true;
+    if(delta<=0) return;
+  }
+  low_state_ = incoming;
+  state_received_at_=std::chrono::steady_clock::now();
+  state_stamp_=rclcpp::Clock(RCL_SYSTEM_TIME).now();
   // Reorder Unitree's foot_force [FR, FL, RR, RL] into quad-sdk leg order
   // [FL, RL, FR, RR] so downstream code uses a single convention.
   const auto& ff = low_state_.foot_force();
@@ -116,7 +163,7 @@ void UnitreeInterface::lowStateHandler(const void* message) {
 std::array<int16_t, UnitreeInterface::kNumLegs>
 UnitreeInterface::getFootForcesRaw() const {
   std::lock_guard<std::mutex> lock(state_mutex_);
-  return foot_force_quad_order_;
+  return consumed_forces_;
 }
 
 uint32_t UnitreeInterface::crc32Core(uint32_t* ptr, uint32_t len) {
@@ -147,13 +194,39 @@ uint32_t UnitreeInterface::crc32Core(uint32_t* ptr, uint32_t len) {
 bool UnitreeInterface::send(
     const quad_msgs::msg::LegCommandArray& leg_command_array_msg,
     const Eigen::VectorXd& user_tx_data) {
+  std::array<double,12> measured_q{},measured_dq{};
+  if(cpg_guard_) {
+    std::lock_guard<std::mutex> state_lock(state_mutex_);
+    if(!state_received_ || std::chrono::duration<double>(std::chrono::steady_clock::now()-state_received_at_).count()>.05)
+      cpg_fault_=true;
+    for(int i=0;i<12;++i) {
+      measured_q[i]=low_state_.motor_state()[i].q();measured_dq[i]=low_state_.motor_state()[i].dq();
+      if(!cpg_guard::measuredRange(measured_q[i],measured_dq[i],i%3)) cpg_fault_=true;
+    }
+    if(leg_command_array_msg.leg_commands.size()!=4) cpg_fault_=true;
+    else for(const auto& leg:leg_command_array_msg.leg_commands) if(leg.motor_commands.size()!=3) cpg_fault_=true;
+  }
+  std::lock_guard<std::mutex> command_lock(command_mutex_);
+  command_received_at_=std::chrono::steady_clock::now();
+  if(cpg_guard_ && cpg_fault_) {writeDampingLocked();return false;}
   for (int leg = 0; leg < kNumLegs; ++leg) {
     const auto& leg_cmd = leg_command_array_msg.leg_commands.at(leg);
 
     // 12 leg motors.
     for (int j = 0; j < kJointsPerLeg; ++j) {
       int motor_idx = kLegMap[leg][j];
-      const auto& mc = leg_cmd.motor_commands.at(j);
+      auto mc = leg_cmd.motor_commands.at(j);
+      if(cpg_guard_) {
+        cpg_guard::Motor m{mc.pos_setpoint,mc.vel_setpoint,mc.kp,mc.kd,mc.torque_ff};
+        try {
+          if(mc.kp>60.||mc.kd>5.) throw std::invalid_argument("CPG excessive gains");
+          cpg_guard::limit(m,measured_q[motor_idx],measured_dq[motor_idx]);
+        } catch(const std::exception& e) {
+          std::cerr<<"CPG interface fault: "<<e.what()<<std::endl;
+          cpg_fault_=true;writeDampingLocked();return false;
+        }
+        mc.kp=m.kp;mc.kd=m.kd;mc.torque_ff=m.ff;
+      }
 
       low_cmd_.motor_cmd()[motor_idx].mode() = 0x01;
       low_cmd_.motor_cmd()[motor_idx].q() = static_cast<float>(mc.pos_setpoint);
@@ -219,6 +292,20 @@ bool UnitreeInterface::recv(sensor_msgs::msg::JointState& joint_state_msg,
     return false;
   }
 
+  if(cpg_guard_) {
+    if(cpg_fault_ || std::chrono::duration<double>(std::chrono::steady_clock::now()-state_received_at_).count()>.05) {
+      cpg_fault_=true;return false;
+    }
+  }
+  if(cpg_guard_) for(int i=0;i<12;++i) {
+    if(!cpg_guard::measuredRange(low_state_.motor_state()[i].q(),low_state_.motor_state()[i].dq(),i%3)) {
+      cpg_fault_=true;return false;
+    }
+  }
+  joint_state_msg.header.stamp=state_stamp_;
+  imu_msg.header.stamp=state_stamp_;
+  consumed_forces_=foot_force_quad_order_;
+  consumed_tick_=low_state_.tick();
   // 12 leg joints, in quad-sdk leg-then-joint order.
   int idx = 0;
   for (int leg = 0; leg < kNumLegs; ++leg) {
@@ -282,4 +369,32 @@ bool UnitreeInterface::recv(sensor_msgs::msg::JointState& joint_state_msg,
   imu_msg.linear_acceleration.z = low_state_.imu_state().accelerometer()[2];
 
   return true;
+}
+
+
+void UnitreeInterface::writeDampingLocked() {
+  initLowCmd();
+  for(int i=0;i<12;++i) {
+    auto& m=low_cmd_.motor_cmd()[i];m.q()=0.;m.dq()=0.;m.kp()=0.;m.kd()=.5;m.tau()=0.;
+  }
+  low_cmd_.crc()=crc32Core(reinterpret_cast<uint32_t*>(&low_cmd_),
+      (sizeof(unitree_go::msg::dds_::LowCmd_)>>2)-1);
+  cmd_pub_->Write(low_cmd_);
+}
+
+void UnitreeInterface::watchdogLoop() {
+  // Best-effort watchdog in a separate thread. Process/OS/network failure still
+  // requires the robot's independent protection and physical operator stop.
+  while(!watchdog_stop_) {
+    std::this_thread::sleep_for(std::chrono::milliseconds(5));
+    bool stale=false;
+    {
+      std::lock_guard<std::mutex> state_lock(state_mutex_);
+      stale=state_received_ && std::chrono::duration<double>(std::chrono::steady_clock::now()-state_received_at_).count()>.05;
+    }
+    std::lock_guard<std::mutex> command_lock(command_mutex_);
+    if(stale || std::chrono::duration<double>(std::chrono::steady_clock::now()-command_received_at_).count()>.06)
+      cpg_fault_=true;
+    if(cpg_fault_) writeDampingLocked();
+  }
 }

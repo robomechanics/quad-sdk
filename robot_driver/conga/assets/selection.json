@@ -1,0 +1,29 @@
+{
+  "onnx_sha256": "bfe0617876fd09abc972161193004974975f402927119023e707ac0037df3051",
+  "joystick_limits": [
+    0.1,
+    0,
+    0.1
+  ],
+  "observation_dim": 75,
+  "actuator_profile": "go2hv_mujoco_v1",
+  "command_min": [
+    0,
+    0,
+    -0.1
+  ],
+  "command_max": [
+    0.1,
+    0,
+    0.1
+  ],
+  "sampled_torque_cap_nm": 18.0,
+  "jit_sha256": "769489828a01cabef1e3968ebc2b4480a93eac928b7f963ae86859d57242ea6d",
+  "checkpoint_sha256": "0eac0f64a2e2f2a06cf0233d86c06d95a321d6ff5eec383a669bff4b573b5fce",
+  "onnx_export": "policy.onnx",
+  "jit_export": "policy.pt",
+  "deploy_metadata": "deploy.yaml",
+  "settings": "settings.json",
+  "hardware_compatible": false,
+  "qualification": "Restricted forward/turning candidate; unchanged best75 actor. Hardware gates remain unverified until real calibration/timing. See reports/go2_cpg_hardware6h.md."
+}

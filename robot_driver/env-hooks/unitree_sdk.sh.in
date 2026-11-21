@@ -1,0 +1,2 @@
+ament_prepend_unique_value LD_LIBRARY_PATH "@UNITREE_LIB_DIR@"
+ament_prepend_unique_value LD_LIBRARY_PATH "@UNITREE_THIRD_PARTY_DIR@"

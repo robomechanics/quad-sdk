@@ -32,6 +32,8 @@
 #include "robot_driver/controllers/underbrush_inverse_dynamics.hpp"
 #include "robot_driver/controllers/inertia_estimation_controller.hpp"
 #include "robot_driver/controllers/joint_controller.hpp"
+#include "robot_driver/controllers/cpg_controller.hpp"
+#include <quad_msgs/msg/cpg_sensor_frame.hpp>
 #include "robot_driver/controllers/leg_controller.hpp"
 #ifdef HAS_ONNXRUNTIME
 #include "robot_driver/controllers/learned_policy.hpp"
@@ -73,6 +75,7 @@ class RobotDriver {
    * @brief Initializes leg controller object
    */
   void initLegController();
+  rclcpp::Publisher<std_msgs::msg::UInt8>::SharedPtr control_mode_pub_;
 
   /**
    * @brief Initializes states and controls structures
@@ -280,6 +283,8 @@ class RobotDriver {
 
   /// Torque limits
   std::vector<double> torque_limits_;
+  std::vector<double> cpg_transition_start_;
+  rclcpp::Publisher<quad_msgs::msg::CpgSensorFrame>::SharedPtr cpg_sensor_pub_;
 
   /// Define ids for control modes: Sit
   const int SIT = 0;

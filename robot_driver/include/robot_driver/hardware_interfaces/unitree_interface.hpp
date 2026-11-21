@@ -10,6 +10,9 @@
 #include <unitree/idl/go2/LowState_.hpp>
 
 #include <array>
+#include <atomic>
+#include <chrono>
+#include <thread>
 #include <mutex>
 #include <string>
 #include <vector>
@@ -47,6 +50,9 @@ class UnitreeInterface : public HardwareInterface {
   //! Anything else falls back to "go2".
   explicit UnitreeInterface(const std::string& robot_name = "go2");
 
+  void enableCpgGuard() { cpg_guard_=true; }
+  bool cpgFaulted() const { return cpg_fault_.load(); }
+  uint32_t consumedTick() const { return consumed_tick_; }
   void loadInterface(int argc, char** argv) override;
   void unloadInterface() override;
 
@@ -119,7 +125,17 @@ class UnitreeInterface : public HardwareInterface {
   std::vector<std::string> wheel_joint_names_ = {
       "jtoe0", "jtoe1", "jtoe2", "jtoe3"};
 
+  std::array<int16_t,kNumLegs> consumed_forces_{};
+  uint32_t consumed_tick_=0;
   bool state_received_ = false;
+  bool cpg_guard_=false;
+  std::atomic<bool> cpg_fault_{false}, watchdog_stop_{false};
+  std::chrono::steady_clock::time_point state_received_at_, command_received_at_;
+  rclcpp::Time state_stamp_{0,0,RCL_SYSTEM_TIME};
+  std::mutex command_mutex_;
+  std::thread watchdog_;
+  void writeDampingLocked();
+  void watchdogLoop();
 };
 
 #endif  // UNITREE_INTERFACE_H

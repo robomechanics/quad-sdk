@@ -49,6 +49,8 @@ If you use this work in an academic context, please cite the following as releva
 
 ## Installation
 
+For the self-contained Go2 Conga controller, see [Conga build and simulation](docs/cpg_gazebo.md) and the [Go2 hardware runbook](docs/cpg_hardware.md). The Conga policy and runtime ship with this checkout.
+
 Quad-SDK requires ROS2 Jazzy on Ubuntu 24.04. A Docker-based install is also supported — see the [Wiki](https://github.com/robomechanics/quad-sdk/wiki). The included `setup.sh` installs all other dependencies.
 
 ```bash

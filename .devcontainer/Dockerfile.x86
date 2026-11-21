@@ -103,7 +103,7 @@ RUN echo "source /opt/ros/jazzy/setup.bash" >> /etc/bash.bashrc
 RUN which cmake && cmake --version
 RUN apt-get install -y cmake
 WORKDIR /root/
-RUN git clone https://github.com/liyufan/Livox-SDK2.git
+RUN git clone https://github.com/Livox-SDK/Livox-SDK2.git
 WORKDIR /root/Livox-SDK2
 RUN mkdir build
 WORKDIR /root/Livox-SDK2/build
@@ -112,9 +112,19 @@ RUN cmake -DCMAKE_POLICY_VERSION_MINIMUM=3.5 .. && make -j2 && make install
 # Install Python
 WORKDIR /root/ros2_ws
 
+# Frozen Conga uses a separate CPU Python runtime on both desktop and Jetson.
+# Keep ROS's system Python separate from policy dependencies.
+RUN apt-get update && apt-get install -y --no-install-recommends python3-venv && rm -rf /var/lib/apt/lists/*
+COPY conga/ /tmp/conga-deps/
+RUN bash /tmp/conga-deps/install.sh /opt/conga-venv && rm -rf /tmp/conga-deps
+ENV CONGA_POLICY_PYTHON=/opt/conga-venv/bin/python
+
 # Load ROS environment at each run
 COPY ./ros_entrypoint.sh /
 RUN chmod 755 /ros_entrypoint.sh
+# VS Code creates its Wayland socket link before postStartCommand runs.
+# Match XDG_RUNTIME_DIR from x86/devcontainer.json and Compose.
+RUN install -d -m 0700 /tmp/runtime-root
 ENTRYPOINT ["/ros_entrypoint.sh"]
 
 CMD ["bash"]

@@ -180,6 +180,7 @@ controller_interface::CallbackReturn QuadController::on_init() {
     node_->declare_parameter<std::string>(leg_ns + ".joints.knee.name", "");
   }
   node_->declare_parameter<std::string>("topics.control.joint_command", "");
+  node_->declare_parameter<bool>("motor_limits.go2hv_envelope", false);
   node_->declare_parameter<std::vector<double>>("motor_limits.torque",
                                                 std::vector<double>{});
   node_->declare_parameter<std::vector<double>>("motor_limits.speed",
@@ -194,6 +195,8 @@ controller_interface::CallbackReturn QuadController::on_init() {
 
 controller_interface::CallbackReturn QuadController::on_configure(
     const rclcpp_lifecycle::State& /*previous_state*/) {
+  node_->get_parameter("motor_limits.go2hv_envelope", go2hv_envelope_);
+  RCLCPP_INFO(node_->get_logger(), "Go2HV speed envelope: %s", go2hv_envelope_ ? "enabled" : "disabled");
   std::string urdf_string = get_robot_description();
   // RCLCPP_INFO(node_->get_logger(), "URDF: %s", urdf_string.c_str());
 
@@ -392,6 +395,14 @@ controller_interface::return_type QuadController::update(
         (apply_motor_model)
             ? std::min(std::max(torque_command, motor_model_lb), motor_model_ub)
             : torque_command;
+
+    if (go2hv_envelope_) {
+      const double requested = torque_feedback + torque_ff;
+      const double peak = requested * current_vel > 0.0 ? 20.2 : 23.4;
+      const double scale = std::min(1.0, std::max(0.0, (30.0 - std::abs(current_vel)) / 16.5));
+      const double bound = std::min(torque_lim, peak * scale);
+      torque_command = std::min(bound, std::max(-bound, requested));
+    }
 
     // Update joint torque
     // joints_.at(i).setCommand(torque_command);

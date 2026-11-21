@@ -28,7 +28,7 @@ find_package(tf2 REQUIRED)
 find_package(tf2_eigen REQUIRED)
 find_package(geometry_msgs REQUIRED)
 # Unitree SDK2 setup
-set(UNITREE_SDK2_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../external/unitree_sdk2)
+set(UNITREE_SDK2_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../external/unitree_sdk2 CACHE PATH "Unitree SDK2 source or installation root")
 
 # ONNX Runtime is optional — only needed for learned policy controller
 find_library(ONNXRUNTIME_LIB
@@ -176,6 +176,14 @@ if(BUILD_TESTING)
   # the following line skips cpplint (only works in a git repo)
   # comment the line when this package is in a git repo and when
   # a copyright and license is added to all source files
+  ament_add_gtest(cpg_controller_test test/test_cpg_controller.cpp)
+  target_link_libraries(cpg_controller_test ${PROJECT_NAME})
+  ament_target_dependencies(cpg_controller_test rclcpp quad_utils)
+
+  ament_add_gtest(cpg_sensor_test test/test_cpg_sensors.cpp)
+  target_link_libraries(cpg_sensor_test ${PROJECT_NAME})
+  ament_target_dependencies(cpg_sensor_test rclcpp quad_utils)
+
   ament_add_gtest(robot_driver_test
     test/test_robot_driver.cpp
   )
@@ -191,4 +199,7 @@ if(BUILD_TESTING)
   )
 endif()
 
+install(DIRECTORY conga/ DESTINATION share/${PROJECT_NAME}/conga PATTERN "__pycache__" EXCLUDE)
+
+ament_environment_hooks("${CMAKE_CURRENT_SOURCE_DIR}/env-hooks/unitree_sdk.sh.in")
 ament_package()

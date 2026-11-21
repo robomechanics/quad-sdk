@@ -78,3 +78,17 @@ services:
       - ROS_DOMAIN_ID=42
       - XDG_RUNTIME_DIR=/tmp/runtime-root
       - QT_X11_NO_MITSHM=1
+
+  # Standalone CPU Conga image; no training checkout, CUDA, or host venv required.
+  conga:
+    build:
+      context: ..
+      dockerfile: .devcontainer/Dockerfile.conga
+    image: quad-sdk:conga
+    init: true
+    network_mode: host
+    ipc: host
+    shm_size: 2gb
+    environment:
+      - ROS_AUTOMATIC_DISCOVERY_RANGE=LOCALHOST
+      - ROS_DOMAIN_ID=42

@@ -14,6 +14,7 @@ copyright: Copyright &copy; Robomechanics Lab, Carnegie Mellon University
 # tell MkDocs not to warn about it.
 not_in_nav: |
   roadmap.md
+  conga_port_audit_20261117.md
 
 validation:
   links:
@@ -154,6 +155,8 @@ nav:
       - Installation: getting-started/installation.md
       - Quickstart: getting-started/quickstart.md
       - Hardware Bringup: getting-started/hardware-bringup.md
+      - Conga Simulation: cpg_gazebo.md
+      - Go2 Conga Hardware: cpg_hardware.md
   - Architecture:
       - Overview: architecture/overview.md
       - ROS2 Migration: architecture/ros2-migration.md

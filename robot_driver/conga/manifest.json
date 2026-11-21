@@ -1,0 +1,86 @@
+{
+  "source_repo": "unitree_rl_lab",
+  "source_head": "3be76a81ab37b213e9a660eec0ad7d829359c0db",
+  "note": "Working-tree snapshot used by frozen replay; runtime.py only changes source and URDF paths. URDF is parsed for joint limits only; meshes are not required. Historical JIT path in selection is unused. Contact-free adaptation is scripts/conga_runtime.py.",
+  "files": {
+    "deploy/cpg/runtime.py": {
+      "source": "deploy/cpg/runtime.py",
+      "source_sha256": "17c7f57ec4f25f958a4252a48723b5b1be2b3972b4e731acd63f4c4651be3288",
+      "bundled_sha256": "308fc940eaeca3324f0d4177dfb0ea69b8c9ce16808c45fb2733ba9aca517bdd"
+    },
+    "deploy/cpg/quad_sdk.py": {
+      "source": "deploy/cpg/quad_sdk.py",
+      "source_sha256": "2a77ac00723c1713d3239115af4ff9e235384e02beff1a587cf2f7dcb90724a4",
+      "bundled_sha256": "2a77ac00723c1713d3239115af4ff9e235384e02beff1a587cf2f7dcb90724a4"
+    },
+    "deploy/cpg/safety.py": {
+      "source": "deploy/cpg/safety.py",
+      "source_sha256": "ceec39a2f6dc01bd8e9c3ede2ce4438e57ddb13eff43eb3ae6f9e2f6b521e167",
+      "bundled_sha256": "ceec39a2f6dc01bd8e9c3ede2ce4438e57ddb13eff43eb3ae6f9e2f6b521e167"
+    },
+    "source/cpg/core.py": {
+      "source": "source/unitree_rl_lab/unitree_rl_lab/tasks/locomotion/cpg/core.py",
+      "source_sha256": "96b0d297351029cbfa712e111b4764e1c13aabd7791ea209241208725bb8d7d1",
+      "bundled_sha256": "96b0d297351029cbfa712e111b4764e1c13aabd7791ea209241208725bb8d7d1"
+    },
+    "source/cpg/controller.py": {
+      "source": "source/unitree_rl_lab/unitree_rl_lab/tasks/locomotion/cpg/controller.py",
+      "source_sha256": "2b247727d6a6709d2d2653ad803cb5c46f156b3e04a0f4e70e413f9734498232",
+      "bundled_sha256": "1a47a4e083fa8c13b4c370cee943719c147641ba70a64c604dd9b45e3944ef68"
+    },
+    "source/cpg/dance.py": {
+      "source": "source/unitree_rl_lab/unitree_rl_lab/tasks/locomotion/cpg/dance.py",
+      "source_sha256": "437fa84f2bc1aa697ebdbebd21297832ff965151480f5bf499e0878ee5068052",
+      "bundled_sha256": "437fa84f2bc1aa697ebdbebd21297832ff965151480f5bf499e0878ee5068052"
+    },
+    "source/cpg/sensing.py": {
+      "source": "source/unitree_rl_lab/unitree_rl_lab/tasks/locomotion/cpg/sensing.py",
+      "source_sha256": "abc606e1cbd1c93c84813523fdbf027357e3afa4cc1c69fc076c7a002656efc7",
+      "bundled_sha256": "abc606e1cbd1c93c84813523fdbf027357e3afa4cc1c69fc076c7a002656efc7"
+    },
+    "source/skills/preparation.py": {
+      "source": "source/unitree_rl_lab/unitree_rl_lab/tasks/locomotion/skills/preparation.py",
+      "source_sha256": "c67b50a621af407340ae17ea1632786ecff69dee33d389bc6b7ee9e5de672938",
+      "bundled_sha256": "c67b50a621af407340ae17ea1632786ecff69dee33d389bc6b7ee9e5de672938"
+    },
+    "assets/policy.onnx": {
+      "source": "exports/go2_cpg_hardware_prep_20261102/assets/policy.onnx",
+      "source_sha256": "bfe0617876fd09abc972161193004974975f402927119023e707ac0037df3051",
+      "bundled_sha256": "bfe0617876fd09abc972161193004974975f402927119023e707ac0037df3051"
+    },
+    "assets/deploy.yaml": {
+      "source": "exports/go2_cpg_hardware_prep_20261102/assets/deploy.yaml",
+      "source_sha256": "1eadc5ff38ee79d2882f1c7d4f6a221e780fff60ade4b39bb78a5d1032b33158",
+      "bundled_sha256": "1eadc5ff38ee79d2882f1c7d4f6a221e780fff60ade4b39bb78a5d1032b33158"
+    },
+    "assets/selection.json": {
+      "source": "exports/go2_cpg_hardware_prep_20261102/assets/selection.json",
+      "source_sha256": "7dad338c9cac56b7dd3026f2b695fb2200bd3ca7be0940393b8a5dff7c875b03",
+      "bundled_sha256": "7dad338c9cac56b7dd3026f2b695fb2200bd3ca7be0940393b8a5dff7c875b03"
+    },
+    "assets/settings.json": {
+      "source": "exports/go2_cpg_hardware_prep_20261102/assets/settings.json",
+      "source_sha256": "25202ae58696ee2ed8541e11ce5c4ad402658c66a596671083050510013bba25",
+      "bundled_sha256": "25202ae58696ee2ed8541e11ce5c4ad402658c66a596671083050510013bba25"
+    },
+    "assets/go2.urdf": {
+      "source": ".local/unitree_ros/robots/go2_description/urdf/go2_description.urdf",
+      "source_sha256": "7d19fe48e2e689ee1a032ab99f2a4a8b671d87e73de48d3e65811682a5b48b9e",
+      "bundled_sha256": "7d19fe48e2e689ee1a032ab99f2a4a8b671d87e73de48d3e65811682a5b48b9e"
+    },
+    "LICENSE.unitree_rl_lab": {
+      "source": "LICENCE",
+      "source_sha256": "ff28cacaef7b9919a0fb905136cf4ccffba5191522bf5d024c4339932c0edc28",
+      "bundled_sha256": "ff28cacaef7b9919a0fb905136cf4ccffba5191522bf5d024c4339932c0edc28"
+    },
+    "contact_free_report.md": {
+      "source": "reports/go2_cpg_contact_free_frozen.md",
+      "source_sha256": "350475ab9c6639ffe8b55cfe11e3e71c816c8773d0e7ebde9e56edd7bb0b7ea9",
+      "bundled_sha256": "350475ab9c6639ffe8b55cfe11e3e71c816c8773d0e7ebde9e56edd7bb0b7ea9"
+    },
+    "tests/replay.npz": {
+      "source": "logs/cpg_contact_free_20261117/free_forward_FL/traces.npz, first 600 frames (selected fields)",
+      "bundled_sha256": "33e744d0ea22b86e62330ca94684574390bd9de20a4bcfa91e5b315a8b0ece5b"
+    }
+  }
+}

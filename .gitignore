@@ -28,3 +28,11 @@ quad_logger/bags/archive/
 
 *.onnx
 external/livox_ros_driver2/
+
+# Local colcon output
+/install/
+/log/
+
+# Small frozen Conga deployment actor is intentionally versioned.
+!robot_driver/conga/assets/policy.onnx
+!robot_driver/conga/tests/replay.npz

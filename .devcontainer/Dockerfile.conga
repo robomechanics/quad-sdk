@@ -1,0 +1,40 @@
+# Self-contained CPU Conga simulator image. Build from the REPOSITORY root:
+# docker build -f .devcontainer/Dockerfile.conga -t quad-sdk:conga .
+FROM ros:jazzy-ros-base
+SHELL ["/bin/bash", "-c"]
+ENV DEBIAN_FRONTEND=noninteractive
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    build-essential cmake git python3-venv python3-rosdep python3-colcon-common-extensions \
+    ros-jazzy-pinocchio ros-jazzy-urdf ros-jazzy-ros-gz ros-jazzy-gz-ros2-control \
+    ros-jazzy-ros2-controllers ros-jazzy-topic-tools ros-jazzy-xacro \
+    ros-jazzy-robot-state-publisher ros-jazzy-ros2launch ros-jazzy-grid-map \
+    && rm -rf /var/lib/apt/lists/*
+COPY .devcontainer/conga/ /tmp/conga-deps/
+RUN bash /tmp/conga-deps/install.sh /opt/conga-venv && rm -rf /tmp/conga-deps
+ENV CONGA_POLICY_PYTHON=/opt/conga-venv/bin/python
+WORKDIR /opt/quad-sdk
+COPY . .
+RUN test -f external/unitree_sdk2/include/unitree/robot/channel/channel_publisher.hpp \
+    && test -f external/unitree_sdk2/include/unitree/common/log/log.hpp \
+    && test -f external/rbdl-orb/CMakeLists.txt \
+    && test -f external/rbdl-orb/addons/urdfreader/thirdparty/urdfparser/CMakeLists.txt \
+    || { echo 'Missing pinned submodules: run git submodule update --init --recursive external/unitree_sdk2 external/rbdl-orb'; exit 1; }
+RUN source /opt/ros/jazzy/setup.bash && (rosdep init 2>/dev/null || true) && rosdep update \
+    && apt-get update && rosdep install -y --ignore-src --rosdistro jazzy --from-paths \
+       quad_msgs quad_utils robot_driver quad_simulator/gazebo_plugins quad_simulator/gazebo_scripts \
+       quad_simulator/go2_description quad_simulator/other/sensor_description quad_simulator/other/objects_description \
+    && rm -rf /var/lib/apt/lists/*
+RUN source /opt/ros/jazzy/setup.bash && cmake -S external/rbdl-orb -B /tmp/rbdl-build \
+      -DCMAKE_BUILD_TYPE=Release -DRBDL_BUILD_ADDON_URDFREADER=ON \
+    && cmake --build /tmp/rbdl-build -j4 && cmake --install /tmp/rbdl-build && ldconfig
+RUN bash scripts/build_conga.sh
+RUN /opt/conga-venv/bin/python scripts/test_conga_runtime.py
+RUN source install/conga/setup.bash && colcon --log-base log/conga-test test \
+      --build-base build/conga --install-base install/conga --packages-select robot_driver \
+      --ctest-args -R cpg --output-on-failure \
+    && colcon test-result --test-result-base build/conga/robot_driver/test_results
+RUN printf '%s\n' '#!/bin/bash' 'set -e' 'source /opt/ros/jazzy/setup.bash' \
+      'source /opt/quad-sdk/install/conga/setup.bash' 'exec "$@"' > /conga_entrypoint.sh \
+    && chmod +x /conga_entrypoint.sh
+ENTRYPOINT ["/conga_entrypoint.sh"]
+CMD ["ros2", "launch", "quad_utils", "quad_conga_gazebo.py", "gui:=false", "rviz:=false"]

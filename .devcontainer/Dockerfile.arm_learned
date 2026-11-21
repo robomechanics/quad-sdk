@@ -38,6 +38,13 @@ RUN rosdep init || true && rosdep update
 
 RUN echo "source /opt/ros/jazzy/setup.bash" >> /etc/bash.bashrc
 
+# Frozen Conga uses a separate CPU Python runtime on both desktop and Jetson.
+# Keep ROS's system Python separate from policy dependencies.
+RUN apt-get update && apt-get install -y --no-install-recommends python3-venv && rm -rf /var/lib/apt/lists/*
+COPY conga/ /tmp/conga-deps/
+RUN bash /tmp/conga-deps/install.sh /opt/conga-venv && rm -rf /tmp/conga-deps
+ENV CONGA_POLICY_PYTHON=/opt/conga-venv/bin/python
+
 WORKDIR /root/ros2_ws
 
 COPY ./ros_entrypoint.sh /

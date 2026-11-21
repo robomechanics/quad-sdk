@@ -1,0 +1,12 @@
+.git
+# Only exclude workspace outputs. SDK sources include common/log/log.hpp.
+/build/
+/install/
+/log/
+**/__pycache__
+**/.pytest_cache
+**/*.mcap
+**/*.bag
+site
+.cache
+external/ipopt

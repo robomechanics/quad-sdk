@@ -51,7 +51,8 @@ def generate_launch_description():
     mocap = DeclareLaunchArgument('mocap', default_value='true')
     logging = DeclareLaunchArgument('logging', default_value='false')
     controller = DeclareLaunchArgument('controller', default_value='learned')
-    model_path = DeclareLaunchArgument('model_path', default_value='/root/ros2_ws/src/quad-sdk/robot_driver/models/go2/go2_policy.onnx')
+    model_path = DeclareLaunchArgument('model_path', default_value='',
+                                       description='ONNX policy path; empty keeps robot_driver.model_path from YAML')
     provider = DeclareLaunchArgument('provider', default_value = "tensorrt")
     estimator = DeclareLaunchArgument('estimator', default_value="comp_filter")
     is_hardware = DeclareLaunchArgument('is_hardware', default_value='true')
@@ -84,8 +85,11 @@ def generate_launch_description():
             remappings=[('joint_states', 'state/joints')]
         )
 
-    def _make_robot_driver_node():
-        return Node(
+    def _make_robot_driver_node(context):
+        policy_path = LaunchConfiguration('model_path').perform(context)
+        policy_override = {'robot_driver.model_path': policy_path} if policy_path else {}
+        extra_file=LaunchConfiguration('extra_params').perform(context)
+        return [Node(
             package='robot_driver',
             executable='robot_driver_node',
             name='robot_driver',
@@ -94,14 +98,16 @@ def generate_launch_description():
                 robot_driver_param_file,
                 robot_driver_topics_file,
                 robot_specific_param_file,
+                *([extra_file] if extra_file else []),
                 {
                     'controller': LaunchConfiguration('controller'),
+                    'cpg.hardware_enabled': ParameterValue(LaunchConfiguration('conga_hardware_enabled'), value_type=bool),
                     'is_hardware': LaunchConfiguration('is_hardware'),
                     'mocap': LaunchConfiguration('mocap'),
                     'namespace': LaunchConfiguration('namespace'),
                     'robot_type': LaunchConfiguration('robot_type'),
                     'estimator_id': LaunchConfiguration('estimator'),
-                    'model_path': LaunchConfiguration('model_path'),
+                    **policy_override,
                     'provider': LaunchConfiguration('provider'),
                     'robot_description': ParameterValue(
                         LaunchConfiguration('robot_description'),
@@ -109,7 +115,7 @@ def generate_launch_description():
                     'use_sim_time': LaunchConfiguration('use_sim_time')
                 }
             ]
-        )
+        )]
 
     # Hardware mode: this launch is invoked directly (no parent
     # PushRosNamespace) so we push the namespace ourselves. Also brings up
@@ -118,7 +124,7 @@ def generate_launch_description():
     hardware_group = GroupAction([
         PushRosNamespace(LaunchConfiguration('namespace')),
         _make_rsp_node(),
-        _make_robot_driver_node(),
+        OpaqueFunction(function=_make_robot_driver_node),
     ], condition=IfCondition(LaunchConfiguration('is_hardware')))
 
     # Sim mode: robot_bringup.py is included from quad_gazebo.py inside a
@@ -127,10 +133,12 @@ def generate_launch_description():
     # NOT push it again. robot_state_publisher is owned by robot_bringup
     # in this path.
     sim_group = GroupAction([
-        _make_robot_driver_node(),
+        OpaqueFunction(function=_make_robot_driver_node),
     ], condition=UnlessCondition(LaunchConfiguration('is_hardware')))
 
     return LaunchDescription([
+        DeclareLaunchArgument('conga_hardware_enabled',default_value='false'),
+        DeclareLaunchArgument('extra_params',default_value='',description='Optional final parameter YAML override'),
         robot_type,
         mocap,
         logging,

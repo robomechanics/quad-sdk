@@ -302,4 +302,6 @@ if(BUILD_TESTING)
   endif()
 endif()
 
+install(PROGRAMS ../scripts/cpg_gazebo.py ../scripts/conga_worker.py ../scripts/conga_runtime.py DESTINATION lib/${PROJECT_NAME})
+
 ament_package()

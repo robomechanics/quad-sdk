@@ -1,5 +1,5 @@
 from launch import LaunchDescription
-from launch.actions import DeclareLaunchArgument, OpaqueFunction, GroupAction, IncludeLaunchDescription, ExecuteProcess
+from launch.actions import DeclareLaunchArgument, OpaqueFunction, GroupAction, IncludeLaunchDescription, ExecuteProcess, SetEnvironmentVariable
 from launch.substitutions import LaunchConfiguration, TextSubstitution, EnvironmentVariable
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch_ros.actions import PushRosNamespace, Node
@@ -8,6 +8,26 @@ from launch.substitutions import PathJoinSubstitution
 
 import os
 import json
+from ament_index_python.packages import get_packages_with_prefixes
+
+def configure_gazebo_paths(context, *args, **kwargs):
+    """Resolve assets/plugins from the active overlay, independent of .bashrc."""
+    packages = get_packages_with_prefixes()
+    resources = []
+    for name, prefix in packages.items():
+        if name.endswith("_description") or name == "gazebo_scripts":
+            models = os.path.join(prefix, "share", name, "models")
+            if os.path.isdir(models):
+                resources.append(models)
+    plugins = [os.path.join(packages["gazebo_plugins"], "lib")]
+    actions = []
+    for variable, paths in (("GZ_SIM_RESOURCE_PATH", resources),
+                            ("GZ_SIM_SYSTEM_PLUGIN_PATH", plugins)):
+        existing = context.environment.get(variable, "")
+        if existing:
+            paths.append(existing)
+        actions.append(SetEnvironmentVariable(variable, os.pathsep.join(paths)))
+    return actions
 
 def launch_ignition_world(context, *args, **kwargs):
     world_name = LaunchConfiguration('world').perform(context)
@@ -123,6 +143,11 @@ def launch_robot_group(context, *args, **kwargs):
                     'robot_type': TextSubstitution(text=robot_type),
                     'namespace': TextSubstitution(text=robot_ns),
                     'controller': TextSubstitution(text=controller),
+                    'model_path': TextSubstitution(text=config.get('model_path', LaunchConfiguration('model_path').perform(context))),
+                    'cpg_disable_springs': LaunchConfiguration('cpg_disable_springs'),
+                    'cpg_disable_damping': LaunchConfiguration('cpg_disable_damping'),
+                    'cpg_model_dump': LaunchConfiguration('cpg_model_dump'),
+                    'cpg_actuator_profile': LaunchConfiguration('cpg_actuator_profile'),
                     'init_pose' : TextSubstitution(text=init_pose),
                     'world': LaunchConfiguration('world'),
                     'use_sim_time': LaunchConfiguration('use_sim_time')
@@ -169,6 +194,11 @@ def launch_plot_juggler(context, *args, **kwargs):
 
 def generate_launch_description():
     declared_args = [
+        DeclareLaunchArgument('cpg_disable_springs', default_value='false'),
+        DeclareLaunchArgument('cpg_disable_damping', default_value='false'),
+        DeclareLaunchArgument('cpg_model_dump', default_value=''),
+        DeclareLaunchArgument('cpg_actuator_profile',default_value='legacy'),
+        DeclareLaunchArgument('model_path', default_value='', description='ONNX policy path; robot_configs model_path overrides this per robot'),
         DeclareLaunchArgument('world', default_value='flat.sdf', description='SDF world file name to load into simulation'),
         DeclareLaunchArgument('gui', default_value='true', description='Whether to launch the Gazebo GUI. Defaults on for the single-robot case where the GUI is useful for debugging; the multi-robot launch (quad_multi.py) defaults it off.'),
         DeclareLaunchArgument('paused', default_value='false', description='Whether to start the simulation in a paused state'),
@@ -188,6 +218,7 @@ def generate_launch_description():
     ]
 
     return LaunchDescription(declared_args + [
+        OpaqueFunction(function=configure_gazebo_paths),
         OpaqueFunction(function=launch_ignition_world),
         OpaqueFunction(function=launch_obstacles),
         OpaqueFunction(function=bridge_global_clock),

@@ -1,0 +1,147 @@
+{
+  "gait": {
+    "bpm": 90.0,
+    "swing_seconds": 0.2,
+    "clearance": 0.06,
+    "leg_height": 0.3,
+    "residual_scale": 0.12,
+    "max_speed": 0.12,
+    "max_yaw": 0.15,
+    "timing_tolerance": 0.06,
+    "kick_lateral": 0.08,
+    "kick_height": 0.05,
+    "kick_duration": 0.25,
+    "kick_hold": 0.75,
+    "bounce_amplitude": 0.0,
+    "mode": "dance",
+    "load_compensation": 1.0,
+    "attitude_compensation": 0.0,
+    "velocity_reward_std": 0.1,
+    "yaw_reward_std": 0.15,
+    "training_zero_fraction": 0.4,
+    "balanced_phrases": true,
+    "wrench_compensation": 1.0,
+    "freeze_hold_phase": true,
+    "support_velocity_damping": 6.0,
+    "support_angular_damping": 2.0,
+    "recovery_strategy": "land_and_rejoin",
+    "extended_hold_fraction": 0.0,
+    "hold_angular_std": 0.3,
+    "support_com_x": -0.001,
+    "support_com_z": -0.02,
+    "kick_shift_back": 0.03,
+    "kick_shift_side": 0.015,
+    "integrated_walk_reference": false,
+    "linear_acceleration_limit": 0.075,
+    "yaw_acceleration_limit": 0.15,
+    "exclude_pause_tracking": true,
+    "estimated_feedback": true,
+    "training_command_period": 6.0,
+    "strict_kick_timing_reward": true,
+    "kick_tracking_std": 0.015,
+    "training_backward_fraction": 0.1,
+    "training_turn_fraction": 0.15
+  },
+  "evaluation_commands": [
+    [
+      0,
+      0,
+      0
+    ],
+    [
+      0.12,
+      0,
+      0
+    ],
+    [
+      -0.1,
+      0,
+      0
+    ],
+    [
+      0,
+      0.06,
+      0
+    ],
+    [
+      0,
+      -0.06,
+      0
+    ],
+    [
+      0,
+      0,
+      0.1
+    ],
+    [
+      0,
+      0,
+      -0.1
+    ],
+    [
+      0.08,
+      0,
+      0.1
+    ]
+  ],
+  "symmetry_mirror_loss": 0,
+  "rewards": {
+    "base_angular_velocity": -0.05,
+    "joint_vel": -0.0002,
+    "joint_acc": -2.5e-07,
+    "joint_torques": -0.0002,
+    "action_rate": -0.01,
+    "dof_pos_limits": -10.0,
+    "energy": -2e-05,
+    "flat_orientation_l2": -2.5,
+    "feet_slide": -0.5,
+    "undesired_contacts": -1,
+    "contact": 1.0,
+    "clearance": 2.0,
+    "velocity": 1.5,
+    "yaw": 0.75,
+    "body_height": -0.5,
+    "residual": -0.05,
+    "timing": 0.25,
+    "kick_tracking": 1.5,
+    "endpoint_speed": -0.1,
+    "hold_quality": 4.0,
+    "hold_stationary": 1.5
+  },
+  "equivariant_actor": true,
+  "episode_length_s": 90,
+  "observation_noise": true,
+  "transfer_randomization": false,
+  "actuator": {
+    "stiffness": 25.0,
+    "damping": 0.5,
+    "armature": 0.01,
+    "friction": 0.0,
+    "Fs": 0.2,
+    "Fd": 0.1,
+    "Va": 0.01,
+    "min_delay": 0,
+    "max_delay": 0
+  },
+  "task": "Unitree-Go2-CPG-Dance",
+  "joystick_limits": [
+    0.12,
+    0.06,
+    0.1
+  ],
+  "transfer_armature_range": [
+    0.005,
+    0.015
+  ],
+  "measured_policy": true,
+  "extra_feedback": false,
+  "actuator_profile": "go2hv_mujoco_v1",
+  "fresh_optimizer": false,
+  "robust_physics": false,
+  "ppo": {
+    "learning_rate": 0.0003,
+    "schedule": "adaptive",
+    "desired_kl": 0.01
+  },
+  "sensor_uncertainty": {}
+}

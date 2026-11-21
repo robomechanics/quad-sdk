@@ -74,6 +74,7 @@ class QuadController : public controller_interface::ControllerInterface {
   std::map<int, std::pair<int, int>> leg_map_;
 
   /// Torque limits for each motor
+  bool go2hv_envelope_ = false;
   std::vector<double> torque_lims_;
   std::vector<double> speed_lims_;
 

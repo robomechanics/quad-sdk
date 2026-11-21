@@ -46,6 +46,7 @@ RobotDriver::RobotDriver(std::shared_ptr<rclcpp::Node> node, int argc,
   quad_utils::loadROSParamDefault(node_, "is_hardware", is_hardware_, true);
   quad_utils::loadROSParamDefault(node_, "controller", controller_id_,
                                   std::string("inverse_dynamics"));
+  if (controller_id_ == "conga_driver") controller_id_ = "cpg";
   quad_utils::loadROSParamDefault(node_, "estimator_id", estimator_id_,
                                   std::string("comp_filter"));
   quad_utils::loadROSParamDefault(node_, "mocap", use_mocap_, true);
@@ -176,12 +177,22 @@ RobotDriver::RobotDriver(std::shared_ptr<rclcpp::Node> node, int argc,
   // Initialize kinematics object
   quadKD2_ = std::make_shared<quad_utils::QuadKD2>(node_, robot_ns);
 
+  if (controller_id_ == "cpg" && is_hardware_) {
+    bool enabled=false, sim_time=false;
+    quad_utils::loadROSParamDefault(node_, "cpg.hardware_enabled", enabled, false);
+    node_->get_parameter("use_sim_time", sim_time);
+    if (!enabled || sim_time || robot_name != "go2" || update_rate_ < 250. || use_mocap_)
+      throw std::runtime_error("Conga hardware requires explicit enable, Go2, wall time, >=250Hz, mocap=false");
+  }
+
   // Initialize hardware interface
   if (is_hardware_) {
     if (robot_name == "spirit" || robot_name == "spirit_rotors") {
       hardware_interface_ = std::make_shared<SpiritInterface>();
     } else if (robot_name == "go2" || robot_name == "go2w") {
       hardware_interface_ = std::make_shared<UnitreeInterface>(robot_name);
+      if (controller_id_=="cpg")
+        std::dynamic_pointer_cast<UnitreeInterface>(hardware_interface_)->enableCpgGuard();
     } else {
       RCLCPP_ERROR_STREAM(node_->get_logger(), "Invalid robot name "
                                                    << robot_name
@@ -190,10 +201,13 @@ RobotDriver::RobotDriver(std::shared_ptr<rclcpp::Node> node, int argc,
     }
   }
 
+  cpg_sensor_pub_=node_->create_publisher<quad_msgs::msg::CpgSensorFrame>("cpg/sensors",rclcpp::SensorDataQoS().keep_last(1));
   initLegController();
 
+  control_mode_pub_ = node_->create_publisher<std_msgs::msg::UInt8>("state/control_mode", 1);
+
   // Start sitting
-  control_mode_ = SIT;
+  control_mode_ = (controller_id_=="cpg" && is_hardware_) ? SAFETY : SIT;
   remote_heartbeat_received_time_ = std::numeric_limits<double>::max();
   last_state_time_ = std::numeric_limits<double>::max();
 
@@ -213,6 +227,7 @@ RobotDriver::RobotDriver(std::shared_ptr<rclcpp::Node> node, int argc,
 }
 
 void RobotDriver::initStateEstimator() {
+  if (controller_id_ == "cpg") { state_estimator_ = nullptr; return; }
   if (estimator_id_ == "none") {
     RCLCPP_INFO(node_->get_logger(),
                 "State estimator disabled (estimator_id='none')");
@@ -270,6 +285,8 @@ void RobotDriver::initLegController() {
   } else if (controller_id_ == "inertia_estimation") {
     leg_controller_ = std::make_shared<InertiaEstimationController>(
         node_, robot_ns, quadKD2_);
+  } else if (controller_id_ == "cpg") {
+    leg_controller_ = std::make_shared<CpgController>(node_, robot_ns, quadKD2_);
   } else if (controller_id_ == "learned") {
 #ifdef HAS_ONNXRUNTIME
     leg_controller_ =
@@ -324,6 +341,28 @@ void RobotDriver::initStateControlStructs() {
 
 void RobotDriver::controlModeCallback(
     const std_msgs::msg::UInt8::SharedPtr msg) {
+  if(controller_id_=="cpg") {
+    auto c=std::dynamic_pointer_cast<CpgController>(leg_controller_);
+    if (c && c->faulted() && msg->data!=SAFETY) return;
+    if (msg->data==SAFETY) {
+      if(c && control_mode_!=SAFETY) c->latchFault("operator safety request");
+      control_mode_=SAFETY; return; // safety must interrupt a stand/sit transition
+    }
+  }
+  if(controller_id_=="cpg" && is_hardware_ && msg->data==READY && control_mode_==SAFETY) {
+    const auto stamp = rclcpp::Time(last_joint_state_msg_.header.stamp);
+    const auto age = (node_->now() - stamp).seconds();
+    if (stamp.nanoseconds() == 0 || age < 0.0 || age > 0.05 ||
+        last_joint_state_msg_.position.size() != 12) {
+      RCLCPP_WARN(node_->get_logger(), "Conga READY requires fresh measured joint state");
+      return;
+    }
+    for (double q : last_joint_state_msg_.position) {
+      if (!std::isfinite(q)) return;
+    }
+    cpg_transition_start_=last_joint_state_msg_.position;
+    control_mode_=SIT_TO_READY;transition_timestamp_=node_->now();return;
+  }
   // Wait if transitioning
   if ((control_mode_ == SIT_TO_READY) || (control_mode_ == READY_TO_SIT))
     return;
@@ -333,6 +372,7 @@ void RobotDriver::controlModeCallback(
     transition_timestamp_ = node_->now();
   } else if ((msg->data == SIT) &&
              (control_mode_ == READY)) {  // Sit if previously standing
+    if(controller_id_=="cpg") cpg_transition_start_=last_robot_state_msg_.joints.position;
     control_mode_ = READY_TO_SIT;
     transition_timestamp_ = node_->now();
   } else if (msg->data == SIT ||
@@ -493,17 +533,24 @@ bool RobotDriver::updateState() {
     // to avoid leaking it into the abstract HardwareInterface API.
     if (auto* unitree =
             dynamic_cast<UnitreeInterface*>(hardware_interface_.get())) {
-      quad_msgs::msg::FootContact fc_msg;
-      fc_msg.header.stamp = node_->now();
-      fc_msg.header.frame_id = "map";
-      const auto raw = unitree->getFootForcesRaw();
-      fc_msg.foot_force_raw.resize(num_feet_);
-      fc_msg.contact_states.resize(num_feet_);
-      for (int i = 0; i < num_feet_; ++i) {
-        fc_msg.foot_force_raw[i] = raw[i];
-        fc_msg.contact_states[i] = (raw[i] > foot_contact_threshold_);
+      if (controller_id_ != "cpg") {
+        quad_msgs::msg::FootContact fc_msg;
+        fc_msg.header.stamp = controller_id_=="cpg" ? rclcpp::Time(last_joint_state_msg_.header.stamp) : node_->now();
+        fc_msg.header.frame_id = "map";
+        const auto raw = unitree->getFootForcesRaw();
+        fc_msg.foot_force_raw.resize(num_feet_);
+        fc_msg.contact_states.resize(num_feet_);
+        for (int i = 0; i < num_feet_; ++i) {
+          fc_msg.foot_force_raw[i] = raw[i];
+          fc_msg.contact_states[i] = (raw[i] > foot_contact_threshold_);
+        }
+        foot_contact_pub_->publish(fc_msg);
       }
-      foot_contact_pub_->publish(fc_msg);
+      quad_msgs::msg::CpgSensorFrame frame;
+      frame.header=last_joint_state_msg_.header;
+      frame.source_tick=unitree->consumedTick();
+      frame.joints=last_joint_state_msg_;frame.imu=last_imu_msg_;
+      cpg_sensor_pub_->publish(frame);
     }
 
     // Pass IMU to learned policy for acceleration access. Hoisted out of the
@@ -524,7 +571,7 @@ bool RobotDriver::updateState() {
     // all available from onboard sensors. With mocap (use_mocap_), fall
     // through to the real state estimator instead — it supplies a true world
     // pose rather than a body pinned to the origin.
-    if (controller_id_ == "learned" && !use_mocap_) {
+    if ((controller_id_ == "learned" || controller_id_ == "cpg") && !use_mocap_) {
       rclcpp::Time state_timestamp = node_->now();
 
       // Joint state from encoders
@@ -641,7 +688,7 @@ bool RobotDriver::updateState() {
 
 void RobotDriver::publishState() {
   if (is_hardware_) {
-    last_joint_state_msg_.header.stamp = node_->now();
+    if(controller_id_!="cpg") last_joint_state_msg_.header.stamp = node_->now();
     imu_pub_->publish(last_imu_msg_);
     joint_state_pub_->publish(last_joint_state_msg_);
     robot_state_pub_->publish(last_robot_state_msg_);
@@ -688,7 +735,8 @@ bool RobotDriver::updateControl() {
         int joint_idx = 3 * i + j;
 
         robot_driver_utils::loadMotorCommandMsg(
-            0, 0, 0, safety_kp_.at(j), safety_kd_.at(j),
+            0, 0, 0, controller_id_=="cpg" ? 0. : safety_kp_.at(j),
+            controller_id_=="cpg" ? .5 : safety_kd_.at(j),
             leg_command_array_msg_.leg_commands.at(i).motor_commands.at(j));
       }
     }
@@ -733,9 +781,9 @@ bool RobotDriver::updateControl() {
     for (int i = 0; i < num_feet_; ++i) {
       leg_command_array_msg_.leg_commands.at(i).motor_commands.resize(3);
       for (int j = 0; j < 3; ++j) {
-        double ang =
-            (stand_joint_angles_.at(j) - sit_joint_angles_.at(j)) * t_interp +
-            sit_joint_angles_.at(j);
+        const double start=(controller_id_=="cpg" && cpg_transition_start_.size()==12)
+            ? cpg_transition_start_[3*i+j] : sit_joint_angles_.at(j);
+        double ang=(stand_joint_angles_.at(j)-start)*t_interp+start;
 
         robot_driver_utils::loadMotorCommandMsg(
             ang, 0, 0, stand_kp_.at(j), stand_kd_.at(j),
@@ -754,9 +802,9 @@ bool RobotDriver::updateControl() {
     for (int i = 0; i < num_feet_; ++i) {
       leg_command_array_msg_.leg_commands.at(i).motor_commands.resize(3);
       for (int j = 0; j < 3; ++j) {
-        double ang =
-            (sit_joint_angles_.at(j) - stand_joint_angles_.at(j)) * t_interp +
-            stand_joint_angles_.at(j);
+        const double start=(controller_id_=="cpg" && cpg_transition_start_.size()==12)
+            ? cpg_transition_start_[3*i+j] : stand_joint_angles_.at(j);
+        double ang=(sit_joint_angles_.at(j)-start)*t_interp+start;
 
         robot_driver_utils::loadMotorCommandMsg(
             ang, 0, 0, stand_kp_.at(j), stand_kd_.at(j),
@@ -836,6 +884,9 @@ bool RobotDriver::updateControl() {
 }
 
 void RobotDriver::publishControl(bool is_valid) {
+  std_msgs::msg::UInt8 mode;
+  mode.data = control_mode_;
+  control_mode_pub_->publish(mode);
   // Stamp and send the message
   // if ((ros::Time::now() - leg_command_array_msg_.header.stamp).toSec()
   // >= 1.0/publish_rate_) {
