@@ -310,13 +310,22 @@ void RobotDriver::initLegController() {
                  "Learned policy requested but built without ONNX Runtime");
     leg_controller_ = nullptr;
 #endif
+  } else if (controller_id_ == "forl") {
+#ifdef HAS_ONNXRUNTIME
+    leg_controller_ = std::make_shared<ForlPolicy>(node_, robot_ns, quadKD2_);
+#else
+    RCLCPP_FATAL(node_->get_logger(),
+                 "FORL policy requested but built without ONNX Runtime");
+    leg_controller_ = nullptr;
+#endif
   } else {
     RCLCPP_ERROR(node_->get_logger(),
                  "Invalid controller id %s, returning nullptr",
                  controller_id_.c_str());
     leg_controller_ = nullptr;
   }
-  if (leg_controller_ != nullptr && controller_id_ != "learned") {
+  if (leg_controller_ != nullptr && controller_id_ != "learned" &&
+      controller_id_ != "forl") {
     leg_controller_->init(stance_kp_, stance_kd_, swing_kp_, swing_kd_,
                           swing_kp_cart_, swing_kd_cart_);
   } else {
@@ -556,7 +565,7 @@ bool RobotDriver::updateState() {
     // IMU + joint encoders without requiring mocap or a full state estimator.
     // The learned policy only needs orientation, angular velocity, joint
     // positions, and joint velocities — all available from onboard sensors.
-    if (controller_id_ == "learned") {
+    if (controller_id_ == "learned" || controller_id_ == "forl") {
       rclcpp::Time state_timestamp = node_->now();
 
       // Joint state from encoders

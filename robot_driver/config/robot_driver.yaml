@@ -46,6 +46,14 @@
       model_path: /root/ros2_ws/src/quad-sdk/robot_driver/include/robot_driver/models/go2/policy.onnx # Path to Policy Onnx File
       policy_inference_rate: 50.0  # Hz, rate at which learned policy runs inference (PD tracking runs at update_rate)
       cmd_vel_filter_const: 0.10
+      # controller:=forl (FORL / forlax Go2 joystick policy, MuJoCo MJX
+      # conventions). These are the values the policy was trained with; the
+      # gains in the robot yaml are not used by this controller.
+      forl_kp: 25.0
+      forl_kd: 0.5
+      forl_action_scale: 0.5
+      forl_default_joint_angles: [0.0, 0.9, -1.8]  # abad, hip, knee
+      forl_cmd_limits: [1.0, 0.4, 1.0]  # vx, vy, yaw rate
       cmd_vel_scale: 1.0
 
     underbrush_swing:

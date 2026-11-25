@@ -84,6 +84,7 @@ set(ROBOT_DRIVER_SOURCES
 
 if(ONNXRUNTIME_LIB)
   list(APPEND ROBOT_DRIVER_SOURCES src/controllers/learned_policy.cpp)
+  list(APPEND ROBOT_DRIVER_SOURCES src/controllers/forl_policy.cpp)
 endif()
 
 add_library(robot_driver SHARED ${ROBOT_DRIVER_SOURCES})
@@ -190,6 +191,17 @@ if(BUILD_TESTING)
     rclcpp
     quad_utils
     ament_index_cpp
+  )
+
+  # Joint-order and observation conventions of the FORL policy controller.
+  # The header under test only needs Eigen, but grid_map_core defines an Eigen
+  # plugin header for every target in this package, so the test links the
+  # library to get the same include paths.
+  ament_add_gtest(forl_policy_math_test
+    test/test_forl_policy_math.cpp
+  )
+  target_link_libraries(forl_policy_math_test
+    ${PROJECT_NAME}
   )
 endif()
 
